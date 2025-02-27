@@ -1,16 +1,12 @@
 import { useState, useCallback } from 'react';
-import { varAlpha } from 'minimal-shared/utils';
 import { useBoolean, useSetState } from 'minimal-shared/hooks';
 
 import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import TableBody from '@mui/material/TableBody';
-import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 
 import { paths } from 'src/routes/paths';
@@ -21,7 +17,6 @@ import { fIsAfter, fIsBetween } from 'src/utils/format-time';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { _invoices, PRODUCT_STOCK_OPTIONS } from 'src/_mock';
 
-import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
@@ -56,15 +51,16 @@ const TABLE_HEAD = [
 ];
 
 const FILTERS_OPTIONS = [
-  { id: 'id', type: 'input', label: 'ID' },
-  { id: 'service', type: 'select', options: PRODUCT_STOCK_OPTIONS, label: 'Service' },
-  { id: 'startDate', type: 'date', label: 'Start date' },
+  { id: 'designation', type: 'input', label: 'Designation' },
+  { id: 'status', type: 'select', options: PRODUCT_STOCK_OPTIONS, label: 'Etat' },
+  { id: 'startDate', type: 'date', label: 'Date de début' },
+  { id: 'endDate', type: 'date', label: 'Date de fin' },
 ];
 
 // ----------------------------------------------------------------------
 
 export function DocumentListView() {
-  const theme = useTheme();
+  // const theme = useTheme();
 
   const table = useTable({ defaultOrderBy: 'createDate' });
 
@@ -80,7 +76,10 @@ export function DocumentListView() {
     startDate: null,
     endDate: null,
   });
-  const { state: currentFilters, setState: updateFilters } = filters;
+  const {
+    state: currentFilters,
+    // , setState: updateFilters
+  } = filters;
 
   const dateError = fIsAfter(currentFilters.startDate, currentFilters.endDate);
 
@@ -101,7 +100,7 @@ export function DocumentListView() {
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
-  const getInvoiceLength = (status) => tableData.filter((item) => item.status === status).length;
+  // const getInvoiceLength = (status) => tableData.filter((item) => item.status === status).length;
   const handleReset = () => {
     setEditedFilters([]);
   };
@@ -113,38 +112,38 @@ export function DocumentListView() {
 
   //   const getPercentByStatus = (status) => (getInvoiceLength(status) / tableData.length) * 100;
 
-  const TABS = [
-    {
-      value: 'all',
-      label: 'All',
-      color: 'default',
-      count: tableData.length,
-    },
-    {
-      value: 'paid',
-      label: 'Paid',
-      color: 'success',
-      count: getInvoiceLength('paid'),
-    },
-    {
-      value: 'pending',
-      label: 'Pending',
-      color: 'warning',
-      count: getInvoiceLength('pending'),
-    },
-    {
-      value: 'overdue',
-      label: 'Overdue',
-      color: 'error',
-      count: getInvoiceLength('overdue'),
-    },
-    {
-      value: 'draft',
-      label: 'Draft',
-      color: 'default',
-      count: getInvoiceLength('draft'),
-    },
-  ];
+  // const TABS = [
+  //   {
+  //     value: 'all',
+  //     label: 'All',
+  //     color: 'default',
+  //     count: tableData.length,
+  //   },
+  //   {
+  //     value: 'paid',
+  //     label: 'Paid',
+  //     color: 'success',
+  //     count: getInvoiceLength('paid'),
+  //   },
+  //   {
+  //     value: 'pending',
+  //     label: 'Pending',
+  //     color: 'warning',
+  //     count: getInvoiceLength('pending'),
+  //   },
+  //   {
+  //     value: 'overdue',
+  //     label: 'Overdue',
+  //     color: 'error',
+  //     count: getInvoiceLength('overdue'),
+  //   },
+  //   {
+  //     value: 'draft',
+  //     label: 'Draft',
+  //     color: 'default',
+  //     count: getInvoiceLength('draft'),
+  //   },
+  // ];
 
   const handleDeleteRow = useCallback(
     (id) => {
@@ -169,13 +168,13 @@ export function DocumentListView() {
     table.onUpdatePageDeleteRows(dataInPage.length, dataFiltered.length);
   }, [dataFiltered.length, dataInPage.length, table, tableData]);
 
-  const handleFilterStatus = useCallback(
-    (event, newValue) => {
-      table.onResetPage();
-      updateFilters({ status: newValue });
-    },
-    [updateFilters, table]
-  );
+  // const handleFilterStatus = useCallback(
+  //   (event, newValue) => {
+  //     table.onResetPage();
+  //     updateFilters({ status: newValue });
+  //   },
+  //   [updateFilters, table]
+  // );
 
   const renderConfirmDialog = () => (
     <ConfirmDialog
@@ -215,7 +214,7 @@ export function DocumentListView() {
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.root}
+              href={paths.dashboard.rh.personal.newPersonelDocument}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
@@ -280,7 +279,7 @@ export function DocumentListView() {
         </Card> */}
 
         <Card>
-          <Tabs
+          {/* <Tabs
             value={currentFilters.status}
             onChange={handleFilterStatus}
             sx={{
@@ -307,7 +306,7 @@ export function DocumentListView() {
                 }
               />
             ))}
-          </Tabs>
+          </Tabs> */}
 
           {/* <DocumentTableToolbar
             filters={filters}

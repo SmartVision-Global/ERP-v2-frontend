@@ -17,6 +17,7 @@ export function RHFTextField({ name, helperText, slotProps, type = 'text', ...ot
       render={({ field, fieldState: { error } }) => (
         <TextField
           {...field}
+          size="small"
           fullWidth
           value={isNumberType ? transformValue(field.value) : field.value}
           onChange={(event) => {

@@ -108,7 +108,7 @@ const CONTENT = `
 </ul>
 `;
 
-export const _jobs = Array.from({ length: 12 }, (_, index) => {
+export const _jobs = Array.from({ length: 18 }, (_, index) => {
   const publish = index % 3 ? 'published' : 'draft';
 
   const salary = {
@@ -153,3 +153,319 @@ export const _jobs = Array.from({ length: 12 }, (_, index) => {
     workingSchedule: JOB_WORKING_SCHEDULE_OPTIONS.slice(0, 2),
   };
 });
+
+export const _RhSettingsIdent = [
+  {
+    id: 1,
+    title: 'Entreprises',
+    can_add: false,
+    icon: 'mdi:company',
+    uuid: '1',
+    items: [
+      {
+        id: 1,
+        title: 'SARL EL DIOUANE IMPORT EXPORT',
+        category: 'IMPORT-EXPORT',
+        adress: 'CENTRE COMMUNE BIR HADDADA',
+      },
+      {
+        id: 2,
+        title: 'SARL EL DIOUANE IMPORT EXPORT ( Fabrication)',
+        category: 'FABRICATION DE POMPES ET DE MATERIEL HYDRAULI',
+        adress: 'Chott groupe 39 section 12 commune AIN OULMENE',
+      },
+      {
+        id: 3,
+        title: 'SARL DS POWER MOTORS',
+        category: 'CONCESSIONNAIRE MOTOCYCLE',
+        adress: '1èr Etage Section 13 Gr 86 Bir HADDADA',
+      },
+      {
+        id: 4,
+        title: 'SARL DS POWER MOTORS',
+        category: 'CONCESSIONNAIRE MOTOCYCLE',
+        adress: '1èr Etage Section 13 Gr 86 Bir HADDADA',
+      },
+      {
+        id: 5,
+        title: 'SARL DS POWER MOTORS',
+        category: 'CONCESSIONNAIRE MOTOCYCLE',
+        adress: '1èr Etage Section 13 Gr 86 Bir HADDADA',
+      },
+    ],
+  },
+  {
+    id: 2,
+    uuid: '2',
+
+    title: 'Directions',
+    can_add: true,
+    icon: 'mdi:direct-current',
+    items: [
+      {
+        id: 1,
+        title: 'Direction générale',
+        category: 'Direction générale',
+      },
+      {
+        id: 2,
+        title: 'Division industrie',
+        category: 'Division industrie',
+      },
+      {
+        id: 3,
+        title: 'Division marches',
+        category: 'Division marches',
+      },
+      {
+        id: 4,
+        title: 'Division support',
+        category: 'Division support',
+      },
+    ],
+  },
+  {
+    id: 3,
+    uuid: '3',
+
+    title: 'Ateliers',
+    can_add: false,
+    icon: 'mdi:direct-current',
+
+    items: [],
+  },
+  {
+    id: 4,
+    uuid: '4',
+
+    title: 'Filiales',
+    can_add: true,
+    icon: 'mdi:direct-current',
+
+    items: [
+      {
+        id: 1,
+        title: 'Non défini',
+      },
+      {
+        id: 2,
+        title: 'ELDIOUANE FABRICATION POMPE',
+        category: 'ELDIOUANE FABRICATION POMPE',
+      },
+      {
+        id: 3,
+        title: 'ELDIOUANE IMP-EXP',
+        category: 'ELDIOUANE IMP-EXP',
+      },
+      {
+        id: 4,
+        title: 'CONCESSIONNAIRE MOTOCYCLE',
+        category: 'CONCESSIONNAIRE MOTOCYCLE',
+      },
+    ],
+  },
+  {
+    id: 5,
+    uuid: '5',
+
+    title: 'Divisions',
+    can_add: true,
+    icon: 'mdi:direct-current',
+
+    items: [
+      {
+        id: 1,
+        title: 'Non défini',
+      },
+    ],
+  },
+  {
+    id: 6,
+    uuid: '6',
+
+    title: 'Départements',
+    can_add: true,
+    icon: 'mdi:building',
+    items: [
+      {
+        id: 1,
+        title: 'Achats et approvisionnements',
+        category: 'Achats et approvisionnements',
+      },
+    ],
+  },
+  {
+    id: 7,
+    uuid: '7',
+
+    title: 'Sections',
+    can_add: true,
+    icon: 'mdi:view-list',
+    items: [
+      {
+        id: 1,
+        title: 'Equipe A',
+        category: 'Equipe A',
+      },
+    ],
+  },
+  {
+    id: 8,
+    uuid: '8',
+
+    title: 'Nationalités',
+    can_add: true,
+    icon: 'mdi:flag',
+    items: [
+      {
+        id: 1,
+        title: 'Algérienne',
+        category: 'Algerian nationality law is regulated by the Constitution of Algeria',
+      },
+    ],
+  },
+  {
+    id: 9,
+    uuid: '9',
+
+    title: 'Catégories EPI',
+    can_add: true,
+    icon: 'mdi:shield-user',
+    items: [
+      {
+        id: 1,
+        title: 'Protection du corps',
+        category: 'Protection du corps',
+      },
+    ],
+  },
+  {
+    id: 10,
+    uuid: '10',
+
+    title: 'Normes de conformité EPI',
+    can_add: true,
+    icon: 'mdi:user-box-outline',
+    items: [
+      {
+        id: 1,
+        title: 'Protection du corps',
+        category: 'Protection du corps',
+      },
+    ],
+  },
+  {
+    id: 11,
+    uuid: '11',
+
+    title: 'Grades',
+    can_add: true,
+    icon: 'mdi:chart-areaspline-variant',
+    items: [
+      {
+        id: 1,
+        title: 'Protection du corps',
+        category: 'Protection du corps',
+      },
+    ],
+  },
+  {
+    id: 12,
+    uuid: '2',
+    title: 'Banques',
+    can_add: true,
+    icon: 'mdi:bank',
+    items: [
+      {
+        id: 1,
+        title: 'BNA',
+        category: 'BNA',
+      },
+    ],
+  },
+  {
+    id: 13,
+    uuid: '13',
+
+    title: "Type d'équipe",
+    can_add: true,
+    icon: 'mdi:users-group',
+    items: [
+      {
+        id: 1,
+        title: 'Administration',
+      },
+    ],
+  },
+  {
+    id: 14,
+    uuid: '14',
+
+    title: 'Catégorie socio-professionnelle',
+    can_add: true,
+    icon: 'mdi:cabin-a-frame',
+    items: [
+      {
+        id: 1,
+        title: 'C',
+        category: 'Cadre',
+      },
+    ],
+  },
+  {
+    id: 15,
+    uuid: '15',
+
+    title: 'Échelons',
+    can_add: true,
+    icon: 'mdi:format-list-numbered',
+    items: [
+      {
+        id: 1,
+        title: '1',
+        category: '1',
+      },
+    ],
+  },
+  {
+    id: 16,
+    uuid: '16',
+
+    title: 'Niveau de la grille salariale',
+    can_add: true,
+    icon: 'mdi:format-list-numbered',
+
+    items: [
+      {
+        id: 1,
+        title: 'NIV-1',
+        category: 'Niveau 1',
+      },
+    ],
+  },
+  {
+    id: 17,
+    uuid: '17',
+
+    title: 'Motifs - Sortie, Congé et Récupération',
+    can_add: true,
+    icon: 'mdi:content-copy',
+    items: [
+      {
+        id: 1,
+        title: 'Démission',
+        category: 'Démission',
+      },
+    ],
+  },
+  {
+    id: 18,
+    uuid: '18',
+
+    title: 'Motifs - Prêt et Aide',
+    can_add: true,
+    icon: 'mdi:content-copy',
+
+    items: [],
+  },
+];

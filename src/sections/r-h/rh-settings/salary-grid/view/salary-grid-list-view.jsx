@@ -1,4 +1,4 @@
-import { useBoolean, useSetState } from 'minimal-shared/hooks';
+import { useBoolean } from 'minimal-shared/hooks';
 import { useState, useEffect, forwardRef, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
@@ -8,14 +8,7 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { TextField, FormControl, InputAdornment } from '@mui/material';
-import {
-  DataGrid,
-  gridClasses,
-  GridToolbarExport,
-  GridActionsCellItem,
-  GridToolbarContainer,
-  GridToolbarColumnsButton,
-} from '@mui/x-data-grid';
+import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -33,20 +26,17 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import {
   RenderCellId,
-  RenderCellUser,
-  RenderCellPrice,
+  RenderCellIrg,
+  RenderCellLevel,
   RenderCellPublish,
-  RenderCellCompany,
+  RenderCellEchelle,
   RenderCellContract,
   RenderCellCreatedAt,
-} from '../product-table-row';
+  RenderCellDesignation,
+  RenderCellCategorySocio,
+} from '../salary-grid-table-row';
 
 // ----------------------------------------------------------------------
-
-const PUBLISH_OPTIONS = [
-  { value: 'published', label: 'Published' },
-  { value: 'draft', label: 'Draft' },
-];
 
 const SEX_OPTIONS = [
   { value: 'man', label: 'Homme' },
@@ -60,25 +50,55 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 // ----------------------------------------------------------------------
 
 const FILTERS_OPTIONS = [
-  { id: 'id', type: 'input', label: 'ID', inputType: 'number' },
-  { id: 'full_name', type: 'select', options: PRODUCT_STOCK_OPTIONS, label: 'Nom-Prénom' },
-  { id: 'sex', type: 'select', options: SEX_OPTIONS, label: 'Sexe' },
-  { id: 'status', type: 'select', options: PRODUCT_STOCK_OPTIONS, label: 'Etat' },
-  { id: 'paymantType', type: 'select', options: PRODUCT_STOCK_OPTIONS, label: 'Type de paiement' },
-  { id: 'teamType', type: 'select', options: PRODUCT_STOCK_OPTIONS, label: 'Type équipe' },
-  { id: 'banc', type: 'select', options: PRODUCT_STOCK_OPTIONS, label: 'Banque' },
-  { id: 'contractType', type: 'select', options: PRODUCT_STOCK_OPTIONS, label: 'Type de contrat' },
   {
-    id: 'workDepartment',
+    id: 'code',
+    type: 'input',
+    label: 'Code',
+    cols: 3,
+    width: 1,
+  },
+  {
+    id: 'base_salary',
+    type: 'input',
+    label: 'Salaire de base',
+    cols: 3,
+    width: 1,
+  },
+  {
+    id: 'echelle',
     type: 'select',
     options: PRODUCT_STOCK_OPTIONS,
-    label: 'Lieu de travail',
+    label: 'Echelons',
+    cols: 3,
+    width: 1,
   },
-  { id: 'departement', type: 'select', options: PRODUCT_STOCK_OPTIONS, label: 'Département' },
-  { id: 'site', type: 'select', options: PRODUCT_STOCK_OPTIONS, label: 'Site' },
+
+  {
+    id: 'category',
+    type: 'select',
+    options: PRODUCT_STOCK_OPTIONS,
+    label: 'Catégorie socioprofessionnelle',
+    cols: 3,
+    width: 1,
+  },
+
+  {
+    id: 'start_date',
+    type: 'date',
+    label: 'Date début de création',
+    cols: 3,
+    width: 1,
+  },
+  {
+    id: 'end_date',
+    type: 'date',
+    label: 'Date fin de création',
+    cols: 3,
+    width: 1,
+  },
 ];
 
-export function ProductListView() {
+export function SalaryGridListView() {
   const confirmDialog = useBoolean();
 
   const { products, productsLoading } = useGetProducts();
@@ -87,9 +107,6 @@ export function ProductListView() {
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
-
-  const filters = useSetState({ id: '', publish: [], stock: [], full_name: '' });
-  const { state: currentFilters } = filters;
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
@@ -101,9 +118,7 @@ export function ProductListView() {
   const handleReset = () => {
     setEditedFilters([]);
   };
-  // const canReset =
-  //   currentFilters.publish.length > 0 || currentFilters.stock.length > 0 || !!currentFilters.id;
-  const canReset = editedFilters.length > 0;
+
   const dataFiltered = tableData;
 
   const handleDeleteRow = useCallback(
@@ -125,28 +140,15 @@ export function ProductListView() {
     setTableData(deleteRows);
   }, [selectedRowIds, tableData]);
 
-  const CustomToolbarCallback = useCallback(
-    () => (
-      <CustomToolbar
-        filters={filters}
-        canReset={canReset}
-        selectedRowIds={selectedRowIds}
-        setFilterButtonEl={setFilterButtonEl}
-        filteredResults={dataFiltered.length}
-        onOpenConfirmDeleteRows={confirmDialog.onTrue}
-      />
-    ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [currentFilters, selectedRowIds, editedFilters]
-  );
-
   const columns = [
     { field: 'category', headerName: 'Category', filterable: false },
     {
       field: 'id',
       headerName: 'ID',
-      flex: 0.5,
-      minWidth: 260,
+      //   flex: 0.5,
+      flex: 1,
+
+      minWidth: 100,
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
@@ -154,91 +156,146 @@ export function ProductListView() {
       ),
     },
     {
-      field: 'name',
-      headerName: 'Nom-Prénom',
+      field: 'code',
+      headerName: 'Code',
       flex: 1,
-      minWidth: 260,
+      minWidth: 160,
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellUser params={params} href={paths.dashboard.root} />
+        <RenderCellContract params={params} href={paths.dashboard.root} />
       ),
     },
     {
-      field: 'sex',
-      headerName: 'Sex',
-      width: 110,
+      field: 'base_salary',
+      headerName: 'Salaire de base',
+      flex: 1,
+      minWidth: 160,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
       renderCell: (params) => <RenderCellPublish params={params} />,
     },
     {
-      field: 'etat',
-      headerName: 'Etat',
-      width: 110,
+      field: 'designation',
+      headerName: 'Designation',
+      //   flex: 0.5,
+      flex: 1,
+      minWidth: 100,
+      hideable: false,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellDesignation params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'echelle',
+      headerName: 'Echellons',
+      //   flex: 0.5,
+      flex: 1,
+      minWidth: 100,
+      hideable: false,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellEchelle params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'category',
+      headerName: 'Catégorie socioprofessionnelle',
+      //   flex: 0.5,
+      flex: 1,
+      minWidth: 100,
+      hideable: false,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellCategorySocio params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'level',
+      headerName: 'Niveau',
+      //   flex: 0.5,
+      flex: 1,
+      minWidth: 100,
+      hideable: false,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellLevel params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'cotis_salary',
+      headerName: 'Salaire cotisable',
+      flex: 1,
+      minWidth: 160,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
       renderCell: (params) => <RenderCellPublish params={params} />,
     },
     {
-      field: 'company',
-      headerName: 'Entreprise',
-      width: 210,
+      field: 'poste_salary',
+      headerName: 'Salaire de poste',
+      flex: 1,
+      minWidth: 160,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellCompany params={params} />,
+      renderCell: (params) => <RenderCellPublish params={params} />,
     },
     {
-      field: 'site',
-      headerName: 'Site',
-      width: 210,
+      field: 'impos_salary',
+      headerName: 'Salaire imposable',
+      flex: 1,
+      minWidth: 160,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellCompany params={params} />,
+      renderCell: (params) => <RenderCellPublish params={params} />,
     },
     {
-      field: 'fonction',
-      headerName: 'Fonction',
-      width: 210,
+      field: 'irg',
+      headerName: 'Retenue IRG',
+      flex: 1,
+      minWidth: 160,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellCompany params={params} />,
+      renderCell: (params) => <RenderCellIrg params={params} />,
     },
     {
-      field: 'net',
-      headerName: 'Salaire net á payer',
-      width: 210,
+      field: 'net_salary',
+      headerName: 'Salaire Net',
+      flex: 1,
+      minWidth: 160,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPrice params={params} />,
+      renderCell: (params) => <RenderCellPublish params={params} />,
     },
     {
-      field: 'contrat',
-      headerName: 'Contrat',
-      width: 110,
+      field: 'net_salary_pay',
+      headerName: 'Salaire Net a payer',
+      flex: 1,
+      minWidth: 160,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellContract params={params} />,
+      renderCell: (params) => <RenderCellPublish params={params} />,
     },
+
     {
-      field: 'contact_start_date',
-      headerName: 'De',
-      width: 160,
+      field: 'createdAt',
+      headerName: 'Date de création',
+      flex: 1,
+      minWidth: 150,
+      type: 'singleSelect',
+      editable: true,
+      valueOptions: SEX_OPTIONS,
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
     },
-    {
-      field: 'contact_end_date',
-      headerName: 'Au',
-      width: 160,
-      renderCell: (params) => <RenderCellCreatedAt params={params} />,
-    },
+
     {
       type: 'actions',
       field: 'actions',
@@ -309,20 +366,20 @@ export function ProductListView() {
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <CustomBreadcrumbs
-          heading="List"
+          heading="Grille de salaire"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Ressources humaine', href: paths.dashboard.root },
-            { name: 'Employés' },
+            { name: 'Grille de salaire' },
           ]}
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.root}
+              href={paths.dashboard.rh.rhSettings.newSalaryGrid}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New Employé
+              Ajouter
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
@@ -348,7 +405,7 @@ export function ProductListView() {
             onReset={handleReset}
           />
           <Box paddingX={4} paddingY={2} sx={{}}>
-            <FormControl sx={{ flexShrink: 0, width: 0.5 }} size="small">
+            <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
               <TextField
                 fullWidth
                 // value={currentFilters.name}
@@ -402,58 +459,6 @@ export function ProductListView() {
 
 // ----------------------------------------------------------------------
 
-function CustomToolbar({ selectedRowIds, setFilterButtonEl, onOpenConfirmDeleteRows }) {
-  return (
-    <>
-      {/* <ProductTableToolbar
-        filters={filters}
-        options={{ stocks: PRODUCT_STOCK_OPTIONS, publishs: PUBLISH_OPTIONS }}
-      /> */}
-      {/* <ActifTableToolbar
-        filterOptions={FILTERS_OPTIONS}
-        filters={editedFilters}
-        setFilters={setEditedFilters}
-      /> */}
-      <GridToolbarContainer>
-        {/* <GridToolbarQuickFilter size="small" /> */}
-
-        <Box
-          sx={{
-            gap: 1,
-            flexGrow: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-          }}
-        >
-          {!!selectedRowIds.length && (
-            <Button
-              size="small"
-              color="error"
-              startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
-              onClick={onOpenConfirmDeleteRows}
-            >
-              Delete ({selectedRowIds.length})
-            </Button>
-          )}
-
-          <GridToolbarColumnsButton ref={setFilterButtonEl} />
-          {/* <GridToolbarFilterButton ref={setFilterButtonEl} /> */}
-          <GridToolbarExport />
-        </Box>
-      </GridToolbarContainer>
-
-      {/* {canReset && (
-        <ProductTableFiltersResult
-          filters={filters}
-          totalResults={filteredResults}
-          sx={{ p: 2.5, pt: 0 }}
-        />
-      )} */}
-    </>
-  );
-}
-
 // ----------------------------------------------------------------------
 
 export const GridActionsLinkItem = forwardRef((props, ref) => {
@@ -476,17 +481,3 @@ export const GridActionsLinkItem = forwardRef((props, ref) => {
 });
 
 // ----------------------------------------------------------------------
-
-function applyFilter({ inputData, filters }) {
-  const { stock, publish } = filters;
-
-  if (stock.length) {
-    inputData = inputData.filter((product) => stock.includes(product.inventoryType));
-  }
-
-  if (publish.length) {
-    inputData = inputData.filter((product) => publish.includes(product.publish));
-  }
-
-  return inputData;
-}

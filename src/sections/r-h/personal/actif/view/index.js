@@ -1,1 +1,2 @@
-export * from './product-list-view';
+export * from './actif-list-view';
+export * from './actif-create-view';

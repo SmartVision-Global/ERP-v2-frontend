@@ -56,11 +56,19 @@ export const navData = [
       // { title: 'Two', path: paths.dashboard.two, icon: ICONS.ecommerce },
       // { title: 'Three', path: paths.dashboard.three, icon: ICONS.analytics },
       {
-        // subheader:"",
         title: 'resssources humaines',
-        path: paths.dashboard.rh.personal.root,
+        path: '/dashboard/humain-ressource',
         icon: ICONS.analytics,
         children: [
+          {
+            title: 'Fonction',
+            path: paths.dashboard.rh.fonction.root,
+            children: [
+              { title: 'Tâches et responsabilités', path: paths.dashboard.rh.fonction.taskResp },
+              { title: 'Parcours professionnel', path: paths.dashboard.rh.fonction.careerPath },
+              { title: 'Fonctions', path: paths.dashboard.rh.fonction.fonctions },
+            ],
+          },
           {
             title: 'Personnel',
             path: paths.dashboard.rh.personal.root,
@@ -71,6 +79,53 @@ export const navData = [
               { title: 'DAS', path: paths.dashboard.rh.personal.das },
             ],
           },
+          {
+            title: 'Parametrage RH',
+            path: paths.dashboard.rh.rhSettings.root,
+            children: [
+              {
+                title: "Parametrage d'identification",
+                path: paths.dashboard.rh.rhSettings.identification,
+              },
+              { title: 'Zones', path: paths.dashboard.rh.rhSettings.zones },
+              { title: 'Programmes de travail', path: paths.dashboard.rh.rhSettings.workPrograms },
+              {
+                title: 'Indemnités - Retenues',
+                path: paths.dashboard.rh.rhSettings.deductionsCompensation,
+              },
+              {
+                title: 'Grille de Salaire',
+                path: paths.dashboard.rh.rhSettings.salaryGrid,
+              },
+              { title: 'Taux CNAS', path: paths.dashboard.rh.rhSettings.cnasRate },
+              { title: 'Agences', path: paths.dashboard.rh.rhSettings.agencies },
+            ],
+          },
+          {
+            title: 'Les Demandes',
+            path: paths.dashboard.rh.demandes.root,
+            children: [
+              { title: 'Demande de sortie', path: paths.dashboard.rh.demandes.sortie },
+              { title: 'Demande de conge', path: paths.dashboard.rh.demandes.conge },
+              { title: 'Demande de recuperation', path: paths.dashboard.rh.demandes.recuperation },
+              { title: 'Demande de pret', path: paths.dashboard.rh.demandes.pret },
+              { title: "Demande d'aide", path: paths.dashboard.rh.demandes.aide },
+            ],
+          },
+          {
+            title: 'Les Ecritures',
+            path: paths.dashboard.rh.entries.root,
+            children: [
+              { title: 'Prets sociaux', path: paths.dashboard.rh.entries.socialLoan },
+              { title: 'Conge - Absence', path: paths.dashboard.rh.entries.leaveAbsence },
+              {
+                title: 'Permanence - Jours supplementaires',
+                path: paths.dashboard.rh.entries.permanence,
+              },
+              { title: 'Heures supplementaires', path: paths.dashboard.rh.entries.overtime },
+              { title: 'Récupération', path: paths.dashboard.rh.entries.recovery },
+            ],
+          },
         ],
       },
     ],
@@ -78,19 +133,19 @@ export const navData = [
   /**
    * Management
    */
-  {
-    subheader: 'Management',
-    items: [
-      {
-        title: 'Group',
-        path: paths.dashboard.group.root,
-        icon: ICONS.user,
-        children: [
-          { title: 'Four', path: paths.dashboard.group.root },
-          { title: 'Five', path: paths.dashboard.group.five },
-          { title: 'Six', path: paths.dashboard.group.six },
-        ],
-      },
-    ],
-  },
+  // {
+  //   subheader: 'Management',
+  //   items: [
+  //     {
+  //       title: 'Group',
+  //       path: paths.dashboard.group.root,
+  //       icon: ICONS.user,
+  //       children: [
+  //         { title: 'Four', path: paths.dashboard.group.root },
+  //         { title: 'Five', path: paths.dashboard.group.five },
+  //         { title: 'Six', path: paths.dashboard.group.six },
+  //       ],
+  //     },
+  //   ],
+  // },
 ];

@@ -15,6 +15,7 @@ import { AuthProvider } from 'src/auth/context/jwt';
 import { LocalizationProvider } from './locales';
 
 // ----------------------------------------------------------------------
+// @@Eldiouane2023##
 
 export default function App({ children }) {
   useScrollToTop();

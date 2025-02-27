@@ -23,10 +23,19 @@ export function ProductTableToolbar({ filters, options }) {
 
   const { state: currentFilters, setState: updateFilters } = filters;
   const [id, setID] = useState(currentFilters.id);
+  const [fullname, setFullname] = useState(currentFilters.full_name);
+  const [sex, setSex] = useState(currentFilters.sex);
+  const [status, setStatus] = useState(currentFilters.status);
+  const [paymantType, setPaymantType] = useState(currentFilters.status);
+  const [teamType, setTeamType] = useState(currentFilters.status);
+  const [banc, setBanc] = useState(currentFilters.status);
+  const [contractType, setContractType] = useState(currentFilters.status);
+  const [jobDepartment, setJobDepartment] = useState(currentFilters.status);
+  const [site, setSite] = useState(currentFilters.status);
+  const [search, setSearch] = useState(currentFilters.status);
 
   const [stock, setStock] = useState(currentFilters.stock);
   const [publish, setPublish] = useState(currentFilters.publish);
-  const [fullname, setFullname] = useState(currentFilters.full_name);
 
   // const handleChangeId = useCallback((event) => {
   //   const newValue =

@@ -67,8 +67,8 @@ export function TableToolbarCustom({ filterOptions, filters, setFilters, onReset
     <Stack direction="column" spacing={2} paddingX={4} paddingY={2}>
       <Grid container spacing={2}>
         {filterOptions.map((item) => (
-          <Grid size={{ xs: 12, md: 3 }} key={item.id}>
-            <FormControl sx={{ flexShrink: 0, width: 1 }} size="small">
+          <Grid size={{ xs: 12, md: item?.cols ?? 3 }} key={item.id}>
+            <FormControl sx={{ flexShrink: 0, width: item?.width ?? 1 }} size="small">
               {item.type === 'input' && (
                 <TextField
                   fullWidth
@@ -131,7 +131,7 @@ export function TableToolbarCustom({ filterOptions, filters, setFilters, onReset
                   }
                   onChange={(newValue) => handleDateChange(newValue, item.id)}
                   slotProps={{ textField: { fullWidth: true, size: 'small' } }}
-                  sx={{ maxWidth: { md: 180 } }}
+                  // sx={{ maxWidth: { md: 180 } }}
                 />
               )}
             </FormControl>
@@ -139,7 +139,9 @@ export function TableToolbarCustom({ filterOptions, filters, setFilters, onReset
         ))}
       </Grid>
       <Stack direction="row" spacing={1}>
-        <Button variant="contained">Chercher</Button>
+        <Button variant="contained" sx={{ px: 2, py: 1 }}>
+          Chercher
+        </Button>
         {filters.length > 0 && (
           <Button
             variant="outlined"
