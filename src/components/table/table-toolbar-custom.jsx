@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import { varAlpha } from 'minimal-shared/utils';
 import React, { useState, useCallback } from 'react';
 
 import Grid from '@mui/material/Grid2';
@@ -106,7 +105,7 @@ export function TableToolbarCustom({ filterOptions, filters, setFilters, onReset
                         {option.label}
                       </MenuItem>
                     ))}
-                    <MenuItem
+                    {/* <MenuItem
                       sx={[
                         (theme) => ({
                           justifyContent: 'center',
@@ -117,7 +116,7 @@ export function TableToolbarCustom({ filterOptions, filters, setFilters, onReset
                       ]}
                     >
                       Apply
-                    </MenuItem>
+                    </MenuItem> */}
                   </Select>
                 </>
               )}

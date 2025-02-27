@@ -6,7 +6,7 @@ import { DocumentCreateView } from 'src/sections/r-h/personal/documents/view/doc
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Create a new document personnel | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `Ajouter Document | Dashboard - ${CONFIG.appName}` };
 
 export default function Page() {
   return (

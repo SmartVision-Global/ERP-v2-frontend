@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
-import { CareerListView } from 'src/sections/r-h/fonction/career-path/view';
+import { SocialLoanListView } from 'src/sections/r-h/entries/social-loan/view';
 
 // ----------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ export default function Page() {
         <title> {metadata.title}</title>
       </Helmet>
 
-      <CareerListView />
+      <SocialLoanListView />
     </>
   );
 }

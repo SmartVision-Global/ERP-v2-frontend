@@ -15,7 +15,7 @@ import { RouterLink } from 'src/routes/components';
 import { fIsAfter, fIsBetween } from 'src/utils/format-time';
 
 import { DashboardContent } from 'src/layouts/dashboard';
-import { _invoices, PRODUCT_STOCK_OPTIONS } from 'src/_mock';
+import { _invoices, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -51,10 +51,12 @@ const TABLE_HEAD = [
 ];
 
 const FILTERS_OPTIONS = [
-  { id: 'designation', type: 'input', label: 'Designation' },
-  { id: 'status', type: 'select', options: PRODUCT_STOCK_OPTIONS, label: 'Etat' },
-  { id: 'startDate', type: 'date', label: 'Date de début' },
-  { id: 'endDate', type: 'date', label: 'Date de fin' },
+  { id: 'designation', type: 'input', label: 'Designation', cols: 12, width: 0.24 },
+  { id: 'status', type: 'select', options: DOCUMENT_STATUS_OPTIONS, label: 'Etat' },
+  { id: 'valideur', type: 'select', options: DOCUMENT_STATUS_OPTIONS, label: 'Valideur' },
+
+  { id: 'startDate', type: 'date', label: 'Date de début création' },
+  { id: 'endDate', type: 'date', label: 'Date de fin création' },
 ];
 
 // ----------------------------------------------------------------------

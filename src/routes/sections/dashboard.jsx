@@ -115,14 +115,28 @@ const PageRhDemandeAideAgenciesNew = lazy(
 const PageRhEntriesSocialLoan = lazy(
   () => import('src/pages/dashboard/r-h/entries/social-loan/list')
 );
+const PageRhEntriesSocialLoanNew = lazy(
+  () => import('src/pages/dashboard/r-h/entries/social-loan/new')
+);
+
 const PageRhEntriesLeaveAbsence = lazy(
   () => import('src/pages/dashboard/r-h/entries/leave-absence/list')
+);
+const PageRhEntriesLeaveAbsenceNew = lazy(
+  () => import('src/pages/dashboard/r-h/entries/leave-absence/new')
 );
 const PageRhEntriesPermanence = lazy(
   () => import('src/pages/dashboard/r-h/entries/permanence/list')
 );
+const PageRhEntriesPermanenceNew = lazy(
+  () => import('src/pages/dashboard/r-h/entries/permanence/new')
+);
+
 const PageRhEntriesOvertime = lazy(() => import('src/pages/dashboard/r-h/entries/overtime/list'));
+const PageRhEntriesOvertimeNew = lazy(() => import('src/pages/dashboard/r-h/entries/overtime/new'));
+
 const PageRhEntriesRecovery = lazy(() => import('src/pages/dashboard/r-h/entries/recovery/list'));
+const PageRhEntriesRecoveryNew = lazy(() => import('src/pages/dashboard/r-h/entries/recovery/new'));
 
 function SuspenseOutlet() {
   const pathname = usePathname();
@@ -229,10 +243,19 @@ export const dashboardRoutes = [
             path: 'entries',
             children: [
               { path: 'social-loan', element: <PageRhEntriesSocialLoan /> },
+              { path: 'social-loan/new', element: <PageRhEntriesSocialLoanNew /> },
+
               { path: 'leave-absence', element: <PageRhEntriesLeaveAbsence /> },
+              { path: 'leave-absence/new', element: <PageRhEntriesLeaveAbsenceNew /> },
+
               { path: 'permanence', element: <PageRhEntriesPermanence /> },
+              { path: 'permanence/new', element: <PageRhEntriesPermanenceNew /> },
+
               { path: 'overtime', element: <PageRhEntriesOvertime /> },
+              { path: 'overtime/new', element: <PageRhEntriesOvertimeNew /> },
+
               { path: 'recovery', element: <PageRhEntriesRecovery /> },
+              { path: 'recovery/new', element: <PageRhEntriesRecoveryNew /> },
             ],
           },
         ],

@@ -1,4 +1,4 @@
-import { useBoolean, useSetState } from 'minimal-shared/hooks';
+import { useBoolean } from 'minimal-shared/hooks';
 import { useState, useEffect, forwardRef, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
@@ -8,31 +8,14 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { TextField, FormControl, InputAdornment } from '@mui/material';
-import {
-  DataGrid,
-  gridClasses,
-  GridToolbarExport,
-  GridActionsCellItem,
-  GridToolbarContainer,
-  GridToolbarColumnsButton,
-} from '@mui/x-data-grid';
+import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
+import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
 import { useGetProducts } from 'src/actions/product';
 import { DashboardContent } from 'src/layouts/dashboard';
-import {
-  ACTIF_NAMES,
-  PRODUCT_BANQ_OPTIONS,
-  PRODUCT_SITE_OPTIONS,
-  PRODUCT_STATUS_OPTIONS,
-  PRODUCT_PAYMANT_OPTIONS,
-  PRODUCT_CONTRACT_OPTIONS,
-  PRODUCT_TEAM_TYPE_OPTIONS,
-  PRODUCT_DEPARTEMENT_OPTIONS,
-  PRODUCT_WORK_DEPARTEMENT_OPTIONS,
-} from 'src/_mock';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -43,20 +26,22 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import {
   RenderCellId,
-  RenderCellUser,
-  RenderCellPrice,
-  RenderCellPublish,
-  RenderCellCompany,
-  RenderCellContract,
+  RenderCellSite,
+  RenderCellEndAt,
+  RenderCellStatus,
+  RenderCellNature,
+  RenderCellAtelier,
+  RenderCellStartAt,
+  RenderCellFullname,
+  RenderCellValideBy,
+  RenderCellFunction,
   RenderCellCreatedAt,
-} from '../product-table-row';
+  RenderCellPermanence,
+  RenderCellDesignation,
+  RenderCellDesignationPerm,
+} from '../recovery-table-row';
 
 // ----------------------------------------------------------------------
-
-const PUBLISH_OPTIONS = [
-  { value: 'published', label: 'Published' },
-  { value: 'draft', label: 'Draft' },
-];
 
 const SEX_OPTIONS = [
   { value: 'man', label: 'Homme' },
@@ -70,35 +55,103 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 // ----------------------------------------------------------------------
 
 const FILTERS_OPTIONS = [
-  { id: 'id', type: 'input', label: 'ID', inputType: 'number' },
-  { id: 'full_name', type: 'select', options: ACTIF_NAMES, label: 'Nom-Prénom' },
-  { id: 'sex', type: 'select', options: SEX_OPTIONS, label: 'Sexe' },
-  { id: 'status', type: 'select', options: PRODUCT_STATUS_OPTIONS, label: 'Etat' },
   {
-    id: 'paymantType',
+    id: 'fullname',
     type: 'select',
-    options: PRODUCT_PAYMANT_OPTIONS,
-    label: 'Type de paiement',
-  },
-  { id: 'teamType', type: 'select', options: PRODUCT_TEAM_TYPE_OPTIONS, label: 'Type équipe' },
-  { id: 'banc', type: 'select', options: PRODUCT_BANQ_OPTIONS, label: 'Banque' },
-  {
-    id: 'contractType',
-    type: 'select',
-    options: PRODUCT_CONTRACT_OPTIONS,
-    label: 'Type de contrat',
+    options: PRODUCT_STOCK_OPTIONS,
+    label: 'Nom - Prénom',
+    cols: 3,
+    width: 1,
   },
   {
-    id: 'workDepartment',
+    id: 'site',
     type: 'select',
-    options: PRODUCT_WORK_DEPARTEMENT_OPTIONS,
-    label: 'Lieu de travail',
+    options: PRODUCT_STOCK_OPTIONS,
+    label: 'Site',
+    cols: 3,
+    width: 1,
   },
-  { id: 'departement', type: 'select', options: PRODUCT_DEPARTEMENT_OPTIONS, label: 'Département' },
-  { id: 'site', type: 'select', options: PRODUCT_SITE_OPTIONS, label: 'Site' },
+  {
+    id: 'function',
+    type: 'select',
+    options: PRODUCT_STOCK_OPTIONS,
+    label: 'Fonction',
+    cols: 3,
+    width: 1,
+  },
+  {
+    id: 'atelier',
+    type: 'select',
+    options: PRODUCT_STOCK_OPTIONS,
+    label: 'Atelier',
+    cols: 3,
+    width: 1,
+  },
+  {
+    id: 'permanence',
+    type: 'input',
+    label: 'Permanence',
+    cols: 3,
+    width: 1,
+  },
+  {
+    id: 'start_date',
+    type: 'date',
+    label: 'Date début',
+    cols: 3,
+    width: 1,
+  },
+  {
+    id: 'end_date',
+    type: 'date',
+    label: 'Date fin',
+    cols: 3,
+    width: 1,
+  },
+  {
+    id: 'nature',
+    type: 'select',
+    options: PRODUCT_STOCK_OPTIONS,
+    label: 'Nature',
+    cols: 3,
+    width: 1,
+  },
+
+  {
+    id: 'status',
+    type: 'select',
+    options: PRODUCT_STOCK_OPTIONS,
+    label: 'Etat',
+    cols: 3,
+    width: 1,
+  },
+
+  {
+    id: 'valideur',
+    type: 'select',
+    options: PRODUCT_STOCK_OPTIONS,
+    label: 'Valideur',
+    cols: 3,
+    width: 1,
+  },
+
+  {
+    id: 'created_start_date',
+    type: 'date',
+    label: 'Date début de création',
+    cols: 3,
+    width: 1,
+  },
+  {
+    id: 'created_end_date',
+    type: 'date',
+    label: 'Date fin de création',
+    cols: 3,
+    width: 1,
+  },
 ];
 
-export function ActifListView() {
+export function RecoveryListView() {
   const confirmDialog = useBoolean();
 
   const { products, productsLoading } = useGetProducts();
@@ -107,9 +160,6 @@ export function ActifListView() {
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
-
-  const filters = useSetState({ id: '', publish: [], stock: [], full_name: '' });
-  const { state: currentFilters } = filters;
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
@@ -121,9 +171,7 @@ export function ActifListView() {
   const handleReset = () => {
     setEditedFilters([]);
   };
-  // const canReset =
-  //   currentFilters.publish.length > 0 || currentFilters.stock.length > 0 || !!currentFilters.id;
-  const canReset = editedFilters.length > 0;
+
   const dataFiltered = tableData;
 
   const handleDeleteRow = useCallback(
@@ -145,28 +193,15 @@ export function ActifListView() {
     setTableData(deleteRows);
   }, [selectedRowIds, tableData]);
 
-  const CustomToolbarCallback = useCallback(
-    () => (
-      <CustomToolbar
-        filters={filters}
-        canReset={canReset}
-        selectedRowIds={selectedRowIds}
-        setFilterButtonEl={setFilterButtonEl}
-        filteredResults={dataFiltered.length}
-        onOpenConfirmDeleteRows={confirmDialog.onTrue}
-      />
-    ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [currentFilters, selectedRowIds, editedFilters]
-  );
-
   const columns = [
     { field: 'category', headerName: 'Category', filterable: false },
     {
       field: 'id',
       headerName: 'ID',
-      flex: 0.5,
-      minWidth: 260,
+      //   flex: 0.5,
+      flex: 1,
+
+      minWidth: 100,
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
@@ -174,91 +209,159 @@ export function ActifListView() {
       ),
     },
     {
-      field: 'name',
-      headerName: 'Nom-Prénom',
+      field: 'fullname',
+      headerName: 'Nom - Prénom',
       flex: 1,
-      minWidth: 260,
+      minWidth: 160,
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellUser params={params} href={paths.dashboard.root} />
+        <RenderCellFullname params={params} href={paths.dashboard.root} />
       ),
     },
-    {
-      field: 'sex',
-      headerName: 'Sex',
-      width: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPublish params={params} />,
-    },
-    {
-      field: 'etat',
-      headerName: 'Etat',
-      width: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPublish params={params} />,
-    },
-    {
-      field: 'company',
-      headerName: 'Entreprise',
-      width: 210,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellCompany params={params} />,
-    },
+
     {
       field: 'site',
       headerName: 'Site',
-      width: 210,
+      flex: 1,
+      minWidth: 160,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellCompany params={params} />,
+      renderCell: (params) => <RenderCellSite params={params} />,
     },
     {
-      field: 'fonction',
+      field: 'function',
       headerName: 'Fonction',
-      width: 210,
+      flex: 1,
+      minWidth: 200,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellCompany params={params} />,
+      renderCell: (params) => <RenderCellFunction params={params} />,
     },
     {
-      field: 'net',
-      headerName: 'Salaire net á payer',
-      width: 210,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPrice params={params} />,
+      field: 'atelier',
+      headerName: 'Atelier',
+      //   flex: 0.5,
+      flex: 1,
+      minWidth: 100,
+      hideable: false,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellAtelier params={params} href={paths.dashboard.root} />
+      ),
     },
     {
-      field: 'contrat',
-      headerName: 'Contrat',
-      width: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellContract params={params} />,
+      field: 'codePer',
+      headerName: 'Code (permanence)',
+      //   flex: 0.5,
+      flex: 1,
+      minWidth: 200,
+      hideable: false,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellPermanence params={params} href={paths.dashboard.root} />
+      ),
     },
     {
-      field: 'contact_start_date',
+      field: 'designationPerm',
+      headerName: 'Designation(permanence)',
+      //   flex: 0.5,
+      flex: 1,
+      minWidth: 150,
+      hideable: false,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellDesignationPerm params={params} href={paths.dashboard.root} />
+      ),
+    },
+
+    {
+      field: 'start_date',
       headerName: 'De',
-      width: 160,
-      renderCell: (params) => <RenderCellCreatedAt params={params} />,
+      //   flex: 0.5,
+      flex: 1,
+      minWidth: 200,
+      hideable: false,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellStartAt params={params} href={paths.dashboard.root} />
+      ),
     },
     {
-      field: 'contact_end_date',
+      field: 'end_date',
       headerName: 'Au',
-      width: 160,
+      //   flex: 0.5,
+      flex: 1,
+      minWidth: 200,
+      hideable: false,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellEndAt params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'nature',
+      headerName: 'Nature',
+      //   flex: 0.5,
+      flex: 1,
+      minWidth: 100,
+      hideable: false,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellNature params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'designation',
+      headerName: 'Designation',
+      //   flex: 0.5,
+      flex: 1,
+      minWidth: 200,
+      hideable: false,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellDesignation params={params} href={paths.dashboard.root} />
+      ),
+    },
+
+    {
+      field: 'status',
+      headerName: 'Etat',
+      //   flex: 0.5,
+      flex: 1,
+      minWidth: 100,
+      hideable: false,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellStatus params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'valide_par',
+      headerName: 'Valider Par',
+      //   flex: 0.5,
+      flex: 1,
+      minWidth: 200,
+      hideable: false,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellValideBy params={params} href={paths.dashboard.root} />
+      ),
+    },
+
+    {
+      field: 'createdAt',
+      headerName: 'Date de création',
+      flex: 1,
+      minWidth: 150,
+      type: 'singleSelect',
+      editable: true,
+      valueOptions: SEX_OPTIONS,
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
     },
+
     {
       type: 'actions',
       field: 'actions',
@@ -329,20 +432,20 @@ export function ActifListView() {
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <CustomBreadcrumbs
-          heading="List"
+          heading="Récupération"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Ressources humaine', href: paths.dashboard.root },
-            { name: 'Employés' },
+            { name: 'Récupération' },
           ]}
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.rh.personal.newPersonel}
+              href={paths.dashboard.rh.entries.newRecovery}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New Personnel
+              Ajouter
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
@@ -422,58 +525,6 @@ export function ActifListView() {
 
 // ----------------------------------------------------------------------
 
-function CustomToolbar({ selectedRowIds, setFilterButtonEl, onOpenConfirmDeleteRows }) {
-  return (
-    <>
-      {/* <ProductTableToolbar
-        filters={filters}
-        options={{ stocks: PRODUCT_STOCK_OPTIONS, publishs: PUBLISH_OPTIONS }}
-      /> */}
-      {/* <ActifTableToolbar
-        filterOptions={FILTERS_OPTIONS}
-        filters={editedFilters}
-        setFilters={setEditedFilters}
-      /> */}
-      <GridToolbarContainer>
-        {/* <GridToolbarQuickFilter size="small" /> */}
-
-        <Box
-          sx={{
-            gap: 1,
-            flexGrow: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-          }}
-        >
-          {!!selectedRowIds.length && (
-            <Button
-              size="small"
-              color="error"
-              startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
-              onClick={onOpenConfirmDeleteRows}
-            >
-              Delete ({selectedRowIds.length})
-            </Button>
-          )}
-
-          <GridToolbarColumnsButton ref={setFilterButtonEl} />
-          {/* <GridToolbarFilterButton ref={setFilterButtonEl} /> */}
-          <GridToolbarExport />
-        </Box>
-      </GridToolbarContainer>
-
-      {/* {canReset && (
-        <ProductTableFiltersResult
-          filters={filters}
-          totalResults={filteredResults}
-          sx={{ p: 2.5, pt: 0 }}
-        />
-      )} */}
-    </>
-  );
-}
-
 // ----------------------------------------------------------------------
 
 export const GridActionsLinkItem = forwardRef((props, ref) => {
@@ -496,17 +547,3 @@ export const GridActionsLinkItem = forwardRef((props, ref) => {
 });
 
 // ----------------------------------------------------------------------
-
-function applyFilter({ inputData, filters }) {
-  const { stock, publish } = filters;
-
-  if (stock.length) {
-    inputData = inputData.filter((product) => stock.includes(product.inventoryType));
-  }
-
-  if (publish.length) {
-    inputData = inputData.filter((product) => publish.includes(product.publish));
-  }
-
-  return inputData;
-}

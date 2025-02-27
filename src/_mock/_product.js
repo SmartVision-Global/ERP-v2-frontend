@@ -49,6 +49,55 @@ export const PRODUCT_STOCK_OPTIONS = [
   { value: 'low stock', label: 'Low stock' },
   { value: 'out of stock', label: 'Out of stock' },
 ];
+export const ACTIF_NAMES = [
+  { value: 'HADDAR - MUSTAPHA', label: 'HADDAR - MUSTAPHA' },
+  { value: 'SEBIA - BILLAL', label: 'Low stock' },
+];
+export const PRODUCT_STATUS_OPTIONS = [
+  { value: 'pending', label: 'En cours' },
+  { value: 'actif', label: 'Actif' },
+  { value: 'bloquer', label: 'Bloquer' },
+];
+
+export const PRODUCT_PAYMANT_OPTIONS = [
+  { value: 'virement', label: 'Virement' },
+  { value: 'actif', label: 'Actif' },
+  { value: 'esp', label: 'Especes' },
+];
+
+export const PRODUCT_TEAM_TYPE_OPTIONS = [
+  { value: 'poste', label: 'Posté' },
+  { value: 'surface', label: 'Surface' },
+];
+export const PRODUCT_BANQ_OPTIONS = [
+  { value: 'cpa', label: 'CPA' },
+  { value: 'bna', label: 'BNA' },
+];
+
+export const PRODUCT_CONTRACT_OPTIONS = [
+  { value: 'cdd', label: 'CDD' },
+  { value: 'cdi', label: 'CDI' },
+];
+
+export const PRODUCT_WORK_DEPARTEMENT_OPTIONS = [
+  { value: 'Not_defined', label: 'Non défini' },
+  { value: 'ELDIOUANE FABRICATION POMPE', label: 'ELDOUANE FABRICATION POMPE' },
+  { value: 'ELDIOUANE IMP-EXP', label: 'ELDIOUANE IMP-EXP' },
+  { value: 'CONCESSIONNAIRE MOTOCYCLE', label: 'CONCESSIONNAIRE MOTOCYCLE' },
+];
+export const PRODUCT_DEPARTEMENT_OPTIONS = [
+  { value: 'direction generale', label: 'Direction générale' },
+  { value: 'division industrie', label: 'Division industrie' },
+  { value: 'division marches', label: 'Division marches' },
+  { value: 'division supprort', label: 'Division support' },
+];
+
+export const PRODUCT_SITE_OPTIONS = [
+  { value: 'ST-berbes', label: 'ST-BERBES' },
+  { value: 'st-alger', label: 'ST-ALGER' },
+  { value: 'st-oran', label: 'ST-ORAN' },
+  { value: 'st-hotel', label: 'ST-HOTEL' },
+];
 
 export const PRODUCT_PUBLISH_OPTIONS = [
   { value: 'published', label: 'Published' },

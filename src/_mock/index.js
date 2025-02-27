@@ -1,5 +1,7 @@
 export * from './_job';
 
+export * from './_das';
+
 export * from './_mock';
 
 export * from './_user';
@@ -21,5 +23,5 @@ export * from './_invoice';
 export * from './_product';
 
 export * from './_overview';
-
 export * from './_calendar';
+export * from './_document';

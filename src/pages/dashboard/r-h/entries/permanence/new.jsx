@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
-import { CareerCreateView } from 'src/sections/r-h/fonction/career-path/view';
+import { PermanenceCreateView } from 'src/sections/r-h/entries/permanence/view';
 
 // import { PersonnelCreateView } from 'src/sections/r-h/personal/actif/view';
 
@@ -17,7 +17,7 @@ export default function Page() {
         <title> {metadata.title}</title>
       </Helmet>
 
-      <CareerCreateView />
+      <PermanenceCreateView />
     </>
   );
 }

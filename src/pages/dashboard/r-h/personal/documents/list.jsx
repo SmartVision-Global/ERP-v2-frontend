@@ -8,7 +8,7 @@ import { DocumentListView } from 'src/sections/r-h/personal/documents/view';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Invoice list | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `Documents | Dashboard - ${CONFIG.appName}` };
 
 export default function Page() {
   return (

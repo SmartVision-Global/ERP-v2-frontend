@@ -92,10 +92,18 @@ export const paths = {
       entries: {
         root: `${ROOTS.DASHBOARD}/humain-ressource/entries/social-loan`,
         socialLoan: `${ROOTS.DASHBOARD}/humain-ressource/entries/social-loan`,
+        newSocialLoan: `${ROOTS.DASHBOARD}/humain-ressource/entries/social-loan/new`,
         leaveAbsence: `${ROOTS.DASHBOARD}/humain-ressource/entries/leave-absence`,
+        newLeaveAbsence: `${ROOTS.DASHBOARD}/humain-ressource/entries/leave-absence/new`,
+
         permanence: `${ROOTS.DASHBOARD}/humain-ressource/entries/permanence`,
+        newPermanence: `${ROOTS.DASHBOARD}/humain-ressource/entries/permanence/new`,
+
         overtime: `${ROOTS.DASHBOARD}/humain-ressource/entries/overtime`,
+        newOvertime: `${ROOTS.DASHBOARD}/humain-ressource/entries/overtime/new`,
+
         recovery: `${ROOTS.DASHBOARD}/humain-ressource/entries/recovery`,
+        newRecovery: `${ROOTS.DASHBOARD}/humain-ressource/entries/recovery/new`,
       },
     },
 

@@ -20,9 +20,19 @@ import {
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
 import { useGetProducts } from 'src/actions/product';
 import { DashboardContent } from 'src/layouts/dashboard';
+import {
+  ACTIF_NAMES,
+  PRODUCT_BANQ_OPTIONS,
+  PRODUCT_SITE_OPTIONS,
+  PRODUCT_STATUS_OPTIONS,
+  PRODUCT_PAYMANT_OPTIONS,
+  PRODUCT_CONTRACT_OPTIONS,
+  PRODUCT_TEAM_TYPE_OPTIONS,
+  PRODUCT_DEPARTEMENT_OPTIONS,
+  PRODUCT_WORK_DEPARTEMENT_OPTIONS,
+} from 'src/_mock';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -56,21 +66,31 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 const FILTERS_OPTIONS = [
   { id: 'id', type: 'input', label: 'ID', inputType: 'number' },
-  { id: 'full_name', type: 'select', options: PRODUCT_STOCK_OPTIONS, label: 'Nom-Prénom' },
+  { id: 'full_name', type: 'select', options: ACTIF_NAMES, label: 'Nom-Prénom' },
   { id: 'sex', type: 'select', options: SEX_OPTIONS, label: 'Sexe' },
-  { id: 'status', type: 'select', options: PRODUCT_STOCK_OPTIONS, label: 'Etat' },
-  { id: 'paymantType', type: 'select', options: PRODUCT_STOCK_OPTIONS, label: 'Type de paiement' },
-  { id: 'teamType', type: 'select', options: PRODUCT_STOCK_OPTIONS, label: 'Type équipe' },
-  { id: 'banc', type: 'select', options: PRODUCT_STOCK_OPTIONS, label: 'Banque' },
-  { id: 'contractType', type: 'select', options: PRODUCT_STOCK_OPTIONS, label: 'Type de contrat' },
+  { id: 'status', type: 'select', options: PRODUCT_STATUS_OPTIONS, label: 'Etat' },
+  {
+    id: 'paymantType',
+    type: 'select',
+    options: PRODUCT_PAYMANT_OPTIONS,
+    label: 'Type de paiement',
+  },
+  { id: 'teamType', type: 'select', options: PRODUCT_TEAM_TYPE_OPTIONS, label: 'Type équipe' },
+  { id: 'banc', type: 'select', options: PRODUCT_BANQ_OPTIONS, label: 'Banque' },
+  {
+    id: 'contractType',
+    type: 'select',
+    options: PRODUCT_CONTRACT_OPTIONS,
+    label: 'Type de contrat',
+  },
   {
     id: 'workDepartment',
     type: 'select',
-    options: PRODUCT_STOCK_OPTIONS,
+    options: PRODUCT_WORK_DEPARTEMENT_OPTIONS,
     label: 'Lieu de travail',
   },
-  { id: 'departement', type: 'select', options: PRODUCT_STOCK_OPTIONS, label: 'Département' },
-  { id: 'site', type: 'select', options: PRODUCT_STOCK_OPTIONS, label: 'Site' },
+  { id: 'departement', type: 'select', options: PRODUCT_DEPARTEMENT_OPTIONS, label: 'Département' },
+  { id: 'site', type: 'select', options: PRODUCT_SITE_OPTIONS, label: 'Site' },
 ];
 
 export function BloqueListView() {

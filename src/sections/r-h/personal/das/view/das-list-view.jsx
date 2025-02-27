@@ -20,9 +20,13 @@ import {
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
 import { useGetProducts } from 'src/actions/product';
 import { DashboardContent } from 'src/layouts/dashboard';
+import {
+  DAS_YEAR_REF_OPTIONS,
+  PRODUCT_STOCK_OPTIONS,
+  DAS_DECLARATION_TYPE_OPTIONS,
+} from 'src/_mock';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -59,11 +63,11 @@ const FILTERS_OPTIONS = [
   {
     id: 'declaration_type',
     type: 'select',
-    options: PRODUCT_STOCK_OPTIONS,
+    options: DAS_DECLARATION_TYPE_OPTIONS,
     label: 'Type de déclaration',
   },
-  { id: 'year_ref', type: 'select', options: SEX_OPTIONS, label: 'Année Réf' },
-  { id: 'bill_center', type: 'select', options: PRODUCT_STOCK_OPTIONS, label: 'Centre Payeur' },
+  { id: 'year_ref', type: 'select', options: DAS_YEAR_REF_OPTIONS, label: 'Année Réf' },
+  { id: 'bill_center', type: 'input', label: 'Centre Payeur' },
   { id: 'denomination', type: 'select', options: PRODUCT_STOCK_OPTIONS, label: 'Dénomination' },
   {
     id: 'social_name',

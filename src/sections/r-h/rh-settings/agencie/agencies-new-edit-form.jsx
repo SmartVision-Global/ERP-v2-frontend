@@ -49,7 +49,7 @@ export function AgenciesNewEditForm({ currentTaux }) {
 
   const renderDetails = () => (
     <Card>
-      <CardHeader title="Ajouter Taux CNAS" sx={{ mb: 3 }} />
+      <CardHeader title="Ajouter Agence" sx={{ mb: 3 }} />
 
       <Divider />
 
