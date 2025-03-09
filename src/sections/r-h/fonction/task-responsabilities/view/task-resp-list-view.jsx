@@ -13,7 +13,7 @@ import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
+import { TASK_NATURE_OPTIONS } from 'src/_mock';
 import { useGetProducts } from 'src/actions/product';
 import { DashboardContent } from 'src/layouts/dashboard';
 
@@ -48,7 +48,7 @@ const FILTERS_OPTIONS = [
   {
     id: 'nature',
     type: 'select',
-    options: PRODUCT_STOCK_OPTIONS,
+    options: TASK_NATURE_OPTIONS,
     label: 'Nature',
     cols: 5,
     width: 1,
@@ -275,6 +275,7 @@ export function TaskRespListView() {
           <DataGrid
             checkboxSelection
             disableRowSelectionOnClick
+            disableColumnMenu
             rows={dataFiltered}
             columns={columns}
             loading={productsLoading}

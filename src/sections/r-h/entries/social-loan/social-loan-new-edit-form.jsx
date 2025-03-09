@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 
-import { USER_STATUS_OPTIONS } from 'src/_mock';
+import { ACTIF_NAMES } from 'src/_mock';
 
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { FieldContainer } from 'src/components/form-validation-view';
@@ -73,8 +73,8 @@ export function SocialLoanNewEditForm({ currentTaux }) {
       <Stack spacing={3} sx={{ p: 3 }}>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="category" label="Employé" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+            <Field.Select name="employer" label="Employé" size="small">
+              {ACTIF_NAMES.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>

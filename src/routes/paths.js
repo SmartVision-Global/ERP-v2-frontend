@@ -43,8 +43,8 @@ export const paths = {
   // DASHBOARD
   dashboard: {
     root: ROOTS.DASHBOARD,
-    two: `${ROOTS.DASHBOARD}/two`,
-    three: `${ROOTS.DASHBOARD}/three`,
+    // two: `${ROOTS.DASHBOARD}/two`,
+    // three: `${ROOTS.DASHBOARD}/three`,
     rh: {
       personal: {
         root: `${ROOTS.DASHBOARD}/humain-ressource/personal`,
@@ -104,6 +104,48 @@ export const paths = {
 
         recovery: `${ROOTS.DASHBOARD}/humain-ressource/entries/recovery`,
         newRecovery: `${ROOTS.DASHBOARD}/humain-ressource/entries/recovery/new`,
+      },
+      treatment: {
+        root: `${ROOTS.DASHBOARD}/humain-ressource/treatment/location-assignment`,
+
+        locationAssignment: `${ROOTS.DASHBOARD}/humain-ressource/treatment/location-assignment`,
+        newLocationAssignment: `${ROOTS.DASHBOARD}/humain-ressource/treatment/location-assignment/new`,
+
+        promotionDemotion: `${ROOTS.DASHBOARD}/humain-ressource/treatment/promotion-demotion`,
+        newPromotionDemotion: `${ROOTS.DASHBOARD}/humain-ressource/treatment/promotion-demotion/new`,
+
+        renewalContract: `${ROOTS.DASHBOARD}/humain-ressource/treatment/renewal-contract`,
+        newRenewalContract: `${ROOTS.DASHBOARD}/humain-ressource/treatment/renewal-contract/new`,
+
+        endRelationship: `${ROOTS.DASHBOARD}/humain-ressource/treatment/end-relationship`,
+        newEndRelationship: `${ROOTS.DASHBOARD}/humain-ressource/treatment/end-relationship/new`,
+      },
+      hse: {
+        root: `${ROOTS.DASHBOARD}/humain-ressource/hse/epi`,
+
+        epi: `${ROOTS.DASHBOARD}/humain-ressource/hse/epi`,
+        newEpi: `${ROOTS.DASHBOARD}/humain-ressource/hse/epi/new`,
+
+        discharge: `${ROOTS.DASHBOARD}/humain-ressource/hse/discharge`,
+        newDischarge: `${ROOTS.DASHBOARD}/humain-ressource/hse/discharge/new`,
+      },
+      teamManagement: {
+        root: `${ROOTS.DASHBOARD}/humain-ressource/team-management/team`,
+
+        team: `${ROOTS.DASHBOARD}/humain-ressource/team-management/team`,
+        newTeam: `${ROOTS.DASHBOARD}/humain-ressource/team-management/team/new`,
+
+        teamProgram: `${ROOTS.DASHBOARD}/humain-ressource/team-management/team-program`,
+        newtTeamProgram: `${ROOTS.DASHBOARD}/humain-ressource/team-management/team-program/new`,
+      },
+      payrollManagement: {
+        root: `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/calculation`,
+
+        calculation: `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/calculation`,
+        newCalculation: `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/calculation/new`,
+
+        preparation: `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/preparation`,
+        newPreparation: `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/preparation/new`,
       },
     },
 

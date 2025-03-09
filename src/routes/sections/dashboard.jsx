@@ -97,21 +97,19 @@ const PageRhSettingsAgenciesNew = lazy(
 
 // ----------------------------------------------------------------------
 
-const PageRhDemandeSortieAgenciesNew = lazy(
-  () => import('src/pages/dashboard/r-h/demandes/sortie/list')
-);
-const PageRhDemandeCongieAgenciesNew = lazy(
-  () => import('src/pages/dashboard/r-h/demandes/sortie/list')
-);
-const PageRhDemandeRecupAgenciesNew = lazy(
-  () => import('src/pages/dashboard/r-h/demandes/sortie/list')
-);
-const PageRhDemandePretAgenciesNew = lazy(
-  () => import('src/pages/dashboard/r-h/demandes/sortie/list')
-);
-const PageRhDemandeAideAgenciesNew = lazy(
-  () => import('src/pages/dashboard/r-h/demandes/sortie/list')
-);
+// const PageRhDemandesSortie = lazy(() => import('src/pages/dashboard/r-h/demandes/sortie/list'));
+// const PageRhDemandeCongieAgenciesNew = lazy(
+//   () => import('src/pages/dashboard/r-h/demandes/sortie/list')
+// );
+// const PageRhDemandeRecupAgenciesNew = lazy(
+//   () => import('src/pages/dashboard/r-h/demandes/sortie/list')
+// );
+// const PageRhDemandePretAgenciesNew = lazy(
+//   () => import('src/pages/dashboard/r-h/demandes/sortie/list')
+// );
+// const PageRhDemandeAideAgenciesNew = lazy(
+//   () => import('src/pages/dashboard/r-h/demandes/sortie/list')
+// );
 const PageRhEntriesSocialLoan = lazy(
   () => import('src/pages/dashboard/r-h/entries/social-loan/list')
 );
@@ -137,6 +135,74 @@ const PageRhEntriesOvertimeNew = lazy(() => import('src/pages/dashboard/r-h/entr
 
 const PageRhEntriesRecovery = lazy(() => import('src/pages/dashboard/r-h/entries/recovery/list'));
 const PageRhEntriesRecoveryNew = lazy(() => import('src/pages/dashboard/r-h/entries/recovery/new'));
+
+// Treatment
+const PageRhTreatmentLocationAssignment = lazy(
+  () => import('src/pages/dashboard/r-h/treatment/location-assignment/list')
+);
+const PageRhTreatmentLocationAssignmentNew = lazy(
+  () => import('src/pages/dashboard/r-h/treatment/location-assignment/new')
+);
+
+const PageRhTreatmentPromotionDemotion = lazy(
+  () => import('src/pages/dashboard/r-h/treatment/promotion-demotion/list')
+);
+const PageRhTreatmentPromotionDemotionNew = lazy(
+  () => import('src/pages/dashboard/r-h/treatment/promotion-demotion/new')
+);
+
+const PageRhTreatmentRenewalContract = lazy(
+  () => import('src/pages/dashboard/r-h/treatment/renewal-contract/list')
+);
+const PageRhTreatmentRenewalContractNew = lazy(
+  () => import('src/pages/dashboard/r-h/treatment/renewal-contract/new')
+);
+
+const PageRhTreatmentEndRelationship = lazy(
+  () => import('src/pages/dashboard/r-h/treatment/end-relationship/list')
+);
+const PageRhTreatmentEndRelationshipNew = lazy(
+  () => import('src/pages/dashboard/r-h/treatment/end-relationship/new')
+);
+
+// HSE
+// const PageRhHseEpi = lazy(() => import('src/pages/dashboard/r-h/hse/epi/list'));
+// const PageRhHseEpiNew = lazy(() => import('src/pages/dashboard/r-h/hse/epi/new'));
+
+// const PageRhHseDischarge = lazy(() => import('src/pages/dashboard/r-h/hse/discharge/list'));
+// const PageRhHseDischargeNew = lazy(() => import('src/pages/dashboard/r-h/hse/discharge/new'));
+
+// team management
+
+// const PageRhTeamManagementTeam = lazy(
+//   () => import('src/pages/dashboard/r-h/team-management/team/list')
+// );
+// const PageRhTeamManagementTeamNew = lazy(
+//   () => import('src/pages/dashboard/r-h/team-management/team/new')
+// );
+
+// const PageRhTeamManagementProgram = lazy(
+//   () => import('src/pages/dashboard/r-h/team-management/team-program/list')
+// );
+// const PageRhTeamManagementProgramNew = lazy(
+//   () => import('src/pages/dashboard/r-h/team-management/team-program/new')
+// );
+
+// payroll management
+const PageRhPayrollManagementCalculation = lazy(
+  () => import('src/pages/dashboard/r-h/payroll-management/calculation/list')
+);
+const PageRhPayrollManagementCalculationNew = lazy(
+  () => import('src/pages/dashboard/r-h/payroll-management/calculation/new')
+);
+
+const PageRhPayrollManagementPreparation = lazy(
+  () => import('src/pages/dashboard/r-h/payroll-management/preparation/list')
+);
+// const PageRhPayrollManagementPreparationNew = lazy(
+//   () => import('src/pages/dashboard/r-h/payroll-management/preparation/new')
+// );
+const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
 function SuspenseOutlet() {
   const pathname = usePathname();
@@ -232,17 +298,17 @@ export const dashboardRoutes = [
           {
             path: 'demandes',
             children: [
-              { path: 'sortie', element: <PageRhDemandeSortieAgenciesNew /> },
-              { path: 'conge', element: <PageRhDemandeSortieAgenciesNew /> },
-              { path: 'recuperation', element: <PageRhDemandeSortieAgenciesNew /> },
-              { path: 'pret', element: <PageRhDemandeSortieAgenciesNew /> },
-              { path: 'aide', element: <PageRhDemandeAideAgenciesNew /> },
+              { path: 'sortie', element: <ComingSoonPage />, index: true },
+              { path: 'conge', element: <ComingSoonPage /> },
+              { path: 'recuperation', element: <ComingSoonPage /> },
+              { path: 'pret', element: <ComingSoonPage /> },
+              { path: 'aide', element: <ComingSoonPage /> },
             ],
           },
           {
             path: 'entries',
             children: [
-              { path: 'social-loan', element: <PageRhEntriesSocialLoan /> },
+              { path: 'social-loan', element: <PageRhEntriesSocialLoan />, index: true },
               { path: 'social-loan/new', element: <PageRhEntriesSocialLoanNew /> },
 
               { path: 'leave-absence', element: <PageRhEntriesLeaveAbsence /> },
@@ -256,6 +322,68 @@ export const dashboardRoutes = [
 
               { path: 'recovery', element: <PageRhEntriesRecovery /> },
               { path: 'recovery/new', element: <PageRhEntriesRecoveryNew /> },
+            ],
+          },
+          {
+            path: 'treatment',
+            children: [
+              {
+                path: 'location-assignment',
+                element: <PageRhTreatmentLocationAssignment />,
+                index: true,
+              },
+              {
+                path: 'location-assignment/new',
+                element: <PageRhTreatmentLocationAssignmentNew />,
+              },
+
+              { path: 'promotion-demotion', element: <PageRhTreatmentPromotionDemotion /> },
+              { path: 'promotion-demotion/new', element: <PageRhTreatmentPromotionDemotionNew /> },
+
+              { path: 'renewal-contract', element: <PageRhTreatmentRenewalContract /> },
+              { path: 'renewal-contract/new', element: <PageRhTreatmentRenewalContractNew /> },
+
+              { path: 'end-relationship', element: <PageRhTreatmentEndRelationship /> },
+              { path: 'end-relationship/new', element: <PageRhTreatmentEndRelationshipNew /> },
+            ],
+          },
+          {
+            path: 'hse',
+            children: [
+              { path: 'epi', element: <ComingSoonPage />, index: true },
+              {
+                path: 'epi/new',
+                element: <ComingSoonPage />,
+              },
+
+              { path: 'discharge', element: <ComingSoonPage /> },
+              { path: 'discharge/new', element: <ComingSoonPage /> },
+            ],
+          },
+          {
+            path: 'team-management',
+            children: [
+              { path: 'team', element: <ComingSoonPage />, index: true },
+              {
+                path: 'team/new',
+                element: <ComingSoonPage />,
+              },
+
+              { path: 'team-program', element: <ComingSoonPage /> },
+              { path: 'team-program/new', element: <ComingSoonPage /> },
+            ],
+          },
+          {
+            path: 'payroll-management',
+            children: [
+              { path: 'calculation', element: <PageRhPayrollManagementCalculation />, index: true },
+              {
+                path: 'calculation/new',
+                element: <PageRhPayrollManagementCalculationNew />,
+              },
+
+              { path: 'preparation', element: <PageRhPayrollManagementPreparation /> },
+              { path: 'preparation/new', element: <ComingSoonPage /> },
             ],
           },
         ],

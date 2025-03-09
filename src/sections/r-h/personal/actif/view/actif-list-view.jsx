@@ -53,11 +53,6 @@ import {
 
 // ----------------------------------------------------------------------
 
-const PUBLISH_OPTIONS = [
-  { value: 'published', label: 'Published' },
-  { value: 'draft', label: 'Draft' },
-];
-
 const SEX_OPTIONS = [
   { value: 'man', label: 'Homme' },
   { value: 'woman', label: 'Femme' },
@@ -389,6 +384,7 @@ export function ActifListView() {
           </Box>
           <DataGrid
             checkboxSelection
+            disableColumnMenu
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}

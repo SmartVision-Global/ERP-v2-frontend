@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Box, Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 
-import { USER_STATUS_OPTIONS, CALENDAR_COLOR_OPTIONS } from 'src/_mock';
+import { PRODUCT_SITE_OPTIONS, CALENDAR_COLOR_OPTIONS } from 'src/_mock';
 
 import { ColorPicker } from 'src/components/color-utils';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
@@ -99,7 +99,7 @@ export function ZoneNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="site" label="Site" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {PRODUCT_SITE_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>

@@ -10,6 +10,7 @@ export const NumberInputRoot = styled('div')(({ theme }) => ({
   overflow: 'hidden',
   borderRadius: theme.shape.borderRadius,
   border: 'solid 1px var(--border-color)',
+  width: '100%',
 }));
 
 export const InputContainer = styled('div')(() => ({
@@ -20,6 +21,7 @@ export const InputContainer = styled('div')(() => ({
   backgroundColor: 'var(--input-background)',
   borderLeft: 'solid 1px var(--divider-vertical-color)',
   borderRight: 'solid 1px var(--divider-vertical-color)',
+  width: '100%',
 }));
 
 export const CenteredInput = styled(InputBase)(({ theme }) => ({

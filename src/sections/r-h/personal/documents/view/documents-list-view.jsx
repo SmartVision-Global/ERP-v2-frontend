@@ -61,7 +61,7 @@ const FILTERS_OPTIONS = [
 
 // ----------------------------------------------------------------------
 
-export function DocumentListView() {
+export function DocumentsListView() {
   // const theme = useTheme();
 
   const table = useTable({ defaultOrderBy: 'createDate' });

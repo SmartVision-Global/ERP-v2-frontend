@@ -13,9 +13,9 @@ import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
 import { useGetProducts } from 'src/actions/product';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { ACTIF_NAMES, PRODUCT_STOCK_OPTIONS, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -52,7 +52,7 @@ const FILTERS_OPTIONS = [
   {
     id: 'fullname',
     type: 'select',
-    options: PRODUCT_STOCK_OPTIONS,
+    options: ACTIF_NAMES,
     label: 'Nom-Prénom',
     cols: 3,
     width: 1,
@@ -81,7 +81,7 @@ const FILTERS_OPTIONS = [
   {
     id: 'status',
     type: 'select',
-    options: PRODUCT_STOCK_OPTIONS,
+    options: DOCUMENT_STATUS_OPTIONS,
     label: 'Etat',
     cols: 3,
     width: 1,
@@ -387,6 +387,7 @@ export function SocialLoanListView() {
           </Box>
           <DataGrid
             checkboxSelection
+            disableColumnMenu
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}

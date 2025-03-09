@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Box, Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 
-import { USER_STATUS_OPTIONS } from 'src/_mock';
+import { DEDUCTIONS_TYPE_OPTIONS } from 'src/_mock';
 
 import { Form, Field } from 'src/components/hook-form';
 
@@ -79,8 +79,8 @@ export function DeductionsCompensationNewEditForm({ currentProduct }) {
       <Stack spacing={3} sx={{ p: 3 }}>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="site" label="Site" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+            <Field.Select name="type" label="Type" size="small">
+              {DEDUCTIONS_TYPE_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>

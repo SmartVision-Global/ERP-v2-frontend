@@ -12,7 +12,7 @@ export function PersonnelCreateView() {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Create a new product"
+        heading="Ajouter personnel"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           { name: 'Ressource humain', href: paths.dashboard.rh.personal.root },

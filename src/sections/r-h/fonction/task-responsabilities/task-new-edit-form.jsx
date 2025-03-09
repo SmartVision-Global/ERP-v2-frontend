@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { LoadingButton } from '@mui/lab';
 import { Box, Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 
-import { USER_STATUS_OPTIONS } from 'src/_mock';
+import { TASK_NATURE_OPTIONS } from 'src/_mock';
 
 import { Form, Field } from 'src/components/hook-form';
 
@@ -65,7 +65,7 @@ export function TaskNewEditForm({ currentProduct }) {
 
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.Select name="nature" label="Nature" size="small">
-          {USER_STATUS_OPTIONS.map((status) => (
+          {TASK_NATURE_OPTIONS.map((status) => (
             <MenuItem key={status.value} value={status.value}>
               {status.label}
             </MenuItem>

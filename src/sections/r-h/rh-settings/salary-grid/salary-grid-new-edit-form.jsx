@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Box, Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 
-import { USER_STATUS_OPTIONS } from 'src/_mock';
+import { USER_STATUS_OPTIONS, SALARY_ECHEL_OPTIONS, SALARY_CATEGORY_OPTIONS } from 'src/_mock';
 
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { FieldContainer } from 'src/components/form-validation-view';
@@ -139,7 +139,7 @@ export function SalaryGridNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="category_socio" label="Catégorie socioprofessionnelle" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {SALARY_CATEGORY_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
@@ -148,7 +148,7 @@ export function SalaryGridNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="echelle" label="Echelons" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {SALARY_ECHEL_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>

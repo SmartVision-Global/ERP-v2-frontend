@@ -51,7 +51,7 @@ export const PRODUCT_STOCK_OPTIONS = [
 ];
 export const ACTIF_NAMES = [
   { value: 'HADDAR - MUSTAPHA', label: 'HADDAR - MUSTAPHA' },
-  { value: 'SEBIA - BILLAL', label: 'Low stock' },
+  { value: 'SEBIA - BILLAL', label: 'SEBIA - BILLAL' },
 ];
 export const PRODUCT_STATUS_OPTIONS = [
   { value: 'pending', label: 'En cours' },

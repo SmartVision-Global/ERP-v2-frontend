@@ -324,11 +324,11 @@ export function BloqueListView() {
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <CustomBreadcrumbs
-          heading="List"
+          heading="Bloque"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Ressources humaine', href: paths.dashboard.root },
-            { name: 'Employés' },
+            { name: 'Bloque' },
           ]}
           action={
             <Button
@@ -337,7 +337,7 @@ export function BloqueListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New Employé
+              Ajouter Bloque
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
@@ -384,6 +384,7 @@ export function BloqueListView() {
           </Box>
           <DataGrid
             checkboxSelection
+            disableColumnMenu
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}

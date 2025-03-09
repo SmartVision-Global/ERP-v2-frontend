@@ -2,11 +2,11 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
-import { BlankView } from 'src/sections/blank/view';
+import { EndRelationshipCreateView } from 'src/sections/r-h/treatment/end-relationship/view';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Page six | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `Ajouter Fin de relation | Dashboard - ${CONFIG.appName}` };
 
 export default function Page() {
   return (
@@ -15,7 +15,7 @@ export default function Page() {
         <title> {metadata.title}</title>
       </Helmet>
 
-      <BlankView title="Page six" />
+      <EndRelationshipCreateView />
     </>
   );
 }

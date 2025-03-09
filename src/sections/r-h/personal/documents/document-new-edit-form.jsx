@@ -7,7 +7,7 @@ import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Box, Card, Stack, Divider, MenuItem, CardHeader, Typography } from '@mui/material';
 
-import { USER_STATUS_OPTIONS } from 'src/_mock';
+import { COMMUN_DOCUMENT_TYPE_OPTIONS } from 'src/_mock';
 
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
@@ -83,7 +83,7 @@ export function DocumentNewEditForm({ currentProduct }) {
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="document_type" label="Type document" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {COMMUN_DOCUMENT_TYPE_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
@@ -132,7 +132,7 @@ export function DocumentNewEditForm({ currentProduct }) {
       /> */}
 
       <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
-        {!currentProduct ? 'Create product' : 'Save changes'}
+        {!currentProduct ? 'Ajouter Document' : 'Enregistrer'}
       </LoadingButton>
     </Box>
   );

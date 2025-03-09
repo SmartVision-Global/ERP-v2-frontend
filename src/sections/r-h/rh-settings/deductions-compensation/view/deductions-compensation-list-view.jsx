@@ -13,9 +13,13 @@ import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
 import { useGetProducts } from 'src/actions/product';
 import { DashboardContent } from 'src/layouts/dashboard';
+import {
+  DEDUCTIONS_ABS_OPTIONS,
+  DEDUCTIONS_TYPE_OPTIONS,
+  DEDUCTIONS_NATURE_OPTIONS,
+} from 'src/_mock';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -69,7 +73,7 @@ const FILTERS_OPTIONS = [
   {
     id: 'type',
     type: 'select',
-    options: PRODUCT_STOCK_OPTIONS,
+    options: DEDUCTIONS_TYPE_OPTIONS,
     label: 'Type',
     cols: 3,
     width: 1,
@@ -84,7 +88,7 @@ const FILTERS_OPTIONS = [
   {
     id: 'abs',
     type: 'select',
-    options: PRODUCT_STOCK_OPTIONS,
+    options: DEDUCTIONS_ABS_OPTIONS,
     label: 'Soumis aux absence',
     cols: 3,
     width: 1,
@@ -92,7 +96,7 @@ const FILTERS_OPTIONS = [
   {
     id: 'nature',
     type: 'select',
-    options: PRODUCT_STOCK_OPTIONS,
+    options: DEDUCTIONS_NATURE_OPTIONS,
     label: 'Nature',
     cols: 3,
     width: 1,
@@ -422,6 +426,7 @@ export function DeductionsCompensationListView() {
           </Box>
           <DataGrid
             checkboxSelection
+            disableColumnMenu
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}

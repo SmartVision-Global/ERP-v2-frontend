@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 
-import { USER_STATUS_OPTIONS } from 'src/_mock';
+import { USER_STATUS_OPTIONS, COMMUN_OVERIME_OPTIONS } from 'src/_mock';
 
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { FieldContainer } from 'src/components/form-validation-view';
@@ -80,7 +80,7 @@ export function OvertimeNewEditForm({ currentTaux }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="nature" label="Nature" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {COMMUN_OVERIME_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>

@@ -24,7 +24,7 @@ export const _account = [
     ),
   },
   {
-    label: 'Projects',
+    label: 'Tasks',
     href: '#',
     icon: <Iconify icon="solar:notes-bold-duotone" />,
     info: '3',
@@ -53,5 +53,5 @@ export const _account = [
     ),
   },
   { label: 'Security', href: '#', icon: <Iconify icon="solar:shield-keyhole-bold-duotone" /> },
-  { label: 'Account settings', href: '#', icon: <Iconify icon="solar:settings-bold-duotone" /> },
+  { label: 'Parametres', href: '#', icon: <Iconify icon="solar:settings-bold-duotone" /> },
 ];

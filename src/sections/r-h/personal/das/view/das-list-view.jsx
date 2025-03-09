@@ -22,11 +22,7 @@ import { RouterLink } from 'src/routes/components';
 
 import { useGetProducts } from 'src/actions/product';
 import { DashboardContent } from 'src/layouts/dashboard';
-import {
-  DAS_YEAR_REF_OPTIONS,
-  PRODUCT_STOCK_OPTIONS,
-  DAS_DECLARATION_TYPE_OPTIONS,
-} from 'src/_mock';
+import { DAS_DENOM_OPTIONS, DAS_YEAR_REF_OPTIONS, DAS_DECLARATION_TYPE_OPTIONS } from 'src/_mock';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -68,11 +64,11 @@ const FILTERS_OPTIONS = [
   },
   { id: 'year_ref', type: 'select', options: DAS_YEAR_REF_OPTIONS, label: 'Année Réf' },
   { id: 'bill_center', type: 'input', label: 'Centre Payeur' },
-  { id: 'denomination', type: 'select', options: PRODUCT_STOCK_OPTIONS, label: 'Dénomination' },
+  { id: 'denomination', type: 'select', options: DAS_DENOM_OPTIONS, label: 'Dénomination' },
   {
     id: 'social_name',
     type: 'select',
-    options: PRODUCT_STOCK_OPTIONS,
+    options: DAS_DENOM_OPTIONS,
     label: 'Nom ou Raison Sociale',
   },
 ];
@@ -382,6 +378,7 @@ export function DasListView() {
           </Box>
           <DataGrid
             checkboxSelection
+            disableColumnMenu
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}

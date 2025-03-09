@@ -71,7 +71,12 @@ export const NumberInput = forwardRef((props, ref) => {
   );
 
   return (
-    <Box {...slotProps?.wrapper}>
+    <Box
+      {...slotProps?.wrapper}
+      sx={{
+        width: '100%',
+      }}
+    >
       <NumberInputRoot
         ref={ref}
         sx={[
@@ -134,14 +139,18 @@ export const NumberInput = forwardRef((props, ref) => {
 // ----------------------------------------------------------------------
 
 export function transformNumberOnChange(value, options) {
+  // eslint-disable-next-line no-debugger
+  debugger;
   const { min = 0, max = 9999 } = options ?? {};
 
   if (!value || value.trim() === '') {
     return 0;
   }
 
+  // if (value.toString().includes('.')) {
+  //   return value;
+  // }
   const numericValue = Number(value.trim());
-
   if (!Number.isNaN(numericValue)) {
     // Clamp the value between min and max
     return Math.min(Math.max(numericValue, min), max);

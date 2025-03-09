@@ -6,7 +6,13 @@ import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Box, Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 
-import { USER_STATUS_OPTIONS } from 'src/_mock';
+import {
+  USER_STATUS_OPTIONS,
+  PRODUCT_SITE_OPTIONS,
+  COMMUN_SERVICE_OPTIONS,
+  SALARY_CATEGORY_OPTIONS,
+  PRODUCT_DEPARTEMENT_OPTIONS,
+} from 'src/_mock';
 
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { FieldContainer } from 'src/components/form-validation-view';
@@ -128,14 +134,14 @@ export function FonctionsNewEditForm({ currentProduct }) {
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
           <Field.Select name="site" label="Site" size="small">
-            {USER_STATUS_OPTIONS.map((status) => (
+            {PRODUCT_SITE_OPTIONS.map((status) => (
               <MenuItem key={status.value} value={status.value}>
                 {status.label}
               </MenuItem>
             ))}
           </Field.Select>
           <Field.Select name="category" label="Catégorie socio-professionnelle" size="small">
-            {USER_STATUS_OPTIONS.map((status) => (
+            {SALARY_CATEGORY_OPTIONS.map((status) => (
               <MenuItem key={status.value} value={status.value}>
                 {status.label}
               </MenuItem>
@@ -220,7 +226,7 @@ export function FonctionsNewEditForm({ currentProduct }) {
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="directions" label="Directions" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {PRODUCT_DEPARTEMENT_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
@@ -229,7 +235,7 @@ export function FonctionsNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="service" label="Service" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {COMMUN_SERVICE_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>

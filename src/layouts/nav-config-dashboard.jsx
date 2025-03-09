@@ -58,17 +58,19 @@ export const navData = [
       {
         title: 'resssources humaines',
         path: '/dashboard/humain-ressource',
-        icon: ICONS.analytics,
+        icon: ICONS.user,
         children: [
+          // Fonction
           {
             title: 'Fonction',
-            path: paths.dashboard.rh.fonction.root,
+            path: '/dashboard/humain-ressource/fonction',
             children: [
               { title: 'Tâches et responsabilités', path: paths.dashboard.rh.fonction.taskResp },
               { title: 'Parcours professionnel', path: paths.dashboard.rh.fonction.careerPath },
               { title: 'Fonctions', path: paths.dashboard.rh.fonction.fonctions },
             ],
           },
+          // Personnel
           {
             title: 'Personnel',
             path: paths.dashboard.rh.personal.root,
@@ -79,9 +81,12 @@ export const navData = [
               { title: 'DAS', path: paths.dashboard.rh.personal.das },
             ],
           },
+          // Parametrage RH
           {
             title: 'Parametrage RH',
-            path: paths.dashboard.rh.rhSettings.root,
+            // path: paths.dashboard.rh.rhSettings.root,
+            path: '/dashboard/humain-ressource/settings',
+
             children: [
               {
                 title: "Parametrage d'identification",
@@ -101,9 +106,12 @@ export const navData = [
               { title: 'Agences', path: paths.dashboard.rh.rhSettings.agencies },
             ],
           },
+          // Demandes
           {
             title: 'Les Demandes',
-            path: paths.dashboard.rh.demandes.root,
+            // path: paths.dashboard.rh.demandes.root,
+            path: '/dashboard/humain-ressource/demandes',
+
             children: [
               { title: 'Demande de sortie', path: paths.dashboard.rh.demandes.sortie },
               { title: 'Demande de conge', path: paths.dashboard.rh.demandes.conge },
@@ -112,9 +120,86 @@ export const navData = [
               { title: "Demande d'aide", path: paths.dashboard.rh.demandes.aide },
             ],
           },
+          // HSE
+          // {
+          //   title: 'HSE',
+          //   // path: paths.dashboard.rh.demandes.root,
+          //   path: '/dashboard/humain-ressource/hse',
+
+          //   children: [
+          //     {
+          //       title: 'Les équipements de protection individuelle (EPI)',
+          //       path: paths.dashboard.rh.hse.epi,
+          //     },
+          //     { title: 'Décharge', path: paths.dashboard.rh.hse.discharge },
+          //   ],
+          // },
+          // Traitement
+          {
+            title: 'Traitement',
+            // path: paths.dashboard.rh.entries.root,
+            path: '/dashboard/humain-ressource/treatment',
+
+            children: [
+              {
+                title: "Changement d'emplacement-Affectation",
+                path: paths.dashboard.rh.treatment.locationAssignment,
+                // caption: "Changement d'emplacement-Affectation",
+              },
+              {
+                title: 'Décision de promotion - Retrogradation',
+                path: paths.dashboard.rh.treatment.promotionDemotion,
+              },
+              {
+                title: 'Renouvellement du contrat',
+                path: paths.dashboard.rh.treatment.renewalContract,
+              },
+              {
+                title: 'Fin de relation de travail',
+                path: paths.dashboard.rh.treatment.endRelationship,
+              },
+            ],
+          },
+          // Gestion Equipe
+          // {
+          //   title: 'Gestion Equipe',
+          //   // path: paths.dashboard.rh.entries.root,
+          //   path: '/dashboard/humain-ressource/team-management',
+
+          //   children: [
+          //     {
+          //       title: 'Equipe',
+          //       path: paths.dashboard.rh.teamManagement.team,
+          //     },
+          //     {
+          //       title: "Programme d'équipe",
+          //       path: paths.dashboard.rh.teamManagement.teamProgram,
+          //     },
+          //   ],
+          // },
+          // gestion paies
+          {
+            title: 'Gestion Paies',
+            // path: paths.dashboard.rh.entries.root,
+            path: '/dashboard/humain-ressource/payroll-management',
+
+            children: [
+              {
+                title: 'Calcul de la paie',
+                path: paths.dashboard.rh.payrollManagement.calculation,
+              },
+              {
+                title: 'Preparation paie',
+                path: paths.dashboard.rh.payrollManagement.preparation,
+              },
+            ],
+          },
+          // les ecritures
           {
             title: 'Les Ecritures',
-            path: paths.dashboard.rh.entries.root,
+            // path: paths.dashboard.rh.entries.root,
+            path: '/dashboard/humain-ressource/entries',
+
             children: [
               { title: 'Prets sociaux', path: paths.dashboard.rh.entries.socialLoan },
               { title: 'Conge - Absence', path: paths.dashboard.rh.entries.leaveAbsence },

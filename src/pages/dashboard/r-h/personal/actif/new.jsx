@@ -6,7 +6,7 @@ import { PersonnelCreateView } from 'src/sections/r-h/personal/actif/view';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Create a new personnel | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `Ajouter personnel | Dashboard - ${CONFIG.appName}` };
 
 export default function Page() {
   return (

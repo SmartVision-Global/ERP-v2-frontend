@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 
-import { USER_STATUS_OPTIONS } from 'src/_mock';
+import { ACTIF_NAMES, COMMUN_OVERDAYS_OPTIONS } from 'src/_mock';
 
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
@@ -66,7 +66,7 @@ export function PermanenceNewEditForm({ currentTaux }) {
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="employer" label="Employé" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {ACTIF_NAMES.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
@@ -75,7 +75,7 @@ export function PermanenceNewEditForm({ currentTaux }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="nature" label="Nature" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {COMMUN_OVERDAYS_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>

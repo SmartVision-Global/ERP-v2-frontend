@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 
-import { USER_STATUS_OPTIONS } from 'src/_mock';
+import { ACTIF_NAMES, RECOVERY_TYPE_OPTIONS, COMMUN_OVERDAYS_OPTIONS } from 'src/_mock';
 
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { FieldContainer } from 'src/components/form-validation-view';
@@ -71,7 +71,7 @@ export function RecoveryNewEditForm({ currentTaux }) {
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="employer" label="Employé" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {ACTIF_NAMES.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
@@ -80,7 +80,7 @@ export function RecoveryNewEditForm({ currentTaux }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="type" label="Type" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {RECOVERY_TYPE_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
@@ -92,7 +92,7 @@ export function RecoveryNewEditForm({ currentTaux }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="overdays" label="Jours supplémentaires" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {COMMUN_OVERDAYS_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>

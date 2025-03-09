@@ -7,7 +7,26 @@ import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Box, Card, Stack, Divider, MenuItem, CardHeader, Typography } from '@mui/material';
 
-import { USER_STATUS_OPTIONS } from 'src/_mock';
+import {
+  DAS_DENOM_OPTIONS,
+  COMMUN_SEXE_OPTIONS,
+  USER_STATUS_OPTIONS,
+  PRODUCT_SITE_OPTIONS,
+  SALARY_ECHEL_OPTIONS,
+  COMMUN_SERVICE_OPTIONS,
+  SALARY_CATEGORY_OPTIONS,
+  COMMUN_AGENCIES_OPTIONS,
+  PRODUCT_CONTRACT_OPTIONS,
+  COMMUN_BLOOD_TYPE_OPTIONS,
+  PRODUCT_TEAM_TYPE_OPTIONS,
+  COMMUN_NATIONNALITY_OPTIONS,
+  PRODUCT_DEPARTEMENT_OPTIONS,
+  COMMUN_FAMILY_SITUATION_OPTIONS,
+  COMMUN_GRID_SALARY_LEVEL_OPTIONS,
+  COMMUN_CALCULATION_METHOD_OPTIONS,
+  COMMUN_CONTRIBUTION_SCHEME_OPTIONS,
+  COMMUN_NATIONAL_SERVICE_STATUS_OPTIONS,
+} from 'src/_mock';
 
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
@@ -100,10 +119,15 @@ export const NewProductSchema = zod.object({
 
 export function ActifNewEditForm({ currentProduct }) {
   const defaultValues = {
-    firstname: '',
-    lastname: '',
+    firstname_fr: '',
+    firstname_ar: '',
+
+    lastname_fr: '',
+    lastname_ar: '',
+
     birthday: null,
-    location: '',
+    location_fr: '',
+    location_ar: '',
     /********/
     sex: 'male',
     blood_type: '',
@@ -214,21 +238,31 @@ export function ActifNewEditForm({ currentProduct }) {
 
       <Stack spacing={3} sx={{ p: 3 }}>
         <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="firstname" label="Product name" />
+          <Grid size={{ xs: 12, md: 3 }}>
+            <Field.Text name="lastname" label="Nom" />
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="lastname" label="Sub description" />
+          <Grid size={{ xs: 12, md: 3 }}>
+            <Field.Text name="lastname" label="اللقب بالعربية" dir="rtl" />
+          </Grid>
+          <Grid size={{ xs: 12, md: 3 }}>
+            <Field.Text name="firstname" label="Prénom" />
+          </Grid>
+          <Grid size={{ xs: 12, md: 3 }}>
+            <Field.Text name="firstname" label="الإسم بالعربية" dir="rtl" />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.DatePicker name="birthday" label="Date de naissance" />
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="location" label="Lieu de naissance" />
+          <Grid size={{ xs: 12, md: 3 }}>
+            <Field.Text name="location_fr" label="Lieu de naissance" />
           </Grid>
+          <Grid size={{ xs: 12, md: 3 }}>
+            <Field.Text name="location_ar" label="مكان الميلاد" dir="rtl" />
+          </Grid>
+
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="sex" label="Sexe" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {COMMUN_SEXE_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
@@ -237,7 +271,7 @@ export function ActifNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="blood_type" label="Groupe sanguin" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {COMMUN_BLOOD_TYPE_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
@@ -246,7 +280,7 @@ export function ActifNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="nationality" label="Nationalité" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {COMMUN_NATIONNALITY_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
@@ -262,7 +296,7 @@ export function ActifNewEditForm({ currentProduct }) {
               label="Situation Service National"
               size="small"
             >
-              {USER_STATUS_OPTIONS.map((status) => (
+              {COMMUN_NATIONAL_SERVICE_STATUS_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
@@ -330,7 +364,7 @@ export function ActifNewEditForm({ currentProduct }) {
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="family_situation" label="Situation familiale " size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {COMMUN_FAMILY_SITUATION_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
@@ -364,7 +398,7 @@ export function ActifNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="direction" label="Direction" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {PRODUCT_DEPARTEMENT_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
@@ -373,7 +407,7 @@ export function ActifNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="site" label="Site" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {PRODUCT_SITE_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
@@ -391,7 +425,7 @@ export function ActifNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="departement" label="Departement" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {COMMUN_SERVICE_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
@@ -453,7 +487,7 @@ export function ActifNewEditForm({ currentProduct }) {
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="company" label="Societé" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {DAS_DENOM_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
@@ -471,7 +505,7 @@ export function ActifNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="category" label="Catégorie socio-professionnelle" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {SALARY_CATEGORY_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
@@ -480,7 +514,7 @@ export function ActifNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="steps" label="Échelons" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {SALARY_ECHEL_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
@@ -489,7 +523,7 @@ export function ActifNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="salary_grid_level" label="Niveau de grille salariale" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {COMMUN_GRID_SALARY_LEVEL_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
@@ -516,7 +550,7 @@ export function ActifNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="work_schedule" label="Régime de travail" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {PRODUCT_TEAM_TYPE_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
@@ -525,14 +559,13 @@ export function ActifNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="agencies" label="Agences" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {COMMUN_AGENCIES_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
               ))}
             </Field.Select>
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }} />
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Switch
               name="overtime"
@@ -564,7 +597,7 @@ export function ActifNewEditForm({ currentProduct }) {
 
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="contribution_scheme" label="Regime de cotisation" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {COMMUN_CONTRIBUTION_SCHEME_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
@@ -577,7 +610,7 @@ export function ActifNewEditForm({ currentProduct }) {
               label="Méthode de calcul de la paie"
               size="small"
             >
-              {USER_STATUS_OPTIONS.map((status) => (
+              {COMMUN_CALCULATION_METHOD_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
@@ -618,7 +651,7 @@ export function ActifNewEditForm({ currentProduct }) {
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="contract_type" label="Type de contrat" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+              {PRODUCT_CONTRACT_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
@@ -726,6 +759,7 @@ function FieldContainer({ sx, children, label = 'RHFTextField' }) {
             // fontStyle: 'italic',
             // color: 'text.disabled',
             fontSize: theme.typography.pxToRem(12),
+            textWrap: 'nowrap',
           }),
         ]}
       >

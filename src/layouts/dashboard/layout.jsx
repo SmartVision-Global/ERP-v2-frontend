@@ -25,7 +25,6 @@ import { HeaderSection } from '../core/header-section';
 import { LayoutSection } from '../core/layout-section';
 import { AccountDrawer } from '../components/account-drawer';
 import { SettingsButton } from '../components/settings-button';
-import { LanguagePopover } from '../components/language-popover';
 import { ContactsPopover } from '../components/contacts-popover';
 import { WorkspacesPopover } from '../components/workspaces-popover';
 import { navData as dashboardNavData } from '../nav-config-dashboard';
@@ -110,7 +109,7 @@ export function DashboardLayout({ sx, cssVars, children, slotProps, layoutQuery 
           <Searchbar data={navData} />
 
           {/** @slot Language popover */}
-          <LanguagePopover
+          {/* <LanguagePopover
             data={[
               { value: 'en', label: 'English', countryCode: 'GB' },
               { value: 'fr', label: 'French', countryCode: 'FR' },
@@ -118,7 +117,7 @@ export function DashboardLayout({ sx, cssVars, children, slotProps, layoutQuery 
               { value: 'cn', label: 'Chinese', countryCode: 'CN' },
               { value: 'ar', label: 'Arabic', countryCode: 'SA' },
             ]}
-          />
+          /> */}
 
           {/** @slot Notifications popover */}
           <NotificationsDrawer data={_notifications} />
