@@ -11,7 +11,6 @@ import { TextField, FormControl, InputAdornment } from '@mui/material';
 import {
   DataGrid,
   gridClasses,
-  GridToolbarExport,
   GridActionsCellItem,
   GridToolbarContainer,
   GridToolbarColumnsButton,
@@ -43,12 +42,37 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import {
   RenderCellId,
+  RenderCellSex,
+  RenderCellNss,
+  RenderCellRib,
   RenderCellUser,
+  RenderCellLieu,
+  RenderCellBanq,
+  RenderCellGrid,
+  RenderCellSite,
   RenderCellPrice,
+  RenderCellBlood,
+  RenderCellPhone,
+  RenderCellAdress,
   RenderCellPublish,
   RenderCellCompany,
+  RenderCellFiliale,
+  RenderCellSection,
+  RenderCellAtelier,
   RenderCellContract,
+  RenderCellBirthday,
+  RenderCellMilitary,
+  RenderCellTeamType,
+  RenderCellFunction,
   RenderCellCreatedAt,
+  RenderCellDirection,
+  RenderCellExpiration,
+  RenderCellPostalCode,
+  RenderCellDepartment,
+  RenderCellNationality,
+  RenderCellPaymantType,
+  RenderCellBirthLocation,
+  RenderCellFamilySituation,
 } from '../product-table-row';
 
 // ----------------------------------------------------------------------
@@ -160,8 +184,8 @@ export function ActifListView() {
     {
       field: 'id',
       headerName: 'ID',
-      flex: 0.5,
-      minWidth: 260,
+      flex: 1,
+      minWidth: 100,
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
@@ -180,27 +204,40 @@ export function ActifListView() {
       ),
     },
     {
-      field: 'sex',
-      headerName: 'Sex',
-      width: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPublish params={params} />,
+      field: 'expiration',
+      headerName: 'Expiration',
+      flex: 1,
+      minWidth: 260,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellExpiration params={params} href={paths.dashboard.root} />
+      ),
     },
     {
       field: 'etat',
       headerName: 'Etat',
       width: 110,
       type: 'singleSelect',
-      editable: true,
+      // editable: true,
       valueOptions: SEX_OPTIONS,
       renderCell: (params) => <RenderCellPublish params={params} />,
     },
+
+    {
+      field: 'sex',
+      headerName: 'Sex',
+      minWidth: 110,
+      type: 'singleSelect',
+      editable: true,
+      valueOptions: SEX_OPTIONS,
+      renderCell: (params) => <RenderCellSex params={params} />,
+    },
+
+    // Declaration
     {
       field: 'company',
       headerName: 'Entreprise',
-      width: 210,
+      minWidth: 260,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
@@ -209,11 +246,11 @@ export function ActifListView() {
     {
       field: 'site',
       headerName: 'Site',
-      width: 210,
+      minWidth: 120,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellCompany params={params} />,
+      renderCell: (params) => <RenderCellSite params={params} />,
     },
     {
       field: 'fonction',
@@ -222,7 +259,7 @@ export function ActifListView() {
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellCompany params={params} />,
+      renderCell: (params) => <RenderCellFunction params={params} />,
     },
     {
       field: 'net',
@@ -234,14 +271,260 @@ export function ActifListView() {
       renderCell: (params) => <RenderCellPrice params={params} />,
     },
     {
+      field: 'service_start_date',
+      headerName: 'Démarrage du service',
+      width: 200,
+      renderCell: (params) => <RenderCellCreatedAt params={params} />,
+    },
+    {
+      field: 'service_end_date',
+      headerName: 'Fin du service',
+      width: 200,
+      renderCell: (params) => <RenderCellCreatedAt params={params} />,
+    },
+    {
+      field: 'postal_code',
+      headerName: 'Code postal',
+      flex: 1,
+      minWidth: 150,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellPostalCode params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'blood_type',
+      headerName: 'Groupe sanguin',
+      flex: 1,
+      minWidth: 150,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellBlood params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'nationality',
+      headerName: 'Nationalité',
+      flex: 1,
+      minWidth: 150,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellNationality params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'birthday',
+      headerName: 'Date de naissance',
+      flex: 1,
+      minWidth: 150,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellBirthday params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'birthday_location',
+      headerName: 'Lieu de naissance',
+      flex: 1,
+      minWidth: 150,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellBirthLocation params={params} href={paths.dashboard.root} />
+      ),
+    },
+
+    {
+      field: 'military',
+      headerName: 'Situation Service National',
+      flex: 1,
+      minWidth: 200,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellMilitary params={params} href={paths.dashboard.root} />
+      ),
+    },
+
+    {
+      field: 'nss',
+      headerName: 'Numéro de sécurité sociale',
+      flex: 1,
+      minWidth: 200,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellNss params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'address',
+      headerName: 'Address',
+      flex: 1,
+      minWidth: 200,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellAdress params={params} href={paths.dashboard.root} />
+      ),
+    },
+
+    {
+      field: 'family_situation',
+      headerName: 'Situation familiale',
+      flex: 1,
+      minWidth: 200,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellFamilySituation params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'lieu',
+      headerName: 'Lieu',
+      flex: 1,
+      minWidth: 100,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellLieu params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'department',
+      headerName: 'Département',
+      flex: 1,
+      minWidth: 160,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellDepartment params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'direction',
+      headerName: 'Direction',
+      flex: 1,
+      minWidth: 200,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellDirection params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'filiale',
+      headerName: 'Filiale',
+      flex: 1,
+      minWidth: 200,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellFiliale params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'section',
+      headerName: 'Section',
+      flex: 1,
+      minWidth: 200,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellSection params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'atelier',
+      headerName: 'Atelier',
+      flex: 1,
+      minWidth: 200,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellAtelier params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'paymant_type',
+      headerName: 'Type de payment',
+      flex: 1,
+      minWidth: 200,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellPaymantType params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'banq',
+      headerName: 'Banque',
+      flex: 1,
+      minWidth: 200,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellBanq params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'rib',
+      headerName: 'Rib',
+      flex: 1,
+      minWidth: 200,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellRib params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'created_at',
+      headerName: 'Date de création',
+      flex: 1,
+      minWidth: 200,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellCreatedAt params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'updated_at',
+      headerName: 'Date de mise à jour',
+      flex: 1,
+      minWidth: 200,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellCreatedAt params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'team_type',
+      headerName: 'Type équipe',
+      flex: 1,
+      minWidth: 200,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellTeamType params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'Salary_grid',
+      headerName: 'Grille',
+      flex: 1,
+      minWidth: 240,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellGrid params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'phone',
+      headerName: 'Telephone',
+      flex: 1,
+      minWidth: 200,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellPhone params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
       field: 'contrat',
       headerName: 'Contrat',
       width: 110,
       type: 'singleSelect',
-      editable: true,
+      editable: false,
       valueOptions: SEX_OPTIONS,
       renderCell: (params) => <RenderCellContract params={params} />,
     },
+
     {
       field: 'contact_start_date',
       headerName: 'De',
@@ -337,7 +620,7 @@ export function ActifListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New Personnel
+              Ajouter Personnel
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
@@ -397,7 +680,7 @@ export function ActifListView() {
             onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
             // disableColumnFilter
             slots={{
-              // toolbar: CustomToolbarCallback,
+              toolbar: CustomToolbarCallback,
               noRowsOverlay: () => <EmptyContent />,
               noResultsOverlay: () => <EmptyContent title="No results found" />,
             }}
@@ -407,6 +690,7 @@ export function ActifListView() {
               columnsManagement: { getTogglableColumns },
             }}
             sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
+            density="compact"
           />
         </Card>
       </DashboardContent>
@@ -455,7 +739,7 @@ function CustomToolbar({ selectedRowIds, setFilterButtonEl, onOpenConfirmDeleteR
 
           <GridToolbarColumnsButton ref={setFilterButtonEl} />
           {/* <GridToolbarFilterButton ref={setFilterButtonEl} /> */}
-          <GridToolbarExport />
+          {/* <GridToolbarExport /> */}
         </Box>
       </GridToolbarContainer>
 
@@ -492,17 +776,3 @@ export const GridActionsLinkItem = forwardRef((props, ref) => {
 });
 
 // ----------------------------------------------------------------------
-
-function applyFilter({ inputData, filters }) {
-  const { stock, publish } = filters;
-
-  if (stock.length) {
-    inputData = inputData.filter((product) => stock.includes(product.inventoryType));
-  }
-
-  if (publish.length) {
-    inputData = inputData.filter((product) => publish.includes(product.publish));
-  }
-
-  return inputData;
-}

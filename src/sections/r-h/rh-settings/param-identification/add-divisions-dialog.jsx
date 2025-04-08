@@ -15,13 +15,13 @@ import { Form, Field } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 export const NewProductSchema = zod.object({
-  //   divisions: zod.string().min(1, { message: 'Name is required!' }),
+  name: zod.string().min(1, { message: 'Name is required!' }),
   designation: zod.string().min(1, { message: 'Name is required!' }),
 });
 
-export function AddDivisionsDialog({ open, onClose, currentProduct, name, title }) {
+export function AddDivisionsDialog({ open, onClose, currentProduct, name, title, onCreate }) {
   const defaultValues = {
-    // divisions: '',
+    name: '',
     designation: '',
   };
 
@@ -32,32 +32,33 @@ export function AddDivisionsDialog({ open, onClose, currentProduct, name, title 
   });
 
   const {
-    watch,
+    // watch,
     reset,
     handleSubmit,
-    setError,
+    // setError,
     formState: { isSubmitting },
   } = methods;
-  const values = watch();
+  // const values = watch();
   const onSubmit = handleSubmit(async (data) => {
-    if (!values[name]) {
-      setError(name, { message: `Remplir ${title}` });
-    } else {
-      const updatedData = {
-        ...data,
-        // taxes: includeTaxes ? defaultValues.taxes : data.taxes,
-      };
+    // if (!values[name]) {
+    //   setError(name, { message: `Remplir ${title}` });
+    // } else {
+    const updatedData = {
+      ...data,
+      // taxes: includeTaxes ? defaultValues.taxes : data.taxes,
+    };
 
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        reset();
-        // toast.success(currentProduct ? 'Update success!' : 'Create success!');
-        // router.push(paths.dashboard.product.root);
-        console.info('DATA', updatedData);
-      } catch (error) {
-        console.error(error);
-      }
+    try {
+      // await new Promise((resolve) => setTimeout(resolve, 500));
+      await onCreate(updatedData);
+      reset();
+      // toast.success(currentProduct ? 'Update success!' : 'Create success!');
+      // router.push(paths.dashboard.product.root);
+      console.info('DATA', updatedData);
+    } catch (error) {
+      console.error(error);
     }
+    // }
   });
   return (
     <div>
@@ -72,7 +73,11 @@ export function AddDivisionsDialog({ open, onClose, currentProduct, name, title 
           </Typography> */}
 
             <Stack spacing={3} sx={{ p: 3 }}>
-              <Field.Text name={`${name}`} label={title} />
+              <Field.Text
+                // name={`${name}`}
+                name="name"
+                label={title}
+              />
               <Field.Text name="designation" label="Designation" multiline rows={3} />
             </Stack>
           </DialogContent>

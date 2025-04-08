@@ -148,7 +148,18 @@ export const paths = {
         newPreparation: `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/preparation/new`,
       },
     },
-
+    user: {
+      root: `${ROOTS.DASHBOARD}/user`,
+      new: `${ROOTS.DASHBOARD}/user/new`,
+      list: `${ROOTS.DASHBOARD}/user/list`,
+      cards: `${ROOTS.DASHBOARD}/user/cards`,
+      profile: `${ROOTS.DASHBOARD}/user/profile`,
+      account: `${ROOTS.DASHBOARD}/user/account`,
+      edit: (id) => `${ROOTS.DASHBOARD}/user/${id}/edit`,
+      demo: {
+        edit: `${ROOTS.DASHBOARD}/user/${1}/edit`,
+      },
+    },
     group: {
       root: `${ROOTS.DASHBOARD}/group`,
       five: `${ROOTS.DASHBOARD}/group/five`,

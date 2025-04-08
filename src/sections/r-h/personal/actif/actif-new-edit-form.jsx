@@ -1,11 +1,21 @@
 import { z as zod } from 'zod';
 import { useCallback } from 'react';
-import { useForm } from 'react-hook-form';
+import InputMask from 'react-input-mask';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Stack, Divider, MenuItem, CardHeader, Typography } from '@mui/material';
+import {
+  Box,
+  Card,
+  Stack,
+  Divider,
+  MenuItem,
+  TextField,
+  CardHeader,
+  Typography,
+} from '@mui/material';
 
 import {
   DAS_DENOM_OPTIONS,
@@ -13,9 +23,11 @@ import {
   USER_STATUS_OPTIONS,
   PRODUCT_SITE_OPTIONS,
   SALARY_ECHEL_OPTIONS,
+  JOB_SITUATION_OPTIONS,
   COMMUN_SERVICE_OPTIONS,
   SALARY_CATEGORY_OPTIONS,
   COMMUN_AGENCIES_OPTIONS,
+  EDUCATION_LEVEL_OPTIONS,
   PRODUCT_CONTRACT_OPTIONS,
   COMMUN_BLOOD_TYPE_OPTIONS,
   PRODUCT_TEAM_TYPE_OPTIONS,
@@ -30,92 +42,162 @@ import {
 
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
-export const NewProductSchema = zod.object({
-  firstname: zod.string().min(1, { message: 'Name is required!' }),
-  lastname: zod.string().min(1, { message: 'Name is required!' }),
-  birthday: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
-  location: zod.string().min(1, { message: 'Name is required!' }),
-  sex: zod.string().min(1, { message: 'Name is required!' }),
-  blood_type: zod.string().min(1, { message: 'Product code is required!' }),
-  nationality: zod.string().min(1, { message: 'Name is required!' }),
+export const NewProductSchema = zod
+  .object({
+    firstname_fr: zod.string().min(1, { message: 'firstname_fr is required!' }),
+    lastname_fr: zod.string().min(1, { message: 'lastname_fr is required!' }),
+    firstname_ar: zod.string().min(1, { message: 'firstname_ar is required!' }),
+    lastname_ar: zod.string().min(1, { message: 'lastname_ar is required!' }),
+    birthday: schemaHelper.date({ message: { required: 'birthday is required!' } }),
+    location_fr: zod.string().min(1, { message: 'location_fr is required!' }),
+    location_ar: zod.string().min(1, { message: 'location_ar is required!' }),
+    sex: zod.string().min(1, { message: 'sex is required!' }),
+    blood_type: zod.string().min(1, { message: 'blood_type code is required!' }),
+    nationality: zod.string().min(1, { message: 'nationality is required!' }),
 
-  phone: zod.string().min(1, { message: 'Product sku is required!' }),
-  national_service_status: zod.string().min(1, { message: 'Product sku is required!' }),
-  email: zod.string().min(1, { message: 'Product sku is required!' }),
-  social_number: zod.string().min(1, { message: 'Product sku is required!' }),
-  adressFr: zod.string().min(1, { message: 'Product sku is required!' }),
-  adressAr: zod.string().min(1, { message: 'Product sku is required!' }),
+    phone: zod.string().min(1, { message: 'phone is required!' }),
+    national_service_status: zod
+      .string()
+      .min(1, { message: 'national_service_status is required!' }),
+    email: zod.string().min(1, { message: 'email is required!' }),
+    social_number: zod.string().min(1, { message: 'social_number is required!' }),
+    adressFr: zod.string().min(1, { message: 'adressFr is required!' }),
+    adressAr: zod.string().min(1, { message: 'adressAr is required!' }),
 
-  national_number: zod.string().min(1, { message: 'Product sku is required!' }),
-  image: schemaHelper.file({ message: 'Cover is required!' }),
-  employment_certificate: schemaHelper.file({ message: 'Cover is required!' }),
-  father_lastname: zod.string().min(1, { message: 'Product sku is required!' }),
-  mother_firstname: zod.string().min(1, { message: 'Product sku is required!' }),
-  mother_lastname: zod.string().min(1, { message: 'Product sku is required!' }),
+    national_number: zod.string().min(1, { message: 'national_number is required!' }),
+    birth_certificate_number: zod
+      .string()
+      .min(1, { message: 'birth_certificate_number is required!' }),
+    image: schemaHelper.file({ message: 'image is required!' }),
+    employment_certificate: schemaHelper.file({ message: 'employment_certificate is required!' }),
+    father_lastname_fr: zod.string().min(1, { message: 'father_lastname_fr is required!' }),
+    mother_firstname_fr: zod.string().min(1, { message: 'mother_firstname_fr is required!' }),
+    mother_lastname_fr: zod.string().min(1, { message: 'mother_lastname_fr is required!' }),
+    father_lastname_ar: zod.string().min(1, { message: 'father_lastname_ar is required!' }),
+    mother_firstname_ar: zod.string().min(1, { message: 'mother_firstname_ar is required!' }),
+    mother_lastname_ar: zod.string().min(1, { message: 'mother_lastname_ar is required!' }),
 
-  // Informations Familiales
-  family_situation: zod.string().min(1, { message: 'Product sku is required!' }),
+    // Informations Familiales
+    family_situation: zod.string().min(1, { message: 'family_situation is required!' }),
+    children_number: schemaHelper.nullableInput(zod.number({ coerce: true }).optional()),
+    children_number_min: schemaHelper.nullableInput(zod.number({ coerce: true }).optional()),
+    spouse_fullname_fr: zod.string().optional(),
+    spouse_fullname_ar: zod.string().optional(),
+    spouse_job: zod.string().optional(),
+    spouse_phone: zod.string().optional(),
 
-  // Emplacement et Structure Organisationnelle
-  subsidiary: zod.string().min(1, { message: 'Product sku is required!' }),
-  direction: zod.string().min(1, { message: 'Product sku is required!' }),
-  site: zod.string().min(1, { message: 'Product sku is required!' }),
-  division: zod.string().min(1, { message: 'Product sku is required!' }),
-  department: zod.string().min(1, { message: 'Product sku is required!' }),
-  sections: zod.string().min(1, { message: 'Product sku is required!' }),
-  workshop: zod.string().min(1, { message: 'Product sku is required!' }),
-  machine: zod.string().min(1, { message: 'Product sku is required!' }),
-  area: zod.string().min(1, { message: 'Product sku is required!' }),
+    // Education
+    education: zod.string().min(1, { message: 'Education is required!' }),
+    speciality: zod.string().min(1, { message: 'speciality is required!' }),
 
-  // Informations sur l'Emploi
-  company: zod.string().min(1, { message: 'Product sku is required!' }),
-  function: zod.string().min(1, { message: 'Product sku is required!' }),
-  category: zod.string().min(1, { message: 'Product sku is required!' }),
-  steps: zod.string().min(1, { message: 'Product sku is required!' }),
-  salary_grid_level: zod.string().min(1, { message: 'Product sku is required!' }),
-  net_payable: zod.string().min(1, { message: 'Product sku is required!' }),
-  salary_supplement: zod.string().min(1, { message: 'Product sku is required!' }),
-  work_schedule: zod.string().min(1, { message: 'Product sku is required!' }),
-  agencies: zod.string().min(1, { message: 'Product sku is required!' }),
-  overtime: zod.boolean(),
-  stock_withdrawals: zod.boolean(),
-  professional_experience_allowance: zod.boolean(),
-  contribution_scheme: zod.string().min(1, { message: 'Product sku is required!' }),
-  calculation_method: zod.string().min(1, { message: 'Product sku is required!' }),
-  days_per_month: schemaHelper.nullableInput(
-    zod
-      .number({ coerce: true })
-      .min(1, { message: 'Quantity is required!' })
-      .max(99, { message: 'Quantity must be between 1 and 99' }),
-    // message for null value
-    { message: 'Quantity is required!' }
-  ),
-  hours_per_month: schemaHelper.nullableInput(
-    zod
-      .number({ coerce: true })
-      .min(1, { message: 'Quantity is required!' })
-      .max(99, { message: 'Quantity must be between 1 and 99' }),
-    // message for null value
-    { message: 'Quantity is required!' }
-  ),
-  declaration_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
-  entry_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
+    // Emplacement et Structure Organisationnelle
+    subsidiary: zod.string().min(1, { message: 'subsidiary is required!' }),
+    direction: zod.string().min(1, { message: 'direction is required!' }),
+    site: zod.string().min(1, { message: 'site is required!' }),
+    lieu: zod.string().min(1, { message: 'lieu is required!' }),
 
-  // Informations de la contra
-  contract_type: zod.string().min(1, { message: 'Product sku is required!' }),
-  start_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
-  end_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
-  probation: schemaHelper.nullableInput(
-    zod.number({ coerce: true }).min(1, { message: 'Quantity is required!' }),
-    {
+    division: zod.string().min(1, { message: 'division is required!' }),
+    department: zod.string().min(1, { message: 'department is required!' }),
+    sections: zod.string().min(1, { message: 'sections is required!' }),
+    workshop: zod.string().min(1, { message: 'workshop is required!' }),
+    machine: zod.string().min(1, { message: 'machine is required!' }),
+    area: zod.string().min(1, { message: 'area is required!' }),
+
+    // Informations sur l'Emploi
+    company: zod.string().min(1, { message: 'company is required!' }),
+    function: zod.string().min(1, { message: 'function is required!' }),
+    category: zod.string().min(1, { message: 'category is required!' }),
+    steps: zod.string().min(1, { message: 'steps is required!' }),
+    salary_grid_level: zod.string().min(1, { message: 'salary_grid_level is required!' }),
+    net_payable: zod.string().min(1, { message: 'net_payable is required!' }),
+    salary_supplement: zod.number().min(1, { message: 'salary_supplement is required!' }),
+    work_schedule: zod.string().min(1, { message: 'work_schedule is required!' }),
+    agencies: zod.string().min(1, { message: 'agencies is required!' }),
+    overtime: zod.boolean(),
+    stock_withdrawals: zod.boolean(),
+    professional_experience_allowance: zod.boolean(),
+    contribution_scheme: zod.string().min(1, { message: 'contribution_scheme is required!' }),
+    calculation_method: zod.string().min(1, { message: 'calculation_method is required!' }),
+    days_per_month: schemaHelper.nullableInput(
+      zod
+        .number({ coerce: true })
+        .min(1, { message: 'days_per_month is required!' })
+        .max(99, { message: 'days_per_month must be between 1 and 99' }),
       // message for null value
-      message: 'Quantity is required!',
+      { message: 'days_per_month is required!' }
+    ),
+    hours_per_month: schemaHelper.nullableInput(
+      zod
+        .number({ coerce: true })
+        .min(1, { message: 'hours_per_month is required!' })
+        .max(99, { message: 'hours_per_month must be between 1 and 99' }),
+      // message for null value
+      { message: 'hours_per_month is required!' }
+    ),
+    declaration_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
+    entry_date: schemaHelper.date({ message: { required: 'entry_date is required!' } }),
+
+    // Informations de la contra
+    contract_type: zod.string().min(1, { message: 'contract_type is required!' }),
+    start_date: schemaHelper.date({ message: { required: 'start_date is required!' } }),
+    end_date: schemaHelper.date({ message: { required: 'end_date is required!' } }),
+    probation: schemaHelper.nullableInput(
+      zod.number({ coerce: true }).min(1, { message: 'probation is required!' }),
+      {
+        // message for null value
+        message: 'probation is required!',
+      }
+    ),
+    paymant_type: zod.string().min(1, { message: 'paymant_type is required!' }),
+    rib: zod.string().min(1, { message: 'rib is required!' }),
+    bank: zod.string().min(1, { message: 'bank is required!' }),
+  })
+  .superRefine((data, ctx) => {
+    if (data.family_situation === 'Marié') {
+      if (!data.children_number) {
+        ctx.addIssue({
+          code: zod.ZodIssueCode.custom,
+          message: "Spouse's children number is required when married",
+          path: ['children_number'],
+        });
+      }
+      if (!data.children_number_min) {
+        ctx.addIssue({
+          code: zod.ZodIssueCode.custom,
+          message: "Spouse's children number min is required when married",
+          path: ['children_number_min'],
+        });
+      }
+      if (!data.spouse_fullname_fr) {
+        ctx.addIssue({
+          code: zod.ZodIssueCode.custom,
+          message: "Spouse's French name is required when married",
+          path: ['spouse_fullname_fr'],
+        });
+      }
+      if (!data.spouse_fullname_ar) {
+        ctx.addIssue({
+          code: zod.ZodIssueCode.custom,
+          message: "Spouse's Arabe name is required when married",
+          path: ['spouse_fullname_ar'],
+        });
+      }
+      if (!data.spouse_job) {
+        ctx.addIssue({
+          code: zod.ZodIssueCode.custom,
+          message: "Spouse's job is required when married",
+          path: ['spouse_job'],
+        });
+      }
+      if (!data.spouse_phone) {
+        ctx.addIssue({
+          code: zod.ZodIssueCode.custom,
+          message: "Spouse's phone is required when married",
+          path: ['spouse_phone'],
+        });
+      }
     }
-  ),
-  paymant_type: zod.string().min(1, { message: 'Product sku is required!' }),
-  rib: zod.string().min(1, { message: 'Product sku is required!' }),
-  bank: zod.string().min(1, { message: 'Product sku is required!' }),
-});
+  });
 
 export function ActifNewEditForm({ currentProduct }) {
   const defaultValues = {
@@ -144,18 +226,33 @@ export function ActifNewEditForm({ currentProduct }) {
     birth_certificate_number: '',
     image: null,
     employment_certificate: null,
-    father_lastname: '',
-    mother_firstname: '',
-    morther_lastname: '',
+    father_lastname_fr: '',
+    mother_firstname_fr: '',
+    mother_lastname_fr: '',
+    father_lastname_ar: '',
+    mother_firstname_ar: '',
+    mother_lastname_ar: '',
+
     // Informations Familiales
     family_situation: '',
+    children_number: 0,
+    children_number_min: 0,
+    spouse_fullname_fr: '',
+    spouse_fullname_ar: '',
+    spouse_job: '',
+    spouse_phone: '',
+
+    // Education
+    education: '',
+    speciality: '',
 
     // Emplacement et Structure Organisationnelle
     subsidiary: '',
     direction: '',
+    lieu: '',
     site: '',
     division: '',
-    department: '',
+    department: 'AA',
     sections: '',
     workshop: '',
     machine: '',
@@ -167,7 +264,7 @@ export function ActifNewEditForm({ currentProduct }) {
     steps: '',
     salary_grid_level: '',
     net_payable: '',
-    salary_supplement: null,
+    salary_supplement: 0,
     work_schedule: '',
     agencies: '',
     overtime: false,
@@ -175,8 +272,8 @@ export function ActifNewEditForm({ currentProduct }) {
     professional_experience_allowance: false,
     contribution_scheme: '',
     calculation_method: '',
-    days_per_month: null,
-    hours_per_month: null,
+    days_per_month: 22,
+    hours_per_month: 130,
     declaration_date: null,
     entry_date: null,
     contract_type: '',
@@ -196,20 +293,27 @@ export function ActifNewEditForm({ currentProduct }) {
 
   const {
     reset,
-    // watch,
+    watch,
     setValue,
+    control,
     handleSubmit,
-    formState: { isSubmitting },
+
+    formState: { isSubmitting, errors },
   } = methods;
 
-  // const values = watch();
+  const values = watch();
+  console.log('vallllllllllll', errors);
+
   const handleRemoveImage = useCallback(() => {
     setValue('image', null);
   }, [setValue]);
   const handleRemoveCertificate = useCallback(() => {
     setValue('employment_certificate', null);
   }, [setValue]);
+
   const onSubmit = handleSubmit(async (data) => {
+    console.log('submitted');
+
     const updatedData = {
       ...data,
       // taxes: includeTaxes ? defaultValues.taxes : data.taxes,
@@ -217,7 +321,7 @@ export function ActifNewEditForm({ currentProduct }) {
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
+      // reset();
       // toast.success(currentProduct ? 'Update success!' : 'Create success!');
       // router.push(paths.dashboard.product.root);
       console.info('DATA', updatedData);
@@ -239,16 +343,16 @@ export function ActifNewEditForm({ currentProduct }) {
       <Stack spacing={3} sx={{ p: 3 }}>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 3 }}>
-            <Field.Text name="lastname" label="Nom" />
+            <Field.Text name="lastname_fr" label="Nom" />
           </Grid>
           <Grid size={{ xs: 12, md: 3 }}>
-            <Field.Text name="lastname" label="اللقب بالعربية" dir="rtl" />
+            <Field.Text name="lastname_ar" label="اللقب بالعربية" dir="rtl" />
           </Grid>
           <Grid size={{ xs: 12, md: 3 }}>
-            <Field.Text name="firstname" label="Prénom" />
+            <Field.Text name="firstname_fr" label="Prénom" />
           </Grid>
           <Grid size={{ xs: 12, md: 3 }}>
-            <Field.Text name="firstname" label="الإسم بالعربية" dir="rtl" />
+            <Field.Text name="firstname_ar" label="الإسم بالعربية" dir="rtl" />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.DatePicker name="birthday" label="Date de naissance" />
@@ -307,7 +411,38 @@ export function ActifNewEditForm({ currentProduct }) {
             <Field.Text name="email" label="Email" />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="social_number" label="Numéro de sécurité sociale" />
+            {/* <Field.Text name="social_number" label="Numéro de sécurité sociale" /> */}
+            <Controller
+              name="social_number"
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <InputMask
+                  mask="99 9999 9999 99"
+                  maskChar=" "
+                  value={field.value || ''}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                >
+                  {(inputProps) => (
+                    <TextField
+                      {...inputProps}
+                      {...field}
+                      size="small"
+                      fullWidth
+                      error={!!error}
+                      helperText={error?.message}
+                      slotProps={{
+                        htmlInput: {
+                          autoComplete: 'off',
+                        },
+                      }}
+                      placeholder="-- ---- ---- --"
+                      label="Numéro de sécurité sociale"
+                    />
+                  )}
+                </InputMask>
+              )}
+            />
           </Grid>
           <Grid size={{ xs: 12, md: 3 }}>
             <Field.Text name="adressFr" label="Adresse" />
@@ -337,14 +472,26 @@ export function ActifNewEditForm({ currentProduct }) {
               />
             </Stack>
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="father_lastname" label="Prénom Pere" />
+          <Grid size={{ xs: 12, md: 3 }}>
+            <Field.Text name="father_lastname_fr" label="Prénom Pere" />
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="mother_lastname" label="Nom Mere" />
+          <Grid size={{ xs: 12, md: 3 }}>
+            <Field.Text name="father_lastname_ar" label="اسم الأب بالعربية" dir="rtl" />
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="mother_firstname" label="Prénom Mere" />
+          <Grid size={{ xs: 12, md: 3 }}>
+            <Field.Text name="mother_lastname_fr" label="Nom Mere" />
+          </Grid>
+          <Grid size={{ xs: 12, md: 3 }}>
+            <Field.Text name="mother_lastname_ar" label="لقب الأم بالعربية" dir="rtl" />
+          </Grid>
+          <Grid size={{ xs: 12, md: 3 }}>
+            <Field.Text name="mother_firstname_fr" label="Prénom Mere" />
+          </Grid>
+          <Grid size={{ xs: 12, md: 3 }}>
+            <Field.Text name="mother_firstname_ar" label="اسم الأم بالعربية" dir="rtl" />
+          </Grid>
+          <Grid size={{ xs: 12, md: 3 }}>
+            <Field.Number name="number" label="Number" type="number" />
           </Grid>
         </Grid>
       </Stack>
@@ -370,6 +517,73 @@ export function ActifNewEditForm({ currentProduct }) {
                 </MenuItem>
               ))}
             </Field.Select>
+          </Grid>
+          {(values.family_situation === 'Marié' ||
+            values.family_situation === 'Divorcé' ||
+            values.family_situation === 'Veuf') && (
+            <>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Field.Number name="children_number" label="Nombre d'enfants" type="number" />
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Field.Number
+                  name="children_number_min"
+                  label="Nombre d'enfants mineurs"
+                  type="number"
+                />
+              </Grid>
+            </>
+          )}
+          {
+            // values.family_situation !== 'Divorcé' &&
+            //   values.family_situation !== 'Veuf' &&
+            //   values.family_situation !== 'Célibataire'
+            values.family_situation === 'Marié' && (
+              <>
+                <Grid size={{ xs: 12, md: 3 }}>
+                  <Field.Text name="spouse_fullname_fr" label="Nom et Prénom Conjoint" />
+                </Grid>
+                <Grid size={{ xs: 12, md: 3 }}>
+                  <Field.Text name="spouse_fullname_ar" label="لقب و اسم الزوج" dir="rtl" />
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Field.Select name="spouse_job" label="Situation conjoint" size="small">
+                    {JOB_SITUATION_OPTIONS.map((status) => (
+                      <MenuItem key={status.value} value={status.value}>
+                        {status.label}
+                      </MenuItem>
+                    ))}
+                  </Field.Select>
+                </Grid>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Field.Text name="spouse_phone" label="Téléphone de conjoint" />
+                </Grid>
+              </>
+            )
+          }
+        </Grid>
+      </Stack>
+    </Card>
+  );
+  const renderEducationInformation = () => (
+    <Card>
+      <CardHeader title="Education" sx={{ mb: 3 }} />
+
+      <Divider />
+
+      <Stack spacing={3} sx={{ p: 3 }}>
+        <Grid container spacing={3}>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Field.Select name="education" label="Niveau d’études" size="small">
+              {EDUCATION_LEVEL_OPTIONS.map((status) => (
+                <MenuItem key={status.value} value={status.value}>
+                  {status.label}
+                </MenuItem>
+              ))}
+            </Field.Select>
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Field.Text name="speciality" label="Spécialité" />
           </Grid>
         </Grid>
       </Stack>
@@ -406,6 +620,9 @@ export function ActifNewEditForm({ currentProduct }) {
             </Field.Select>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
+            <Field.Text name="lieu" label="Lieu" />
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="site" label="Site" size="small">
               {PRODUCT_SITE_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
@@ -424,7 +641,7 @@ export function ActifNewEditForm({ currentProduct }) {
             </Field.Select>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="departement" label="Departement" size="small">
+            <Field.Select name="department" label="Departement" size="small">
               {COMMUN_SERVICE_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
@@ -495,7 +712,7 @@ export function ActifNewEditForm({ currentProduct }) {
             </Field.Select>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="fonction" label="Fonction" size="small">
+            <Field.Select name="function" label="Function" size="small">
               {USER_STATUS_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
@@ -618,14 +835,17 @@ export function ActifNewEditForm({ currentProduct }) {
             </Field.Select>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <FieldContainer label="Jours par mois" sx={{ alignItems: 'center' }}>
+            {/* <FieldContainer label="Jours par mois" sx={{ alignItems: 'center' }}>
               <Field.NumberInput name="days_per_month" />
-            </FieldContainer>
+            </FieldContainer> */}
+
+            <Field.Number name="days_per_month" label="Jours par mois" type="number" />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <FieldContainer label="Heures par mois" sx={{ alignItems: 'center' }}>
+            {/* <FieldContainer label="Heures par mois" sx={{ alignItems: 'center' }}>
               <Field.NumberInput name="hours_per_month" />
-            </FieldContainer>
+            </FieldContainer> */}
+            <Field.Number name="hours_per_month" label="Heures par mois" type="number" />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.DatePicker name="declaration_date" label="Date déclaration" />
@@ -672,9 +892,10 @@ export function ActifNewEditForm({ currentProduct }) {
               type="number"
               slotProps={{ inputLabel: { shrink: true } }}
             /> */}
-            <FieldContainer label="Probation" sx={{ alignItems: 'center' }}>
+            {/* <FieldContainer label="Probation" sx={{ alignItems: 'center' }}>
               <Field.NumberInput name="probation" />
-            </FieldContainer>
+            </FieldContainer> */}
+            <Field.Number name="probation" label="Probation" type="number" />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="paymant_type" label="Type de paiement" size="small">
@@ -711,14 +932,8 @@ export function ActifNewEditForm({ currentProduct }) {
         alignItems: 'center',
       }}
     >
-      {/* <FormControlLabel
-        label="Publish"
-        control={<Switch defaultChecked inputProps={{ id: 'publish-switch' }} />}
-        sx={{ pl: 3, flexGrow: 1 }}
-      /> */}
-
       <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
-        {!currentProduct ? 'Create product' : 'Save changes'}
+        {!currentProduct ? 'Ajouter' : 'Enregistrer'}
       </LoadingButton>
     </Box>
   );
@@ -728,6 +943,7 @@ export function ActifNewEditForm({ currentProduct }) {
       <Stack spacing={{ xs: 3, md: 5 }} sx={{ mx: 'auto', maxWidth: { xs: 720, xl: 1080 } }}>
         {renderDetails()}
         {renderFamilyInformation()}
+        {renderEducationInformation()}
         {renderLocationOrganizationalStructure()}
         {renderEmploymentInformation()}
         {renderContractInformation()}
@@ -737,36 +953,36 @@ export function ActifNewEditForm({ currentProduct }) {
   );
 }
 
-function FieldContainer({ sx, children, label = 'RHFTextField' }) {
-  return (
-    <Box
-      sx={[
-        () => ({
-          gap: 1,
-          width: 1,
-          display: 'flex',
-          // flexDirection: 'row',
-          justifyContent: 'space-between',
-        }),
-        ...(Array.isArray(sx) ? sx : [sx]),
-      ]}
-    >
-      <Typography
-        variant="caption"
-        sx={[
-          (theme) => ({
-            textAlign: 'right',
-            // fontStyle: 'italic',
-            // color: 'text.disabled',
-            fontSize: theme.typography.pxToRem(12),
-            textWrap: 'nowrap',
-          }),
-        ]}
-      >
-        {label}
-      </Typography>
+// function FieldContainer({ sx, children, label = 'RHFTextField' }) {
+//   return (
+//     <Box
+//       sx={[
+//         () => ({
+//           gap: 1,
+//           width: 1,
+//           display: 'flex',
+//           // flexDirection: 'row',
+//           justifyContent: 'space-between',
+//         }),
+//         ...(Array.isArray(sx) ? sx : [sx]),
+//       ]}
+//     >
+//       <Typography
+//         variant="caption"
+//         sx={[
+//           (theme) => ({
+//             textAlign: 'right',
+//             // fontStyle: 'italic',
+//             // color: 'text.disabled',
+//             fontSize: theme.typography.pxToRem(12),
+//             textWrap: 'nowrap',
+//           }),
+//         ]}
+//       >
+//         {label}
+//       </Typography>
 
-      {children}
-    </Box>
-  );
-}
+//       {children}
+//     </Box>
+//   );
+// }

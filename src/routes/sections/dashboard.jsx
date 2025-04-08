@@ -6,11 +6,12 @@ import { DashboardLayout } from 'src/layouts/dashboard';
 
 import { LoadingScreen } from 'src/components/loading-screen';
 
+// ----------------------------------------------------------------------
+import { AccountLayout } from 'src/sections/account/account-layout';
+
 import { AuthGuard } from 'src/auth/guard';
 
 import { usePathname } from '../hooks';
-
-// ----------------------------------------------------------------------
 
 const IndexPage = lazy(() => import('src/pages/dashboard/one'));
 const PageTwo = lazy(() => import('src/pages/dashboard/two'));
@@ -97,19 +98,19 @@ const PageRhSettingsAgenciesNew = lazy(
 
 // ----------------------------------------------------------------------
 
-// const PageRhDemandesSortie = lazy(() => import('src/pages/dashboard/r-h/demandes/sortie/list'));
-// const PageRhDemandeCongieAgenciesNew = lazy(
-//   () => import('src/pages/dashboard/r-h/demandes/sortie/list')
-// );
-// const PageRhDemandeRecupAgenciesNew = lazy(
-//   () => import('src/pages/dashboard/r-h/demandes/sortie/list')
-// );
-// const PageRhDemandePretAgenciesNew = lazy(
-//   () => import('src/pages/dashboard/r-h/demandes/sortie/list')
-// );
-// const PageRhDemandeAideAgenciesNew = lazy(
-//   () => import('src/pages/dashboard/r-h/demandes/sortie/list')
-// );
+const PageRhDemandesSortie = lazy(() => import('src/pages/dashboard/r-h/demandes/sortie/list'));
+const PageRhDemandeCongieAgenciesNew = lazy(
+  () => import('src/pages/dashboard/r-h/demandes/sortie/list')
+);
+const PageRhDemandeRecupAgenciesNew = lazy(
+  () => import('src/pages/dashboard/r-h/demandes/sortie/list')
+);
+const PageRhDemandePretAgenciesNew = lazy(
+  () => import('src/pages/dashboard/r-h/demandes/sortie/list')
+);
+const PageRhDemandeAideAgenciesNew = lazy(
+  () => import('src/pages/dashboard/r-h/demandes/sortie/list')
+);
 const PageRhEntriesSocialLoan = lazy(
   () => import('src/pages/dashboard/r-h/entries/social-loan/list')
 );
@@ -202,6 +203,13 @@ const PageRhPayrollManagementPreparation = lazy(
 // const PageRhPayrollManagementPreparationNew = lazy(
 //   () => import('src/pages/dashboard/r-h/payroll-management/preparation/new')
 // );
+
+// Account
+const AccountGeneralPage = lazy(() => import('src/pages/dashboard/user/account/general'));
+const AccountChangePasswordPage = lazy(
+  () => import('src/pages/dashboard/user/account/change-password')
+);
+
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
 function SuspenseOutlet() {
@@ -217,6 +225,11 @@ const dashboardLayout = () => (
   <DashboardLayout>
     <SuspenseOutlet />
   </DashboardLayout>
+);
+const accountLayout = () => (
+  <AccountLayout>
+    <SuspenseOutlet />
+  </AccountLayout>
 );
 
 export const dashboardRoutes = [
@@ -388,7 +401,28 @@ export const dashboardRoutes = [
           },
         ],
       },
-
+      {
+        path: 'user',
+        children: [
+          // { index: true, element: <UserProfilePage /> },
+          // { path: 'profile', element: <UserProfilePage /> },
+          // { path: 'cards', element: <UserCardsPage /> },
+          // { path: 'list', element: <UserListPage /> },
+          // { path: 'new', element: <UserCreatePage /> },
+          // { path: ':id/edit', element: <UserEditPage /> },
+          {
+            path: 'account',
+            element: accountLayout(),
+            children: [
+              { index: true, element: <AccountGeneralPage /> },
+              // { path: 'billing', element: <AccountBillingPage /> },
+              // { path: 'notifications', element: <AccountNotificationsPage /> },
+              // { path: 'socials', element: <AccountSocialsPage /> },
+              { path: 'change-password', element: <AccountChangePasswordPage /> },
+            ],
+          },
+        ],
+      },
       {
         path: 'group',
         children: [

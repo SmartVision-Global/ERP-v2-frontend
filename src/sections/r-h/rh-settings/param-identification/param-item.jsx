@@ -1,26 +1,40 @@
 import { useState } from 'react';
-import { usePopover } from 'minimal-shared/hooks';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Divider from '@mui/material/Divider';
-import MenuList from '@mui/material/MenuList';
-import MenuItem from '@mui/material/MenuItem';
 import { Stack, IconButton, Typography } from '@mui/material';
 
-import { RouterLink } from 'src/routes/components';
-
 import { Iconify } from 'src/components/iconify';
-import { CustomPopover } from 'src/components/custom-popover';
 
-import { AddFilialeDialog } from './add-filiale-dialog';
-import { AddDirectionDialo } from './add-direction-dialog';
 import { AddDivisionsDialog } from './add-divisions-dialog';
 
 // ----------------------------------------------------------------------
 
-const DIALOG_OPEN = ['5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18'];
+const DIALOG_OPEN = [
+  '2',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  '10',
+  '11',
+  '12',
+  '13',
+  '14',
+  '15',
+  '16',
+  '17',
+  '18',
+];
 const NAME_OPTIONS = {
+  1: { name: 'entreprise', title: 'Entreprises' },
+
+  2: { name: 'directions', title: 'Direction' },
+  4: { name: 'filiale', title: 'Filiales' },
+
   5: { name: 'divisions', title: 'Divisions' },
   6: { name: 'departement', title: 'Département' },
   7: { name: 'section', title: 'Section' },
@@ -37,44 +51,54 @@ const NAME_OPTIONS = {
   17: { name: 'demande_motif', title: 'Motifs des demandes' },
   18: { name: 'demande_motif', title: 'Motifs des demandes ' },
 };
-export function ParamItem({ job, editHref, detailsHref, onDelete, sx, ...other }) {
-  const menuActions = usePopover();
+export function ParamItem({
+  data = [],
+  title,
+  canAdd = false,
+  icon,
+  uuid,
+  // , editHref, detailsHref, onDelete
+  onCreate,
+  sx,
+  ...other
+}) {
+  // const menuActions = usePopover();
   const [openDialog, setOpenDialog] = useState('');
-  const renderMenuActions = () => (
-    <CustomPopover
-      open={menuActions.open}
-      anchorEl={menuActions.anchorEl}
-      onClose={menuActions.onClose}
-      slotProps={{ arrow: { placement: 'right-top' } }}
-    >
-      <MenuList>
-        <li>
-          <MenuItem component={RouterLink} href={detailsHref} onClick={() => menuActions.onClose()}>
-            <Iconify icon="solar:eye-bold" />
-            View
-          </MenuItem>
-        </li>
+  // const renderMenuActions = () => (
+  //   <CustomPopover
+  //     open={menuActions.open}
+  //     anchorEl={menuActions.anchorEl}
+  //     onClose={menuActions.onClose}
+  //     slotProps={{ arrow: { placement: 'right-top' } }}
+  //   >
+  //     <MenuList>
+  //       <li>
+  //         <MenuItem component={RouterLink} href={detailsHref} onClick={() => menuActions.onClose()}>
+  //           <Iconify icon="solar:eye-bold" />
+  //           View
+  //         </MenuItem>
+  //       </li>
 
-        <li>
-          <MenuItem component={RouterLink} href={editHref} onClick={() => menuActions.onClose()}>
-            <Iconify icon="solar:pen-bold" />
-            Edit
-          </MenuItem>
-        </li>
+  //       <li>
+  //         <MenuItem component={RouterLink} href={editHref} onClick={() => menuActions.onClose()}>
+  //           <Iconify icon="solar:pen-bold" />
+  //           Edit
+  //         </MenuItem>
+  //       </li>
 
-        <MenuItem
-          onClick={() => {
-            menuActions.onClose();
-            onDelete();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
-        </MenuItem>
-      </MenuList>
-    </CustomPopover>
-  );
+  //       <MenuItem
+  //         onClick={() => {
+  //           menuActions.onClose();
+  //           onDelete();
+  //         }}
+  //         sx={{ color: 'error.main' }}
+  //       >
+  //         <Iconify icon="solar:trash-bin-trash-bold" />
+  //         Delete
+  //       </MenuItem>
+  //     </MenuList>
+  //   </CustomPopover>
+  // );
 
   return (
     <>
@@ -92,7 +116,7 @@ export function ParamItem({ job, editHref, detailsHref, onDelete, sx, ...other }
             justifyContent: 'space-between',
           }}
         >
-          <Typography variant="subtitle1">{job.title}</Typography>
+          <Typography variant="subtitle1">{title}</Typography>
           <Stack direction="row" spacing={1}>
             <IconButton
               onClick={() => {
@@ -102,10 +126,10 @@ export function ParamItem({ job, editHref, detailsHref, onDelete, sx, ...other }
               <Iconify icon="eva:search-fill" />
             </IconButton>
 
-            {job.can_add && (
+            {canAdd && (
               <IconButton
                 onClick={() => {
-                  setOpenDialog(job.uuid);
+                  setOpenDialog(uuid);
                 }}
               >
                 <Iconify icon="mdi:add-circle-outline" />
@@ -139,7 +163,7 @@ export function ParamItem({ job, editHref, detailsHref, onDelete, sx, ...other }
             },
           }}
         >
-          {job.items.map((item) => (
+          {data.map((item) => (
             <Box key={item.id}>
               <Stack direction="row" spacing={2} display="flex" alignItems="center">
                 <Box
@@ -153,14 +177,14 @@ export function ParamItem({ job, editHref, detailsHref, onDelete, sx, ...other }
                     borderRadius: '50%',
                   }}
                 >
-                  <Iconify width={26} icon={job.icon} />
+                  <Iconify width={26} icon={icon} />
                 </Box>
                 <Stack direction="column" spacing={0.5} width="80%">
-                  <Typography variant="subtitle2">{item?.title}</Typography>
+                  <Typography variant="subtitle2">{item?.name}</Typography>
                   <Stack>
-                    {item?.category && (
+                    {item?.designation && (
                       <Typography fontSize={12} color="text-secondary">
-                        {item?.category}
+                        {item?.designation}
                       </Typography>
                     )}
                     {item?.adress && (
@@ -176,23 +200,26 @@ export function ParamItem({ job, editHref, detailsHref, onDelete, sx, ...other }
           ))}
         </Stack>
       </Card>
-
-      {renderMenuActions()}
-
-      {openDialog === '2' && (
-        <AddDirectionDialo open={openDialog === '2'} onClose={() => setOpenDialog('')} />
-      )}
-      {openDialog === '4' && (
-        <AddFilialeDialog open={openDialog === '4'} onClose={() => setOpenDialog('')} />
-      )}
       {DIALOG_OPEN.includes(openDialog) && (
         <AddDivisionsDialog
           open={DIALOG_OPEN.includes(openDialog)}
           onClose={() => setOpenDialog('')}
-          name={NAME_OPTIONS[job.uuid].name}
-          title={NAME_OPTIONS[job.uuid].title}
+          name={NAME_OPTIONS[uuid].name}
+          title={NAME_OPTIONS[uuid].title}
+          onCreate={onCreate}
         />
       )}
+      {/* {renderMenuActions()} */}
+
+      {/* {openDialog === '2' && (
+        <AddDirectionDialo open={openDialog === '2'} onClose={() => setOpenDialog('')} />
+      )} */}
+      {/* {openDialog === '4' && (
+        <AddFilialeDialog open={openDialog === '4'} onClose={() => setOpenDialog('')} />
+      )} */}
+      {/* {DIALOG_OPEN.includes(openDialog) && ( */}
+
+      {/* )} */}
     </>
   );
 }

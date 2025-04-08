@@ -1,5 +1,6 @@
 import { RHFTextField } from './rhf-text-field';
 import { RHFRadioGroup } from './rhf-radio-group';
+import { RHFNumberField } from './rhf-number-field';
 import { RHFNumberInput } from './rhf-number-input';
 import { RHFSelect, RHFMultiSelect } from './rhf-select';
 import { RHFSwitch, RHFMultiSwitch } from './rhf-switch';
@@ -11,6 +12,7 @@ import { RHFDatePicker, RHFMobileDateTimePicker } from './rhf-date-picker';
 
 export const Field = {
   Text: RHFTextField,
+  Number: RHFNumberField,
   DatePicker: RHFDatePicker,
   Upload: RHFUpload,
   MobileDateTimePicker: RHFMobileDateTimePicker,

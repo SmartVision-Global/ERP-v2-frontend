@@ -48,8 +48,10 @@ export function JwtSignInView() {
   const [errorMessage, setErrorMessage] = useState('');
 
   const defaultValues = {
-    email: 'demo@minimals.cc',
-    password: '@2Minimal',
+    // email: 'demo@minimals.cc',
+    // password: '@2Minimal',
+    email: 'admin@smart-vision.com',
+    password: '123456',
   };
 
   const methods = useForm({
@@ -141,11 +143,11 @@ export function JwtSignInView() {
         sx={{ textAlign: { xs: 'center', md: 'left' } }}
       />
 
-      <Alert severity="info" sx={{ mb: 3 }}>
+      {/* <Alert severity="info" sx={{ mb: 3 }}>
         Use <strong>{defaultValues.email}</strong>
         {' with password '}
         <strong>{defaultValues.password}</strong>
-      </Alert>
+      </Alert> */}
 
       {!!errorMessage && (
         <Alert severity="error" sx={{ mb: 3 }}>

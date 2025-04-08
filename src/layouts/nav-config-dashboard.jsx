@@ -211,6 +211,7 @@ export const navData = [
               { title: 'Récupération', path: paths.dashboard.rh.entries.recovery },
             ],
           },
+          //
         ],
       },
     ],

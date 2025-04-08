@@ -16,7 +16,7 @@ export const COMMUN_SERVICE_OPTIONS = [
 ];
 
 export const COMMUN_SEXE_OPTIONS = [
-  { label: 'Homme', value: 'man' },
+  { label: 'Homme', value: 'male' },
   { label: 'Femme', value: 'female' },
 ];
 
@@ -46,6 +46,11 @@ export const COMMUN_FAMILY_SITUATION_OPTIONS = [
   { label: 'Divorcé', value: 'Divorcé' },
   { label: 'Marié', value: 'Marié' },
   { label: 'Veuf', value: 'Veuf' },
+];
+
+export const JOB_SITUATION_OPTIONS = [
+  { label: 'Avec emploi', value: 'Avec emploi' },
+  { label: 'Sans emploi', value: 'Sans emploi' },
 ];
 
 export const COMMUN_GRID_SALARY_LEVEL_OPTIONS = [

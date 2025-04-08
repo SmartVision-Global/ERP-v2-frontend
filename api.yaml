@@ -1,0 +1,2822 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: ERP V2 API
+  description: ERP for ceramic manufacturing factories
+servers:
+  - url: http://localhost:5080/v1
+    description: API server
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Ayoub Test
+        email:
+          type: string
+          example: ayoub.test@example.com
+        avatar_url:
+          type: string
+          format: uri
+          example: https://api.domain.com/storage/1.png
+        created_at:
+          type: string
+          format: date-time
+          example: 2025-03-12T12:00:00Z
+        updated_at:
+          type: string
+          format: date-time
+          example: 2025-03-12T12:00:00Z
+
+    UserPermission:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: ayoub
+        full_name:
+          type: string
+          example: Ayoub Test
+        read:
+          type: boolean
+          example: true
+        create:
+          type: boolean
+          example: false
+        update:
+          type: boolean
+          example: false
+
+    Authorization:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        token_type:
+          type: string
+          example: Bearer
+        expires_in:
+          type: integer
+          example: 3600
+
+    Enterprise:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Ceramic Factory
+        seat:
+          type: string
+          example: Headquarters
+        address:
+          type: string
+          example: 123 Main Street
+        city:
+          type: string
+          example: Algiers
+        country:
+          type: string
+          example: Algeria
+        activity:
+          type: string
+          example: Ceramic Manufacturing
+        bank:
+          type: string
+          example: Bank Name
+        bank_account:
+          type: string
+          example: 123456789
+        ccp_account:
+          type: string
+          example: 987654321
+        email:
+          type: string
+          format: email
+          example: contact@ceramicfactory.com
+        phone:
+          type: string
+          example: +213123456789
+        fax:
+          type: string
+          example: +213123456780
+        color:
+          type: string
+          example: #3366FF
+        email_com:
+          type: string
+          format: email
+          example: commercial@ceramicfactory.com
+        phone_com:
+          type: string
+          example: +213123456781
+        email_pur:
+          type: string
+          format: email
+          example: purchase@ceramicfactory.com
+        phone_pur:
+          type: string
+          example: +213123456782
+        email_bil:
+          type: string
+          format: email
+          example: billing@ceramicfactory.com
+        phone_bil:
+          type: string
+          example: +213123456783
+        trade_registry:
+          type: string
+          example: TR123456
+        article_taxation:
+          type: string
+          example: AT987654
+        tax_registration_number:
+          type: string
+          example: TRN123456789
+        nif:
+          type: string
+          example: 123456789012345
+        nis:
+          type: string
+          example: 987654321098765
+        rib:
+          type: string
+          example: 00123456789012345678
+
+    EnterpriseRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        seat:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        activity:
+          type: string
+        bank:
+          type: string
+        bank_account:
+          type: string
+        ccp_account:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        fax:
+          type: string
+        color:
+          type: string
+        email_com:
+          type: string
+          format: email
+        phone_com:
+          type: string
+        email_pur:
+          type: string
+          format: email
+        phone_pur:
+          type: string
+        email_bil:
+          type: string
+          format: email
+        phone_bil:
+          type: string
+        trade_registry:
+          type: string
+        article_taxation:
+          type: string
+        tax_registration_number:
+          type: string
+        nif:
+          type: string
+        nis:
+          type: string
+        rib:
+          type: string
+      required:
+        - name
+        - address
+        - city
+        - country
+        - activity
+        - bank
+        - bank_account
+        - ccp_account
+        - phone
+        - fax
+        - email
+        - trade_registry
+        - article_taxation
+        - tax_registration_number
+        - color
+        - nis
+        - nif
+        - rib
+
+    Site:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Production Site 1
+        designation:
+          type: string
+          example: Main Production Facility
+        address:
+          type: string
+          example: Industrial Zone, Sector 5
+
+    SiteRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        designation:
+          type: string
+        address:
+          type: string
+      required:
+        - name
+        - address
+
+    Workshop:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Production Workshop 1
+        designation:
+          type: string
+          example: Main Workshop Facility
+        site_id:
+          type: string
+          example: 1
+        site:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: Production Site 1
+
+    WorkshopRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        designation:
+          type: string
+        site_id:
+          type: integer
+      required:
+        - name
+        - site_id
+
+    Machine:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Production Machine 1
+        designation:
+          type: string
+          example: Main Machine Facility
+        workshop_id:
+          type: integer
+          example: 1
+        workshop:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: Production Workshop 1
+
+    MachineRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        designation:
+          type: string
+        workshop_id:
+          type: integer
+      required:
+        - name
+        - workshop_id
+
+    Agency:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Agency 1
+        address:
+          type: string
+          example: Main Agency Address
+        employer_code:
+          type: string
+          example: AZ19817
+
+    AgencyRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+        employer_code:
+          type: string
+      required:
+        - name
+        - address
+        - employer_code
+
+    Zone:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Zone 1
+        code:
+          type: string
+          example: DF10092IO
+        surface:
+          type: number
+          example: 28.15
+        main_activity:
+          type: string
+          example: Main activity 1
+        safety_rules:
+          type: string
+          example: Some rules
+        color:
+          type: string
+          example: #FFFFFF
+        site_id:
+          type: integer
+          example: 1
+        site:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: Production Site 1
+
+    ZoneRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        code:
+          type: string
+        surface:
+          type: number
+        main_activity:
+          type: string
+        safety_rules:
+          type: string
+        color:
+          type: string
+        site_id:
+          type: integer
+      required:
+        - name
+        - color
+        - site_id
+
+    Rate:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        code:
+          type: string
+          example: RATE1290
+        wording:
+          type: string
+          example: Words
+        employer_rate:
+          type: number
+          example: 1.00
+        employee_rate:
+          type: number
+          example: 0.00
+        fnpos:
+          type: number
+          example: 1.50
+
+    RateRequest:
+      type: object
+      properties:
+        code:
+          type: string
+        wording:
+          type: string
+        employer_rate:
+          type: number
+        employee_rate:
+          type: number
+        fnpos:
+          type: number
+      required:
+        - code
+        - wording
+        - employer_rate
+        - employee_rate
+        - fnpos
+
+    Identification:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Entity name
+        designation:
+          type: string
+          example: Entity designation
+
+    IdentificationRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        designation:
+          type: string
+      required:
+        - name
+        - designation
+
+    DutyResponsibility:
+      type: object
+      properties:
+        type:
+          type: string
+          example: DR Type
+        label_french:
+          type: string
+          example: DR FR label
+        label_arabic:
+          type: string
+          example: DR AR label
+        label_english:
+          type: string
+          example: DR EN label
+
+    DutyResponsibilityRequest:
+      type: object
+      properties:
+        type:
+          type: string
+        label_french:
+          type: string
+        label_arabic:
+          type: string
+        label_english:
+          type: string
+      required:
+        - type
+        - label_french
+
+    Job:
+      type: object
+      properties:
+        name:
+          type: string
+        designation:
+          type: string
+        site_id:
+          type: integer
+        site:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        salary_category_id:
+          type: integer
+        salary_category:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        direction_id:
+          type: integer
+        direction:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        service_id:
+          type: integer
+        service:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        manager_job_id:
+          type: integer
+        manager_job:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        mission_id:
+          type: integer
+        mission:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        action_id:
+          type: integer
+        action:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        key_post:
+          type: boolean
+        job_code:
+          type: string
+        job_employee_quota:
+          type: string
+        protective_clothing:
+          type: boolean
+        have_premium:
+          type: boolean
+        premium_amount:
+          type: number
+        max_absence_allowed:
+          type: integer
+        salary_grids:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+
+    JobRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        designation:
+          type: string
+        site_id:
+          type: integer
+        salary_category_id:
+          type: integer
+        direction_id:
+          type: integer
+        service_id:
+          type: integer
+        manager_job_id:
+          type: integer
+        mission_id:
+          type: integer
+        action_id:
+          type: integer
+        key_post:
+          type: boolean
+        job_code:
+          type: string
+        job_employee_quota:
+          type: string
+        protective_clothing:
+          type: boolean
+        have_premium:
+          type: boolean
+        premium_amount:
+          type: number
+        max_absence_allowed:
+          type: integer
+        salary_grids:
+          type: array
+          items:
+            type: integer
+      required:
+        - name
+        - site_id
+        - salary_category_id
+        - direction_id
+        - service_id
+        - key_post
+        - job_employee_quota
+        - have_premium
+        - premium_amount
+        - max_absence_allowed
+        - salary_grids
+
+    SalaryGrid:
+      type: object
+      properties:
+        code:
+          type: string
+        designation:
+          type: string
+        salary:
+          type: number
+        rung_id:
+          type: integer
+        salary_category_id:
+          type: integer
+        salary_scale_level_id:
+          type: integer
+        sum_contributor:
+          type: number
+        sum_taxable:
+          type: number
+        sum_no_con_no_tax:
+          type: number
+        retenueIRG:
+          type: number
+
+    SalaryGridRequest:
+      type: object
+      properties:
+        code:
+          type: string
+        designation:
+          type: string
+        salary:
+          type: number
+        rung_id:
+          type: integer
+        salary_category_id:
+          type: integer
+        salary_scale_level_id:
+          type: integer
+        retenueIRG:
+          type: number
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: An error occurred
+
+    UnauthorizedError:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Unauthorized
+
+    ForbiddenError:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: You don't have permission to access this resource
+
+    NotFoundError:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: The requested resource was not found
+
+    ValidationError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: The given data was invalid
+        errors:
+          type: object
+          example: { 'name': ['The name field is required.', 'The name must be a string.'] }
+
+    ServerError:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Internal server error (Exception Message)
+
+  requestBodies:
+    EnterpriseRequest:
+      description: Request body for creating or updating an enterprise
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EnterpriseRequest'
+
+    SiteRequest:
+      description: Request body for creating or updating a site
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SiteRequest'
+
+    WorkshopRequest:
+      description: Request body for creating or updating a workshop
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/WorkshopRequest'
+
+    MachineRequest:
+      description: Request body for creating or updating a machine
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MachineRequest'
+
+    AgencyRequest:
+      description: Request body for creating or updating a agency
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AgencyRequest'
+
+    ZoneRequest:
+      description: Request body for creating or updating a zone
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ZoneRequest'
+
+    RateRequest:
+      description: Request body for creating or updating a rate
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RateRequest'
+
+    IdentificationRequest:
+      description: Request body for creating or updating an identification entity
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/IdentificationRequest'
+
+    DutyResponsibilityRequest:
+      description: Request body for creating or updating a duty responsibility
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DutyResponsibilityRequest'
+
+    JobRequest:
+      description: Request body for creating or updating a job
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/JobRequest'
+
+    SalaryGridRequest:
+      description: Request body for creating or updating a salary grid
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SalaryGridRequest'
+
+  parameters:
+    IdentificationEntity:
+      in: path
+      name: entity
+      required: true
+      schema:
+        type: string
+        enum:
+          [
+            bank,
+            compensation_leave_pattern,
+            department,
+            direction,
+            division,
+            rung,
+            grade,
+            loan_assistance_pattern,
+            nationality,
+            ppe_category,
+            salary_category,
+            ppe_compliance_standard,
+            salary_scale_level,
+            section,
+            subsidiary,
+            team_type,
+          ]
+
+    ResourceID:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: integer
+
+    Search:
+      in: query
+      name: search
+      schema:
+        type: string
+        description: Search text for filtering
+
+    Limit:
+      in: query
+      name: limit
+      schema:
+        type: integer
+        description: Number of records to return
+
+    Offset:
+      in: query
+      name: offset
+      schema:
+        type: integer
+        description: Starting index for pagination
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotFoundError'
+
+    ServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ServerError'
+
+    UnauthorizedError:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedError'
+
+    BadRequestError:
+      description: Unprocessable Content
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+
+    ForbiddenError:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ForbiddenError'
+
+paths:
+  /auth/login:
+    post:
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: ayoub.test@example.com
+                password:
+                  type: string
+                  example: apassword
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: Ayoub test
+                  email:
+                    type: string
+                    example: ayoub.test@example.com
+                  avatar_url:
+                    type: string
+                    format: uri
+                    example: https://api.domain.com/storage/1.png
+                  authorization:
+                    $ref: '#/components/schemas/Authorization'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /auth/refresh_token:
+    post:
+      summary: Refresh authentication token
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: Ayoub test
+                  email:
+                    type: string
+                    example: ayoub.test@example.com
+                  avatar_url:
+                    type: string
+                    format: uri
+                    example: https://api.domain.com/storage/1.png
+                  authorization:
+                    $ref: '#/components/schemas/Authorization'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /auth/forget_password:
+    post:
+      summary: Send password reset email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: ayoub.test@example.com
+              required:
+                - email
+      responses:
+        '200':
+          description: Reset email sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Reset email sent successfully
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /auth/reset_password:
+    post:
+      summary: Reset user password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: ayoub.test@example.com
+                password:
+                  type: string
+                  example: newpassword
+                password_confirmation:
+                  type: string
+                  example: newpassword
+                token:
+                  type: string
+                  example: reset_token
+              required:
+                - email
+                - password
+                - password_confirmation
+                - token
+      responses:
+        '200':
+          description: Password has been reset
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Password has been reset
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /profile:
+    get:
+      summary: Get user profile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    patch:
+      summary: Update user profile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Ayoub test
+                email:
+                  type: string
+                  format: email
+                  example: ayoub.test@example.com
+                password:
+                  type: string
+                  example: newpassword123
+                avatar:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: User profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /users:
+    get:
+      summary: List of users
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Search'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: Create a new user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Ayoub Test
+                email:
+                  type: string
+                  format: email
+                  example: ayoub.test@example.com
+                password:
+                  type: string
+                  example: securepassword
+                avatar:
+                  type: string
+                  format: uuid
+              required:
+                - name
+                - email
+                - password
+      responses:
+        '200':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /users/{id}:
+    get:
+      summary: Get user by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: User retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    patch:
+      summary: Update user by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Ayoub Test
+                email:
+                  type: string
+                  format: email
+                  example: ayoub.test@example.com
+                password:
+                  type: string
+                  example: securepassword
+                avatar:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Delete user by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /media/upload:
+    post:
+      summary: Upload media file
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum: [image, application]
+                file:
+                  type: string
+                  format: binary
+                collection:
+                  type: string
+              required:
+                - type
+                - file
+                - collection
+      responses:
+        '200':
+          description: Media uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uuid:
+                    type: string
+                    format: uuid
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /media/remove:
+    delete:
+      summary: Remove media file
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                model_name:
+                  type: string
+                  example: User
+                model_id:
+                  type: integer
+                  example: 1
+              required:
+                - model_name
+                - model_id
+      responses:
+        '200':
+          description: Media removed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Media has been deleted
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /permissions:
+    get:
+      summary: Get list of permissions
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Permissions list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        module:
+                          type: string
+                        section:
+                          type: string
+                        resource:
+                          type: string
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /permissions/users:
+    get:
+      summary: Get list of users that have a permission
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: module
+          required: true
+          schema:
+            type: string
+          description: Module name
+        - in: query
+          name: section
+          required: true
+          schema:
+            type: string
+          description: Section name
+        - in: query
+          name: resource
+          required: true
+          schema:
+            type: string
+          description: Resource name
+      responses:
+        '200':
+          description: Users with permission
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserPermission'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /permissions/attach:
+    post:
+      summary: Attach specified permissions to specified users
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                users:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      permissions:
+                        type: array
+                        items:
+                          type: string
+                          example: 'users.create'
+                    required:
+                      - id
+                      - permissions
+              required:
+                - users
+      responses:
+        '200':
+          description: Permissions attached to users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Permissions saved successfully
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /permissions/detach:
+    delete:
+      summary: Detach specified permissions from specified users
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                users:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      permissions:
+                        type: array
+                        items:
+                          type: string
+                          example: 'users.create'
+                    required:
+                      - id
+                      - permissions
+              required:
+                - users
+      responses:
+        '200':
+          description: Permissions detached from users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Permissions removed successfully
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /users/{id}/permissions:
+    get:
+      summary: Get user's permissions by user ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: List of user's permissions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        module:
+                          type: string
+                        section:
+                          type: string
+                        resource:
+                          type: string
+                  message:
+                    type: string
+                    example: Permissions retrieved successfully
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /settings/enterprises:
+    get:
+      summary: List of enterprises
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: List of enterprises
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Enterprise'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: Create a new enterprise
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/EnterpriseRequest'
+      responses:
+        '200':
+          description: Enterprise created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Enterprise'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /settings/enterprises/{id}:
+    get:
+      summary: Get enterprise by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: Enterprise retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Enterprise'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    patch:
+      summary: Update enterprise by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      requestBody:
+        $ref: '#/components/requestBodies/EnterpriseRequest'
+      responses:
+        '200':
+          description: Enterprise updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Enterprise'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Delete enterprise by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: Enterprise deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /settings/sites:
+    get:
+      summary: List of sites
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: List of sites
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Site'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: Create a new site
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/SiteRequest'
+      responses:
+        '200':
+          description: Site created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Site'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /settings/sites/{id}:
+    get:
+      summary: Get site by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: Site retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Site'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    patch:
+      summary: Update site by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      requestBody:
+        $ref: '#/components/requestBodies/SiteRequest'
+      responses:
+        '200':
+          description: Site updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Site'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Delete site by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: site deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /settings/workshops:
+    get:
+      summary: List of workshops
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: List of workshops
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Workshop'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: Create a new workshop
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/WorkshopRequest'
+      responses:
+        '200':
+          description: Workshop created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Workshop'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /settings/workshops/{id}:
+    get:
+      summary: Get workshop by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: Workshop retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Workshop'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    patch:
+      summary: Update workshop by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      requestBody:
+        $ref: '#/components/requestBodies/WorkshopRequest'
+      responses:
+        '200':
+          description: Workshop updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Workshop'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Delete workshop by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: workshop deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /settings/machines:
+    get:
+      summary: List of machines
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: List of machines
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Machine'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: Create a new machine
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/MachineRequest'
+      responses:
+        '200':
+          description: Machine created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Machine'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /settings/machines/{id}:
+    get:
+      summary: Get machine by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: Machine retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Machine'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    patch:
+      summary: Update machine by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      requestBody:
+        $ref: '#/components/requestBodies/MachineRequest'
+      responses:
+        '200':
+          description: Machine updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Machine'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Delete machine by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: machine deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /hr/settings/agencies:
+    get:
+      summary: List of agencies
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: List of agencies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Agency'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: Create a new agency
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/AgencyRequest'
+      responses:
+        '200':
+          description: Agency created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agency'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /hr/settings/agencies/{id}:
+    get:
+      summary: Get agency by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: Agency retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agency'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    patch:
+      summary: Update agency by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      requestBody:
+        $ref: '#/components/requestBodies/AgencyRequest'
+      responses:
+        '200':
+          description: Agency updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agency'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Delete agency by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: agency deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /hr/settings/zones:
+    get:
+      summary: List of zones
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: List of zones
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Zone'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: Create a new zone
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/ZoneRequest'
+      responses:
+        '200':
+          description: Zone created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Zone'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /hr/settings/zones/{id}:
+    get:
+      summary: Get zone by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: Zone retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Zone'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    patch:
+      summary: Update zone by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      requestBody:
+        $ref: '#/components/requestBodies/ZoneRequest'
+      responses:
+        '200':
+          description: Zone updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Zone'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Delete zone by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: zone deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /hr/settings/rates:
+    get:
+      summary: List of rates
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: List of rates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Rate'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: Create a new rate
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/RateRequest'
+      responses:
+        '200':
+          description: Rate created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rate'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /hr/settings/rates/{id}:
+    get:
+      summary: Get rate by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: Rate retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rate'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    patch:
+      summary: Update rate by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      requestBody:
+        $ref: '#/components/requestBodies/RateRequest'
+      responses:
+        '200':
+          description: Rate updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rate'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Delete rate by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: rate deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /hr/settings/salary_grids:
+    get:
+      summary: List of salary grids
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: List of salary grids
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SalaryGrid'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: Create a new salary grid
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/SalaryGridRequest'
+      responses:
+        '200':
+          description: Salary grid created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalaryGrid'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /hr/settings/salary_grids/{id}:
+    get:
+      summary: Get salary grid by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: Salary grid retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalaryGrid'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    patch:
+      summary: Update salary grid by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      requestBody:
+        $ref: '#/components/requestBodies/SalaryGridRequest'
+      responses:
+        '200':
+          description: Salary grid updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalaryGrid'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Delete salary grid by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: salary grid deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /hr/settings/identification:
+    get:
+      summary: List of identification entities
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: List of identification entities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Identification'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /hr/settings/identification/{entity}:
+    post:
+      summary: Create a new identification entity
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdentificationEntity'
+      requestBody:
+        $ref: '#/components/requestBodies/IdentificationRequest'
+      responses:
+        '200':
+          description: Identification created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Identification'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /hr/settings/identification/{entity}/{id}:
+    get:
+      summary: Get identification entity by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdentificationEntity'
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: Identification retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Identification'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    patch:
+      summary: Update identification entity by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdentificationEntity'
+        - $ref: '#/components/parameters/ResourceID'
+      requestBody:
+        $ref: '#/components/requestBodies/IdentificationRequest'
+      responses:
+        '200':
+          description: Identification updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Identification'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Delete identification entity by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdentificationEntity'
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: identification entity deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /hr/function/duties_responsibilities:
+    get:
+      summary: List of duties and responsibilities
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: List of duties and responsibilities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DutyResponsibility'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: Create a new duty responsibility
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/DutyResponsibilityRequest'
+      responses:
+        '200':
+          description: Duty Responsibility created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DutyResponsibility'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /hr/function/duties_responsibilities/{id}:
+    get:
+      summary: Get duty responsibility by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: Duty Responsibility retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DutyResponsibility'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    patch:
+      summary: Update duty responsibility by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      requestBody:
+        $ref: '#/components/requestBodies/DutyResponsibilityRequest'
+      responses:
+        '200':
+          description: Duty Responsibility updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DutyResponsibility'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Delete duty responsibility by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: duty responsibility deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /hr/function/job:
+    get:
+      summary: List of jobs
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: List of jobs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Job'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: Create a new job
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/JobRequest'
+      responses:
+        '200':
+          description: Job created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /hr/function/job/{id}:
+    get:
+      summary: Get job by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: Job retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    patch:
+      summary: Update job by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      requestBody:
+        $ref: '#/components/requestBodies/JobRequest'
+      responses:
+        '200':
+          description: Job updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Delete job by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ResourceID'
+      responses:
+        '200':
+          description: job deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+        '401':
+          $ref: '#/components/responses/ServerError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/ServerError'

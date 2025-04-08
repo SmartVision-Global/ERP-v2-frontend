@@ -5,6 +5,7 @@ import { paths } from 'src/routes/paths';
 
 import { _RhSettingsIdent } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useGetIdentificationEntities } from 'src/actions/identification';
 
 import { EmptyContent } from 'src/components/empty-content';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
@@ -14,6 +15,9 @@ import { JobList } from '../params-list';
 // ----------------------------------------------------------------------
 
 export function ParamsListView() {
+  const { entities, entitiesLoading } = useGetIdentificationEntities();
+  console.log('en', entities);
+
   const filters = useSetState({
     roles: [],
     locations: [],
@@ -61,7 +65,7 @@ export function ParamsListView() {
 
       {notFound && <EmptyContent filled sx={{ py: 10 }} />}
 
-      <JobList jobs={dataFiltered} />
+      <JobList data={entities} />
     </DashboardContent>
   );
 }
