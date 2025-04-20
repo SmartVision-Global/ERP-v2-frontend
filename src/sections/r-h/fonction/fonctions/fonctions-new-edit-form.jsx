@@ -6,24 +6,24 @@ import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Box, Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 
-import {
-  USER_STATUS_OPTIONS,
-  PRODUCT_SITE_OPTIONS,
-  COMMUN_SERVICE_OPTIONS,
-  SALARY_CATEGORY_OPTIONS,
-  PRODUCT_DEPARTEMENT_OPTIONS,
-} from 'src/_mock';
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
 
+import { USER_STATUS_OPTIONS } from 'src/_mock';
+import { createJob } from 'src/actions/function';
+import { useGetLookups } from 'src/actions/lookups';
+
+import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { FieldContainer } from 'src/components/form-validation-view';
 
 export const NewProductSchema = zod.object({
-  lib: zod.string().min(1, { message: 'Name is required!' }),
+  name: zod.string().min(1, { message: 'Name is required!' }),
   designation: zod.string().min(1, { message: 'Name is required!' }),
-  site: zod.string().min(1, { message: 'Name is required!' }),
-  category: zod.string().min(1, { message: 'Name is required!' }),
-  net: zod.string().min(1, { message: 'Name is required!' }),
-  position_number: schemaHelper.nullableInput(
+  site_id: zod.string().min(1, { message: 'Name is required!' }),
+  salary_category_id: zod.string().min(1, { message: 'Name is required!' }),
+  salary_grids: zod.string().min(1, { message: 'Name is required!' }),
+  job_employee_quota: schemaHelper.nullableInput(
     zod
       .number({ coerce: true })
       .min(1, { message: 'Quantity is required!' })
@@ -31,13 +31,13 @@ export const NewProductSchema = zod.object({
     // message for null value
     { message: 'Quantity is required!' }
   ),
-  protective_clothing: zod.boolean(),
-  attendance_bonus: zod.boolean(),
-  amount: schemaHelper.nullableInput(
+  protective_clothing: zod.string().min(1, { message: 'Name is required!' }),
+  have_premium: zod.string().min(1, { message: 'Name is required!' }),
+  premium_amount: schemaHelper.nullableInput(
     zod
       .number({ coerce: true })
       .min(1, { message: 'Quantity is required!' })
-      .max(99, { message: 'Quantity must be between 1 and 99' }),
+      .max(99999999, { message: 'Quantity must be between 1 and 99' }),
     // message for null value
     { message: 'Quantity is required!' }
   ),
@@ -49,34 +49,42 @@ export const NewProductSchema = zod.object({
     // message for null value
     { message: 'Quantity is required!' }
   ),
-  key_position: zod.boolean(),
-  directions: zod.string().min(1, { message: 'Name is required!' }),
-  service: zod.string().min(1, { message: 'Name is required!' }),
-  code_position: zod.string().min(1, { message: 'Name is required!' }),
-  manager: zod.string().min(1, { message: 'Name is required!' }),
-  missions: zod.string().min(1, { message: 'Name is required!' }),
-  function_acts: zod.string().min(1, { message: 'Name is required!' }),
+  key_post: zod.string().min(1, { message: 'Name is required!' }),
+  direction_id: zod.string().min(1, { message: 'Name is required!' }),
+  service_id: zod.string().min(1, { message: 'Name is required!' }),
+  job_code: zod.string().min(1, { message: 'Name is required!' }),
+  manager_job_id: zod.string().optional(),
+  mission_id: zod.string().min(1, { message: 'Name is required!' }),
+  action_id: zod.string().min(1, { message: 'Name is required!' }),
 });
 
 export function FonctionsNewEditForm({ currentProduct }) {
+  const router = useRouter();
+  const { data: sites } = useGetLookups('sites');
+  const { data: salaryCategories } = useGetLookups('salary_categories');
+  const { data: salaryGrids } = useGetLookups('salary_grids');
+  const { data: directions } = useGetLookups('directions');
+  const { data: services } = useGetLookups('services');
+  const { data: jobs } = useGetLookups('jobs');
+
   const defaultValues = {
-    lib: '',
+    name: '',
     designation: '',
-    site: '',
-    category: '',
-    net: '',
-    position_number: 0,
-    protective_clothing: false,
-    attendance_bonus: false,
-    amount: 0,
+    site_id: '',
+    salary_category_id: '',
+    salary_grids: '',
+    job_employee_quota: 0,
+    protective_clothing: 'no',
+    have_premium: 'no',
+    premium_amount: 0,
     max_absence_allowed: 0,
-    key_position: false,
-    directions: '',
-    service: '',
-    code_position: '',
-    manager: '',
-    missions: '',
-    function_acts: '',
+    key_post: 'yes',
+    direction_id: '',
+    service_id: '',
+    job_code: '',
+    manager_job_id: '',
+    mission_id: '',
+    action_id: '',
   };
 
   const methods = useForm({
@@ -93,15 +101,32 @@ export function FonctionsNewEditForm({ currentProduct }) {
 
   const onSubmit = handleSubmit(async (data) => {
     const updatedData = {
-      ...data,
-      // taxes: includeTaxes ? defaultValues.taxes : data.taxes,
+      // ...data,
+      name: data.name,
+      designation: data.designation,
+      site_id: parseInt(data.site_id),
+      salary_category_id: parseInt(data.salary_category_id),
+      direction_id: parseInt(data.direction_id),
+      service_id: parseInt(data.service_id),
+      manager_job_id: parseInt(data.manager_job_id),
+      mission_id: null,
+      action_id: null,
+      key_post: data.key_post === 'yes' ? true : false,
+      job_code: data.job_code,
+      job_employee_quota: `${data.job_employee_quota}`,
+      protective_clothing: data.protective_clothing === 'yes' ? true : false,
+      have_premium: data.have_premium === 'yes' ? true : false,
+      premium_amount: data.premium_amount,
+      max_absence_allowed: data.max_absence_allowed,
+      salary_grids: [parseInt(data.salary_grids)],
     };
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // await new Promise((resolve) => setTimeout(resolve, 500));
+      await createJob(updatedData);
       reset();
-      // toast.success(currentProduct ? 'Update success!' : 'Create success!');
-      // router.push(paths.dashboard.product.root);
+      toast.success(currentProduct ? 'Update success!' : 'Create success!');
+      router.push(paths.dashboard.rh.fonction.fonctions);
       console.info('DATA', updatedData);
     } catch (error) {
       console.error(error);
@@ -119,7 +144,7 @@ export function FonctionsNewEditForm({ currentProduct }) {
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Field.Text name="lib" label="Libellé" />
+        <Field.Text name="name" label="Libellé" />
         <Field.Text name="designation" label="Designation" multiline rows={3} />
       </Stack>
     </Card>
@@ -133,30 +158,39 @@ export function FonctionsNewEditForm({ currentProduct }) {
 
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
-          <Field.Select name="site" label="Site" size="small">
+          <Field.Lookup name="site_id" label="Site" data={sites} />
+          {/* <Field.Select name="site_id" label="Site" size="small">
             {PRODUCT_SITE_OPTIONS.map((status) => (
               <MenuItem key={status.value} value={status.value}>
                 {status.label}
               </MenuItem>
             ))}
-          </Field.Select>
-          <Field.Select name="category" label="Catégorie socio-professionnelle" size="small">
+          </Field.Select> */}
+          <Field.Lookup
+            name="salary_category_id"
+            label="Catégorie socio-professionnelle"
+            data={salaryCategories}
+          />
+
+          {/* <Field.Select name="salary_category_id" label="Catégorie socio-professionnelle" size="small">
             {SALARY_CATEGORY_OPTIONS.map((status) => (
               <MenuItem key={status.value} value={status.value}>
                 {status.label}
               </MenuItem>
             ))}
-          </Field.Select>
+          </Field.Select> */}
         </Stack>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="net" label="Net à payer" size="small">
+            <Field.Lookup name="salary_grids" label="Net à payer" data={salaryGrids} />
+
+            {/* <Field.Select name="salary_grids" label="Net à payer" size="small">
               {USER_STATUS_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
               ))}
-            </Field.Select>
+            </Field.Select> */}
           </Grid>
         </Grid>
         <Grid container spacing={3}>
@@ -175,7 +209,7 @@ export function FonctionsNewEditForm({ currentProduct }) {
 
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.RadioGroup
-              name="attendance_bonus"
+              name="have_premium"
               label="Prime de présence"
               row
               options={[
@@ -187,12 +221,12 @@ export function FonctionsNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <FieldContainer label="Nombre de postes" sx={{ alignItems: 'flex-start' }}>
-              <Field.NumberInput name="position_number" />
+              <Field.NumberInput name="job_employee_quota" />
             </FieldContainer>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <FieldContainer label="Montant" sx={{ alignItems: 'flex-start' }}>
-              <Field.NumberInput name="amount" />
+              <Field.NumberInput name="premium_amount" />
             </FieldContainer>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
@@ -202,7 +236,7 @@ export function FonctionsNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.RadioGroup
-              name="key_position"
+              name="key_post"
               label="Poste clé"
               row
               options={[
@@ -225,28 +259,43 @@ export function FonctionsNewEditForm({ currentProduct }) {
       <Stack spacing={3} sx={{ p: 3 }}>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="directions" label="Directions" size="small">
+            <Field.Lookup name="direction_id" label="Directions" data={directions} />
+
+            {/* <Field.Select name="direction_id" label="Directions" size="small">
               {PRODUCT_DEPARTEMENT_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
               ))}
-            </Field.Select>
+            </Field.Select> */}
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="service" label="Service" size="small">
+            <Field.Lookup name="service_id" label="Service" data={services} />
+
+            {/* <Field.Select name="service_id" label="Service" size="small">
               {COMMUN_SERVICE_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
               ))}
-            </Field.Select>
+            </Field.Select> */}
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="code_position" label="Code Poste" />
+            <Field.Text name="job_code" label="Code Poste" />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="manager" label="Responsable hiérarchique" size="small">
+            <Field.Lookup name="manager_job_id" label="Responsable hiérarchique" data={jobs} />
+
+            {/* <Field.Select name="manager_job_id" label="Responsable hiérarchique" size="small">
+              {USER_STATUS_OPTIONS.map((status) => (
+                <MenuItem key={status.value} value={status.value}>
+                  {status.label}
+                </MenuItem>
+              ))}
+            </Field.Select> */}
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Field.Select name="mission_id" label="Missions" size="small">
               {USER_STATUS_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
@@ -255,16 +304,7 @@ export function FonctionsNewEditForm({ currentProduct }) {
             </Field.Select>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="missions" label="Missions" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select>
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="function_acts" label="Actes de Fonction" size="small">
+            <Field.Select name="action_id" label="Actes de Fonction" size="small">
               {USER_STATUS_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}

@@ -24,6 +24,8 @@ const PageRhDocumentsList = lazy(() => import('src/pages/dashboard/r-h/personal/
 const PageRhBloqueList = lazy(() => import('src/pages/dashboard/r-h/personal/bloque/list'));
 const PageRhDasList = lazy(() => import('src/pages/dashboard/r-h/personal/das/list'));
 const PageRhPersonelNew = lazy(() => import('src/pages/dashboard/r-h/personal/actif/new'));
+const PageRhPersonelEdit = lazy(() => import('src/pages/dashboard/r-h/personal/actif/edit'));
+
 const PageRhDocumentPersonelNew = lazy(
   () => import('src/pages/dashboard/r-h/personal/documents/new')
 );
@@ -209,6 +211,18 @@ const AccountGeneralPage = lazy(() => import('src/pages/dashboard/user/account/g
 const AccountChangePasswordPage = lazy(
   () => import('src/pages/dashboard/user/account/change-password')
 );
+// settings
+const SettingsSiteList = lazy(() => import('src/pages/dashboard/settings/sites/list'));
+const SettingsSiteNew = lazy(() => import('src/pages/dashboard/settings/sites/new'));
+
+const SettingsAtelierList = lazy(() => import('src/pages/dashboard/settings/ateliers/list'));
+const SettingsAtelierNew = lazy(() => import('src/pages/dashboard/settings/ateliers/new'));
+
+const SettingsMachineList = lazy(() => import('src/pages/dashboard/settings/machines/list'));
+const SettingsMachineNew = lazy(() => import('src/pages/dashboard/settings/machines/new'));
+
+const SettingsEntrepriseList = lazy(() => import('src/pages/dashboard/settings/entreprises/list'));
+const SettingsEntrepriseNew = lazy(() => import('src/pages/dashboard/settings/entreprises/new'));
 
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
@@ -254,6 +268,7 @@ export const dashboardRoutes = [
               { path: 'das', element: <PageRhDasList /> },
               { path: 'new', element: <PageRhPersonelNew /> },
               { path: 'documents/new', element: <PageRhDocumentPersonelNew /> },
+              { path: ':id/edit', element: <PageRhPersonelEdit /> },
             ],
           },
           {
@@ -423,6 +438,57 @@ export const dashboardRoutes = [
           },
         ],
       },
+      {
+        path: 'settings',
+        children: [
+          // { index: true, element: <UserProfilePage /> },
+          // { path: 'profile', element: <UserProfilePage /> },
+          // { path: 'cards', element: <UserCardsPage /> },
+          // { path: 'list', element: <UserListPage /> },
+          // { path: 'new', element: <UserCreatePage /> },
+          // { path: ':id/edit', element: <UserEditPage /> },
+          {
+            path: 'site',
+            children: [
+              { index: true, element: <SettingsSiteList /> },
+              { path: 'new', element: <SettingsSiteNew /> },
+            ],
+          },
+          {
+            path: 'workshop',
+            children: [
+              { index: true, element: <SettingsAtelierList /> },
+              { path: 'new', element: <SettingsAtelierNew /> },
+            ],
+          },
+          {
+            path: 'machine',
+            children: [
+              { index: true, element: <SettingsMachineList /> },
+              { path: 'new', element: <SettingsMachineNew /> },
+            ],
+          },
+          {
+            path: 'society',
+            children: [
+              { index: true, element: <SettingsEntrepriseList /> },
+              { path: 'new', element: <SettingsEntrepriseNew /> },
+            ],
+          },
+          {
+            path: 'account',
+            element: accountLayout(),
+            children: [
+              { index: true, element: <AccountGeneralPage /> },
+              // { path: 'billing', element: <AccountBillingPage /> },
+              // { path: 'notifications', element: <AccountNotificationsPage /> },
+              // { path: 'socials', element: <AccountSocialsPage /> },
+              { path: 'change-password', element: <AccountChangePasswordPage /> },
+            ],
+          },
+        ],
+      },
+
       {
         path: 'group',
         children: [

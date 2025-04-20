@@ -6,21 +6,28 @@ import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Card, Stack, Divider, CardHeader } from '@mui/material';
 
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
+
+import { createAgency } from 'src/actions/agency';
+
+import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 
 export const NewTauxCnasSchema = zod.object({
-  name: zod.number().min(0, { message: 'Rate must be a positive number!' }),
+  name: zod.string().min(1, { message: 'Rate must be a positive number!' }),
   address: zod.string().min(1, { message: 'Category is required!' }),
-  adh_number: zod.string().min(1, { message: 'Category is required!' }),
-  username: zod.string().min(1, { message: 'Category is required!' }),
-  password: zod.string().min(1, { message: 'Category is required!' }),
+  employer_code: zod.string().min(1, { message: 'Category is required!' }),
+  username: zod.string().optional(),
+  password: zod.string().optional(),
 });
 
 export function AgenciesNewEditForm({ currentTaux }) {
+  const router = useRouter();
   const defaultValues = {
     name: '',
     address: '',
-    adh_number: '',
+    employer_code: '',
     username: '',
     password: '',
   };
@@ -39,8 +46,13 @@ export function AgenciesNewEditForm({ currentTaux }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // await new Promise((resolve) => setTimeout(resolve, 500));
+      await createAgency(data);
       reset();
+      toast.success(currentTaux ? 'Update success!' : 'Create success!');
+
+      router.push(paths.dashboard.rh.rhSettings.agencies);
+
       console.info('DATA', data);
     } catch (error) {
       console.error(error);
@@ -62,7 +74,7 @@ export function AgenciesNewEditForm({ currentTaux }) {
             <Field.Text name="address" label="Address" />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="adh_number" label="Numéro d'adhérent CNAS" />
+            <Field.Text name="employer_code" label="Numéro d'adhérent CNAS" />
           </Grid>
         </Grid>
         <Grid container spacing={3}>

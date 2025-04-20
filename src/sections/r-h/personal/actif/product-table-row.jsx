@@ -2,19 +2,64 @@ import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import { Avatar, Typography } from '@mui/material';
 import ListItemText from '@mui/material/ListItemText';
-import LinearProgress from '@mui/material/LinearProgress';
 
 import { RouterLink } from 'src/routes/components';
 
-import { fDate } from 'src/utils/format-time';
 import { fCurrency } from 'src/utils/format-number';
+import { fDate, fTime } from 'src/utils/format-time';
 
 import { Label } from 'src/components/label';
 
+const BLOOD_TYPE = {
+  1: 'A+',
+  2: 'B+',
+  3: 'AB+',
+  4: 'O+',
+  5: 'A-',
+  6: 'B-',
+  7: 'AB-',
+  8: 'O-',
+};
+
+const NATIONAL_SERVICE = {
+  1: 'Accompli',
+  2: 'Dégage',
+  3: 'Sourcie',
+  4: 'Autre',
+};
+
+const FAMILY_SITUATION = {
+  1: 'Célibataire',
+  2: 'Divorcé',
+  3: 'Marié',
+  4: 'Veuf',
+};
+const PAYMENT_TYPE = {
+  1: 'Virement',
+  2: 'Especes',
+  3: 'Autre',
+};
+
+const JOB_REGIME = {
+  1: 'poste',
+  2: 'surface',
+};
+
 // ----------------------------------------------------------------------
 
+const GENDER = {
+  1: 'Homme',
+  2: 'Femme',
+};
+
+const CONTRACT_TYPE = {
+  1: 'CDD',
+  2: 'CDI',
+  3: 'Autre',
+};
+
 export function RenderCellPrice({ params }) {
-  return fCurrency(params.row.price);
+  return fCurrency(params.row.salary_grid?.salary);
 }
 
 export function RenderCellPublish({ params }) {
@@ -24,31 +69,78 @@ export function RenderCellPublish({ params }) {
     </Label>
   );
 }
+export function RenderCellStatus({ params }) {
+  return (
+    <Label variant="soft" color={params.row.status === '1' ? 'warning' : 'error'}>
+      {params.row.status === '1' ? 'Actif' : 'Bloquer'}
+    </Label>
+  );
+}
 
 export function RenderCellSex({ params }) {
   return (
-    <Label variant="soft" color={params.row.publish === 'published' ? 'default' : 'default'}>
-      Homme
+    <Label variant="soft" color={params.row.gender === '1' ? 'default' : 'default'}>
+      {GENDER[params.row.gender]}
     </Label>
   );
 }
 
 export function RenderCellContract({ params }) {
   return (
-    <Label variant="soft" color={params.row.publish === 'published' ? 'info' : 'default'}>
-      {/* {params.row.publish} */}
-      {params.row.publish === 'published' ? 'CDI' : 'CDD'}
+    <Label
+      variant="soft"
+      color={
+        params.row.contract_type === '1'
+          ? 'info'
+          : params.row.contract_type === '2'
+            ? 'warning'
+            : 'default'
+      }
+    >
+      {CONTRACT_TYPE[params.row.contract_type]}
     </Label>
+  );
+}
+export function RenderCellServiceStart({ params }) {
+  return (
+    <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
+      <span>{fDate(params.row.service_start)}</span>
+      {/* <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
+        {fTime(params.row.createdAt)}
+      </Box> */}
+    </Box>
+  );
+}
+
+export function RenderCellServiceEnd({ params }) {
+  return (
+    <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
+      <span>{params.row.service_end ? fDate(params.row.service_end) : '-'}</span>
+      {/* <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
+        {fTime(params.row.createdAt)}
+      </Box> */}
+    </Box>
   );
 }
 
 export function RenderCellCreatedAt({ params }) {
   return (
     <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
-      <span>{fDate(params.row.createdAt)}</span>
-      {/* <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
-        {fTime(params.row.createdAt)}
-      </Box> */}
+      <span>{fDate(params.row.created_at)}</span>
+      <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
+        {fTime(params.row.created_at)}
+      </Box>
+    </Box>
+  );
+}
+
+export function RenderCellUpdatedAt({ params }) {
+  return (
+    <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
+      <span>{fDate(params.row.created_at)}</span>
+      <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
+        {fTime(params.row.updated_at)}
+      </Box>
     </Box>
   );
 }
@@ -56,28 +148,11 @@ export function RenderCellCreatedAt({ params }) {
 export function RenderCellExpiration({ params }) {
   return (
     <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
-      <span>{fDate(params.row.createdAt)}</span>
+      {/* {params.row.service_end ? fDate(params.row.service_end):-} */}
+      <span>{params.row.service_end ? fDate(params.row.service_end) : '-'}</span>
       {/* <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
         {fTime(params.row.createdAt)}
       </Box> */}
-    </Box>
-  );
-}
-
-export function RenderCellStock({ params }) {
-  return (
-    <Box sx={{ width: 1, typography: 'caption', color: 'text.secondary' }}>
-      <LinearProgress
-        value={(params.row.available * 100) / params.row.quantity}
-        variant="determinate"
-        color={
-          (params.row.inventoryType === 'out of stock' && 'error') ||
-          (params.row.inventoryType === 'low stock' && 'warning') ||
-          'success'
-        }
-        sx={{ mb: 1, height: 6, width: 80 }}
-      />
-      {!!params.row.available && params.row.available} {params.row.inventoryType}
     </Box>
   );
 }
@@ -101,8 +176,12 @@ export function RenderCellUser({ params, href }) {
       />
 
       <ListItemText
-        primary={<Typography fontSize={14}>Amar amour</Typography>}
-        secondary="عمار عمور"
+        primary={
+          <Typography
+            fontSize={14}
+          >{`${params.row.first_name?.fr} ${params.row.last_name?.fr}`}</Typography>
+        }
+        secondary={`${params.row.first_name?.ar} ${params.row.last_name?.ar}`}
         slotProps={{
           primary: { noWrap: true },
           secondary: { sx: { color: 'text.disabled', fontSize: 14 } },
@@ -126,7 +205,7 @@ export function RenderCellId({ params, href }) {
       <ListItemText
         primary={
           <Link component={RouterLink} href={href} color="inherit">
-            {Math.floor(Math.random() * 100) + 1}
+            {params.row.id}
           </Link>
         }
         // secondary={params.row.category}
@@ -153,7 +232,7 @@ export function RenderCellCompany({ params, href }) {
       <ListItemText
         primary={
           <Typography color="inherit" fontSize={14}>
-            SARL ELDIOUANE IMPORT EXPORT
+            {params.row.enterprise?.name}
           </Typography>
         }
         // secondary={params.row.category}
@@ -167,11 +246,11 @@ export function RenderCellCompany({ params, href }) {
 }
 
 export function RenderCellSite({ params, href }) {
-  return <Typography fontSize={14}>ST-ORAN</Typography>;
+  return <Typography fontSize={14}>{params.row.site?.name}</Typography>;
 }
 
 export function RenderCellFunction({ params, href }) {
-  return <Typography fontSize={14}>AGENT POLYVALENT NIV 1</Typography>;
+  return <Typography fontSize={14}>{params.row.job?.name}</Typography>;
 }
 
 export function RenderCellPostalCode({ params, href }) {
@@ -179,50 +258,47 @@ export function RenderCellPostalCode({ params, href }) {
 }
 
 export function RenderCellBlood({ params, href }) {
-  return <Typography fontSize={14}>O+</Typography>;
+  return <Typography fontSize={14}>{BLOOD_TYPE[params.row.blood_group]}</Typography>;
 }
 
 export function RenderCellNationality({ params, href }) {
-  return <Typography fontSize={14}>Algérienne</Typography>;
+  return <Typography fontSize={14}>{params.row.nationality?.name}</Typography>;
 }
 
 export function RenderCellBirthday({ params }) {
   return (
     <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
-      <span>{fDate('12/12/1995')}</span>
-      {/* <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
-        {fTime(params.row.createdAt)}
-      </Box> */}
+      <span>{fDate(params.row.birth_date)}</span>
     </Box>
   );
 }
 
 export function RenderCellBirthLocation({ params, href }) {
-  return <Typography fontSize={14}>Alger</Typography>;
+  return <Typography fontSize={14}>{params.row?.birth_place.fr}</Typography>;
 }
 
 export function RenderCellMilitary({ params }) {
   return (
     <Label variant="soft" color={params.row.publish === 'published' ? 'info' : 'default'}>
       {/* {params.row.publish} */}
-      {params.row.publish === 'published' ? 'Accompli' : 'Sourcis'}
+      {NATIONAL_SERVICE[params.row.national_service_situation]}
     </Label>
   );
 }
 
 export function RenderCellNss({ params, href }) {
-  return <Typography fontSize={14}>123451241556251</Typography>;
+  return <Typography fontSize={14}>{params.row.social_security_number}</Typography>;
 }
 
 export function RenderCellAdress({ params, href }) {
-  return <Typography fontSize={14}>Rue 11 decembre 1960 n4</Typography>;
+  return <Typography fontSize={14}>{params.row?.address.fr}</Typography>;
 }
 
 export function RenderCellFamilySituation({ params }) {
   return (
-    <Label variant="soft" color={params.row.publish === 'published' ? 'warning' : 'default'}>
+    <Label variant="soft" color="default">
       {/* {params.row.publish} */}
-      {params.row.publish === 'published' ? 'Célibataire' : 'Marié'}
+      {FAMILY_SITUATION[params.row.family_situation]}
     </Label>
   );
 }
@@ -231,26 +307,26 @@ export function RenderCellLieu({ params, href }) {
   return <Typography fontSize={14}>Alger</Typography>;
 }
 export function RenderCellDepartment({ params, href }) {
-  return <Typography fontSize={14}>Production</Typography>;
+  return <Typography fontSize={14}>{params.row.department?.name}</Typography>;
 }
 export function RenderCellDirection({ params, href }) {
-  return <Typography fontSize={14}>Direction Générale</Typography>;
+  return <Typography fontSize={14}>{params.row.direction?.name}</Typography>;
 }
 export function RenderCellFiliale({ params, href }) {
-  return <Typography fontSize={14}>ELDIOUANE IMP-EXP</Typography>;
+  return <Typography fontSize={14}>{params.row.subsidiary?.name}</Typography>;
 }
 export function RenderCellSection({ params, href }) {
-  return <Typography fontSize={14}>Equipe A</Typography>;
+  return <Typography fontSize={14}>{params.row.section?.name}</Typography>;
 }
 export function RenderCellAtelier({ params, href }) {
-  return <Typography fontSize={14}>Equipe A</Typography>;
+  return <Typography fontSize={14}>{params.row.workshop?.name}</Typography>;
 }
 
 export function RenderCellPaymantType({ params }) {
   return (
-    <Label variant="soft" color={params.row.publish === 'published' ? 'warning' : 'default'}>
+    <Label variant="soft" color="default">
       {/* {params.row.publish} */}
-      {params.row.publish === 'published' ? 'Virement' : 'Especes'}
+      {PAYMENT_TYPE[params.row.payment_type]}
     </Label>
   );
 }
@@ -259,23 +335,45 @@ export function RenderCellBanq({ params }) {
   return (
     <Label variant="soft" color="default">
       {/* {params.row.publish} */}
-      {params.row.publish === 'published' ? 'CPA' : 'BNA'}
+      {params.row.bank?.name}
     </Label>
   );
 }
 
 export function RenderCellRib({ params, href }) {
-  return <Typography fontSize={14}>12345678911234567892</Typography>;
+  return <Typography fontSize={14}>{params.row.rib}</Typography>;
 }
 
 export function RenderCellTeamType({ params, href }) {
-  return <Typography fontSize={14}>Surface</Typography>;
+  return <Typography fontSize={14}>{JOB_REGIME[params.row.job_regime]}</Typography>;
 }
 
 export function RenderCellGrid({ params, href }) {
-  return <Typography fontSize={14}>AGENT-POLYVALENT-NIV-1-SRF-1</Typography>;
+  return <Typography fontSize={14}>{params.row.salary_grid?.code}</Typography>;
 }
 
 export function RenderCellPhone({ params, href }) {
-  return <Typography fontSize={14}>0777777777</Typography>;
+  return <Typography fontSize={14}>{params.row.phone}</Typography>;
+}
+
+export function RenderCellContractStartAt({ params }) {
+  return (
+    <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
+      <span>{fDate(params.row.from_date)}</span>
+      {/* <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
+        {fTime(params.row.created_at)}
+      </Box> */}
+    </Box>
+  );
+}
+
+export function RenderCellContractEndAt({ params }) {
+  return (
+    <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
+      <span>{params.row.to_date ? fDate(params.row.to_date) : '-'}</span>
+      {/* <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
+        {fTime(params.row.created_at)}
+      </Box> */}
+    </Box>
+  );
 }

@@ -16,41 +16,41 @@ export const COMMUN_SERVICE_OPTIONS = [
 ];
 
 export const COMMUN_SEXE_OPTIONS = [
-  { label: 'Homme', value: 'male' },
-  { label: 'Femme', value: 'female' },
+  { label: 'Homme', value: '1' },
+  { label: 'Femme', value: '2' },
 ];
 
 export const COMMUN_BLOOD_TYPE_OPTIONS = [
-  { label: 'A+', value: 'A+' },
-  { label: 'B+', value: 'B+' },
+  { label: 'A+', value: '1' },
+  { label: 'B+', value: '2' },
 
-  { label: 'AB+', value: 'AB+' },
-  { label: 'O+', value: 'O+' },
-  { label: 'A-', value: 'A-' },
-  { label: 'B-', value: 'B-' },
-  { label: 'AB-', value: 'AB-' },
-  { label: 'O-', value: 'O-' },
+  { label: 'AB+', value: '3' },
+  { label: 'O+', value: '4' },
+  { label: 'A-', value: '5' },
+  { label: 'B-', value: '6' },
+  { label: 'AB-', value: '7' },
+  { label: 'O-', value: '8' },
 ];
 
 export const COMMUN_NATIONNALITY_OPTIONS = [{ label: 'Algérienne', value: 'Algeria' }];
 
 export const COMMUN_NATIONAL_SERVICE_STATUS_OPTIONS = [
-  { label: 'Accompli', value: 'accompli' },
-  { label: 'Dégage', value: 'Dégage' },
-  { label: 'Sourcie', value: 'sourcie' },
-  { label: 'Autre', value: 'autre' },
+  { label: 'Accompli', value: '1' },
+  { label: 'Dégage', value: '2' },
+  { label: 'Sourcie', value: '3' },
+  { label: 'Autre', value: '4' },
 ];
 
 export const COMMUN_FAMILY_SITUATION_OPTIONS = [
-  { label: 'Célibataire', value: 'Célibataire' },
-  { label: 'Divorcé', value: 'Divorcé' },
-  { label: 'Marié', value: 'Marié' },
-  { label: 'Veuf', value: 'Veuf' },
+  { label: 'Célibataire', value: '1' },
+  { label: 'Divorcé', value: '2' },
+  { label: 'Marié', value: '3' },
+  { label: 'Veuf', value: '4' },
 ];
 
 export const JOB_SITUATION_OPTIONS = [
-  { label: 'Avec emploi', value: 'Avec emploi' },
-  { label: 'Sans emploi', value: 'Sans emploi' },
+  { label: 'Avec emploi', value: '1' },
+  { label: 'Sans emploi', value: '2' },
 ];
 
 export const COMMUN_GRID_SALARY_LEVEL_OPTIONS = [
@@ -75,9 +75,15 @@ export const COMMUN_CONTRIBUTION_SCHEME_OPTIONS = [
 ];
 
 export const COMMUN_CALCULATION_METHOD_OPTIONS = [
-  { label: 'Mensuel', value: 'Mensuel' },
-  { label: 'Horaire', value: 'Horaire' },
-  { label: 'Journalier', value: 'Journalier' },
+  { label: 'Mensuel', value: '1' },
+  { label: 'Horaire', value: '2' },
+  { label: 'Journalier', value: '3' },
+];
+
+export const PAYMENT_TYPE_OPTIONS = [
+  { label: 'Virement', value: '1' },
+  { label: 'Especes', value: '2' },
+  { label: 'Autre', value: '3' },
 ];
 
 export const COMMUN_DOCUMENT_TYPE_OPTIONS = [

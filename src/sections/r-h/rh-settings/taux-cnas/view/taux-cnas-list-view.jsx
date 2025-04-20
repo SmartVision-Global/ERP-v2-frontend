@@ -13,7 +13,7 @@ import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetProducts } from 'src/actions/product';
+import { useGetRates } from 'src/actions/cnas-rate';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { PRODUCT_STOCK_OPTIONS, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
 
@@ -27,12 +27,12 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import {
   RenderCellId,
   RenderCellType,
-  RenderCellLevel,
-  RenderCellEchelle,
-  RenderCellContract,
+  RenderCellCode,
+  RenderCellFnpos,
   RenderCellCreatedAt,
   RenderCellDesignation,
-  RenderCellCategorySocio,
+  RenderCellEmployerRate,
+  RenderCellEmployeeRate,
 } from '../taux-cnas-table-row';
 
 // ----------------------------------------------------------------------
@@ -92,9 +92,9 @@ const FILTERS_OPTIONS = [
 export function TauxCnasListView() {
   const confirmDialog = useBoolean();
 
-  const { products, productsLoading } = useGetProducts();
+  const { rates, ratesLoading } = useGetRates();
 
-  const [tableData, setTableData] = useState(products);
+  const [tableData, setTableData] = useState(rates);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
@@ -102,10 +102,10 @@ export function TauxCnasListView() {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (products.length) {
-      setTableData(products);
+    if (rates.length) {
+      setTableData(rates);
     }
-  }, [products]);
+  }, [rates]);
   const handleReset = () => {
     setEditedFilters([]);
   };
@@ -165,14 +165,14 @@ export function TauxCnasListView() {
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellContract params={params} />,
+      renderCell: (params) => <RenderCellCode params={params} />,
     },
     {
       field: 'lib',
       headerName: 'Libelle',
       //   flex: 0.5,
       flex: 1,
-      minWidth: 150,
+      minWidth: 250,
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
@@ -188,11 +188,11 @@ export function TauxCnasListView() {
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellEchelle params={params} href={paths.dashboard.root} />
+        <RenderCellEmployerRate params={params} href={paths.dashboard.root} />
       ),
     },
     {
-      field: 'salary_rate',
+      field: 'employee_rate',
       headerName: 'Taux Salarié',
       //   flex: 0.5,
       flex: 1,
@@ -200,7 +200,7 @@ export function TauxCnasListView() {
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellCategorySocio params={params} href={paths.dashboard.root} />
+        <RenderCellEmployeeRate params={params} href={paths.dashboard.root} />
       ),
     },
     {
@@ -212,7 +212,7 @@ export function TauxCnasListView() {
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellLevel params={params} href={paths.dashboard.root} />
+        <RenderCellFnpos params={params} href={paths.dashboard.root} />
       ),
     },
 
@@ -361,7 +361,7 @@ export function TauxCnasListView() {
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}
-            loading={productsLoading}
+            loading={ratesLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}

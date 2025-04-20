@@ -15,7 +15,7 @@ export function AgenciesCreateView() {
         heading="Ajouter Agence"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Ressource humain', href: paths.dashboard.rh.personal },
+          { name: 'Agences', href: paths.dashboard.rh.rhSettings.agencies },
           { name: 'Ajouter Agence' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

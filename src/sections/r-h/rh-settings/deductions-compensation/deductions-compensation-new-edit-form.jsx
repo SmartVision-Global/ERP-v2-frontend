@@ -6,35 +6,43 @@ import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Box, Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 
-import { DEDUCTIONS_TYPE_OPTIONS } from 'src/_mock';
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
 
+import { DEDUCTIONS_TYPE_OPTIONS } from 'src/_mock';
+import { createDeductionsCompensations } from 'src/actions/deduction-conpensation';
+
+import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 
 export const NewProductSchema = zod.object({
   type: zod.string().min(1, { message: 'Name is required!' }),
   code: zod.string().min(1, { message: 'Name is required!' }),
-  lib: zod.string().min(1, { message: 'Name is required!' }),
+  name: zod.string().min(1, { message: 'Name is required!' }),
   designation: zod.string().min(1, { message: 'Name is required!' }),
-  abs: zod.boolean(),
-  category: zod.boolean(),
-  suppress: zod.boolean(),
-  periode: zod.boolean(),
-  countBase: zod.boolean(),
-  displayBase: zod.boolean(),
+  subject_absence: zod.string(),
+  contributory_imposable: zod.string(),
+  is_deletable: zod.string(),
+  is_updatable: zod.string(),
+  periodic: zod.string(),
+  calculation_base: zod.string(),
+  display_base: zod.string(),
 });
 
 export function DeductionsCompensationNewEditForm({ currentProduct }) {
+  const router = useRouter();
   const defaultValues = {
     type: '',
     code: '',
-    lib: '',
+    name: '',
     designation: '',
-    abs: false,
-    category: false,
-    suppress: false,
-    periode: false,
-    countBase: false,
-    displayBase: false,
+    subject_absence: 'yes',
+    contributory_imposable: '1',
+    is_deletable: 'yes',
+    is_updatable: 'no',
+    periodic: '1',
+    calculation_base: '1',
+    display_base: '1',
   };
 
   const methods = useForm({
@@ -46,20 +54,33 @@ export function DeductionsCompensationNewEditForm({ currentProduct }) {
   const {
     reset,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = methods;
+  console.log('err', errors);
 
   const onSubmit = handleSubmit(async (data) => {
     const updatedData = {
-      ...data,
+      type: data.type,
+      code: data.code,
+      name: data.name,
+      designation: data.designation,
+      subject_absence: data.type === 'yes' ? true : false,
+      contributory_imposable: data.contributory_imposable,
+      is_deletable: data.is_deletable === 'yes' ? true : false,
+      is_updatable: data.is_updatable === 'yes' ? true : false,
+      periodic: data.periodic,
+      calculation_base: data.calculation_base,
+      display_base: data.display_base,
+      // ...data,
       // taxes: includeTaxes ? defaultValues.taxes : data.taxes,
     };
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // await new Promise((resolve) => setTimeout(resolve, 500));
+      await createDeductionsCompensations(updatedData);
       reset();
-      // toast.success(currentProduct ? 'Update success!' : 'Create success!');
-      // router.push(paths.dashboard.product.root);
+      toast.success(currentProduct ? 'Update success!' : 'Create success!');
+      router.push(paths.dashboard.rh.rhSettings.deductionsCompensation);
       console.info('DATA', updatedData);
     } catch (error) {
       console.error(error);
@@ -91,11 +112,14 @@ export function DeductionsCompensationNewEditForm({ currentProduct }) {
             <Field.Text name="code" label="Code" />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
+            <Field.Text name="name" label="Libelle" />
+          </Grid>
+          <Grid size={{ xs: 12, md: 12 }}>
             <Field.Text name="designation" label="Designation" multiline rows={3} />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.RadioGroup
-              name="abs"
+              name="subject_absence"
               label="Soumis aux absence"
               row
               options={[
@@ -107,20 +131,20 @@ export function DeductionsCompensationNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.RadioGroup
-              name="category"
+              name="contributory_imposable"
               label="Catégorie"
               row
               options={[
-                { label: 'COTISABLE - IMPOSABLE', value: 'cotisable_impos' },
-                { label: 'NON COTISABLE - IMPOSABLE', value: 'non_cotisable_impos' },
-                { label: 'NON COTISABLE - NON IMPOSABLE', value: 'non_cotisable_non_impos' },
+                { label: 'COTISABLE - IMPOSABLE', value: '1' },
+                { label: 'NON COTISABLE - IMPOSABLE', value: '2' },
+                { label: 'NON COTISABLE - NON IMPOSABLE', value: '3' },
               ]}
               sx={{ gap: 0.75 }}
             />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.RadioGroup
-              name="suppress"
+              name="is_deletable"
               label="Est Supprimable"
               row
               options={[
@@ -132,36 +156,48 @@ export function DeductionsCompensationNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.RadioGroup
-              name="periode"
+              name="is_updatable"
+              label="Est Modifiable"
+              row
+              options={[
+                { label: 'Oui', value: 'yes' },
+                { label: 'Non', value: 'no' },
+              ]}
+              sx={{ gap: 0.75 }}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Field.RadioGroup
+              name="periodic"
               label="Périodicité"
               row
               options={[
-                { label: 'AUTRE', value: 'other' },
-                { label: 'Mensuelle', value: 'monthly' },
+                { label: 'Mensuelle', value: '1' },
+                { label: 'AUTRE', value: '2' },
               ]}
               sx={{ gap: 0.75 }}
             />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.RadioGroup
-              name="countBase"
+              name="calculation_base"
               label="Base de calcul"
               row
               options={[
-                { label: 'TAUX', value: 'taux' },
-                { label: 'Montant', value: 'montant' },
+                { label: 'TAUX', value: '1' },
+                { label: 'Montant', value: '2' },
               ]}
               sx={{ gap: 0.75 }}
             />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.RadioGroup
-              name="displayBase"
+              name="display_base"
               label="BASE D'AFFICHAGE"
               row
               options={[
-                { label: 'SALAIRE', value: 'sal' },
-                { label: 'JOURS', value: 'days' },
+                { label: 'SALAIRE', value: '1' },
+                { label: 'JOURS', value: '2' },
               ]}
               sx={{ gap: 0.75 }}
             />

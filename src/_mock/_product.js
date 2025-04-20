@@ -66,8 +66,8 @@ export const PRODUCT_PAYMANT_OPTIONS = [
 ];
 
 export const PRODUCT_TEAM_TYPE_OPTIONS = [
-  { value: 'poste', label: 'Posté' },
-  { value: 'surface', label: 'Surface' },
+  { value: '1', label: 'poste' },
+  { value: '2', label: 'surface' },
 ];
 export const PRODUCT_BANQ_OPTIONS = [
   { value: 'cpa', label: 'CPA' },
@@ -75,8 +75,9 @@ export const PRODUCT_BANQ_OPTIONS = [
 ];
 
 export const PRODUCT_CONTRACT_OPTIONS = [
-  { value: 'cdd', label: 'CDD' },
-  { value: 'cdi', label: 'CDI' },
+  { value: '1', label: 'CDD' },
+  { value: '2', label: 'CDI' },
+  { value: '3', label: 'Autre' },
 ];
 
 export const PRODUCT_WORK_DEPARTEMENT_OPTIONS = [

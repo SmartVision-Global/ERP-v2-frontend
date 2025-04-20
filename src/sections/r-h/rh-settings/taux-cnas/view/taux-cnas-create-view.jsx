@@ -15,7 +15,7 @@ export function TauxCnasCreateView() {
         heading="Ajouter Taux CNAS"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Ressource humain', href: paths.dashboard.rh.personal },
+          { name: 'Taux CNAS', href: paths.dashboard.rh.rhSettings.cnasRate },
           { name: 'Ajouter Taux CNAS' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

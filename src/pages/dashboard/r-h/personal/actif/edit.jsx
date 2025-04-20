@@ -3,18 +3,19 @@ import { Helmet } from 'react-helmet-async';
 import { useParams } from 'src/routes/hooks';
 
 import { CONFIG } from 'src/global-config';
-import { _userList } from 'src/_mock/_user';
+import { useGetPersonal } from 'src/actions/personal';
 
-import { UserEditView } from 'src/sections/user/view';
+import { PersonalEditView } from 'src/sections/r-h/personal/actif/view';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `User edit | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `Modifier Personel | Dashboard - ${CONFIG.appName}` };
 
 export default function Page() {
   const { id = '' } = useParams();
 
-  const currentUser = _userList.find((user) => user.id === id);
+  const { personal } = useGetPersonal(id);
+  console.log('ppppppp', personal);
 
   return (
     <>
@@ -22,7 +23,7 @@ export default function Page() {
         <title> {metadata.title}</title>
       </Helmet>
 
-      <UserEditView user={currentUser} />
+      <PersonalEditView personal={personal} />
     </>
   );
 }

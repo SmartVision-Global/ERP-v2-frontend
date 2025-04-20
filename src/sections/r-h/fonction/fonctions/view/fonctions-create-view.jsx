@@ -15,7 +15,7 @@ export function FonctionCreateView() {
         heading="Ajouter Fonction"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Ressource humain', href: paths.dashboard.rh.personal },
+          { name: 'Fonctions', href: paths.dashboard.rh.fonction.fonctions },
           { name: 'Ajouter Fonction' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

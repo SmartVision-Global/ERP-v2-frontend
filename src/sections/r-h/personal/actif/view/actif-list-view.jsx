@@ -19,7 +19,7 @@ import {
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetProducts } from 'src/actions/product';
+import { useGetPersonals } from 'src/actions/personal';
 import { DashboardContent } from 'src/layouts/dashboard';
 import {
   ACTIF_NAMES,
@@ -46,7 +46,6 @@ import {
   RenderCellNss,
   RenderCellRib,
   RenderCellUser,
-  RenderCellLieu,
   RenderCellBanq,
   RenderCellGrid,
   RenderCellSite,
@@ -54,7 +53,7 @@ import {
   RenderCellBlood,
   RenderCellPhone,
   RenderCellAdress,
-  RenderCellPublish,
+  RenderCellStatus,
   RenderCellCompany,
   RenderCellFiliale,
   RenderCellSection,
@@ -66,13 +65,17 @@ import {
   RenderCellFunction,
   RenderCellCreatedAt,
   RenderCellDirection,
+  RenderCellUpdatedAt,
   RenderCellExpiration,
-  RenderCellPostalCode,
   RenderCellDepartment,
+  RenderCellServiceEnd,
   RenderCellNationality,
   RenderCellPaymantType,
+  RenderCellServiceStart,
   RenderCellBirthLocation,
+  RenderCellContractEndAt,
   RenderCellFamilySituation,
+  RenderCellContractStartAt,
 } from '../product-table-row';
 
 // ----------------------------------------------------------------------
@@ -120,9 +123,9 @@ const FILTERS_OPTIONS = [
 export function ActifListView() {
   const confirmDialog = useBoolean();
 
-  const { products, productsLoading } = useGetProducts();
+  const { personals, personalsLoading } = useGetPersonals();
 
-  const [tableData, setTableData] = useState(products);
+  const [tableData, setTableData] = useState(personals);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
@@ -133,10 +136,10 @@ export function ActifListView() {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (products.length) {
-      setTableData(products);
+    if (personals.length) {
+      setTableData(personals);
     }
-  }, [products]);
+  }, [personals]);
   const handleReset = () => {
     setEditedFilters([]);
   };
@@ -214,13 +217,13 @@ export function ActifListView() {
       ),
     },
     {
-      field: 'etat',
+      field: 'status',
       headerName: 'Etat',
       width: 110,
       type: 'singleSelect',
       // editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPublish params={params} />,
+      renderCell: (params) => <RenderCellStatus params={params} />,
     },
 
     {
@@ -271,27 +274,27 @@ export function ActifListView() {
       renderCell: (params) => <RenderCellPrice params={params} />,
     },
     {
-      field: 'service_start_date',
+      field: 'service_start',
       headerName: 'Démarrage du service',
       width: 200,
-      renderCell: (params) => <RenderCellCreatedAt params={params} />,
+      renderCell: (params) => <RenderCellServiceStart params={params} />,
     },
     {
       field: 'service_end_date',
       headerName: 'Fin du service',
       width: 200,
-      renderCell: (params) => <RenderCellCreatedAt params={params} />,
+      renderCell: (params) => <RenderCellServiceEnd params={params} />,
     },
-    {
-      field: 'postal_code',
-      headerName: 'Code postal',
-      flex: 1,
-      minWidth: 150,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellPostalCode params={params} href={paths.dashboard.root} />
-      ),
-    },
+    // {
+    //   field: 'postal_code',
+    //   headerName: 'Code postal',
+    //   flex: 1,
+    //   minWidth: 150,
+    //   renderCell: (params) => (
+    //     // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+    //     <RenderCellPostalCode params={params} href={paths.dashboard.root} />
+    //   ),
+    // },
     {
       field: 'blood_type',
       headerName: 'Groupe sanguin',
@@ -375,21 +378,21 @@ export function ActifListView() {
         <RenderCellFamilySituation params={params} href={paths.dashboard.root} />
       ),
     },
-    {
-      field: 'lieu',
-      headerName: 'Lieu',
-      flex: 1,
-      minWidth: 100,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellLieu params={params} href={paths.dashboard.root} />
-      ),
-    },
+    // {
+    //   field: 'lieu',
+    //   headerName: 'Lieu',
+    //   flex: 1,
+    //   minWidth: 100,
+    //   renderCell: (params) => (
+    //     // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+    //     <RenderCellLieu params={params} href={paths.dashboard.root} />
+    //   ),
+    // },
     {
       field: 'department',
       headerName: 'Département',
       flex: 1,
-      minWidth: 160,
+      minWidth: 260,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
         <RenderCellDepartment params={params} href={paths.dashboard.root} />
@@ -482,7 +485,7 @@ export function ActifListView() {
       minWidth: 200,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellCreatedAt params={params} href={paths.dashboard.root} />
+        <RenderCellUpdatedAt params={params} href={paths.dashboard.root} />
       ),
     },
     {
@@ -496,7 +499,7 @@ export function ActifListView() {
       ),
     },
     {
-      field: 'Salary_grid',
+      field: 'salary_grid',
       headerName: 'Grille',
       flex: 1,
       minWidth: 240,
@@ -526,16 +529,16 @@ export function ActifListView() {
     },
 
     {
-      field: 'contact_start_date',
+      field: 'from_date',
       headerName: 'De',
       width: 160,
-      renderCell: (params) => <RenderCellCreatedAt params={params} />,
+      renderCell: (params) => <RenderCellContractStartAt params={params} />,
     },
     {
-      field: 'contact_end_date',
+      field: 'to_date',
       headerName: 'Au',
       width: 160,
-      renderCell: (params) => <RenderCellCreatedAt params={params} />,
+      renderCell: (params) => <RenderCellContractEndAt params={params} />,
     },
     {
       type: 'actions',
@@ -560,7 +563,7 @@ export function ActifListView() {
           icon={<Iconify icon="solar:pen-bold" />}
           label="Edit"
           // href={paths.dashboard.product.edit(params.row.id)}
-          href={paths.dashboard.root}
+          href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
         />,
         <GridActionsCellItem
           showInMenu
@@ -671,7 +674,7 @@ export function ActifListView() {
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}
-            loading={productsLoading}
+            loading={personalsLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}

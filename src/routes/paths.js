@@ -49,6 +49,7 @@ export const paths = {
       personal: {
         root: `${ROOTS.DASHBOARD}/humain-ressource/personal`,
         newPersonel: `${ROOTS.DASHBOARD}/humain-ressource/personal/new`,
+        editPersonel: (id) => `${ROOTS.DASHBOARD}/humain-ressource/personal/${id}/edit`,
         documents: `${ROOTS.DASHBOARD}/humain-ressource/personal/documents`,
         bloc: `${ROOTS.DASHBOARD}/humain-ressource/personal/bloc`,
         das: `${ROOTS.DASHBOARD}/humain-ressource/personal/das`,
@@ -158,6 +159,28 @@ export const paths = {
       edit: (id) => `${ROOTS.DASHBOARD}/user/${id}/edit`,
       demo: {
         edit: `${ROOTS.DASHBOARD}/user/${1}/edit`,
+      },
+    },
+    settings: {
+      site: {
+        root: `${ROOTS.DASHBOARD}/settings/site`,
+        newSite: `${ROOTS.DASHBOARD}/settings/site/new`,
+      },
+      // enterprise: {
+      //   root: `${ROOTS.DASHBOARD}/settings/enterprise`,
+      //   newEnterprise: `${ROOTS.DASHBOARD}/settings/enterprise/new`,
+      // },
+      workshop: {
+        root: `${ROOTS.DASHBOARD}/settings/workshop`,
+        newWorkshop: `${ROOTS.DASHBOARD}/settings/workshop/new`,
+      },
+      machine: {
+        root: `${ROOTS.DASHBOARD}/settings/machine`,
+        newMachine: `${ROOTS.DASHBOARD}/settings/machine/new`,
+      },
+      society: {
+        root: `${ROOTS.DASHBOARD}/settings/society`,
+        newSociety: `${ROOTS.DASHBOARD}/settings/society/new`,
       },
     },
     group: {

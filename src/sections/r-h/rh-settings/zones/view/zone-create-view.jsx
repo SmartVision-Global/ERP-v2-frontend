@@ -15,7 +15,7 @@ export function ZoneCreateView() {
         heading="Ajouter Zone"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Ressource humain', href: paths.dashboard.rh.personal },
+          { name: 'Zones', href: paths.dashboard.rh.rhSettings.zones },
           { name: 'Ajouter Zone' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

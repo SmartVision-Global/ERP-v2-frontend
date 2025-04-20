@@ -15,7 +15,7 @@ export function SalaryGridCreateView() {
         heading="Ajouter grille de salaire"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Ressource humain', href: paths.dashboard.rh.personal },
+          { name: 'Grillee de salaire', href: paths.dashboard.rh.rhSettings.salaryGrid },
           { name: 'Ajouter grille de salaire' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

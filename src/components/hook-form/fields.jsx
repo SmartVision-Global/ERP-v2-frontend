@@ -1,7 +1,10 @@
+import { RHFLookup } from './rhf-lookup';
 import { RHFTextField } from './rhf-text-field';
 import { RHFRadioGroup } from './rhf-radio-group';
+import { RHFTimePicker } from './rhf-time-picker';
 import { RHFNumberField } from './rhf-number-field';
 import { RHFNumberInput } from './rhf-number-input';
+import { RHFRotationDays } from './rhf-rotation-days';
 import { RHFSelect, RHFMultiSelect } from './rhf-select';
 import { RHFSwitch, RHFMultiSwitch } from './rhf-switch';
 import { RHFCheckbox, RHFMultiCheckbox } from './rhf-checkbox';
@@ -14,6 +17,8 @@ export const Field = {
   Text: RHFTextField,
   Number: RHFNumberField,
   DatePicker: RHFDatePicker,
+  TimePicker: RHFTimePicker,
+
   Upload: RHFUpload,
   MobileDateTimePicker: RHFMobileDateTimePicker,
   Select: RHFSelect,
@@ -26,4 +31,6 @@ export const Field = {
   Checkbox: RHFCheckbox,
   RadioGroup: RHFRadioGroup,
   MultiCheckbox: RHFMultiCheckbox,
+  Lookup: RHFLookup,
+  RotationDays: RHFRotationDays,
 };

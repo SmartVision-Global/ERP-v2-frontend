@@ -30,7 +30,7 @@ export const NumberInput = forwardRef((props, ref) => {
     hideButtons,
     disableInput,
     min = 0,
-    max = 9999,
+    max = 999999999,
     ...other
   } = props;
 

@@ -13,7 +13,7 @@ import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetProducts } from 'src/actions/product';
+import { useGetJobs } from 'src/actions/function';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { COMMUN_OUI_NON_OPTIONS } from 'src/_mock/_commun';
 import { DEDUCTIONS_TYPE_OPTIONS, DEDUCTIONS_NATURE_OPTIONS } from 'src/_mock';
@@ -27,8 +27,11 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import {
   RenderCellId,
+  RenderCellName,
+  RenderCellSite,
   RenderCellStatus,
-  RenderCellPublish,
+  RenderCellAmount,
+  RenderCellKeyPost,
   RenderCellCreatedAt,
   RenderCellSalaryGrid,
   RenderCellPresentPrime,
@@ -101,9 +104,9 @@ const FILTERS_OPTIONS = [
 export function FonctionsListView() {
   const confirmDialog = useBoolean();
 
-  const { products, productsLoading } = useGetProducts();
+  const { jobs, jobsLoading } = useGetJobs();
 
-  const [tableData, setTableData] = useState(products);
+  const [tableData, setTableData] = useState(jobs);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
@@ -111,10 +114,10 @@ export function FonctionsListView() {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (products.length) {
-      setTableData(products);
+    if (jobs.length) {
+      setTableData(jobs);
     }
-  }, [products]);
+  }, [jobs]);
   const handleReset = () => {
     setEditedFilters([]);
   };
@@ -159,11 +162,11 @@ export function FonctionsListView() {
       field: 'fonction_name',
       headerName: 'Nom de la fonction',
       flex: 1,
-      minWidth: 200,
+      minWidth: 320,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPublish params={params} />,
+      renderCell: (params) => <RenderCellName params={params} />,
     },
     {
       field: 'site',
@@ -174,10 +177,10 @@ export function FonctionsListView() {
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPublish params={params} />,
+      renderCell: (params) => <RenderCellSite params={params} />,
     },
     {
-      field: 'salary_grid',
+      field: 'salary_grids',
       headerName: 'Grille de salaire',
       flex: 1,
       minWidth: 80,
@@ -188,7 +191,7 @@ export function FonctionsListView() {
       renderCell: (params) => <RenderCellSalaryGrid params={params} />,
     },
     {
-      field: 'present_prime',
+      field: 'have_premium',
       headerName: 'Prime de présence',
       flex: 1,
       minWidth: 100,
@@ -199,7 +202,7 @@ export function FonctionsListView() {
       renderCell: (params) => <RenderCellPresentPrime params={params} />,
     },
     {
-      field: 'montant',
+      field: 'premium_amount',
       headerName: 'Montant',
       flex: 1,
 
@@ -207,10 +210,10 @@ export function FonctionsListView() {
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellSalaryGrid params={params} />,
+      renderCell: (params) => <RenderCellAmount params={params} />,
     },
     {
-      field: 'key_poste',
+      field: 'key_post',
       headerName: 'Poste clé',
       flex: 1,
       minWidth: 100,
@@ -218,7 +221,7 @@ export function FonctionsListView() {
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPresentPrime params={params} />,
+      renderCell: (params) => <RenderCellKeyPost params={params} />,
     },
     {
       field: 'status',
@@ -378,7 +381,7 @@ export function FonctionsListView() {
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}
-            loading={productsLoading}
+            loading={jobsLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}

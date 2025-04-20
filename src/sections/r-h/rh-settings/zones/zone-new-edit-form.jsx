@@ -4,9 +4,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
+import { Box, Card, Stack, Divider, CardHeader } from '@mui/material';
 
-import { PRODUCT_SITE_OPTIONS, CALENDAR_COLOR_OPTIONS } from 'src/_mock';
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
+
+import { createZone } from 'src/actions/zone';
+import { CALENDAR_COLOR_OPTIONS } from 'src/_mock';
+import { useGetLookups } from 'src/actions/lookups';
 
 import { ColorPicker } from 'src/components/color-utils';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
@@ -14,30 +19,29 @@ import { FieldContainer } from 'src/components/form-validation-view';
 
 export const NewProductSchema = zod.object({
   name: zod.string().min(1, { message: 'Name is required!' }),
-  code: zod.string().min(1, { message: 'Name is required!' }),
-  superficie: schemaHelper.nullableInput(
-    zod
-      .number({ coerce: true })
-      .min(1, { message: 'Quantity is required!' })
-      .max(99, { message: 'Quantity must be between 1 and 99' }),
+  code: zod.string().optional(),
+  surface: schemaHelper.nullableInput(
+    zod.number({ coerce: true }).optional()
     // message for null value
-    { message: 'Quantity is required!' }
+    // { message: 'Quantity is required!' }
   ),
-  principale_activity: zod.string().min(1, { message: 'Name is required!' }),
-  site: zod.string().min(1, { message: 'Name is required!' }),
+  main_activity: zod.string().optional(),
+  site_id: zod.string().min(1, { message: 'Name is required!' }),
   color: zod.string().min(1, { message: 'Name is required!' }),
-  security_principles: zod.string().min(1, { message: 'Name is required!' }),
+  safety_rules: zod.string().min(1, { message: 'Name is required!' }),
 });
 
 export function ZoneNewEditForm({ currentProduct }) {
+  const router = useRouter();
+  const { data: sites } = useGetLookups('sites');
   const defaultValues = {
     name: '',
     code: '',
-    superficie: 0,
-    principale_activity: '',
-    site: '',
+    surface: 0,
+    main_activity: '',
+    site_id: '',
     color: '',
-    security_principles: '',
+    safety_rules: '',
   };
 
   const methods = useForm({
@@ -60,10 +64,11 @@ export function ZoneNewEditForm({ currentProduct }) {
     };
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // await new Promise((resolve) => setTimeout(resolve, 500));
+      await createZone(data);
       reset();
       // toast.success(currentProduct ? 'Update success!' : 'Create success!');
-      // router.push(paths.dashboard.product.root);
+      router.push(paths.dashboard.rh.rhSettings.zones);
       console.info('DATA', updatedData);
     } catch (error) {
       console.error(error);
@@ -91,20 +96,14 @@ export function ZoneNewEditForm({ currentProduct }) {
 
           <Grid size={{ xs: 12, md: 6 }}>
             <FieldContainer label="Superficie(m)" sx={{ alignItems: 'center' }} direction="row">
-              <Field.NumberInput name="superficie" />
+              <Field.NumberInput name="surface" />
             </FieldContainer>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="principale_activity" label="La fonction ou l'activité principale" />
+            <Field.Text name="main_activity" label="La fonction ou l'activité principale" />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="site" label="Site" size="small">
-              {PRODUCT_SITE_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select>
+            <Field.Lookup name="site_id" label="Site" data={sites} />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             {/* <Field.Text name="color" label="Couleur" /> */}
@@ -125,7 +124,7 @@ export function ZoneNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Text
-              name="security_principles"
+              name="safety_rules"
               label="Régles de sécurité"
               placeholder="Les règles de sécurité ou les procédures spéciales qui s'appliquent"
               multiline

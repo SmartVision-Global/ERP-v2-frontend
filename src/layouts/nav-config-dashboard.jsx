@@ -214,6 +214,30 @@ export const navData = [
           //
         ],
       },
+      {
+        title: 'parametres',
+        path: '/dashboard/settings',
+        icon: ICONS.user,
+        children: [
+          // sites
+          {
+            title: 'Sites',
+            path: paths.dashboard.settings.site.root,
+          },
+          {
+            title: 'Entreprises',
+            path: paths.dashboard.settings.society.root,
+          },
+          {
+            title: 'Ateliers',
+            path: paths.dashboard.settings.workshop.root,
+          },
+          {
+            title: 'Machines',
+            path: paths.dashboard.settings.machine.root,
+          },
+        ],
+      },
     ],
   },
   /**

@@ -42,10 +42,10 @@ export function RenderCellLevel({ params }) {
   return <Typography variant="body2">0.5</Typography>;
 }
 export function RenderCellAddress({ params }) {
-  return <Typography variant="body2">SETIF</Typography>;
+  return <Typography variant="body2">{params.row.address}</Typography>;
 }
 export function RenderCellEmployerCode({ params }) {
-  return <Typography variant="body2">19603180 53</Typography>;
+  return <Typography variant="body2">{params.row.employer_code}</Typography>;
 }
 
 export function RenderCellContract({ params }) {
@@ -58,7 +58,7 @@ export function RenderCellContract({ params }) {
 export function RenderCellName({ params }) {
   return (
     <Label variant="soft" color="info">
-      CNAS-SETIF(IMP-EXP)
+      {params.row.name}
     </Label>
   );
 }
@@ -119,7 +119,7 @@ export function RenderCellWorkStop({ params }) {
 export function RenderCellCreatedAt({ params }) {
   return (
     <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
-      <span>{fDate(params.row.createdAt)}</span>
+      <span>{fDate(params.row.created_at)}</span>
       {/* <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
         {fTime(params.row.createdAt)}
       </Box> */}
@@ -130,7 +130,7 @@ export function RenderCellCreatedAt({ params }) {
 export function RenderCellUsername({ params }) {
   return (
     <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
-      <span> 19######80</span>
+      <span> {params.row.username}</span>
     </Box>
   );
 }
@@ -200,7 +200,7 @@ export function RenderCellId({ params, href }) {
       <ListItemText
         primary={
           <Link component={RouterLink} href={href} color="inherit">
-            {Math.floor(Math.random() * 1000) + 1}
+            {params.row.id}
           </Link>
         }
         // secondary={params.row.category}

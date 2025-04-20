@@ -13,7 +13,7 @@ import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetProducts } from 'src/actions/product';
+import { useGetAgencies } from 'src/actions/agency';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { PRODUCT_STOCK_OPTIONS, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
 
@@ -90,9 +90,9 @@ const FILTERS_OPTIONS = [
 export function AgenciesListView() {
   const confirmDialog = useBoolean();
 
-  const { products, productsLoading } = useGetProducts();
+  const { agencies, agenciesLoading } = useGetAgencies();
 
-  const [tableData, setTableData] = useState(products);
+  const [tableData, setTableData] = useState(agencies);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
@@ -100,10 +100,10 @@ export function AgenciesListView() {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (products.length) {
-      setTableData(products);
+    if (agencies.length) {
+      setTableData(agencies);
     }
-  }, [products]);
+  }, [agencies]);
   const handleReset = () => {
     setEditedFilters([]);
   };
@@ -148,7 +148,7 @@ export function AgenciesListView() {
       field: 'name',
       headerName: 'Nom',
       flex: 1,
-      minWidth: 160,
+      minWidth: 320,
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
@@ -359,7 +359,7 @@ export function AgenciesListView() {
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}
-            loading={productsLoading}
+            loading={agenciesLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}

@@ -13,17 +13,36 @@ import { fCurrency } from 'src/utils/format-number';
 import { Label } from 'src/components/label';
 
 // ----------------------------------------------------------------------
+const CONTRIBUTORY_IMPOSABLE = {
+  1: 'COTISABLE - IMPOSABLE',
+  2: 'NON COTISABLE - IMPOSABLE',
 
+  3: 'NON COTISABLE - NON IMPOSABLE',
+};
+
+const PERIODIC = {
+  1: 'Mensuelle',
+  2: 'AUTRE',
+};
+
+const CALCULATION_BASE = {
+  1: 'TAUX',
+  2: 'Montant',
+};
+const DISPLAY_BASE = {
+  1: 'SALAIRE',
+  2: 'JOURS',
+};
 export function RenderCellPrice({ params }) {
   return fCurrency(params.row.price);
 }
 
-export function RenderCellPublish({ params }) {
-  return <Typography variant="body2">Missions Principales</Typography>;
+export function RenderCellName({ params }) {
+  return <Typography variant="body2">{params.row.name}</Typography>;
 }
 
-export function RenderCellColor({ params }) {
-  return <Typography variant="body2">red</Typography>;
+export function RenderCellCode({ params }) {
+  return <Typography variant="body2">{params.row.code}</Typography>;
 }
 
 export function RenderCellContract({ params }) {
@@ -178,7 +197,7 @@ export function RenderCellId({ params, href }) {
       <ListItemText
         primary={
           <Link component={RouterLink} href={href} color="inherit">
-            {Math.floor(Math.random() * 1000) + 1}
+            {params.row.id}
           </Link>
         }
         // secondary={params.row.category}

@@ -13,8 +13,8 @@ import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetProducts } from 'src/actions/product';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useGetWorkPrograms } from 'src/actions/work-programs';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -49,19 +49,19 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 export function WorkProgramsListView() {
   const confirmDialog = useBoolean();
 
-  const { products, productsLoading } = useGetProducts();
+  const { workPrograms, workProgramsLoading } = useGetWorkPrograms();
 
-  const [tableData, setTableData] = useState(products);
+  const [tableData, setTableData] = useState(workPrograms);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (products.length) {
-      setTableData(products);
+    if (workPrograms.length) {
+      setTableData(workPrograms);
     }
-  }, [products]);
+  }, [workPrograms]);
 
   const dataFiltered = tableData;
 
@@ -305,7 +305,7 @@ export function WorkProgramsListView() {
           heading="List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Ressources humaine', href: paths.dashboard.root },
+            // { name: 'Ressources humaine', href: paths.dashboard.root },
             { name: 'Programmes de travail' },
           ]}
           action={
@@ -354,7 +354,7 @@ export function WorkProgramsListView() {
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}
-            loading={productsLoading}
+            loading={workProgramsLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}

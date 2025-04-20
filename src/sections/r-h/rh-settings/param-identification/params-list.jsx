@@ -2,7 +2,24 @@ import { useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 
-import { createDirection } from 'src/actions/identification';
+import {
+  createBank,
+  createRung,
+  createGrade,
+  createSection,
+  createDivision,
+  createTeamType,
+  createDirection,
+  createDepartment,
+  createSubsidiary,
+  createNationality,
+  createPpeCategory,
+  createSalaryCategory,
+  createSalaryScaleLevel,
+  createLoanAssistancePattern,
+  createPpeComplianceStandard,
+  createCompensationLeavePattern,
+} from 'src/actions/identification';
 
 import { ParamItem } from './param-item';
 
@@ -34,7 +51,7 @@ export function JobList({ data }) {
         {/* entreprises */}
 
         {/* direction */}
-        <ParamItem title="Entreprises" data={[]} icon="mdi:direct-current" uuid="1" />
+        <ParamItem title="Entreprises" data={[]} icon="mdi:company" uuid="1" />
         <ParamItem
           title="Direction"
           data={data?.direction}
@@ -44,50 +61,126 @@ export function JobList({ data }) {
           onCreate={createDirection}
         />
         <ParamItem title="Ateliers" data={[]} icon="mdi:direct-current" uuid="1" />
-        <ParamItem title="Filiales" data={[]} icon="mdi:direct-current" uuid="4" canAdd />
-        <ParamItem title="Division" data={[]} icon="mdi:direct-current" uuid="5" canAdd />
-        <ParamItem title="Départements" data={[]} icon="mdi:direct-current" uuid="6" canAdd />
-        <ParamItem title="Sections" data={[]} icon="mdi:direct-current" uuid="7" canAdd />
-        <ParamItem title="Nationalités" data={[]} icon="mdi:direct-current" uuid="8" canAdd />
-        <ParamItem title="Catégories EPI" data={[]} icon="mdi:direct-current" uuid="9" canAdd />
+        <ParamItem
+          title="Filiales"
+          data={data?.subsidiary}
+          icon="mdi:direct-current"
+          uuid="4"
+          canAdd
+          onCreate={createSubsidiary}
+        />
+        <ParamItem
+          title="Division"
+          data={data?.division}
+          icon="mdi:direct-current"
+          uuid="5"
+          canAdd
+          onCreate={createDivision}
+        />
+        <ParamItem
+          title="Départements"
+          data={data?.department}
+          icon="mdi:building"
+          uuid="6"
+          canAdd
+          onCreate={createDepartment}
+        />
+        <ParamItem
+          title="Sections"
+          data={data?.section}
+          icon="mdi:view-list"
+          uuid="7"
+          canAdd
+          onCreate={createSection}
+        />
+        <ParamItem
+          title="Nationalités"
+          data={data?.nationality}
+          icon="mdi:flag"
+          uuid="8"
+          canAdd
+          onCreate={createNationality}
+        />
+        <ParamItem
+          title="Catégories EPI"
+          data={data?.ppe_category}
+          icon="mdi:shield-user"
+          uuid="9"
+          canAdd
+          onCreate={createPpeCategory}
+        />
         <ParamItem
           title="Normes de conformité EPI"
-          data={[]}
-          icon="mdi:direct-current"
+          data={data?.ppe_compliance_standard}
+          icon="mdi:user-box-outline"
           uuid="10"
           canAdd
+          onCreate={createPpeComplianceStandard}
         />
-        <ParamItem title="Grades" data={[]} icon="mdi:direct-current" uuid="11" canAdd />
-        <ParamItem title="Banques" data={[]} icon="mdi:direct-current" uuid="12" canAdd />
-        <ParamItem title="Type d'équipe" data={[]} icon="mdi:direct-current" uuid="13" canAdd />
+        <ParamItem
+          title="Grades"
+          data={data?.grade}
+          icon="mdi:chart-areaspline-variant"
+          uuid="11"
+          canAdd
+          onCreate={createGrade}
+        />
+        <ParamItem
+          title="Banques"
+          data={data?.bank}
+          icon="mdi:bank"
+          uuid="12"
+          canAdd
+          onCreate={createBank}
+        />
+        <ParamItem
+          title="Type d'équipe"
+          data={data?.team_type}
+          icon="mdi:users-group"
+          uuid="13"
+          canAdd
+          onCreate={createTeamType}
+        />
         <ParamItem
           title="Catégorie socioprofessionnelle"
-          data={[]}
-          icon="mdi:direct-current"
+          data={data?.salary_category}
+          icon="mdi:cabin-a-frame"
           uuid="14"
           canAdd
+          onCreate={createSalaryCategory}
         />
-        <ParamItem title="Échelons" data={[]} icon="mdi:direct-current" uuid="15" canAdd />
+        <ParamItem
+          title="Échelons"
+          data={data?.rung}
+          icon="mdi:format-list-numbered"
+          uuid="15"
+          canAdd
+          onCreate={createRung}
+        />
         <ParamItem
           title="Niveau de la grille salariale"
-          data={[]}
-          icon="mdi:direct-current"
+          data={data?.salary_scale_level}
+          icon="mdi:format-list-numbered"
           uuid="16"
           canAdd
+          onCreate={createSalaryScaleLevel}
         />
         <ParamItem
           title="Motifs - Sortie, Congé et Récupération"
-          data={[]}
-          icon="mdi:direct-current"
+          data={data?.compensation_leave_pattern}
+          icon="mdi:content-copy"
           uuid="17"
           canAdd
+          onCreate={createCompensationLeavePattern}
         />
+
         <ParamItem
           title="Motifs - Prêt et Aide"
-          data={[]}
-          icon="mdi:direct-current"
+          data={data?.loan_assistance_pattern}
+          icon="mdi:content-copy"
           uuid="18"
           canAdd
+          onCreate={createLoanAssistancePattern}
         />
       </Box>
       {/* {jobs.length > 8 && (

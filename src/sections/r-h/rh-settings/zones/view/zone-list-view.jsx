@@ -13,7 +13,7 @@ import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetProducts } from 'src/actions/product';
+import { useGetZones } from 'src/actions/zone';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { PRODUCT_STOCK_OPTIONS, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
 
@@ -26,10 +26,14 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import {
   RenderCellId,
+  RenderCellName,
+  RenderCellCode,
+  RenderCellSite,
   RenderCellColor,
-  RenderCellPublish,
-  RenderCellContract,
+  RenderCellSurface,
   RenderCellCreatedAt,
+  RenderCellSafetyRules,
+  RenderCellMainActivity,
 } from '../zone-table-row';
 
 // ----------------------------------------------------------------------
@@ -88,9 +92,9 @@ const FILTERS_OPTIONS = [
 export function ZoneListView() {
   const confirmDialog = useBoolean();
 
-  const { products, productsLoading } = useGetProducts();
+  const { zones, zonesLoading } = useGetZones();
 
-  const [tableData, setTableData] = useState(products);
+  const [tableData, setTableData] = useState(zones);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
@@ -98,10 +102,10 @@ export function ZoneListView() {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (products.length) {
-      setTableData(products);
+    if (zones.length) {
+      setTableData(zones);
     }
-  }, [products]);
+  }, [zones]);
   const handleReset = () => {
     setEditedFilters([]);
   };
@@ -150,7 +154,7 @@ export function ZoneListView() {
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellContract params={params} href={paths.dashboard.root} />
+        <RenderCellName params={params} href={paths.dashboard.root} />
       ),
     },
     {
@@ -161,7 +165,7 @@ export function ZoneListView() {
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPublish params={params} />,
+      renderCell: (params) => <RenderCellCode params={params} />,
     },
     {
       field: 'domain',
@@ -171,7 +175,7 @@ export function ZoneListView() {
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPublish params={params} />,
+      renderCell: (params) => <RenderCellSite params={params} />,
     },
     {
       field: 'color',
@@ -184,34 +188,34 @@ export function ZoneListView() {
       renderCell: (params) => <RenderCellColor params={params} />,
     },
     {
-      field: 'superficie',
+      field: 'surface',
       headerName: 'Superficie',
       flex: 1,
       width: 110,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPublish params={params} />,
+      renderCell: (params) => <RenderCellSurface params={params} />,
     },
     {
-      field: 'principale_act',
+      field: 'main_activity',
       headerName: 'Activité principale',
       flex: 1,
       width: 110,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPublish params={params} />,
+      renderCell: (params) => <RenderCellMainActivity params={params} />,
     },
     {
-      field: 'security',
+      field: 'safety_rules',
       headerName: 'Regles de sécurité',
       flex: 1,
       width: 110,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPublish params={params} />,
+      renderCell: (params) => <RenderCellSafetyRules params={params} />,
     },
     {
       field: 'createdAt',
@@ -297,7 +301,7 @@ export function ZoneListView() {
           heading="List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Ressources humaine', href: paths.dashboard.root },
+            // { name: 'Ressources humaine', href: paths.dashboard.root },
             { name: 'Zones' },
           ]}
           action={
@@ -358,7 +362,7 @@ export function ZoneListView() {
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}
-            loading={productsLoading}
+            loading={zonesLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}

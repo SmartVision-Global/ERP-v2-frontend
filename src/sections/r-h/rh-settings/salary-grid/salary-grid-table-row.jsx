@@ -30,13 +30,18 @@ export function RenderCellColor({ params }) {
   return <Typography variant="body2">red</Typography>;
 }
 
-export function RenderCellContract({ params }) {
+export function RenderCellBaseSalary({ params }) {
+  return <Typography variant="body2">{params.row.salary}</Typography>;
+}
+
+export function RenderCellCode({ params }) {
   return (
     <Label variant="soft" color={params.row.publish === 'published' ? 'info' : 'default'}>
-      Missions Principales
+      {params.row.code}
     </Label>
   );
 }
+
 export function RenderCellType({ params }) {
   return (
     <Label variant="soft" color="info">
@@ -112,7 +117,7 @@ export function RenderCellCreatedAt({ params }) {
 export function RenderCellDesignation({ params }) {
   return (
     <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
-      <span>Designation</span>
+      <span>{params.row.designation}</span>
     </Box>
   );
 }
@@ -205,7 +210,7 @@ export function RenderCellId({ params, href }) {
       <ListItemText
         primary={
           <Link component={RouterLink} href={href} color="inherit">
-            {Math.floor(Math.random() * 1000) + 1}
+            {params.row.id}
           </Link>
         }
         // secondary={params.row.category}

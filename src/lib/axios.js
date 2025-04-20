@@ -61,5 +61,36 @@ export const endpoints = {
   identification: {
     list: '/v1/hr/settings/identification',
     direction: '/v1/hr/settings/identification/direction',
+    subsidiary: '/v1/hr/settings/identification/subsidiary',
+    division: '/v1/hr/settings/identification/division',
+    bank: '/v1/hr/settings/identification/bank',
+    compensationLeavePattern: '/v1/hr/settings/identification/compensation_leave_pattern',
+    department: '/v1/hr/settings/identification/department',
+    rung: '/v1/hr/settings/identification/rung',
+    grade: '/v1/hr/settings/identification/grade',
+    loanAssistancePattern: '/v1/hr/settings/identification/loan_assistance_pattern',
+    nationality: '/v1/hr/settings/identification/nationality',
+    ppeCategory: '/v1/hr/settings/identification/ppe_category',
+    salaryCategory: '/v1/hr/settings/identification/salary_category',
+    ppeComplianceStandard: '/v1/hr/settings/identification/ppe_compliance_standard',
+    salaryScaleLevel: '/v1/hr/settings/identification/salary_scale_level',
+    section: '/v1/hr/settings/identification/section',
+    teamType: '/v1/hr/settings/identification/team_type',
   },
+  zone: '/v1/hr/settings/zones',
+  workPrograms: '/v1/hr/settings/work_programs',
+  deductionsCompensations: '/v1/hr/settings/deductions_compensations',
+
+  salaryGrid: '/v1/hr/settings/salary_grids',
+  rates: '/v1/hr/settings/rates',
+  agency: '/v1/hr/settings/agencies',
+
+  site: '/v1/settings/sites',
+  workshop: '/v1/settings/workshops',
+  machine: '/v1/settings/machines',
+  society: '/v1/settings/enterprises',
+  function: '/v1/hr/function/jobs',
+  personal: '/v1/hr/personal/personals',
+
+  // new:''
 };

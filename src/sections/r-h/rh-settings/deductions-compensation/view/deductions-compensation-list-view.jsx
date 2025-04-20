@@ -13,8 +13,8 @@ import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetProducts } from 'src/actions/product';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useGetDeductionsCompensations } from 'src/actions/deduction-conpensation';
 import {
   DEDUCTIONS_ABS_OPTIONS,
   DEDUCTIONS_TYPE_OPTIONS,
@@ -32,9 +32,9 @@ import {
   RenderCellId,
   RenderCellAbs,
   RenderCellType,
-  RenderCellPublish,
+  RenderCellCode,
+  RenderCellName,
   RenderCellPeriode,
-  RenderCellContract,
   RenderCellCategory,
   RenderCellCreatedAt,
   RenderCellCountBase,
@@ -120,9 +120,10 @@ const FILTERS_OPTIONS = [
 export function DeductionsCompensationListView() {
   const confirmDialog = useBoolean();
 
-  const { products, productsLoading } = useGetProducts();
+  const { deductionsCompensations, deductionsCompensationsLoading } =
+    useGetDeductionsCompensations();
 
-  const [tableData, setTableData] = useState(products);
+  const [tableData, setTableData] = useState(deductionsCompensations);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
@@ -130,10 +131,10 @@ export function DeductionsCompensationListView() {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (products.length) {
-      setTableData(products);
+    if (deductionsCompensations.length) {
+      setTableData(deductionsCompensations);
     }
-  }, [products]);
+  }, [deductionsCompensations]);
   const handleReset = () => {
     setEditedFilters([]);
   };
@@ -182,7 +183,7 @@ export function DeductionsCompensationListView() {
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellContract params={params} href={paths.dashboard.root} />
+        <RenderCellCode params={params} href={paths.dashboard.root} />
       ),
     },
     {
@@ -193,7 +194,7 @@ export function DeductionsCompensationListView() {
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPublish params={params} />,
+      renderCell: (params) => <RenderCellName params={params} />,
     },
     {
       field: 'type',
@@ -430,7 +431,7 @@ export function DeductionsCompensationListView() {
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}
-            loading={productsLoading}
+            loading={deductionsCompensationsLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}

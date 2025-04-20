@@ -4,9 +4,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
+import { Box, Card, Stack, Divider, CardHeader } from '@mui/material';
 
-import { USER_STATUS_OPTIONS, SALARY_ECHEL_OPTIONS, SALARY_CATEGORY_OPTIONS } from 'src/_mock';
+import { useGetLookups } from 'src/actions/lookups';
+import { createSalaryGrid } from 'src/actions/salary-grid';
 
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { FieldContainer } from 'src/components/form-validation-view';
@@ -17,18 +18,19 @@ import { NoCotisNoImposNewEditForm } from './no-cotis-no-impos-new-edit-form';
 
 export const NewProductSchema = zod.object({
   code: zod.string().min(1, { message: 'Name is required!' }),
-  base_salary: schemaHelper.nullableInput(
+  designation: zod.string().min(1, { message: 'Name is required!' }),
+
+  salary: schemaHelper.nullableInput(
     zod
       .number({ coerce: true })
       .min(1, { message: 'Quantity is required!' })
-      .max(99, { message: 'Quantity must be between 1 and 99' }),
+      .max(10000000, { message: 'Quantity must be between 1 and 99' }),
     // message for null value
     { message: 'Quantity is required!' }
   ),
-  category_socio: zod.string().min(1, { message: 'Name is required!' }),
-  echelle: zod.string().min(1, { message: 'Name is required!' }),
-  level: zod.string().min(1, { message: 'Name is required!' }),
-  observation: zod.string().min(1, { message: 'Name is required!' }),
+  salary_category_id: zod.string().min(1, { message: 'Name is required!' }),
+  rung_id: zod.string().min(1, { message: 'Name is required!' }),
+  salary_scale_level_id: zod.string().min(1, { message: 'Name is required!' }),
   cotis_impos_items: zod.array(
     zod.object({
       code: zod.string().min(1, { message: 'Title is required!' }),
@@ -40,9 +42,9 @@ export const NewProductSchema = zod.object({
     })
   ),
 
-  salary_position: zod.string().min(1, { message: 'Name is required!' }),
-  s_s_retenue: zod.string().min(1, { message: 'Name is required!' }),
-  salary_position_retenue: zod.string().min(1, { message: 'Name is required!' }),
+  salary_position: zod.string().optional(),
+  s_s_retenue: zod.string().optional(),
+  salary_position_retenue: zod.string().optional(),
   cotis_no_impos_items: zod.array(
     zod.object({
       code: zod.string().min(1, { message: 'Title is required!' }),
@@ -52,9 +54,9 @@ export const NewProductSchema = zod.object({
       // Not required
     })
   ),
-  salary_impos: zod.string().min(1, { message: 'Name is required!' }),
-  irg_retenue: zod.string().min(1, { message: 'Name is required!' }),
-  net_salary: zod.string().min(1, { message: 'Name is required!' }),
+  salary_impos: zod.string().optional(),
+  retenueIRG: zod.string().optional(),
+  net_salary: zod.string().optional(),
   no_cotis_no_impos_items: zod.array(
     zod.object({
       code: zod.string().min(1, { message: 'Title is required!' }),
@@ -64,24 +66,29 @@ export const NewProductSchema = zod.object({
       // Not required
     })
   ),
-  net_salary_payer: zod.string().min(1, { message: 'Name is required!' }),
+  net_salary_payer: zod.string().optional(),
 });
 
 export function SalaryGridNewEditForm({ currentProduct }) {
+  const { data: rungs } = useGetLookups('rungs');
+  const { data: salaryCategories } = useGetLookups('salary_categories');
+  const { data: salaryScaleLevels } = useGetLookups('salary_scale_levels');
+
   const defaultValues = {
     code: '',
-    base_salary: 0,
-    category_socio: '',
-    echelle: '',
-    level: '',
-    observation: '',
+    designation: '',
+
+    salary: 0,
+    salary_category_id: '',
+    rung_id: '',
+    salary_scale_level_id: '',
     cotis_impos_items: [],
     salary_position: '',
     s_s_retenue: '',
     salary_position_retenue: '',
     cotis_no_impos_items: 0,
     salary_impos: '',
-    irg_retenue: '',
+    retenueIRG: '0',
     net_salary: '',
     no_cotis_no_impos_items: 0,
     net_salary_payer: '',
@@ -95,23 +102,36 @@ export function SalaryGridNewEditForm({ currentProduct }) {
   });
 
   const {
+    // watch,
     reset,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
+  // const values=watch()
+
   const onSubmit = handleSubmit(async (data) => {
-    const updatedData = {
-      ...data,
-      // taxes: includeTaxes ? defaultValues.taxes : data.taxes,
-    };
+    // const updatedData = {
+    //   ...data,
+    //   // taxes: includeTaxes ? defaultValues.taxes : data.taxes,
+    // };
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
+      // await new Promise((resolve) => setTimeout(resolve, 500));
+      const newData = {
+        code: data.code,
+        designation: data.designation,
+        salary: data.salary,
+        rung_id: parseInt(data.rung_id),
+        salary_category_id: parseInt(data.salary_category_id),
+        salary_scale_level_id: parseInt(data.salary_scale_level_id),
+        retenueIRG: parseInt(data.retenueIRG),
+      };
+      await createSalaryGrid(newData);
+      // reset();
       // toast.success(currentProduct ? 'Update success!' : 'Create success!');
       // router.push(paths.dashboard.product.root);
-      console.info('DATA', updatedData);
+      console.info('DATA', newData);
     } catch (error) {
       console.error(error);
     }
@@ -134,38 +154,51 @@ export function SalaryGridNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <FieldContainer label="Salaire de base" sx={{ alignItems: 'center' }} direction="row">
-              <Field.NumberInput name="base_salary" />
+              <Field.NumberInput name="salary" />
             </FieldContainer>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="category_socio" label="Catégorie socioprofessionnelle" size="small">
+            <Field.Lookup
+              name="salary_category_id"
+              label="Catégorie socioprofessionnelle"
+              data={salaryCategories}
+            />
+            {/* <Field.Select
+              name="salary_category_id"
+              label="Catégorie socioprofessionnelle"
+              size="small"
+            >
               {SALARY_CATEGORY_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
               ))}
-            </Field.Select>
+            </Field.Select> */}
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="echelle" label="Echelons" size="small">
+            <Field.Lookup name="rung_id" label="Echelons" data={rungs} />
+
+            {/* <Field.Select name="rung_id" label="Echelons" size="small">
               {SALARY_ECHEL_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
               ))}
-            </Field.Select>
+            </Field.Select> */}
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="level" label="Niveau" size="small">
+            <Field.Lookup name="salary_scale_level_id" label="Niveau" data={salaryScaleLevels} />
+
+            {/* <Field.Select name="salary_scale_level_id" label="Niveau" size="small">
               {USER_STATUS_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
               ))}
-            </Field.Select>
+            </Field.Select> */}
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="observation" label="Observation" multiline rows={3} />
+            <Field.Text name="designation" label="Observation" multiline rows={3} />
           </Grid>
         </Grid>
       </Stack>
@@ -251,7 +284,7 @@ export function SalaryGridNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Text
-              name="irg_retenue"
+              name="retenueIRG"
               label="Retenue IRG"
               slotProps={{
                 input: {

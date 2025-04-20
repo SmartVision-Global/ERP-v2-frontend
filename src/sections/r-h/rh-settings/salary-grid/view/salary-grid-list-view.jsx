@@ -13,8 +13,8 @@ import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetProducts } from 'src/actions/product';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useGetSalaryGrids } from 'src/actions/salary-grid';
 import { SALARY_ECHEL_OPTIONS, SALARY_CATEGORY_OPTIONS } from 'src/_mock';
 
 import { toast } from 'src/components/snackbar';
@@ -27,11 +27,12 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import {
   RenderCellId,
   RenderCellIrg,
+  RenderCellCode,
   RenderCellLevel,
   RenderCellPublish,
   RenderCellEchelle,
-  RenderCellContract,
   RenderCellCreatedAt,
+  RenderCellBaseSalary,
   RenderCellDesignation,
   RenderCellCategorySocio,
 } from '../salary-grid-table-row';
@@ -101,9 +102,9 @@ const FILTERS_OPTIONS = [
 export function SalaryGridListView() {
   const confirmDialog = useBoolean();
 
-  const { products, productsLoading } = useGetProducts();
+  const { salaryGrids, salaryGridsLoading } = useGetSalaryGrids();
 
-  const [tableData, setTableData] = useState(products);
+  const [tableData, setTableData] = useState(salaryGrids);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
@@ -111,10 +112,10 @@ export function SalaryGridListView() {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (products.length) {
-      setTableData(products);
+    if (salaryGrids.length) {
+      setTableData(salaryGrids);
     }
-  }, [products]);
+  }, [salaryGrids]);
   const handleReset = () => {
     setEditedFilters([]);
   };
@@ -159,11 +160,11 @@ export function SalaryGridListView() {
       field: 'code',
       headerName: 'Code',
       flex: 1,
-      minWidth: 160,
+      minWidth: 320,
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellContract params={params} href={paths.dashboard.root} />
+        <RenderCellCode params={params} href={paths.dashboard.root} />
       ),
     },
     {
@@ -174,7 +175,7 @@ export function SalaryGridListView() {
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPublish params={params} />,
+      renderCell: (params) => <RenderCellBaseSalary params={params} />,
     },
     {
       field: 'designation',
@@ -430,7 +431,7 @@ export function SalaryGridListView() {
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}
-            loading={productsLoading}
+            loading={salaryGridsLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}

@@ -52,9 +52,10 @@ export function AddDivisionsDialog({ open, onClose, currentProduct, name, title,
       // await new Promise((resolve) => setTimeout(resolve, 500));
       await onCreate(updatedData);
       reset();
+      onClose();
       // toast.success(currentProduct ? 'Update success!' : 'Create success!');
       // router.push(paths.dashboard.product.root);
-      console.info('DATA', updatedData);
+      // console.info('DATA', updatedData);
     } catch (error) {
       console.error(error);
     }

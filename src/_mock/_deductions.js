@@ -1,10 +1,10 @@
 export const DEDUCTIONS_TYPE_OPTIONS = [
   {
-    value: 'retenues',
+    value: '1',
     label: 'Retenues',
   },
   {
-    value: 'indemnites',
+    value: '2',
     label: 'Indemnités',
   },
 ];

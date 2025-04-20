@@ -15,7 +15,7 @@ export function PersonnelCreateView() {
         heading="Ajouter personnel"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Ressource humain', href: paths.dashboard.rh.personal.root },
+          { name: 'Personnels', href: paths.dashboard.rh.personal.root },
           { name: 'Ajouter personnel' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

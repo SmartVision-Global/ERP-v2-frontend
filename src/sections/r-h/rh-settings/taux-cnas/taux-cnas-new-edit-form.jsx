@@ -6,24 +6,30 @@ import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Card, Stack, Divider, CardHeader } from '@mui/material';
 
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
+
+import { createRate } from 'src/actions/cnas-rate';
+
+import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { FieldContainer } from 'src/components/form-validation-view';
 
 export const NewTauxCnasSchema = zod.object({
-  code: zod.number().min(0, { message: 'Rate must be a positive number!' }),
-  lib: zod.string().min(1, { message: 'Category is required!' }),
+  code: zod.string().min(1, { message: 'Rate must be a positive number!' }),
+  wording: zod.string().min(1, { message: 'Category is required!' }),
   employer_rate: schemaHelper.nullableInput(
     zod
       .number({ coerce: true })
-      .min(1, { message: 'Quantity is required!' })
+      .min(0, { message: 'Quantity is required!' })
       .max(99, { message: 'Quantity must be between 1 and 99' }),
     // message for null value
     { message: 'Quantity is required!' }
   ),
-  salary_rate: schemaHelper.nullableInput(
+  employee_rate: schemaHelper.nullableInput(
     zod
       .number({ coerce: true })
-      .min(1, { message: 'Quantity is required!' })
+      .min(0, { message: 'Quantity is required!' })
       .max(99, { message: 'Quantity must be between 1 and 99' }),
     // message for null value
     { message: 'Quantity is required!' }
@@ -31,7 +37,7 @@ export const NewTauxCnasSchema = zod.object({
   fnpos: schemaHelper.nullableInput(
     zod
       .number({ coerce: true })
-      .min(1, { message: 'Quantity is required!' })
+      .min(0, { message: 'Quantity is required!' })
       .max(99, { message: 'Quantity must be between 1 and 99' }),
     // message for null value
     { message: 'Quantity is required!' }
@@ -39,11 +45,12 @@ export const NewTauxCnasSchema = zod.object({
 });
 
 export function TauxCnasNewEditForm({ currentTaux }) {
+  const router = useRouter();
   const defaultValues = {
     code: '',
-    lib: '',
+    wording: '',
     employer_rate: 0,
-    salary_rate: 0,
+    employee_rate: 0,
     fnpos: 0,
   };
 
@@ -61,8 +68,11 @@ export function TauxCnasNewEditForm({ currentTaux }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // await new Promise((resolve) => setTimeout(resolve, 500));
+      await createRate(data);
       reset();
+      toast.success(currentTaux ? 'Update success!' : 'Create success!');
+      router.push(paths.dashboard.rh.rhSettings.cnasRate);
       console.info('DATA', data);
     } catch (error) {
       console.error(error);
@@ -81,7 +91,7 @@ export function TauxCnasNewEditForm({ currentTaux }) {
             <Field.Text name="code" label="Code" />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="lib" label="Libelle" />
+            <Field.Text name="wording" label="Libelle" />
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
@@ -91,7 +101,7 @@ export function TauxCnasNewEditForm({ currentTaux }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <FieldContainer label="Taux Salarié" sx={{ alignItems: 'center' }} direction="column">
-              <Field.NumberInput name="salary_rate" />
+              <Field.NumberInput name="employee_rate" />
             </FieldContainer>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
