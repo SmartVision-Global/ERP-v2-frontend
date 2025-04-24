@@ -5,8 +5,8 @@ import ListItemText from '@mui/material/ListItemText';
 
 import { RouterLink } from 'src/routes/components';
 
-import { fDate } from 'src/utils/format-time';
 import { fCurrency } from 'src/utils/format-number';
+import { fDate, fTime } from 'src/utils/format-time';
 
 import { Label } from 'src/components/label';
 
@@ -21,7 +21,7 @@ export function RenderCellCode({ params }) {
 }
 
 export function RenderCellSite({ params }) {
-  return <Typography variant="body2">{params.row.site_id}</Typography>;
+  return <Typography variant="body2">{params.row.site?.name}</Typography>;
 }
 
 export function RenderCellColor({ params }) {
@@ -51,7 +51,7 @@ export function RenderCellSafetyRules({ params }) {
 
 export function RenderCellName({ params }) {
   return (
-    <Label variant="soft" color={params.row.publish === 'published' ? 'info' : 'default'}>
+    <Label variant="soft" color="default">
       {params.row.name}
     </Label>
   );
@@ -60,10 +60,10 @@ export function RenderCellName({ params }) {
 export function RenderCellCreatedAt({ params }) {
   return (
     <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
-      <span>{fDate(params.row.createdAt)}</span>
-      {/* <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
-        {fTime(params.row.createdAt)}
-      </Box> */}
+      <span>{fDate(params.row.created_at)}</span>
+      <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
+        {fTime(params.row.created_at)}
+      </Box>
     </Box>
   );
 }

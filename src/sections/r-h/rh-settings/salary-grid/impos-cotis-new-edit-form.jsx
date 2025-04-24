@@ -128,8 +128,6 @@ export function ImposCotisNewEditForm() {
   // };
   // const handleCellEditStop = useCallback(
   //   (params, event) => {
-  //     // eslint-disable-next-line no-debugger
-  //     debugger;
   //     event.defaultMuiPrevented = true;
   //     // Find the index of the item with the matching ID
   //     const index = fields.findIndex((field) => field.id === params.row.id);
@@ -206,26 +204,28 @@ export function ImposCotisNewEditForm() {
       </Stack>
 
       <Divider sx={{ my: 2, borderStyle: 'dashed' }} />
-
-      <ProductListDialog
-        title="Liste des produits"
-        open={openProductDialog}
-        onClose={handleCloseProductDialog}
-        // selected={(selectedId) => invoiceFrom?.id === selectedId}
-        selected={() => false}
-        onSelect={(address) => handleSelectProduct(address)}
-        list={PRODUCT_LIST}
-        action={
-          <IconButton
-            size="small"
-            // startIcon={<Iconify icon="mdi:close" />}
-            // sx={{ alignSelf: 'flex-end' }}
-            onClick={handleCloseProductDialog}
-          >
-            <Iconify icon="mdi:close" />
-          </IconButton>
-        }
-      />
+      {openProductDialog && (
+        <ProductListDialog
+          title="Liste des produits"
+          open={openProductDialog}
+          onClose={handleCloseProductDialog}
+          // selected={(selectedId) => invoiceFrom?.id === selectedId}
+          selected={() => false}
+          onSelect={(address) => handleSelectProduct(address)}
+          list={PRODUCT_LIST}
+          action={
+            <IconButton
+              size="small"
+              // startIcon={<Iconify icon="mdi:close" />}
+              // sx={{ alignSelf: 'flex-end' }}
+              onClick={handleCloseProductDialog}
+            >
+              <Iconify icon="mdi:close" />
+            </IconButton>
+          }
+          type="1"
+        />
+      )}
       <ConfirmDialog
         open={confirmDialog.value}
         onClose={confirmDialog.onFalse}

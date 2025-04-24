@@ -168,7 +168,7 @@ export function SiteListView() {
       field: 'address',
       headerName: 'Addresse',
       flex: 1,
-      width: 110,
+      minWidth: 280,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,

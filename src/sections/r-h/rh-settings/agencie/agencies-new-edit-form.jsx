@@ -9,7 +9,7 @@ import { Card, Stack, Divider, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { createAgency } from 'src/actions/agency';
+import { createAgency, updateAgency } from 'src/actions/agency';
 
 import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
@@ -18,8 +18,8 @@ export const NewTauxCnasSchema = zod.object({
   name: zod.string().min(1, { message: 'Rate must be a positive number!' }),
   address: zod.string().min(1, { message: 'Category is required!' }),
   employer_code: zod.string().min(1, { message: 'Category is required!' }),
-  username: zod.string().optional(),
-  password: zod.string().optional(),
+  username: zod.string().optional().nullable(),
+  password: zod.string().optional().nullable(),
 });
 
 export function AgenciesNewEditForm({ currentTaux }) {
@@ -47,7 +47,11 @@ export function AgenciesNewEditForm({ currentTaux }) {
   const onSubmit = handleSubmit(async (data) => {
     try {
       // await new Promise((resolve) => setTimeout(resolve, 500));
-      await createAgency(data);
+      if (currentTaux) {
+        await updateAgency(currentTaux.id, data);
+      } else {
+        await createAgency(data);
+      }
       reset();
       toast.success(currentTaux ? 'Update success!' : 'Create success!');
 

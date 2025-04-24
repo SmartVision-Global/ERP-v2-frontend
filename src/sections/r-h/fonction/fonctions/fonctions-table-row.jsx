@@ -21,6 +21,10 @@ export function RenderCellName({ params }) {
 }
 
 export function RenderCellSite({ params }) {
+  return <Typography variant="body2">{params.row.site?.name}</Typography>;
+}
+
+export function RenderCellSalaryGrid({ params }) {
   return <Typography variant="body2">{params.row.site_id}</Typography>;
 }
 
@@ -29,18 +33,16 @@ export function RenderCellAmount({ params }) {
 }
 export function RenderCellKeyPost({ params }) {
   return (
-    <Label variant="soft" color={params.row.publish === 'published' ? 'primary' : 'warning'}>
+    <Label variant="soft" color={params.row.key_post ? 'primary' : 'warning'}>
       {params.row.key_post ? 'Oui' : 'Nom'}
-      {/* {params.row.have_premium} */}
     </Label>
   );
 }
 
 export function RenderCellPresentPrime({ params }) {
   return (
-    <Label variant="soft" color={params.row.publish === 'published' ? 'primary' : 'warning'}>
+    <Label variant="soft" color={params.row.have_premium ? 'primary' : 'warning'}>
       {params.row.have_premium ? 'Oui' : 'Nom'}
-      {/* {params.row.have_premium} */}
     </Label>
   );
 }
@@ -84,7 +86,7 @@ export function RenderCellId({ params, href }) {
 }
 export function RenderCellStatus({ params }) {
   return (
-    <Label variant="soft" color={params.row.publish === 'published' ? 'warning' : 'warning'}>
+    <Label variant="soft" color={params.row.status === 1 ? 'warning' : 'error'}>
       {params.row.status === 1 ? 'En cours' : 'En cours'}
     </Label>
   );

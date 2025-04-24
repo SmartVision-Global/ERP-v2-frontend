@@ -143,8 +143,6 @@ export const DaysInput = forwardRef((props, ref) => {
 // ----------------------------------------------------------------------
 
 export function transformNumberOnChange(value, options) {
-  // eslint-disable-next-line no-debugger
-  debugger;
   const { min = 0, max = 9999 } = options ?? {};
 
   if (!value || value.trim() === '') {

@@ -96,15 +96,15 @@ export const COMMUN_DOCUMENT_TYPE_OPTIONS = [
 ];
 
 export const COMMUN_OVERDAYS_OPTIONS = [
-  { label: 'Jour supplémentaire +50%', value: 'Jour supplémentaire +50%' },
-  { label: 'Jour supplémentaire +75%', value: 'Jour supplémentaire +75%' },
-  { label: 'Jour supplémentaire +100%', value: 'Jour supplémentaire +100%' },
+  { label: 'Jour supplémentaire +50%', value: '1' },
+  { label: 'Jour supplémentaire +75%', value: '2' },
+  { label: 'Jour supplémentaire +100%', value: '3' },
 ];
 
 export const COMMUN_OVERIME_OPTIONS = [
-  { label: 'Heure supplémentaire +50%', value: 'Heure supplémentaire +50%' },
-  { label: 'Heure supplémentaire +75%', value: 'Heure supplémentaire +75%' },
-  { label: 'Heure supplémentaire +100%', value: 'Heure supplémentaire +100%' },
+  { label: 'Heure supplémentaire +50%', value: '1' },
+  { label: 'Heure supplémentaire +75%', value: '2' },
+  { label: 'Heure supplémentaire +100%', value: '3' },
 ];
 
 export const MONTHS = [

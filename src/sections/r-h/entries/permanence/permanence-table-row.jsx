@@ -5,14 +5,22 @@ import ListItemText from '@mui/material/ListItemText';
 
 import { RouterLink } from 'src/routes/components';
 
-import { fDate } from 'src/utils/format-time';
+import { fDate, fTime } from 'src/utils/format-time';
 
 import { Label } from 'src/components/label';
 
+import { STATUS_VALIDATION_OPTIONS } from '../leave-absence/leave-absence-table-row';
+
 // ----------------------------------------------------------------------
 
+const NATURE = {
+  1: 'Jour supplémentaire +50%',
+  2: 'Jour supplémentaire +75%',
+  3: 'Jour supplémentaire +100%',
+};
+
 export function RenderCellFullname({ params }) {
-  return <Typography variant="body2">LAMARA - HOSSEM</Typography>;
+  return <Typography variant="body2">{params.row?.personal?.name}</Typography>;
 }
 export function RenderCellType({ params }) {
   return (
@@ -23,7 +31,7 @@ export function RenderCellType({ params }) {
 }
 
 export function RenderCellSite({ params }) {
-  return <Typography variant="body2">ST-BERBES</Typography>;
+  return <Typography variant="body2">{params.row.site?.name}</Typography>;
 }
 export function RenderCellFunction({ params }) {
   return <Typography variant="body2">AGENT POLYVALENT NIV 2</Typography>;
@@ -38,39 +46,48 @@ export function RenderCellDays({ params }) {
 export function RenderCellStartAt({ params }) {
   return (
     <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
-      <span>{fDate(params.row.createdAt)}</span>
+      <span>{fDate(params.row.from_date)}</span>
     </Box>
   );
 }
 export function RenderCellEndAt({ params }) {
   return (
     <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
-      <span>{fDate(params.row.createdAt)}</span>
+      <span>{fDate(params.row.to_date)}</span>
     </Box>
   );
 }
 
 export function RenderCellNotes({ params }) {
-  return <Typography variant="body2">A TRAVAILLE LE JOUR DE SON REPOS SAMEDI</Typography>;
+  return <Typography variant="body2">{params.row.observation}</Typography>;
 }
 
 export function RenderCellStatus({ params }) {
   return (
     <Label variant="soft" color={params.row.publish === 'published' ? 'info' : 'default'}>
-      Valider
+      {STATUS_VALIDATION_OPTIONS[params.row.status]}
     </Label>
   );
 }
 export function RenderCellNature({ params }) {
   return (
-    <Label variant="soft" color={params.row.publish === 'published' ? 'info' : 'default'}>
-      50%
+    <Label
+      variant="soft"
+      color={
+        params.row.refund_nature === '1'
+          ? 'info'
+          : params.row.refund_nature === '1'
+            ? 'warning'
+            : 'default'
+      }
+    >
+      {NATURE[params.row.refund_nature]}
     </Label>
   );
 }
 
 export function RenderCellValideBy({ params }) {
-  return <Typography variant="body2">MEZNANE ILYES</Typography>;
+  return <Typography variant="body2">-</Typography>;
 }
 
 export function RenderCellExercice({ params }) {
@@ -80,10 +97,10 @@ export function RenderCellExercice({ params }) {
 export function RenderCellCreatedAt({ params }) {
   return (
     <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
-      <span>{fDate(params.row.createdAt)}</span>
-      {/* <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
-        {fTime(params.row.createdAt)}
-      </Box> */}
+      <span>{fDate(params.row.created_at)}</span>
+      <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
+        {fTime(params.row.created_at)}
+      </Box>
     </Box>
   );
 }
@@ -102,7 +119,7 @@ export function RenderCellId({ params, href }) {
       <ListItemText
         primary={
           <Link component={RouterLink} href={href} color="inherit">
-            {Math.floor(Math.random() * 1000) + 1}
+            {params.row.id}
           </Link>
         }
         // secondary={params.row.category}

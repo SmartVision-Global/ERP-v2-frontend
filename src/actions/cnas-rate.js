@@ -7,9 +7,9 @@ import axios, { fetcher, endpoints } from 'src/lib/axios';
 // ----------------------------------------------------------------------
 
 const swrOptions = {
-  revalidateIfStale: false,
-  revalidateOnFocus: false,
-  revalidateOnReconnect: false,
+  revalidateIfStale: true,
+  revalidateOnFocus: true,
+  revalidateOnReconnect: true,
 };
 
 const ENDPOINT = endpoints.rates;
@@ -37,19 +37,20 @@ export function useGetRates() {
 
 // ----------------------------------------------------------------------
 
-export function useGetRate(productId) {
-  const url = productId ? [endpoints.product.details, { params: { productId } }] : '';
+export function useGetRate(rateId) {
+  // const url = productId ? [endpoints.product.details, { params: { productId } }] : '';
+  const url = rateId ? [`${endpoints.rates}/${rateId}`] : '';
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({
-      product: data?.product,
-      productLoading: isLoading,
-      productError: error,
-      productValidating: isValidating,
+      rate: data?.data,
+      rateLoading: isLoading,
+      rateError: error,
+      rateValidating: isValidating,
     }),
-    [data?.product, error, isLoading, isValidating]
+    [data?.data, error, isLoading, isValidating]
   );
 
   return memoizedValue;
@@ -61,5 +62,14 @@ export async function createRate(data) {
    */
   // const data = { directionData };
   await axios.post(ENDPOINT, data);
+  //   mutate(endpoints.site);
+}
+
+export async function updateRate(id, data) {
+  /**
+   * Work on server
+   */
+  // const data = { directionData };
+  await axios.patch(`${ENDPOINT}/${id}`, data);
   //   mutate(endpoints.site);
 }

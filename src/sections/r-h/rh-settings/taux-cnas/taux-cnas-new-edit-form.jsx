@@ -9,7 +9,7 @@ import { Card, Stack, Divider, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { createRate } from 'src/actions/cnas-rate';
+import { createRate, updateRate } from 'src/actions/cnas-rate';
 
 import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
@@ -69,7 +69,11 @@ export function TauxCnasNewEditForm({ currentTaux }) {
   const onSubmit = handleSubmit(async (data) => {
     try {
       // await new Promise((resolve) => setTimeout(resolve, 500));
-      await createRate(data);
+      if (currentTaux) {
+        await updateRate(currentTaux.id, data);
+      } else {
+        await createRate(data);
+      }
       reset();
       toast.success(currentTaux ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.rh.rhSettings.cnasRate);

@@ -26,8 +26,8 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import {
   RenderCellId,
-  RenderCellSite,
-  RenderCellAddress,
+  RenderCellMachine,
+  RenderCellWorkshop,
   RenderCellCreatedAt,
   RenderCellDesignation,
 } from '../machine-table-row';
@@ -150,7 +150,7 @@ export function MachineListView() {
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellSite params={params} href={paths.dashboard.root} />
+        <RenderCellMachine params={params} href={paths.dashboard.root} />
       ),
     },
     {
@@ -164,15 +164,25 @@ export function MachineListView() {
       renderCell: (params) => <RenderCellDesignation params={params} />,
     },
     {
-      field: 'address',
-      headerName: 'Addresse',
+      field: 'workshop',
+      headerName: 'Atelier',
       flex: 1,
       width: 110,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellAddress params={params} />,
+      renderCell: (params) => <RenderCellWorkshop params={params} />,
     },
+    // {
+    //   field: 'address',
+    //   headerName: 'Addresse',
+    //   flex: 1,
+    //   width: 110,
+    //   type: 'singleSelect',
+    //   editable: true,
+    //   valueOptions: SEX_OPTIONS,
+    //   renderCell: (params) => <RenderCellAddress params={params} />,
+    // },
     {
       field: 'createdAt',
       headerName: 'Date de création',

@@ -7,15 +7,15 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import { TextField, FormControl, InputAdornment } from '@mui/material';
-import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { TASK_NATURE_OPTIONS } from 'src/_mock';
-import { useGetProducts } from 'src/actions/product';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useGetDutiesResponsibilities } from 'src/actions/task';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -26,8 +26,8 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import {
   RenderCellId,
-  RenderCellPublish,
-  RenderCellContract,
+  RenderCellLib,
+  RenderCellNature,
   RenderCellCreatedAt,
 } from '../task-table-row';
 
@@ -58,9 +58,9 @@ const FILTERS_OPTIONS = [
 export function TaskRespListView() {
   const confirmDialog = useBoolean();
 
-  const { products, productsLoading } = useGetProducts();
+  const { dutiesResponsibilities, dutiesResponsibilitiesLoading } = useGetDutiesResponsibilities();
 
-  const [tableData, setTableData] = useState(products);
+  const [tableData, setTableData] = useState(dutiesResponsibilities);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
@@ -68,10 +68,10 @@ export function TaskRespListView() {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (products.length) {
-      setTableData(products);
+    if (dutiesResponsibilities.length) {
+      setTableData(dutiesResponsibilities);
     }
-  }, [products]);
+  }, [dutiesResponsibilities]);
   const handleReset = () => {
     setEditedFilters([]);
   };
@@ -102,10 +102,8 @@ export function TaskRespListView() {
     {
       field: 'id',
       headerName: 'ID',
-      //   flex: 0.5,
       flex: 1,
-
-      width: 100,
+      minWidth: 50,
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
@@ -113,25 +111,25 @@ export function TaskRespListView() {
       ),
     },
     {
-      field: 'nature',
+      field: 'type',
       headerName: 'Nature',
       flex: 1,
       minWidth: 160,
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellContract params={params} href={paths.dashboard.root} />
+        <RenderCellNature params={params} href={paths.dashboard.root} />
       ),
     },
     {
-      field: 'sex',
+      field: 'label',
       headerName: 'Libellé en francais',
       flex: 1,
       width: 110,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPublish params={params} />,
+      renderCell: (params) => <RenderCellLib params={params} />,
     },
     {
       field: 'createdAt',
@@ -155,27 +153,27 @@ export function TaskRespListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => [
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
-          label="View"
-          // href={paths.dashboard.product.details(params.row.id)}
-          href={paths.dashboard.root}
-        />,
+        // <GridActionsLinkItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:eye-bold" />}
+        //   label="View"
+        //   // href={paths.dashboard.product.details(params.row.id)}
+        //   href={paths.dashboard.root}
+        // />,
         <GridActionsLinkItem
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}
           label="Edit"
           // href={paths.dashboard.product.edit(params.row.id)}
-          href={paths.dashboard.root}
+          href={paths.dashboard.rh.fonction.editTask(params.row.id)}
         />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-          label="Delete"
-          onClick={() => handleDeleteRow(params.row.id)}
-          sx={{ color: 'error.main' }}
-        />,
+        // <GridActionsCellItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:trash-bin-trash-bold" />}
+        //   label="Delete"
+        //   onClick={() => handleDeleteRow(params.row.id)}
+        //   sx={{ color: 'error.main' }}
+        // />,
       ],
     },
   ];
@@ -217,7 +215,7 @@ export function TaskRespListView() {
           heading="List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Ressources humaine', href: paths.dashboard.root },
+            // { name: 'Ressources humaine', href: paths.dashboard.root },
             { name: 'Tâche et responsabilité' },
           ]}
           action={
@@ -278,7 +276,7 @@ export function TaskRespListView() {
             disableColumnMenu
             rows={dataFiltered}
             columns={columns}
-            loading={productsLoading}
+            loading={dutiesResponsibilitiesLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}

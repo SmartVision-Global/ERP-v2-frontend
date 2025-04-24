@@ -7,25 +7,33 @@ import LinearProgress from '@mui/material/LinearProgress';
 
 import { RouterLink } from 'src/routes/components';
 
-import { fDate } from 'src/utils/format-time';
 import { fCurrency } from 'src/utils/format-number';
+import { fDate, fTime } from 'src/utils/format-time';
 
 import { Label } from 'src/components/label';
 
 // ----------------------------------------------------------------------
 
+const NATURE = {
+  1: 'Mission principales',
+  2: 'Actes de fonction',
+  3: 'Tache Principale',
+  4: 'Tache Secondaire',
+  5: 'Responsabilité',
+};
+
 export function RenderCellPrice({ params }) {
   return fCurrency(params.row.price);
 }
 
-export function RenderCellPublish({ params }) {
-  return <Typography>Missions Principales</Typography>;
+export function RenderCellLib({ params }) {
+  return <Typography>{params.row.label?.fr}</Typography>;
 }
 
-export function RenderCellContract({ params }) {
+export function RenderCellNature({ params }) {
   return (
     <Label variant="soft" color={params.row.publish === 'published' ? 'info' : 'default'}>
-      Missions Principales
+      {NATURE[params.row.type]}
     </Label>
   );
 }
@@ -33,10 +41,10 @@ export function RenderCellContract({ params }) {
 export function RenderCellCreatedAt({ params }) {
   return (
     <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
-      <span>{fDate(params.row.createdAt)}</span>
-      {/* <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
-        {fTime(params.row.createdAt)}
-      </Box> */}
+      <span>{fDate(params.row.created_at)}</span>
+      <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
+        {fTime(params.row.created_at)}
+      </Box>
     </Box>
   );
 }
@@ -107,7 +115,7 @@ export function RenderCellId({ params, href }) {
       <ListItemText
         primary={
           <Link component={RouterLink} href={href} color="inherit">
-            {Math.floor(Math.random() * 1000) + 1}
+            {params.row.id}
           </Link>
         }
         // secondary={params.row.category}

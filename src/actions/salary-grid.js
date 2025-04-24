@@ -36,25 +36,23 @@ export function useGetSalaryGrids() {
 }
 
 // ----------------------------------------------------------------------
-
-export function useGetSalaryGrid(productId) {
-  const url = productId ? [endpoints.product.details, { params: { productId } }] : '';
+export function useGetSalaryGrid(salaryGridId) {
+  const url = salaryGridId ? [`${endpoints.salaryGrid}/${salaryGridId}`] : '';
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({
-      product: data?.product,
-      productLoading: isLoading,
-      productError: error,
-      productValidating: isValidating,
+      salaryGrid: data?.data,
+      salaryGridLoading: isLoading,
+      salaryGridError: error,
+      salaryGridValidating: isValidating,
     }),
-    [data?.product, error, isLoading, isValidating]
+    [data?.data, error, isLoading, isValidating]
   );
 
   return memoizedValue;
 }
-
 export async function createSalaryGrid(data) {
   /**
    * Work on server

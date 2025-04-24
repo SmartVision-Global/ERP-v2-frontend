@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Box, Card, Stack, Divider, CardHeader } from '@mui/material';
 
-import { useGetLookups } from 'src/actions/lookups';
+import { useMultiLookups } from 'src/actions/lookups';
 import { createSalaryGrid } from 'src/actions/salary-grid';
 
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
@@ -70,10 +70,15 @@ export const NewProductSchema = zod.object({
 });
 
 export function SalaryGridNewEditForm({ currentProduct }) {
-  const { data: rungs } = useGetLookups('rungs');
-  const { data: salaryCategories } = useGetLookups('salary_categories');
-  const { data: salaryScaleLevels } = useGetLookups('salary_scale_levels');
+  const { dataLookups } = useMultiLookups([
+    { entity: 'rungs', url: 'hr/lookups/identification/rung' },
+    { entity: 'salaryCategories', url: 'hr/lookups/identification/salary_category' },
+    { entity: 'salaryScaleLevels', url: 'hr/lookups/identification/salary_scale_level' },
+  ]);
 
+  const rungs = dataLookups.rungs;
+  const salaryCategories = dataLookups.salaryCategories;
+  const salaryScaleLevels = dataLookups.salaryScaleLevels;
   const defaultValues = {
     code: '',
     designation: '',

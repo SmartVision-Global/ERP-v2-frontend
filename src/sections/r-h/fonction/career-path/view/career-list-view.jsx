@@ -7,16 +7,16 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import { TextField, FormControl, InputAdornment } from '@mui/material';
-import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { CAREER_TYPE_OPTIONS } from 'src/_mock';
-import { useGetProducts } from 'src/actions/product';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { COMMUN_OUI_NON_OPTIONS } from 'src/_mock/_commun';
+import { useGetCareerKnowledges } from 'src/actions/knowledge-career';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -27,9 +27,12 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import {
   RenderCellId,
-  RenderCellPublish,
-  RenderCellContract,
+  RenderCellLib,
+  RenderCellType,
   RenderCellCreatedAt,
+  RenderCellSpecialityFr,
+  RenderCellDiplomaExist,
+  RenderCellSpecialityExist,
 } from '../career-table-row';
 
 // ----------------------------------------------------------------------
@@ -75,9 +78,9 @@ const FILTERS_OPTIONS = [
 export function CareerListView() {
   const confirmDialog = useBoolean();
 
-  const { products, productsLoading } = useGetProducts();
+  const { careerKnowledges, careerKnowledgesLoading } = useGetCareerKnowledges();
 
-  const [tableData, setTableData] = useState(products);
+  const [tableData, setTableData] = useState(careerKnowledges);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
@@ -85,10 +88,10 @@ export function CareerListView() {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (products.length) {
-      setTableData(products);
+    if (careerKnowledges.length) {
+      setTableData(careerKnowledges);
     }
-  }, [products]);
+  }, [careerKnowledges]);
   const handleReset = () => {
     setEditedFilters([]);
   };
@@ -133,48 +136,58 @@ export function CareerListView() {
       field: 'type',
       headerName: 'Type',
       flex: 1,
-      minWidth: 160,
+      minWidth: 260,
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellContract params={params} href={paths.dashboard.root} />
+        <RenderCellType params={params} href={paths.dashboard.root} />
       ),
     },
     {
       field: 'lib',
       headerName: 'Libellé',
       flex: 1,
-      width: 110,
+      minWidth: 210,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPublish params={params} />,
+      renderCell: (params) => <RenderCellLib params={params} />,
     },
     {
-      field: 'domain',
-      headerName: 'Spécialité en francais',
+      field: 'specialty_exist',
+      headerName: 'Spécialité á combler',
       flex: 1,
-      width: 110,
+      minWidth: 180,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPublish params={params} />,
+      renderCell: (params) => <RenderCellSpecialityExist params={params} />,
+    },
+    {
+      field: 'specialty',
+      headerName: 'Spécialité en francais',
+      flex: 1,
+      minWidth: 180,
+      type: 'singleSelect',
+      editable: true,
+      valueOptions: SEX_OPTIONS,
+      renderCell: (params) => <RenderCellSpecialityFr params={params} />,
     },
     {
       field: 'diploma',
       headerName: 'Diplome a télécharger',
       flex: 1,
-      width: 110,
+      minWidth: 180,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPublish params={params} />,
+      renderCell: (params) => <RenderCellDiplomaExist params={params} />,
     },
     {
       field: 'createdAt',
       headerName: 'Date de création',
       flex: 1,
-      width: 110,
+      minWidth: 210,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
@@ -192,27 +205,27 @@ export function CareerListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => [
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
-          label="View"
-          // href={paths.dashboard.product.details(params.row.id)}
-          href={paths.dashboard.root}
-        />,
+        // <GridActionsLinkItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:eye-bold" />}
+        //   label="View"
+        //   // href={paths.dashboard.product.details(params.row.id)}
+        //   href={paths.dashboard.root}
+        // />,
         <GridActionsLinkItem
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}
           label="Edit"
           // href={paths.dashboard.product.edit(params.row.id)}
-          href={paths.dashboard.root}
+          href={paths.dashboard.rh.fonction.editCarrerPath(params.row.id)}
         />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-          label="Delete"
-          onClick={() => handleDeleteRow(params.row.id)}
-          sx={{ color: 'error.main' }}
-        />,
+        // <GridActionsCellItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:trash-bin-trash-bold" />}
+        //   label="Delete"
+        //   onClick={() => handleDeleteRow(params.row.id)}
+        //   sx={{ color: 'error.main' }}
+        // />,
       ],
     },
   ];
@@ -315,7 +328,7 @@ export function CareerListView() {
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}
-            loading={productsLoading}
+            loading={careerKnowledgesLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}

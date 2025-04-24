@@ -13,8 +13,8 @@ import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetProducts } from 'src/actions/product';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useGetPermanencies } from 'src/actions/permanence';
 import {
   ACTIF_NAMES,
   PRODUCT_SITE_OPTIONS,
@@ -143,9 +143,9 @@ const FILTERS_OPTIONS = [
 export function PermanenceListView() {
   const confirmDialog = useBoolean();
 
-  const { products, productsLoading } = useGetProducts();
+  const { permanencies, permanenciesLoading } = useGetPermanencies();
 
-  const [tableData, setTableData] = useState(products);
+  const [tableData, setTableData] = useState(permanencies);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
@@ -153,10 +153,10 @@ export function PermanenceListView() {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (products.length) {
-      setTableData(products);
+    if (permanencies.length) {
+      setTableData(permanencies);
     }
-  }, [products]);
+  }, [permanencies]);
   const handleReset = () => {
     setEditedFilters([]);
   };
@@ -249,7 +249,7 @@ export function PermanenceListView() {
       headerName: 'Nature',
       //   flex: 0.5,
       flex: 1,
-      minWidth: 100,
+      minWidth: 220,
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
@@ -474,7 +474,7 @@ export function PermanenceListView() {
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}
-            loading={productsLoading}
+            loading={permanenciesLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}

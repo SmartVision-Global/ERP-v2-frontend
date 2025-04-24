@@ -8,7 +8,7 @@ import { TaskCreateView } from 'src/sections/r-h/fonction/task-responsabilities/
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Create a new personnel | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `Ajouter Tâche et responsabilité | Dashboard - ${CONFIG.appName}` };
 
 export default function Page() {
   return (

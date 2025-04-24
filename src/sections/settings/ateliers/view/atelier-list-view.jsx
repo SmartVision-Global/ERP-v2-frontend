@@ -144,7 +144,7 @@ export function AtelierListView() {
       ),
     },
     {
-      field: 'name',
+      field: 'site',
       headerName: 'Site',
       flex: 1,
       minWidth: 160,

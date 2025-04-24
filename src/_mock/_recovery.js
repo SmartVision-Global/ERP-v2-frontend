@@ -4,6 +4,6 @@ export const RECOVERY_NATURE_OPTIONS = [
 ];
 
 export const RECOVERY_TYPE_OPTIONS = [
-  { label: 'Permanence - jours supplémentaires', value: 'Permanence - jours supplémentaires' },
-  { label: 'Heures supplémentaires', value: 'heures supplémentaires' },
+  { label: 'Permanence - jours supplémentaires', value: '1' },
+  { label: 'Heures supplémentaires', value: '2' },
 ];

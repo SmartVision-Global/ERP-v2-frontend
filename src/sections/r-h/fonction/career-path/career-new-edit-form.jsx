@@ -5,8 +5,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { LoadingButton } from '@mui/lab';
 import { Box, Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 
-import { CAREER_TYPE_OPTIONS } from 'src/_mock';
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
 
+import { CAREER_TYPE_OPTIONS } from 'src/_mock';
+import { createCareerKnowledge, updateCareerKnowledge } from 'src/actions/knowledge-career';
+
+import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 
 export const NewProductSchema = zod.object({
@@ -14,43 +19,92 @@ export const NewProductSchema = zod.object({
   libFr: zod.string().min(1, { message: 'Name is required!' }),
   libAr: zod.string().min(1, { message: 'Name is required!' }),
   libEn: zod.string().min(1, { message: 'Name is required!' }),
-  domain: zod.boolean(),
-  diploma: zod.boolean(),
+  specialty_exist: zod.boolean(),
+  diploma_required: zod.boolean(),
+  specialtyFr: zod.string().optional(),
+  specialtyAr: zod.string().optional(),
+  specialtyEn: zod.string().optional(),
 });
 
 export function CareerNewEditForm({ currentProduct }) {
+  const router = useRouter();
   const defaultValues = {
-    nature: '',
+    type: '',
     libFr: '',
     libAr: '',
     libEn: '',
-    domain: false,
-    diploma: false,
+    specialty_exist: false,
+    diploma_required: false,
+    specialtyFr: '',
+    specialtyAr: '',
+    specialtyEn: '',
   };
 
   const methods = useForm({
     resolver: zodResolver(NewProductSchema),
     defaultValues,
-    values: currentProduct,
+    values: {
+      type: currentProduct?.type,
+      libFr: currentProduct?.label?.fr,
+      libAr: currentProduct?.label?.ar,
+      libEn: currentProduct?.label?.en,
+      specialty_exist: currentProduct?.specialty_exist || false,
+      diploma_required: currentProduct?.diploma_required || false,
+      specialtyFr: currentProduct?.specialty_exist ? currentProduct?.specialty.fr : '',
+      specialtyAr: currentProduct?.specialty_exist ? currentProduct?.specialty.ar : '',
+      specialtyEn: currentProduct?.specialty_exist ? currentProduct?.specialty.en : '',
+    },
   });
 
   const {
+    watch,
     reset,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = methods;
+  const values = watch();
+  console.log('err', errors);
 
   const onSubmit = handleSubmit(async (data) => {
-    const updatedData = {
-      ...data,
+    let updatedData = {
+      // ...data,
+      type: data.type,
+      label: {
+        ar: data.libAr,
+        fr: data.libFr,
+        en: data.libEn,
+      },
+      specialty_exist: data.specialty_exist,
+      diploma_required: data.diploma_required,
+      // specialty: {
+      //   ar: data?.specialtyAr || '',
+      //   fr: data?.specialtyFr || '',
+      //   en: data?.specialtyEn || '',
+      // },
+
       // taxes: includeTaxes ? defaultValues.taxes : data.taxes,
     };
+    if (data.specialty_exist) {
+      updatedData = {
+        ...updatedData,
+        specialty: {
+          ar: data?.specialtyAr || '',
+          fr: data?.specialtyFr || '',
+          en: data?.specialtyEn || '',
+        },
+      };
+    }
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
-      // toast.success(currentProduct ? 'Update success!' : 'Create success!');
-      // router.push(paths.dashboard.product.root);
+      // await new Promise((resolve) => setTimeout(resolve, 500));
+      if (currentProduct) {
+        await updateCareerKnowledge(currentProduct?.id, updatedData);
+      } else {
+        await createCareerKnowledge(updatedData);
+      }
+      // reset();
+      toast.success(currentProduct ? 'Update success!' : 'Create success!');
+      router.push(paths.dashboard.rh.fonction.careerPath);
       console.info('DATA', updatedData);
     } catch (error) {
       console.error(error);
@@ -68,7 +122,7 @@ export function CareerNewEditForm({ currentProduct }) {
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Field.Select name="nature" label="Nature" size="small">
+        <Field.Select name="type" label="Nature" size="small">
           {CAREER_TYPE_OPTIONS.map((status) => (
             <MenuItem key={status.value} value={status.value}>
               {status.label}
@@ -80,20 +134,33 @@ export function CareerNewEditForm({ currentProduct }) {
         <Field.Text name="libEn" label="Libellé en english" multiline rows={3} />
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={3}>
           <Field.Switch
-            name="domain"
+            name="specialty_exist"
             labelPlacement="start"
             label="Existe une spécialité"
             // sx={{ mt: 5, justidyContent: 'space-between' }}
             sx={{ display: 'flex', justifyContent: 'space-between' }}
           />
           <Field.Switch
-            name="diploma"
+            name="diploma_required"
             labelPlacement="start"
             label="il y a un diplôme à télécharger"
             // sx={{ mt: 5, justidyContent: 'space-between' }}
             sx={{ display: 'flex', justifyContent: 'space-between' }}
           />
         </Stack>
+        {values.specialty_exist && (
+          <>
+            <Field.Text name="specialtyFr" label="Spécialité en français" multiline rows={3} />
+            <Field.Text
+              name="specialtyAr"
+              label="Spécialité en arabe"
+              multiline
+              rows={3}
+              dir="rtl"
+            />
+            <Field.Text name="specialtyEn" label="Spécialité en english" multiline rows={3} />
+          </>
+        )}
       </Stack>
     </Card>
   );

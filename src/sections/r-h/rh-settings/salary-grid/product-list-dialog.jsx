@@ -9,6 +9,8 @@ import { MenuItem, ListItemIcon } from '@mui/material';
 import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import InputAdornment from '@mui/material/InputAdornment';
 
+import { useGetDeductionsCompensationsByContributoryImposable } from 'src/actions/deduction-conpensation';
+
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
@@ -28,7 +30,9 @@ export function ProductListDialog({
   selected,
   onSelect,
   title = 'Address book',
+  type,
 }) {
+  const { deductionsCompensations } = useGetDeductionsCompensationsByContributoryImposable(type);
   const [searchAddress, setSearchAddress] = useState('');
   const [selectedRowIds, setSelectedRowIds] = useState([]);
 

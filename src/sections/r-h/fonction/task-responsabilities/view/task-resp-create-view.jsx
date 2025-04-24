@@ -15,7 +15,7 @@ export function TaskCreateView() {
         heading="Create a new tache"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Ressource humain', href: paths.dashboard.rh.personal },
+          { name: 'Tâches et responsabilités', href: paths.dashboard.rh.fonction.taskResp },
           { name: 'Ajouter' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

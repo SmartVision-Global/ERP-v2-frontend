@@ -34,6 +34,9 @@ const PageRhFonctionTaskList = lazy(
   () => import('src/pages/dashboard/r-h/fonction/task-resp/list')
 );
 const PageRhFonctionTaskNew = lazy(() => import('src/pages/dashboard/r-h/fonction/task-resp/new'));
+const PageRhFonctionTaskEdit = lazy(
+  () => import('src/pages/dashboard/r-h/fonction/task-resp/edit')
+);
 
 const PageRhFonctionCareerPathList = lazy(
   () => import('src/pages/dashboard/r-h/fonction/career-path/list')
@@ -42,11 +45,19 @@ const PageRhFonctionCareerPathNew = lazy(
   () => import('src/pages/dashboard/r-h/fonction/career-path/new')
 );
 
+const PageRhFonctionCareerPathEdit = lazy(
+  () => import('src/pages/dashboard/r-h/fonction/career-path/edit')
+);
+
 const PageRhFonctionFonctionsList = lazy(
   () => import('src/pages/dashboard/r-h/fonction/fonctions/list')
 );
 const PageRhFonctionFonctionsNew = lazy(
   () => import('src/pages/dashboard/r-h/fonction/fonctions/new')
+);
+
+const PageRhFonctionFonctionsEdit = lazy(
+  () => import('src/pages/dashboard/r-h/fonction/fonctions/edit')
 );
 
 // rh settings
@@ -63,11 +74,19 @@ const PageRhSettingsZonesList = lazy(
 );
 const PageRhSettingsZonesNew = lazy(() => import('src/pages/dashboard/r-h/rh-settings/zones/new'));
 
+const PageRhSettingsZonesEdit = lazy(
+  () => import('src/pages/dashboard/r-h/rh-settings/zones/edit')
+);
+
 const PageRhSettingsJobProgramsList = lazy(
   () => import('src/pages/dashboard/r-h/rh-settings/programmes-travail/list')
 );
 const PageRhSettingsJobProgramsNew = lazy(
   () => import('src/pages/dashboard/r-h/rh-settings/programmes-travail/new')
+);
+
+const PageRhSettingsJobProgramsEdit = lazy(
+  () => import('src/pages/dashboard/r-h/rh-settings/programmes-travail/edit')
 );
 
 const PageRhSettingsDeductionsCompensationList = lazy(
@@ -77,11 +96,19 @@ const PageRhSettingsDeductionsCompensationNew = lazy(
   () => import('src/pages/dashboard/r-h/rh-settings/retenue-indemnite/new')
 );
 
+const PageRhSettingsDeductionsCompensationEdit = lazy(
+  () => import('src/pages/dashboard/r-h/rh-settings/retenue-indemnite/edit')
+);
+
 const PageRhSettingsSalaryGridList = lazy(
   () => import('src/pages/dashboard/r-h/rh-settings/grille-salaire/list')
 );
 const PageRhSettingsSalaryGridNew = lazy(
   () => import('src/pages/dashboard/r-h/rh-settings/grille-salaire/new')
+);
+
+const PageRhSettingsSalaryGridEdit = lazy(
+  () => import('src/pages/dashboard/r-h/rh-settings/grille-salaire/edit')
 );
 
 const PageRhSettingsCnasRateList = lazy(
@@ -91,11 +118,19 @@ const PageRhSettingsCnasRateNew = lazy(
   () => import('src/pages/dashboard/r-h/rh-settings/taux-cnas/new')
 );
 
+const PageRhSettingsCnasRateEdit = lazy(
+  () => import('src/pages/dashboard/r-h/rh-settings/taux-cnas/edit')
+);
+
 const PageRhSettingsAgenciesList = lazy(
   () => import('src/pages/dashboard/r-h/rh-settings/agences/list')
 );
 const PageRhSettingsAgenciesNew = lazy(
   () => import('src/pages/dashboard/r-h/rh-settings/agences/new')
+);
+
+const PageRhSettingsAgenciesEdit = lazy(
+  () => import('src/pages/dashboard/r-h/rh-settings/agences/edit')
 );
 
 // ----------------------------------------------------------------------
@@ -113,11 +148,16 @@ const PageRhDemandePretAgenciesNew = lazy(
 const PageRhDemandeAideAgenciesNew = lazy(
   () => import('src/pages/dashboard/r-h/demandes/sortie/list')
 );
+
+// entries
 const PageRhEntriesSocialLoan = lazy(
   () => import('src/pages/dashboard/r-h/entries/social-loan/list')
 );
 const PageRhEntriesSocialLoanNew = lazy(
   () => import('src/pages/dashboard/r-h/entries/social-loan/new')
+);
+const PageRhEntriesSocialLoanEdit = lazy(
+  () => import('src/pages/dashboard/r-h/entries/social-loan/edit')
 );
 
 const PageRhEntriesLeaveAbsence = lazy(
@@ -126,6 +166,11 @@ const PageRhEntriesLeaveAbsence = lazy(
 const PageRhEntriesLeaveAbsenceNew = lazy(
   () => import('src/pages/dashboard/r-h/entries/leave-absence/new')
 );
+
+const PageRhEntriesLeaveAbsenceEdit = lazy(
+  () => import('src/pages/dashboard/r-h/entries/leave-absence/edit')
+);
+
 const PageRhEntriesPermanence = lazy(
   () => import('src/pages/dashboard/r-h/entries/permanence/list')
 );
@@ -133,11 +178,21 @@ const PageRhEntriesPermanenceNew = lazy(
   () => import('src/pages/dashboard/r-h/entries/permanence/new')
 );
 
+const PageRhEntriesPermanenceEdit = lazy(
+  () => import('src/pages/dashboard/r-h/entries/permanence/edit')
+);
+
 const PageRhEntriesOvertime = lazy(() => import('src/pages/dashboard/r-h/entries/overtime/list'));
 const PageRhEntriesOvertimeNew = lazy(() => import('src/pages/dashboard/r-h/entries/overtime/new'));
+const PageRhEntriesOvertimeEdit = lazy(
+  () => import('src/pages/dashboard/r-h/entries/overtime/edit')
+);
 
 const PageRhEntriesRecovery = lazy(() => import('src/pages/dashboard/r-h/entries/recovery/list'));
 const PageRhEntriesRecoveryNew = lazy(() => import('src/pages/dashboard/r-h/entries/recovery/new'));
+const PageRhEntriesRecoveryEdit = lazy(
+  () => import('src/pages/dashboard/r-h/entries/recovery/edit')
+);
 
 // Treatment
 const PageRhTreatmentLocationAssignment = lazy(
@@ -277,12 +332,15 @@ export const dashboardRoutes = [
             children: [
               { path: 'task-responsabilities', element: <PageRhFonctionTaskList />, index: true },
               { path: 'task-responsabilities/new', element: <PageRhFonctionTaskNew /> },
+              { path: 'task-responsabilities/:id/edit', element: <PageRhFonctionTaskEdit /> },
 
               { path: 'career-path', element: <PageRhFonctionCareerPathList /> },
               { path: 'career-path/new', element: <PageRhFonctionCareerPathNew /> },
+              { path: 'career-path/:id/edit', element: <PageRhFonctionCareerPathEdit /> },
 
               { path: 'fonctions', element: <PageRhFonctionFonctionsList /> },
               { path: 'fonctions/new', element: <PageRhFonctionFonctionsNew /> },
+              { path: 'fonctions/:id/edit', element: <PageRhFonctionFonctionsEdit /> },
 
               // { path: 'documents', element: <PageRhDocumentsList /> },
               // { path: 'bloc', element: <PageRhBloqueList /> },
@@ -300,9 +358,11 @@ export const dashboardRoutes = [
 
               { path: 'zones', element: <PageRhSettingsZonesList /> },
               { path: 'zones/new', element: <PageRhSettingsZonesNew /> },
+              { path: 'zones/:id/edit', element: <PageRhSettingsZonesEdit /> },
 
               { path: 'work-programs', element: <PageRhSettingsJobProgramsList /> },
               { path: 'work-programs/new', element: <PageRhSettingsJobProgramsNew /> },
+              { path: 'work-programs/:id/edit', element: <PageRhSettingsJobProgramsEdit /> },
 
               {
                 path: 'deductions-compensation',
@@ -312,15 +372,22 @@ export const dashboardRoutes = [
                 path: 'deductions-compensation/new',
                 element: <PageRhSettingsDeductionsCompensationNew />,
               },
+              {
+                path: 'deductions-compensation/:id/edit',
+                element: <PageRhSettingsDeductionsCompensationEdit />,
+              },
 
               { path: 'salary-grid', element: <PageRhSettingsSalaryGridList /> },
               { path: 'salary-grid/new', element: <PageRhSettingsSalaryGridNew /> },
+              { path: 'salary-grid/:id/edit', element: <PageRhSettingsSalaryGridEdit /> },
 
               { path: 'cnas-rate', element: <PageRhSettingsCnasRateList /> },
               { path: 'cnas-rate/new', element: <PageRhSettingsCnasRateNew /> },
+              { path: 'cnas-rate/:id/edit', element: <PageRhSettingsCnasRateEdit /> },
 
               { path: 'agencies', element: <PageRhSettingsAgenciesList /> },
               { path: 'agencies/new', element: <PageRhSettingsAgenciesNew /> },
+              { path: 'agencies/:id/edit', element: <PageRhSettingsAgenciesEdit /> },
             ],
           },
           {
@@ -338,18 +405,23 @@ export const dashboardRoutes = [
             children: [
               { path: 'social-loan', element: <PageRhEntriesSocialLoan />, index: true },
               { path: 'social-loan/new', element: <PageRhEntriesSocialLoanNew /> },
+              { path: 'social-loan/:id/edit', element: <PageRhEntriesSocialLoanEdit /> },
 
               { path: 'leave-absence', element: <PageRhEntriesLeaveAbsence /> },
               { path: 'leave-absence/new', element: <PageRhEntriesLeaveAbsenceNew /> },
+              { path: 'leave-absence/:id/edit', element: <PageRhEntriesLeaveAbsenceEdit /> },
 
               { path: 'permanence', element: <PageRhEntriesPermanence /> },
               { path: 'permanence/new', element: <PageRhEntriesPermanenceNew /> },
+              { path: 'permanence/:id/edit', element: <PageRhEntriesPermanenceEdit /> },
 
               { path: 'overtime', element: <PageRhEntriesOvertime /> },
               { path: 'overtime/new', element: <PageRhEntriesOvertimeNew /> },
+              { path: 'overtime/:id/edit', element: <PageRhEntriesOvertimeEdit /> },
 
               { path: 'recovery', element: <PageRhEntriesRecovery /> },
               { path: 'recovery/new', element: <PageRhEntriesRecoveryNew /> },
+              { path: 'recovery/:id/edit', element: <PageRhEntriesRecoveryEdit /> },
             ],
           },
           {

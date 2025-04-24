@@ -7,14 +7,14 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import { TextField, FormControl, InputAdornment } from '@mui/material';
-import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetProducts } from 'src/actions/product';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useGetLeavesAbesences } from 'src/actions/leave-absence';
 import {
   ACTIF_NAMES,
   ABS_TYPE_OPTIONS,
@@ -43,10 +43,8 @@ import {
   RenderCellFullname,
   RenderCellFunction,
   RenderCellValideBy,
-  RenderCellExercice,
   RenderCellCreatedAt,
   RenderCellDesignation,
-  RenderCellIntermidiate,
 } from '../leave-absence-table-row';
 
 // ----------------------------------------------------------------------
@@ -170,9 +168,9 @@ const FILTERS_OPTIONS = [
 export function LeaveAbsenceListView() {
   const confirmDialog = useBoolean();
 
-  const { products, productsLoading } = useGetProducts();
+  const { leavesAbesences, leavesAbesencesLoading } = useGetLeavesAbesences();
 
-  const [tableData, setTableData] = useState(products);
+  const [tableData, setTableData] = useState(leavesAbesences);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
@@ -180,10 +178,10 @@ export function LeaveAbsenceListView() {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (products.length) {
-      setTableData(products);
+    if (leavesAbesences.length) {
+      setTableData(leavesAbesences);
     }
-  }, [products]);
+  }, [leavesAbesences]);
   const handleReset = () => {
     setEditedFilters([]);
   };
@@ -281,18 +279,18 @@ export function LeaveAbsenceListView() {
         <RenderCellAtelier params={params} href={paths.dashboard.root} />
       ),
     },
-    {
-      field: 'interm',
-      headerName: 'Intériminaire',
-      //   flex: 0.5,
-      flex: 1,
-      minWidth: 100,
-      hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellIntermidiate params={params} href={paths.dashboard.root} />
-      ),
-    },
+    // {
+    //   field: 'interm',
+    //   headerName: 'Intériminaire',
+    //   //   flex: 0.5,
+    //   flex: 1,
+    //   minWidth: 100,
+    //   hideable: false,
+    //   renderCell: (params) => (
+    //     // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+    //     <RenderCellIntermidiate params={params} href={paths.dashboard.root} />
+    //   ),
+    // },
     {
       field: 'start_date',
       headerName: 'De',
@@ -353,18 +351,18 @@ export function LeaveAbsenceListView() {
         <RenderCellValideBy params={params} href={paths.dashboard.root} />
       ),
     },
-    {
-      field: 'exercice',
-      headerName: 'Exercice',
-      //   flex: 0.5,
-      flex: 1,
-      minWidth: 100,
-      hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellExercice params={params} href={paths.dashboard.root} />
-      ),
-    },
+    // {
+    //   field: 'exercice',
+    //   headerName: 'Exercice',
+    //   //   flex: 0.5,
+    //   flex: 1,
+    //   minWidth: 100,
+    //   hideable: false,
+    //   renderCell: (params) => (
+    //     // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+    //     <RenderCellExercice params={params} href={paths.dashboard.root} />
+    //   ),
+    // },
     {
       field: 'createdAt',
       headerName: 'Date de création',
@@ -387,27 +385,27 @@ export function LeaveAbsenceListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => [
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
-          label="View"
-          // href={paths.dashboard.product.details(params.row.id)}
-          href={paths.dashboard.root}
-        />,
+        // <GridActionsLinkItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:eye-bold" />}
+        //   label="View"
+        //   // href={paths.dashboard.product.details(params.row.id)}
+        //   href={paths.dashboard.root}
+        // />,
         <GridActionsLinkItem
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}
-          label="Edit"
+          label="Modifier"
           // href={paths.dashboard.product.edit(params.row.id)}
-          href={paths.dashboard.root}
+          href={paths.dashboard.rh.entries.editLeaveAbsence(params.row.id)}
         />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-          label="Delete"
-          onClick={() => handleDeleteRow(params.row.id)}
-          sx={{ color: 'error.main' }}
-        />,
+        // <GridActionsCellItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:trash-bin-trash-bold" />}
+        //   label="Delete"
+        //   onClick={() => handleDeleteRow(params.row.id)}
+        //   sx={{ color: 'error.main' }}
+        // />,
       ],
     },
   ];
@@ -510,7 +508,7 @@ export function LeaveAbsenceListView() {
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}
-            loading={productsLoading}
+            loading={leavesAbesencesLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}

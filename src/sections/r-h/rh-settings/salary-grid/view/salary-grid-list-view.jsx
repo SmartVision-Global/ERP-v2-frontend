@@ -29,12 +29,14 @@ import {
   RenderCellIrg,
   RenderCellCode,
   RenderCellLevel,
-  RenderCellPublish,
+  RenderCellSalary,
   RenderCellEchelle,
   RenderCellCreatedAt,
   RenderCellBaseSalary,
+  RenderCellSumTaxable,
   RenderCellDesignation,
   RenderCellCategorySocio,
+  RenderCellSumContributor,
 } from '../salary-grid-table-row';
 
 // ----------------------------------------------------------------------
@@ -190,7 +192,7 @@ export function SalaryGridListView() {
       ),
     },
     {
-      field: 'echelle',
+      field: 'rung',
       headerName: 'Echellons',
       //   flex: 0.5,
       flex: 1,
@@ -202,7 +204,7 @@ export function SalaryGridListView() {
       ),
     },
     {
-      field: 'category',
+      field: 'salary_category',
       headerName: 'Catégorie socioprofessionnelle',
       //   flex: 0.5,
       flex: 1,
@@ -214,7 +216,7 @@ export function SalaryGridListView() {
       ),
     },
     {
-      field: 'level',
+      field: 'salary_scale_level',
       headerName: 'Niveau',
       //   flex: 0.5,
       flex: 1,
@@ -226,34 +228,34 @@ export function SalaryGridListView() {
       ),
     },
     {
-      field: 'cotis_salary',
+      field: 'sum_contributor',
       headerName: 'Salaire cotisable',
       flex: 1,
       minWidth: 160,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPublish params={params} />,
+      renderCell: (params) => <RenderCellSumContributor params={params} />,
     },
     {
-      field: 'poste_salary',
+      field: 'salary',
       headerName: 'Salaire de poste',
       flex: 1,
       minWidth: 160,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPublish params={params} />,
+      renderCell: (params) => <RenderCellSalary params={params} />,
     },
     {
-      field: 'impos_salary',
+      field: 'sum_taxable',
       headerName: 'Salaire imposable',
       flex: 1,
       minWidth: 160,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPublish params={params} />,
+      renderCell: (params) => <RenderCellSumTaxable params={params} />,
     },
     {
       field: 'irg',
@@ -273,7 +275,7 @@ export function SalaryGridListView() {
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPublish params={params} />,
+      renderCell: (params) => <RenderCellSalary params={params} />,
     },
     {
       field: 'net_salary_pay',
@@ -283,7 +285,7 @@ export function SalaryGridListView() {
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPublish params={params} />,
+      renderCell: (params) => <RenderCellSalary params={params} />,
     },
 
     {

@@ -7,8 +7,8 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import { TextField, FormControl, InputAdornment } from '@mui/material';
-import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -26,11 +26,16 @@ import { RenderCellStatus } from 'src/sections/r-h/fonction/fonctions/fonctions-
 
 import {
   RenderCellId,
-  RenderCellPublish,
-  RenderCellContract,
+  RenderCellName,
   RenderCellWorkTime,
   RenderCellWorkStop,
+  RenderCellRotation,
   RenderCellCreatedAt,
+  RenderCellWorkedTime,
+  RenderCellBreakCount,
+  RenderCellDescription,
+  RenderCellStartingDate,
+  RenderCellAbsenceValue,
 } from '../work-programs-table-row';
 
 // ----------------------------------------------------------------------
@@ -100,25 +105,25 @@ export function WorkProgramsListView() {
       ),
     },
     {
-      field: 'type',
+      field: 'name',
       headerName: 'Nom',
       flex: 1,
       minWidth: 160,
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellContract params={params} href={paths.dashboard.root} />
+        <RenderCellName params={params} href={paths.dashboard.root} />
       ),
     },
     {
       field: 'description',
       headerName: 'Description',
       flex: 1,
-      minWidth: 160,
+      minWidth: 260,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPublish params={params} />,
+      renderCell: (params) => <RenderCellDescription params={params} />,
     },
     {
       field: 'start_program',
@@ -128,7 +133,7 @@ export function WorkProgramsListView() {
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellCreatedAt params={params} />,
+      renderCell: (params) => <RenderCellStartingDate params={params} />,
     },
     {
       field: 'rotation',
@@ -138,7 +143,7 @@ export function WorkProgramsListView() {
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellContract params={params} href={paths.dashboard.root} />
+        <RenderCellRotation params={params} href={paths.dashboard.root} />
       ),
     },
     {
@@ -151,7 +156,7 @@ export function WorkProgramsListView() {
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellId params={params} href={paths.dashboard.root} />
+        <RenderCellAbsenceValue params={params} href={paths.dashboard.root} />
       ),
     },
     {
@@ -165,7 +170,7 @@ export function WorkProgramsListView() {
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellId params={params} href={paths.dashboard.root} />
+        <RenderCellWorkedTime params={params} href={paths.dashboard.root} />
       ),
     },
     {
@@ -179,7 +184,7 @@ export function WorkProgramsListView() {
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellId params={params} href={paths.dashboard.root} />
+        <RenderCellBreakCount params={params} href={paths.dashboard.root} />
       ),
     },
     {
@@ -243,27 +248,27 @@ export function WorkProgramsListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => [
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
-          label="View"
-          // href={paths.dashboard.product.details(params.row.id)}
-          href={paths.dashboard.root}
-        />,
+        // <GridActionsLinkItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:eye-bold" />}
+        //   label="View"
+        //   // href={paths.dashboard.product.details(params.row.id)}
+        //   href={paths.dashboard.root}
+        // />,
         <GridActionsLinkItem
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}
-          label="Edit"
+          label="Modifier"
           // href={paths.dashboard.product.edit(params.row.id)}
-          href={paths.dashboard.root}
+          href={paths.dashboard.rh.rhSettings.editWorkPrograms(params.row.id)}
         />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-          label="Delete"
-          onClick={() => handleDeleteRow(params.row.id)}
-          sx={{ color: 'error.main' }}
-        />,
+        // <GridActionsCellItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:trash-bin-trash-bold" />}
+        //   label="Delete"
+        //   onClick={() => handleDeleteRow(params.row.id)}
+        //   sx={{ color: 'error.main' }}
+        // />,
       ],
     },
   ];

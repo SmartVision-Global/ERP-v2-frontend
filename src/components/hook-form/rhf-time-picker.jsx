@@ -20,6 +20,7 @@ export function RHFTimePicker({ name, slotProps, ...other }) {
           value={dayjs(field.value)}
           onChange={(newValue) => field.onChange(dayjs(newValue).format())}
           format={formatPatterns.time}
+          // format="HH:mm"
           ampm={false}
           slotProps={{
             ...slotProps,

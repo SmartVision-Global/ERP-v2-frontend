@@ -7,8 +7,8 @@ import LinearProgress from '@mui/material/LinearProgress';
 
 import { RouterLink } from 'src/routes/components';
 
-import { fDate } from 'src/utils/format-time';
 import { fCurrency } from 'src/utils/format-number';
+import { fDate, fTime } from 'src/utils/format-time';
 
 import { Label } from 'src/components/label';
 
@@ -33,6 +33,12 @@ const DISPLAY_BASE = {
   1: 'SALAIRE',
   2: 'JOURS',
 };
+
+const TYPE = {
+  1: 'Retenues',
+  2: 'Indemnités',
+};
+
 export function RenderCellPrice({ params }) {
   return fCurrency(params.row.price);
 }
@@ -55,7 +61,7 @@ export function RenderCellContract({ params }) {
 export function RenderCellType({ params }) {
   return (
     <Label variant="soft" color="info">
-      INDEMNITÉ
+      {TYPE[params.row.type]}
     </Label>
   );
 }
@@ -63,14 +69,23 @@ export function RenderCellType({ params }) {
 export function RenderCellAbs({ params }) {
   return (
     <Label variant="soft" color="info">
-      Oui
+      {params.row.subject_absence ? 'Oui' : 'Non'}
     </Label>
   );
 }
+
+export function RenderCellDelete({ params }) {
+  return (
+    <Label variant="soft" color="info">
+      {params.row.is_deletable ? 'Oui' : 'Non'}
+    </Label>
+  );
+}
+
 export function RenderCellCategory({ params }) {
   return (
     <Label variant="soft" color="primary">
-      COTISABLE - IMPOSABLE
+      {CONTRIBUTORY_IMPOSABLE[params.row.contributory_imposable]}
     </Label>
   );
 }
@@ -78,7 +93,7 @@ export function RenderCellCategory({ params }) {
 export function RenderCellCountBase({ params }) {
   return (
     <Label variant="soft" color="primary">
-      TAUX
+      {CALCULATION_BASE[params.row.calculation_base]}
     </Label>
   );
 }
@@ -86,7 +101,7 @@ export function RenderCellCountBase({ params }) {
 export function RenderCellDisplayBase({ params }) {
   return (
     <Label variant="soft" color="primary">
-      SALAIRE
+      {DISPLAY_BASE[params.row.display_base]}
     </Label>
   );
 }
@@ -94,7 +109,7 @@ export function RenderCellDisplayBase({ params }) {
 export function RenderCellPeriode({ params }) {
   return (
     <Label variant="soft" color="primary">
-      MENSUELE
+      {PERIODIC[params.row.periodic]}
     </Label>
   );
 }
@@ -116,10 +131,10 @@ export function RenderCellWorkStop({ params }) {
 export function RenderCellCreatedAt({ params }) {
   return (
     <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
-      <span>{fDate(params.row.createdAt)}</span>
-      {/* <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
-        {fTime(params.row.createdAt)}
-      </Box> */}
+      <span>{fDate(params.row.created_at)}</span>
+      <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
+        {fTime(params.row.created_at)}
+      </Box>
     </Box>
   );
 }
@@ -127,7 +142,7 @@ export function RenderCellCreatedAt({ params }) {
 export function RenderCellDesignation({ params }) {
   return (
     <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
-      <span>Designation</span>
+      <span>{params.row.designation}</span>
     </Box>
   );
 }

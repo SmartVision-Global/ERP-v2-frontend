@@ -90,7 +90,14 @@ export const endpoints = {
   machine: '/v1/settings/machines',
   society: '/v1/settings/enterprises',
   function: '/v1/hr/function/jobs',
+  task: 'v1/hr/function/duties_responsibilities',
+  careerKnowledges: '/v1/hr/function/career_knowledges',
   personal: '/v1/hr/personal/personals',
-
   // new:''
+  // ecritures
+  socialLoan: '/v1/hr/writings/personal_loans',
+  recovery: '/v1/hr/writings/recuperations',
+  overtime: '/v1/hr/writings/overtime_works',
+  leaveAbesence: '/v1/hr/writings/holiday_absences',
+  permanence: '/v1/hr/writings/permanencies',
 };

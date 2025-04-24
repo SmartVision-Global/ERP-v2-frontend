@@ -128,8 +128,6 @@ export function NoCotisNoImposNewEditForm() {
   // };
   // const handleCellEditStop = useCallback(
   //   (params, event) => {
-  //     // eslint-disable-next-line no-debugger
-  //     debugger;
   //     event.defaultMuiPrevented = true;
   //     // Find the index of the item with the matching ID
   //     const index = fields.findIndex((field) => field.id === params.row.id);

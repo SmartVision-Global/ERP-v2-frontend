@@ -15,7 +15,7 @@ export function WorkProgramsCreateView() {
         heading="Ajouter Programme"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Ressource humain', href: paths.dashboard.rh.personal },
+          { name: 'Programmes de travail', href: paths.dashboard.rh.rhSettings.workPrograms },
           { name: 'Ajouter Programme' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

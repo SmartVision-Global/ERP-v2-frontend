@@ -5,29 +5,40 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { LoadingButton } from '@mui/lab';
 import { Box, Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 
-import { TASK_NATURE_OPTIONS } from 'src/_mock';
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
 
+import { TASK_NATURE_OPTIONS } from 'src/_mock';
+import { createDutyResponsibility, updateDutyResponsibility } from 'src/actions/task';
+
+import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 
 export const NewProductSchema = zod.object({
-  nature: zod.string().min(1, { message: 'Name is required!' }),
-  libFr: zod.string().min(1, { message: 'Name is required!' }),
-  libAr: zod.string().min(1, { message: 'Name is required!' }),
-  libEn: zod.string().min(1, { message: 'Name is required!' }),
+  type: zod.string().min(1, { message: 'Name is required!' }),
+  label_french: zod.string().min(1, { message: 'Name is required!' }),
+  label_arabic: zod.string().min(1, { message: 'Name is required!' }),
+  label_english: zod.string().min(1, { message: 'Name is required!' }),
 });
 
 export function TaskNewEditForm({ currentProduct }) {
+  const router = useRouter();
   const defaultValues = {
-    nature: '',
-    libFr: '',
-    libAr: '',
-    libEn: '',
+    type: '',
+    label_french: '',
+    label_arabic: '',
+    label_english: '',
   };
 
   const methods = useForm({
     resolver: zodResolver(NewProductSchema),
     defaultValues,
-    values: currentProduct,
+    values: {
+      type: currentProduct?.type,
+      label_french: currentProduct.label?.fr,
+      label_english: currentProduct.label?.en,
+      label_arabic: currentProduct.label?.ar,
+    },
   });
 
   const {
@@ -38,15 +49,26 @@ export function TaskNewEditForm({ currentProduct }) {
 
   const onSubmit = handleSubmit(async (data) => {
     const updatedData = {
-      ...data,
+      // ...data,
+      type: data.type,
+      label: {
+        fr: data.label_french,
+        ar: data.label_arabic,
+        en: data.label_english,
+      },
       // taxes: includeTaxes ? defaultValues.taxes : data.taxes,
     };
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      if (currentProduct) {
+        await updateDutyResponsibility(currentProduct?.id, updatedData);
+      } else {
+        await createDutyResponsibility(updatedData);
+      }
+      // await new Promise((resolve) => setTimeout(resolve, 500));
       reset();
-      // toast.success(currentProduct ? 'Update success!' : 'Create success!');
-      // router.push(paths.dashboard.product.root);
+      toast.success(currentProduct ? 'Update success!' : 'Create success!');
+      router.push(paths.dashboard.rh.fonction.taskResp);
       console.info('DATA', updatedData);
     } catch (error) {
       console.error(error);
@@ -64,16 +86,16 @@ export function TaskNewEditForm({ currentProduct }) {
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Field.Select name="nature" label="Nature" size="small">
+        <Field.Select name="type" label="Nature" size="small">
           {TASK_NATURE_OPTIONS.map((status) => (
             <MenuItem key={status.value} value={status.value}>
               {status.label}
             </MenuItem>
           ))}
         </Field.Select>
-        <Field.Text name="libFr" label="Libellé en français" multiline rows={3} />
-        <Field.Text name="libAr" label="Libellé en arabe" multiline rows={3} dir="rtl" />
-        <Field.Text name="libEn" label="Libellé en english" multiline rows={3} />
+        <Field.Text name="label_french" label="Libellé en français" multiline rows={3} />
+        <Field.Text name="label_arabic" label="Libellé en arabe" multiline rows={3} dir="rtl" />
+        <Field.Text name="label_english" label="Libellé en english" multiline rows={3} />
       </Stack>
     </Card>
   );

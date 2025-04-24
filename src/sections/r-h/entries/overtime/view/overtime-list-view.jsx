@@ -7,14 +7,14 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import { TextField, FormControl, InputAdornment } from '@mui/material';
-import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetProducts } from 'src/actions/product';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useGetOvertimeList } from 'src/actions/overtime';
 import { ACTIF_NAMES, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
 
 import { toast } from 'src/components/snackbar';
@@ -27,7 +27,6 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import {
   RenderCellId,
   RenderCellSite,
-  RenderCellEndAt,
   RenderCellNotes,
   RenderCellHours,
   RenderCellStatus,
@@ -122,9 +121,9 @@ const FILTERS_OPTIONS = [
 export function OvertimeListView() {
   const confirmDialog = useBoolean();
 
-  const { products, productsLoading } = useGetProducts();
+  const { overtimeWorks, overtimeWorksLoading } = useGetOvertimeList();
 
-  const [tableData, setTableData] = useState(products);
+  const [tableData, setTableData] = useState(overtimeWorks);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
@@ -132,10 +131,10 @@ export function OvertimeListView() {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (products.length) {
-      setTableData(products);
+    if (overtimeWorks.length) {
+      setTableData(overtimeWorks);
     }
-  }, [products]);
+  }, [overtimeWorks]);
   const handleReset = () => {
     setEditedFilters([]);
   };
@@ -216,7 +215,7 @@ export function OvertimeListView() {
       headerName: 'Nature',
       //   flex: 0.5,
       flex: 1,
-      minWidth: 100,
+      minWidth: 230,
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
@@ -237,7 +236,7 @@ export function OvertimeListView() {
     },
     {
       field: 'start_date',
-      headerName: 'De',
+      headerName: 'Date',
       //   flex: 0.5,
       flex: 1,
       minWidth: 200,
@@ -247,18 +246,18 @@ export function OvertimeListView() {
         <RenderCellStartAt params={params} href={paths.dashboard.root} />
       ),
     },
-    {
-      field: 'end_date',
-      headerName: 'Au',
-      //   flex: 0.5,
-      flex: 1,
-      minWidth: 200,
-      hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellEndAt params={params} href={paths.dashboard.root} />
-      ),
-    },
+    // {
+    //   field: 'end_date',
+    //   headerName: 'Au',
+    //   //   flex: 0.5,
+    //   flex: 1,
+    //   minWidth: 200,
+    //   hideable: false,
+    //   renderCell: (params) => (
+    //     // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+    //     <RenderCellEndAt params={params} href={paths.dashboard.root} />
+    //   ),
+    // },
     {
       field: 'designation',
       headerName: 'Designation',
@@ -318,27 +317,27 @@ export function OvertimeListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => [
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
-          label="View"
-          // href={paths.dashboard.product.details(params.row.id)}
-          href={paths.dashboard.root}
-        />,
+        // <GridActionsLinkItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:eye-bold" />}
+        //   label="View"
+        //   // href={paths.dashboard.product.details(params.row.id)}
+        //   href={paths.dashboard.root}
+        // />,
         <GridActionsLinkItem
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}
-          label="Edit"
+          label="Modifier"
           // href={paths.dashboard.product.edit(params.row.id)}
-          href={paths.dashboard.root}
+          href={paths.dashboard.rh.entries.editOvertime(params.row.id)}
         />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-          label="Delete"
-          onClick={() => handleDeleteRow(params.row.id)}
-          sx={{ color: 'error.main' }}
-        />,
+        // <GridActionsCellItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:trash-bin-trash-bold" />}
+        //   label="Delete"
+        //   onClick={() => handleDeleteRow(params.row.id)}
+        //   sx={{ color: 'error.main' }}
+        // />,
       ],
     },
   ];
@@ -441,7 +440,7 @@ export function OvertimeListView() {
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}
-            loading={productsLoading}
+            loading={overtimeWorksLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}

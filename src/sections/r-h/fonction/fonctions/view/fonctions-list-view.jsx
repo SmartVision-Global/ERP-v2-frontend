@@ -33,7 +33,6 @@ import {
   RenderCellAmount,
   RenderCellKeyPost,
   RenderCellCreatedAt,
-  RenderCellSalaryGrid,
   RenderCellPresentPrime,
 } from '../fonctions-table-row';
 
@@ -179,17 +178,17 @@ export function FonctionsListView() {
       valueOptions: SEX_OPTIONS,
       renderCell: (params) => <RenderCellSite params={params} />,
     },
-    {
-      field: 'salary_grids',
-      headerName: 'Grille de salaire',
-      flex: 1,
-      minWidth: 80,
+    // {
+    //   field: 'salary_grids',
+    //   headerName: 'Grille de salaire',
+    //   flex: 1,
+    //   minWidth: 80,
 
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellSalaryGrid params={params} />,
-    },
+    //   type: 'singleSelect',
+    //   editable: true,
+    //   valueOptions: SEX_OPTIONS,
+    //   renderCell: (params) => <RenderCellSalaryGrid params={params} />,
+    // },
     {
       field: 'have_premium',
       headerName: 'Prime de présence',
@@ -261,21 +260,21 @@ export function FonctionsListView() {
         <GridActionsLinkItem
           showInMenu
           icon={<Iconify icon="solar:eye-bold" />}
-          label="View"
+          label="Valider"
           // href={paths.dashboard.product.details(params.row.id)}
           href={paths.dashboard.root}
         />,
         <GridActionsLinkItem
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}
-          label="Edit"
+          label="Modifier"
           // href={paths.dashboard.product.edit(params.row.id)}
-          href={paths.dashboard.root}
+          href={paths.dashboard.rh.fonction.editFonction(params.row.id)}
         />,
         <GridActionsCellItem
           showInMenu
           icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-          label="Delete"
+          label="Archiver"
           onClick={() => handleDeleteRow(params.row.id)}
           sx={{ color: 'error.main' }}
         />,

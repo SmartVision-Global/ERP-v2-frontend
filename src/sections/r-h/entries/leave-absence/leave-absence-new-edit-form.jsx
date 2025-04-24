@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { z as zod } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,28 +7,37 @@ import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 
-import { ACTIF_NAMES, ABS_TYPE_OPTIONS } from 'src/_mock';
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
 
+import { ABS_TYPE_OPTIONS } from 'src/_mock';
+import { useGetLookups } from 'src/actions/lookups';
+import { createLeaveAbesence, updateLeaveAbesence } from 'src/actions/leave-absence';
+
+import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
 export const NewTauxCnasSchema = zod.object({
-  employer: zod.number().min(0, { message: 'Rate must be a positive number!' }),
+  personal_id: zod.string().min(1, { message: 'Rate must be a positive number!' }),
   type: zod.string().min(1, { message: 'Category is required!' }),
-  start_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
-  end_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
+  from_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
+  to_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
 
-  days: zod.string().min(1, { message: 'Category is required!' }),
-  hours: zod.string().min(1, { message: 'Category is required!' }),
-  minutes: zod.string().min(1, { message: 'Category is required!' }),
-  observation: zod.string().min(1, { message: 'Category is required!' }),
+  days: zod.string().nullable(),
+  hours: zod.string().nullable(),
+  minutes: zod.string().nullable(),
+  observation: zod.string(),
 });
 
 export function LeaveAbsenceNewEditForm({ currentTaux }) {
+  const router = useRouter();
+  const { data: personals } = useGetLookups('hr/lookups/personals');
+
   const defaultValues = {
-    employer: '',
+    personal_id: '',
     type: '',
-    start_date: null,
-    end_date: null,
+    from_date: null,
+    to_date: null,
     days: '',
     hours: '',
     minutes: '',
@@ -37,7 +47,7 @@ export function LeaveAbsenceNewEditForm({ currentTaux }) {
   const methods = useForm({
     resolver: zodResolver(NewTauxCnasSchema),
     defaultValues,
-    values: currentTaux,
+    values: { ...currentTaux, personal_id: currentTaux?.personal_id?.toString() || '' },
   });
 
   const {
@@ -47,10 +57,21 @@ export function LeaveAbsenceNewEditForm({ currentTaux }) {
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
+    const updatedData = {
+      ...data,
+      from_date: dayjs(data.from_date).format('YYYY-MM-DD HH:mm:ss'),
+      to_date: dayjs(data.to_date).format('YYYY-MM-DD HH:mm:ss'),
+    };
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // await new Promise((resolve) => setTimeout(resolve, 500));
+      if (currentTaux) {
+        await updateLeaveAbesence(currentTaux.id, updatedData);
+      } else {
+        await createLeaveAbesence(updatedData);
+      }
       reset();
-      console.info('DATA', data);
+      toast.success(currentTaux ? 'Update success!' : 'Create success!');
+      router.push(paths.dashboard.rh.entries.leaveAbsence);
     } catch (error) {
       console.error(error);
     }
@@ -58,20 +79,17 @@ export function LeaveAbsenceNewEditForm({ currentTaux }) {
 
   const renderDetails = () => (
     <Card>
-      <CardHeader title="Ajouter Congé - Absence" sx={{ mb: 3 }} />
+      <CardHeader
+        title={currentTaux ? 'Modifier Congé - Absence' : 'Ajouter Congé - Absence'}
+        sx={{ mb: 3 }}
+      />
 
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="employer" label="Employé" size="small">
-              {ACTIF_NAMES.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select>
+            <Field.Lookup name="personal_id" label="Employé" data={personals} />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="type" label="Type" size="small">
@@ -83,10 +101,10 @@ export function LeaveAbsenceNewEditForm({ currentTaux }) {
             </Field.Select>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.DatePicker name="start_date" label="Du" />
+            <Field.DatePicker name="from_date" label="Du" />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.DatePicker name="end_date" label="Au" />
+            <Field.DatePicker name="to_date" label="Au" />
           </Grid>
           <Grid size={{ xs: 12, md: 4 }}>
             <Field.Text name="days" label="Jours" />

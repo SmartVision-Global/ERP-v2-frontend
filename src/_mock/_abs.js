@@ -1,16 +1,16 @@
 export const ABS_TYPE_OPTIONS = [
-  { label: 'MALADIE', value: 'maladie' },
-  { label: 'CONGE ANNUEL', value: 'CONGE ANNUEL' },
-  { label: 'ABSENCE AUTORISEE PAYE', value: 'ABSENCE AUTORISEE PAYE' },
-  { label: 'ABSENCE AUTORISEE NON PAYE', value: 'ABSENCE AUTORISEE NON PAYE' },
-  { label: 'ABSENCE NON AUTORISEE', value: 'ABSENCE NON AUTORISEE' },
-  { label: 'CONGE EXCEPTIONNEL', value: 'CONGE EXCEPTIONNEL' },
-  { label: 'CONGE SANS SOLDE', value: 'CONGE SANS SOLDE' },
-  { label: 'SORTIE AUTORISEE PAYE', value: 'SORTIE AUTORISEE PAYE' },
-  { label: 'SORTIE AUTORISEE NON PAYE', value: 'SORTIE AUTORISEE NON PAYE' },
-  { label: 'SORTIE NON AUTORISEE', value: 'SORTIE NON AUTORISEE' },
-  { label: 'RETARD PAYE', value: 'RETARD PAYE' },
-  { label: 'RETARD NON PAYE', value: 'RETARD NON PAYE' },
+  { label: 'MALADIE', value: '1' },
+  { label: 'CONGE ANNUEL', value: '2' },
+  { label: 'ABSENCE AUTORISEE PAYE', value: '3' },
+  { label: 'ABSENCE AUTORISEE NON PAYE', value: '4' },
+  { label: 'ABSENCE NON AUTORISEE', value: '5' },
+  { label: 'CONGE EXCEPTIONNEL', value: '6' },
+  { label: 'CONGE SANS SOLDE', value: '7' },
+  { label: 'SORTIE AUTORISEE PAYE', value: '8' },
+  { label: 'SORTIE AUTORISEE NON PAYE', value: '9' },
+  { label: 'SORTIE NON AUTORISEE', value: '10' },
+  { label: 'RETARD PAYE', value: '11' },
+  { label: 'RETARD NON PAYE', value: '12' },
 ];
 
 export const ABS_EXERCICE_OPTIONS = [

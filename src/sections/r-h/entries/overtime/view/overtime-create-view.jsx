@@ -12,11 +12,11 @@ export function OvertimeCreateView() {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Ajouter Permanence"
+        heading="Ajouter Jours Supplémentaires"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           { name: 'Ressource humain', href: paths.dashboard.rh.personal },
-          { name: 'Ajouter Permanence' },
+          { name: 'Ajouter Jours Supplémentaires' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />

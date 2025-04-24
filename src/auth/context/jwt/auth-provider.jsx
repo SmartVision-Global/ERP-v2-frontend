@@ -20,8 +20,7 @@ export function AuthProvider({ children }) {
         setSession(accessToken);
 
         const res = await axios.get(endpoints.auth.me);
-        // eslint-disable-next-line no-debugger
-        debugger;
+
         const user = res.data.data;
 
         setState({ user: { ...user, accessToken }, loading: false });

@@ -9,9 +9,9 @@ import { Box, Card, Stack, Divider, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { createZone } from 'src/actions/zone';
 import { CALENDAR_COLOR_OPTIONS } from 'src/_mock';
 import { useGetLookups } from 'src/actions/lookups';
+import { createZone, updateZone } from 'src/actions/zone';
 
 import { ColorPicker } from 'src/components/color-utils';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
@@ -33,7 +33,7 @@ export const NewProductSchema = zod.object({
 
 export function ZoneNewEditForm({ currentProduct }) {
   const router = useRouter();
-  const { data: sites } = useGetLookups('sites');
+  const { data: sites } = useGetLookups('settings/lookups/sites');
   const defaultValues = {
     name: '',
     code: '',
@@ -47,7 +47,10 @@ export function ZoneNewEditForm({ currentProduct }) {
   const methods = useForm({
     resolver: zodResolver(NewProductSchema),
     defaultValues,
-    values: currentProduct,
+    values: {
+      ...currentProduct,
+      site_id: currentProduct?.site_id?.toString() || '',
+    },
   });
 
   const {
@@ -65,7 +68,11 @@ export function ZoneNewEditForm({ currentProduct }) {
 
     try {
       // await new Promise((resolve) => setTimeout(resolve, 500));
-      await createZone(data);
+      if (currentProduct) {
+        await updateZone(currentProduct.id, updatedData);
+      } else {
+        await createZone(data);
+      }
       reset();
       // toast.success(currentProduct ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.rh.rhSettings.zones);

@@ -11,7 +11,7 @@ import { Box, Card, Stack, Divider, CardHeader, Typography } from '@mui/material
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { createWorkProgram } from 'src/actions/work-programs';
+import { createWorkProgram, updateWorkProgram } from 'src/actions/work-programs';
 
 import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
@@ -43,8 +43,8 @@ export const NewProductSchema = zod.object({
       ),
       start_time: zod.string().optional(),
       end_time: zod.string().optional(),
-      break_start: zod.string().optional(),
-      break_end: zod.string().optional(),
+      break_start: zod.string().optional().nullable(),
+      break_end: zod.string().optional().nullable(),
     })
   ),
   // is_work_day: zod.string().min(1, { message: 'Name is required!' }),
@@ -83,7 +83,7 @@ export function WorkProgramsNewEditForm({ currentProduct }) {
     days: [defaultAppend],
     // is_work_day: 'true',
     // absence_value: 0,
-    // pause: 'false',
+    pause: 'false',
     // start_time: '',
     // end_time: '',
     // break_start: '',
@@ -128,6 +128,8 @@ export function WorkProgramsNewEditForm({ currentProduct }) {
         break_start: item.break_start ? dayjs(new Date(item.break_start)).format('HH:mm') : null,
         end_time: item.end_time ? dayjs(new Date(item.end_time)).format('HH:mm') : null,
         start_time: item.start_time ? dayjs(new Date(item.start_time)).format('HH:mm') : null,
+        // end_time: item.end_time ? item.end_time : null,
+        // start_time: item.start_time ? item.start_time : null,
       }));
       const newData = {
         // ...data,
@@ -139,7 +141,11 @@ export function WorkProgramsNewEditForm({ currentProduct }) {
       console.log('new data', newData);
 
       // await new Promise((resolve) => setTimeout(resolve, 500));
-      await createWorkProgram(newData);
+      if (currentProduct) {
+        await updateWorkProgram(currentProduct.id, newData);
+      } else {
+        await createWorkProgram(newData);
+      }
       reset();
       toast.success(currentProduct ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.rh.rhSettings.workPrograms);

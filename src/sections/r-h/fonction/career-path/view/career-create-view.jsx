@@ -15,7 +15,7 @@ export function CareerCreateView() {
         heading="Ajouter Parcours professionnel"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Ressource humain', href: paths.dashboard.rh.personal },
+          { name: 'Parcours professionnel', href: paths.dashboard.rh.fonction.careerPath },
           { name: 'Ajouter Parcours professionnel' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

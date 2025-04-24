@@ -59,10 +59,17 @@ export const paths = {
         root: `${ROOTS.DASHBOARD}/humain-ressource/fonction/task-responsabilities`,
         taskResp: `${ROOTS.DASHBOARD}/humain-ressource/fonction/task-responsabilities`,
         newTask: `${ROOTS.DASHBOARD}/humain-ressource/fonction/task-responsabilities/new`,
+        editTask: (id) =>
+          `${ROOTS.DASHBOARD}/humain-ressource/fonction/task-responsabilities/${id}/edit`,
+
         careerPath: `${ROOTS.DASHBOARD}/humain-ressource/fonction/career-path`,
         newCareerPath: `${ROOTS.DASHBOARD}/humain-ressource/fonction/career-path/new`,
+        editCarrerPath: (id) =>
+          `${ROOTS.DASHBOARD}/humain-ressource/fonction/career-path/${id}/edit`,
+
         fonctions: `${ROOTS.DASHBOARD}/humain-ressource/fonction/fonctions`,
         newFonctions: `${ROOTS.DASHBOARD}/humain-ressource/fonction/fonctions/new`,
+        editFonction: (id) => `${ROOTS.DASHBOARD}/humain-ressource/fonction/fonctions/${id}/edit`,
       },
       rhSettings: {
         root: `${ROOTS.DASHBOARD}/humain-ressource/settings/identification`,
@@ -71,16 +78,29 @@ export const paths = {
 
         zones: `${ROOTS.DASHBOARD}/humain-ressource/settings/zones`,
         newZone: `${ROOTS.DASHBOARD}/humain-ressource/settings/zones/new`,
+        editZone: (id) => `${ROOTS.DASHBOARD}/humain-ressource/settings/zones/${id}/edit`,
         workPrograms: `${ROOTS.DASHBOARD}/humain-ressource/settings/work-programs`,
         newWorkPrograms: `${ROOTS.DASHBOARD}/humain-ressource/settings/work-programs/new`,
+        editWorkPrograms: (id) =>
+          `${ROOTS.DASHBOARD}/humain-ressource/settings/work-programs/${id}/edit`,
+
         deductionsCompensation: `${ROOTS.DASHBOARD}/humain-ressource/settings/deductions-compensation`,
         newdeductionsCompensation: `${ROOTS.DASHBOARD}/humain-ressource/settings/deductions-compensation/new`,
+        editDeductionsCompensation: (id) =>
+          `${ROOTS.DASHBOARD}/humain-ressource/settings/deductions-compensation/${id}/edit`,
+
         salaryGrid: `${ROOTS.DASHBOARD}/humain-ressource/settings/salary-grid`,
         newSalaryGrid: `${ROOTS.DASHBOARD}/humain-ressource/settings/salary-grid/new`,
+        editSalaryGrid: (id) =>
+          `${ROOTS.DASHBOARD}/humain-ressource/settings/salary-grid/${id}/edit`,
+
         cnasRate: `${ROOTS.DASHBOARD}/humain-ressource/settings/cnas-rate`,
         newCnasRate: `${ROOTS.DASHBOARD}/humain-ressource/settings/cnas-rate/new`,
+        editCnasRate: (id) => `${ROOTS.DASHBOARD}/humain-ressource/settings/cnas-rate/${id}/edit`,
+
         agencies: `${ROOTS.DASHBOARD}/humain-ressource/settings/agencies`,
         newAgencies: `${ROOTS.DASHBOARD}/humain-ressource/settings/agencies/new`,
+        editAgencies: (id) => `${ROOTS.DASHBOARD}/humain-ressource/settings/agencies/${id}/edit`,
       },
       demandes: {
         root: `${ROOTS.DASHBOARD}/humain-ressource/demandes`,
@@ -94,17 +114,25 @@ export const paths = {
         root: `${ROOTS.DASHBOARD}/humain-ressource/entries/social-loan`,
         socialLoan: `${ROOTS.DASHBOARD}/humain-ressource/entries/social-loan`,
         newSocialLoan: `${ROOTS.DASHBOARD}/humain-ressource/entries/social-loan/new`,
+        editSocialLoan: (id) =>
+          `${ROOTS.DASHBOARD}/humain-ressource/entries/social-loan/${id}/edit`,
+
         leaveAbsence: `${ROOTS.DASHBOARD}/humain-ressource/entries/leave-absence`,
         newLeaveAbsence: `${ROOTS.DASHBOARD}/humain-ressource/entries/leave-absence/new`,
+        editLeaveAbsence: (id) =>
+          `${ROOTS.DASHBOARD}/humain-ressource/entries/leave-absence/${id}/edit`,
 
         permanence: `${ROOTS.DASHBOARD}/humain-ressource/entries/permanence`,
         newPermanence: `${ROOTS.DASHBOARD}/humain-ressource/entries/permanence/new`,
+        editPermanence: (id) => `${ROOTS.DASHBOARD}/humain-ressource/entries/permanence/${id}/edit`,
 
         overtime: `${ROOTS.DASHBOARD}/humain-ressource/entries/overtime`,
         newOvertime: `${ROOTS.DASHBOARD}/humain-ressource/entries/overtime/new`,
+        editOvertime: (id) => `${ROOTS.DASHBOARD}/humain-ressource/entries/overtime/${id}/edit`,
 
         recovery: `${ROOTS.DASHBOARD}/humain-ressource/entries/recovery`,
         newRecovery: `${ROOTS.DASHBOARD}/humain-ressource/entries/recovery/new`,
+        editRecovery: (id) => `${ROOTS.DASHBOARD}/humain-ressource/entries/recovery/${id}/edit`,
       },
       treatment: {
         root: `${ROOTS.DASHBOARD}/humain-ressource/treatment/location-assignment`,

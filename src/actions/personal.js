@@ -7,9 +7,9 @@ import axios, { fetcher, endpoints } from 'src/lib/axios';
 // ----------------------------------------------------------------------
 
 const swrOptions = {
-  revalidateIfStale: false,
-  revalidateOnFocus: false,
-  revalidateOnReconnect: false,
+  revalidateIfStale: true,
+  revalidateOnFocus: true,
+  revalidateOnReconnect: true,
 };
 
 const ENDPOINT = endpoints.personal;
@@ -61,6 +61,7 @@ export async function createPersonal(data) {
    */
   // const data = { directionData };
   await axios.post(ENDPOINT, data);
+
   //   mutate(endpoints.site);
 }
 

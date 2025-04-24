@@ -10,7 +10,10 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { DEDUCTIONS_TYPE_OPTIONS } from 'src/_mock';
-import { createDeductionsCompensations } from 'src/actions/deduction-conpensation';
+import {
+  createDeductionsCompensations,
+  updateDeductionsCompensations,
+} from 'src/actions/deduction-conpensation';
 
 import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
@@ -48,7 +51,13 @@ export function DeductionsCompensationNewEditForm({ currentProduct }) {
   const methods = useForm({
     resolver: zodResolver(NewProductSchema),
     defaultValues,
-    values: currentProduct,
+    values: {
+      ...currentProduct,
+
+      subject_absence: currentProduct?.subject_absence ? 'yes' : 'no',
+      is_deletable: currentProduct?.is_deletable ? 'yes' : 'no',
+      is_updatable: currentProduct?.is_updatable ? 'yes' : 'no',
+    },
   });
 
   const {
@@ -77,7 +86,11 @@ export function DeductionsCompensationNewEditForm({ currentProduct }) {
 
     try {
       // await new Promise((resolve) => setTimeout(resolve, 500));
-      await createDeductionsCompensations(updatedData);
+      if (currentProduct) {
+        await updateDeductionsCompensations(currentProduct.id, updatedData);
+      } else {
+        await createDeductionsCompensations(updatedData);
+      }
       reset();
       toast.success(currentProduct ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.rh.rhSettings.deductionsCompensation);

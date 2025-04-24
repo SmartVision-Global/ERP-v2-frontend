@@ -1,5 +1,5 @@
 import { useBoolean } from 'minimal-shared/hooks';
-import { useState, useEffect, forwardRef, useCallback } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -7,14 +7,14 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import { TextField, FormControl, InputAdornment } from '@mui/material';
-import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetProducts } from 'src/actions/product';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useGetRecoveries, validateRecovery } from 'src/actions/recovery';
 import {
   ACTIF_NAMES,
   PRODUCT_SITE_OPTIONS,
@@ -23,7 +23,6 @@ import {
   RECOVERY_NATURE_OPTIONS,
 } from 'src/_mock';
 
-import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
@@ -33,10 +32,10 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import {
   RenderCellId,
   RenderCellSite,
+  RenderCellType,
   RenderCellEndAt,
   RenderCellStatus,
   RenderCellNature,
-  RenderCellAtelier,
   RenderCellStartAt,
   RenderCellFullname,
   RenderCellValideBy,
@@ -159,10 +158,15 @@ const FILTERS_OPTIONS = [
 
 export function RecoveryListView() {
   const confirmDialog = useBoolean();
+  const confirmDialogCancel = useBoolean();
 
-  const { products, productsLoading } = useGetProducts();
+  const [selectedRow, setSelectedRow] = useState('');
+  const [message, setMessage] = useState('');
+  const [cancellationReason, setCancellationReason] = useState('');
 
-  const [tableData, setTableData] = useState(products);
+  const { recoveries, recoveriesLoading } = useGetRecoveries();
+
+  const [tableData, setTableData] = useState(recoveries);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
@@ -170,34 +174,25 @@ export function RecoveryListView() {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (products.length) {
-      setTableData(products);
+    if (recoveries.length) {
+      setTableData(recoveries);
     }
-  }, [products]);
+  }, [recoveries]);
   const handleReset = () => {
     setEditedFilters([]);
   };
 
   const dataFiltered = tableData;
 
-  const handleDeleteRow = useCallback(
-    (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
+  const handleOpenValidateConfirmDialog = (id) => {
+    confirmDialog.onTrue();
+    setSelectedRow(id);
+  };
 
-      toast.success('Delete success!');
-
-      setTableData(deleteRow);
-    },
-    [tableData]
-  );
-
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
-
-    toast.success('Delete success!');
-
-    setTableData(deleteRows);
-  }, [selectedRowIds, tableData]);
+  const handleOpenCancelConfirmDialog = (id) => {
+    confirmDialogCancel.onTrue();
+    setSelectedRow(id);
+  };
 
   const columns = [
     { field: 'category', headerName: 'Category', filterable: false },
@@ -247,18 +242,30 @@ export function RecoveryListView() {
       renderCell: (params) => <RenderCellFunction params={params} />,
     },
     {
-      field: 'atelier',
-      headerName: 'Atelier',
-      //   flex: 0.5,
+      field: 'type',
+      headerName: 'Type',
       flex: 1,
-      minWidth: 100,
+      minWidth: 260,
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellAtelier params={params} href={paths.dashboard.root} />
+        <RenderCellType params={params} href={paths.dashboard.root} />
       ),
     },
+    // {
+    //   field: 'atelier',
+    //   headerName: 'Atelier',
+    //   //   flex: 0.5,
+    //   flex: 1,
+    //   minWidth: 100,
+    //   hideable: false,
+    //   renderCell: (params) => (
+    //     // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+    //     <RenderCellAtelier params={params} href={paths.dashboard.root} />
+    //   ),
+    // },
     {
+      // TODO
       field: 'codePer',
       headerName: 'Code (permanence)',
       //   flex: 0.5,
@@ -270,6 +277,7 @@ export function RecoveryListView() {
         <RenderCellPermanence params={params} href={paths.dashboard.root} />
       ),
     },
+    // TODO
     {
       field: 'designationPerm',
       headerName: 'Designation(permanence)',
@@ -379,27 +387,28 @@ export function RecoveryListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => [
-        <GridActionsLinkItem
+        <GridActionsClickItem
           showInMenu
           icon={<Iconify icon="solar:eye-bold" />}
-          label="View"
+          label="Valider"
+          onClick={() => handleOpenValidateConfirmDialog(params.row.id)}
           // href={paths.dashboard.product.details(params.row.id)}
-          href={paths.dashboard.root}
+          // href={paths.dashboard.root}
         />,
         <GridActionsLinkItem
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}
-          label="Edit"
+          label="Modifier"
           // href={paths.dashboard.product.edit(params.row.id)}
-          href={paths.dashboard.root}
+          href={paths.dashboard.rh.entries.editRecovery(params.row.id)}
         />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-          label="Delete"
-          onClick={() => handleDeleteRow(params.row.id)}
-          sx={{ color: 'error.main' }}
-        />,
+        // <GridActionsCellItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:trash-bin-trash-bold" />}
+        //   label="Delete"
+        //   onClick={() => handleDeleteRow(params.row.id)}
+        //   sx={{ color: 'error.main' }}
+        // />,
       ],
     },
   ];
@@ -409,30 +418,86 @@ export function RecoveryListView() {
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
 
-  const renderConfirmDialog = () => (
+  const renderConfirmValidationDialog = () => (
     <ConfirmDialog
       open={confirmDialog.value}
       onClose={confirmDialog.onFalse}
-      title="Delete"
+      title="Valider récupération"
       content={
-        <>
-          Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
-        </>
+        // <>
+        //   Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
+        // </>
+        <Box my={2}>
+          <TextField label="Message" fullWidth multiline rows={3} />
+        </Box>
       }
       action={
         <Button
           variant="contained"
-          color="error"
-          onClick={() => {
-            handleDeleteRows();
+          color="info"
+          onClick={async () => {
+            // handleDeleteRows();
+            await validateRecovery(selectedRow, { message: 'validation' });
             confirmDialog.onFalse();
           }}
         >
-          Delete
+          Valider
         </Button>
       }
     />
   );
+  const renderConfirmCancelDialog = () => (
+    <ConfirmDialog
+      open={confirmDialogCancel.value}
+      onClose={confirmDialogCancel.onFalse}
+      title="Annuler la validation"
+      content={
+        // <>
+        //   Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
+        // </>
+        <Box my={2}>
+          <TextField label="Message" fullWidth multiline rows={3} />
+        </Box>
+      }
+      action={
+        <Button
+          variant="contained"
+          color="info"
+          onClick={async () => {
+            // handleDeleteRows();
+            await validateRecovery(selectedRow, { message: 'validation' });
+            confirmDialog.onFalse();
+          }}
+        >
+          Valider
+        </Button>
+      }
+    />
+  );
+  // const renderConfirmCancelationDialog = () => (
+  //   <ConfirmDialog
+  //     open={confirmDialog.value}
+  //     onClose={confirmDialog.onFalse}
+  //     title="Delete"
+  //     content={
+  //       <>
+  //         Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
+  //       </>
+  //     }
+  //     action={
+  //       <Button
+  //         variant="contained"
+  //         color="error"
+  //         onClick={() => {
+  //           handleDeleteRows();
+  //           confirmDialog.onFalse();
+  //         }}
+  //       >
+  //         Delete
+  //       </Button>
+  //     }
+  //   />
+  // );
 
   return (
     <>
@@ -502,7 +567,7 @@ export function RecoveryListView() {
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}
-            loading={productsLoading}
+            loading={recoveriesLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
@@ -525,7 +590,7 @@ export function RecoveryListView() {
         </Card>
       </DashboardContent>
 
-      {renderConfirmDialog()}
+      {renderConfirmValidationDialog()}
     </>
   );
 }
@@ -553,4 +618,14 @@ export const GridActionsLinkItem = forwardRef((props, ref) => {
   );
 });
 
+export const GridActionsClickItem = forwardRef((props, ref) => {
+  const { onClick, label, icon, sx } = props;
+
+  return (
+    <MenuItem ref={ref} sx={sx} onClick={onClick}>
+      {icon && <ListItemIcon>{icon}</ListItemIcon>}
+      {label}
+    </MenuItem>
+  );
+});
 // ----------------------------------------------------------------------

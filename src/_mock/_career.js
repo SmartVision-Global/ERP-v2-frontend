@@ -1,9 +1,9 @@
 export const CAREER_TYPE_OPTIONS = [
-  { label: 'FORMATIONS ACADEMIQUES', value: 'FORMATIONS ACADEMIQUES' },
-  { label: 'FORMATIONS PROFESSIONNELLES', value: 'FORMATIONS PROFESSIONNELLES' },
-  { label: 'EXPERIENCES ANTERIEURES', value: 'EXPERIENCES ANTERIEURES' },
-  { label: 'AUTRE QUALITE', value: 'AUTRE QUALITE' },
-  { label: 'AVOIR', value: 'AVOIR' },
-  { label: 'SAVOIR-FAIRE', value: 'SAVOIR-FAIRE' },
-  { label: 'SAVOIR-ETRE', value: 'SAVOIR-ETRE' },
+  { label: 'FORMATIONS ACADEMIQUES', value: '1' },
+  { label: 'FORMATIONS PROFESSIONNELLES', value: '2' },
+  { label: 'EXPERIENCES ANTERIEURES', value: '3' },
+  { label: 'AUTRE QUALITE', value: '4' },
+  { label: 'AVOIR', value: '5' },
+  { label: 'SAVOIR-FAIRE', value: '6' },
+  { label: 'SAVOIR-ETRE', value: '7' },
 ];

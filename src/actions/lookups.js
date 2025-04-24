@@ -12,9 +12,9 @@ const swrOptions = {
 
 export function useMultiLookups(entities = []) {
   const results = entities.map((entity) => ({
-    key: entity,
+    key: entity.entity,
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    ...useGetLookups(entity),
+    ...useGetLookups(entity.url),
   }));
   const dataLookups = Object.fromEntries(results.map(({ key, data }) => [key, data]));
 
@@ -30,8 +30,8 @@ export function useMultiLookups(entities = []) {
   };
 }
 
-export function useGetLookups(entity) {
-  const url = `/v1/lookups/${entity}`;
+export function useGetLookups(subUrl) {
+  const url = `/v1/${subUrl}`;
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 

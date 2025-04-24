@@ -7,14 +7,14 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import { TextField, FormControl, InputAdornment } from '@mui/material';
-import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetProducts } from 'src/actions/product';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useGetSocialLoans } from 'src/actions/social-loan';
 import { ACTIF_NAMES, PRODUCT_STOCK_OPTIONS, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
 
 import { toast } from 'src/components/snackbar';
@@ -26,13 +26,14 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import {
   RenderCellId,
-  RenderCellName,
   RenderCellStatus,
   RenderCellTauxRemb,
   RenderCellFullname,
   RenderCellCreatedAt,
+  RenderCellStartDate,
   RenderCellPretAmount,
   RenderCellObservation,
+  RenderCellLoanTermMonths,
 } from '../social-loan-table-row';
 
 // ----------------------------------------------------------------------
@@ -114,9 +115,9 @@ const FILTERS_OPTIONS = [
 export function SocialLoanListView() {
   const confirmDialog = useBoolean();
 
-  const { products, productsLoading } = useGetProducts();
+  const { socialLoans, socialLoansLoading } = useGetSocialLoans();
 
-  const [tableData, setTableData] = useState(products);
+  const [tableData, setTableData] = useState(socialLoans);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
@@ -124,10 +125,10 @@ export function SocialLoanListView() {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (products.length) {
-      setTableData(products);
+    if (socialLoans.length) {
+      setTableData(socialLoans);
     }
-  }, [products]);
+  }, [socialLoans]);
   const handleReset = () => {
     setEditedFilters([]);
   };
@@ -180,7 +181,7 @@ export function SocialLoanListView() {
       ),
     },
     {
-      field: 'amount_pret',
+      field: 'loan_amount',
       headerName: 'Montant du pret',
       flex: 1,
       minWidth: 160,
@@ -191,25 +192,25 @@ export function SocialLoanListView() {
       ),
     },
     {
-      field: 'dure',
+      field: 'loan_term_months',
       headerName: 'Durée de remboursement',
       flex: 1,
       minWidth: 160,
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellName params={params} href={paths.dashboard.root} />
+        <RenderCellLoanTermMonths params={params} href={paths.dashboard.root} />
       ),
     },
     {
-      field: 'start_remb',
+      field: 'start_date',
       headerName: 'Début de remboursement',
       flex: 1,
       minWidth: 150,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellCreatedAt params={params} />,
+      renderCell: (params) => <RenderCellStartDate params={params} />,
     },
     {
       field: 'amount_remb',
@@ -268,27 +269,27 @@ export function SocialLoanListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => [
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
-          label="View"
-          // href={paths.dashboard.product.details(params.row.id)}
-          href={paths.dashboard.root}
-        />,
+        // <GridActionsLinkItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:eye-bold" />}
+        //   label="View"
+        //   // href={paths.dashboard.product.details(params.row.id)}
+        //   href={paths.dashboard.root}
+        // />,
         <GridActionsLinkItem
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}
-          label="Edit"
+          label="Modifier"
           // href={paths.dashboard.product.edit(params.row.id)}
-          href={paths.dashboard.root}
+          href={paths.dashboard.rh.entries.editSocialLoan(params.row.id)}
         />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-          label="Delete"
-          onClick={() => handleDeleteRow(params.row.id)}
-          sx={{ color: 'error.main' }}
-        />,
+        // <GridActionsCellItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:trash-bin-trash-bold" />}
+        //   label="Delete"
+        //   onClick={() => handleDeleteRow(params.row.id)}
+        //   sx={{ color: 'error.main' }}
+        // />,
       ],
     },
   ];
@@ -391,7 +392,7 @@ export function SocialLoanListView() {
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}
-            loading={productsLoading}
+            loading={socialLoansLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}

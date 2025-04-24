@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { z as zod } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,32 +7,42 @@ import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 
-import { ACTIF_NAMES, COMMUN_OVERDAYS_OPTIONS } from 'src/_mock';
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
 
+import { useGetLookups } from 'src/actions/lookups';
+import { COMMUN_OVERDAYS_OPTIONS } from 'src/_mock';
+import { createPermanency, updatePermanency } from 'src/actions/permanence';
+
+import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
 export const NewTauxCnasSchema = zod.object({
-  employer: zod.number().min(0, { message: 'Rate must be a positive number!' }),
-  nature: zod.string().min(1, { message: 'Category is required!' }),
-  start_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
-  end_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
+  // personals: zod.array().min(1, { message: 'Personal is required' }),
+  personals: zod.array(zod.string()).min(1, { message: 'Choose at least one option!' }),
+  refund_nature: zod.string().min(1, { message: 'Category is required!' }),
+  from_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
+  to_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
 
-  days: zod.string().min(1, { message: 'Category is required!' }),
-  hours: zod.string().min(1, { message: 'Category is required!' }),
-  minutes: zod.string().min(1, { message: 'Category is required!' }),
-  notes: zod.string().min(1, { message: 'Category is required!' }),
+  days: zod.string().optional().nullable(),
+  hours: zod.string().optional().nullable(),
+  minutes: zod.string().optional().nullable(),
+  observation: zod.string().optional().nullable(),
 });
 
 export function PermanenceNewEditForm({ currentTaux }) {
+  const router = useRouter();
+  const { data: personals } = useGetLookups('hr/lookups/personals');
+
   const defaultValues = {
-    employer: '',
-    nature: '',
-    start_date: null,
-    end_date: null,
+    personals: [],
+    refund_nature: '',
+    from_date: null,
+    to_date: null,
     days: '',
     hours: '',
     minutes: '',
-    notes: '',
+    observation: '',
   };
 
   const methods = useForm({
@@ -41,15 +52,33 @@ export function PermanenceNewEditForm({ currentTaux }) {
   });
 
   const {
+    watch,
     reset,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = methods;
+  const values = watch();
+  console.log('err', errors);
+  console.log('val', values);
 
   const onSubmit = handleSubmit(async (data) => {
+    const updatedData = {
+      ...data,
+      from_date: dayjs(data.from_date).format('YYYY-MM-DD HH:mm:ss'),
+      to_date: dayjs(data.to_date).format('YYYY-MM-DD HH:mm:ss'),
+    };
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // eslint-disable-next-line no-debugger
+      debugger;
+      // await new Promise((resolve) => setTimeout(resolve, 500));
+      if (currentTaux) {
+        await updatePermanency(currentTaux.id, updatedData);
+      } else {
+        await createPermanency(updatedData);
+      }
       reset();
+      toast.success(currentTaux ? 'Update success!' : 'Create success!');
+      router.push(paths.dashboard.rh.entries.permanence);
       console.info('DATA', data);
     } catch (error) {
       console.error(error);
@@ -65,16 +94,16 @@ export function PermanenceNewEditForm({ currentTaux }) {
       <Stack spacing={3} sx={{ p: 3 }}>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="employer" label="Employé" size="small">
-              {ACTIF_NAMES.map((status) => (
+            <Field.LookupMultiSelect name="personals" label="Personels" options={personals} />
+            {/* {ACTIF_NAMES.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
               ))}
-            </Field.Select>
+            </Field.Select> */}
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="nature" label="Nature" size="small">
+            <Field.Select name="refund_nature" label="Nature" size="small">
               {COMMUN_OVERDAYS_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
@@ -83,10 +112,10 @@ export function PermanenceNewEditForm({ currentTaux }) {
             </Field.Select>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.DatePicker name="start_date" label="Du" />
+            <Field.DatePicker name="from_date" label="Du" />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.DatePicker name="end_date" label="Au" />
+            <Field.DatePicker name="to_date" label="Au" />
           </Grid>
           <Grid size={{ xs: 12, md: 4 }}>
             <Field.Text name="days" label="Jours" />
@@ -98,7 +127,7 @@ export function PermanenceNewEditForm({ currentTaux }) {
             <Field.Text name="minutes" label="Minutes" />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="notes" label="Remarques" multiline rows={3} />
+            <Field.Text name="observation" label="Remarques" multiline rows={3} />
           </Grid>
         </Grid>
 

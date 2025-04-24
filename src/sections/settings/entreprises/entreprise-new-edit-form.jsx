@@ -6,9 +6,9 @@ import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Box, Card, Chip, Stack, Divider, CardHeader } from '@mui/material';
 
+import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { useGetLookups } from 'src/actions/lookups';
 import { createSociety } from 'src/actions/society';
 
 import { toast } from 'src/components/snackbar';
@@ -45,7 +45,6 @@ export const NewProductSchema = zod.object({
 
 export function EntrepriseNewEditForm({ currentProduct }) {
   // const { sites, sitesLoading } = useGetSites();
-  const { data: workshops } = useGetLookups('workshops');
   const router = useRouter();
   const defaultValues = {
     name: '',
@@ -103,7 +102,7 @@ export function EntrepriseNewEditForm({ currentProduct }) {
       // reset();
 
       toast.success(currentProduct ? 'Update success!' : 'Create success!');
-      // router.push(paths.dashboard.settings.machine.root);
+      router.push(paths.dashboard.settings.society.root);
       console.info('DATA', updatedData);
     } catch (error) {
       console.error(error);

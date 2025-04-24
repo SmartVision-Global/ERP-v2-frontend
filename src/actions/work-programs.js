@@ -7,9 +7,9 @@ import axios, { fetcher, endpoints } from 'src/lib/axios';
 // ----------------------------------------------------------------------
 
 const swrOptions = {
-  revalidateIfStale: false,
-  revalidateOnFocus: false,
-  revalidateOnReconnect: false,
+  revalidateIfStale: true,
+  revalidateOnFocus: true,
+  revalidateOnReconnect: true,
 };
 
 const ENDPOINT = endpoints.workPrograms;
@@ -20,7 +20,13 @@ export function useGetWorkPrograms() {
   const url = endpoints.workPrograms;
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
-
+  const newData = data?.data?.records?.map((item) => ({
+    ...item,
+    days: item.days?.map((day) => ({
+      ...day,
+      is_work_day: day.is_work_day ? 'true' : 'false',
+    })),
+  }));
   const memoizedValue = useMemo(
     () => ({
       workPrograms: data?.data?.records || [],
@@ -36,25 +42,35 @@ export function useGetWorkPrograms() {
 }
 
 // ----------------------------------------------------------------------
-
-export function useGetWorkProgram(productId) {
-  const url = productId ? [endpoints.product.details, { params: { productId } }] : '';
+export function useGetWorkProgram(workProgramId) {
+  const url = workProgramId ? [`${endpoints.workPrograms}/${workProgramId}`] : '';
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
-
+  // eslint-disable-next-line no-debugger
+  debugger;
+  // const newData = {
+  //   ...data?.data,
+  //   days: data?.data?.days.map((day) =>
+  //     // const [hour, minute, second] = day?.start_time?.split(':');
+  //     ({
+  //       ...day,
+  //       is_work_day: day.is_work_day ? 'true' : 'false',
+  //     })
+  //   ),
+  //   rotation_days: data?.data?.days.length,
+  // };
   const memoizedValue = useMemo(
     () => ({
-      product: data?.product,
-      productLoading: isLoading,
-      productError: error,
-      productValidating: isValidating,
+      workProgram: data?.data,
+      workProgramLoading: isLoading,
+      workProgramError: error,
+      workProgramValidating: isValidating,
     }),
-    [data?.product, error, isLoading, isValidating]
+    [data?.data, error, isLoading, isValidating]
   );
 
   return memoizedValue;
 }
-
 export async function createWorkProgram(data) {
   /**
    * Work on server
@@ -62,4 +78,13 @@ export async function createWorkProgram(data) {
   // const data = { directionData };
   await axios.post(ENDPOINT, data);
   //   mutate(endpoints.site);
+}
+
+export async function updateWorkProgram(id, data) {
+  /**
+   * Work on server
+   */
+  // const data = { directionData };
+  await axios.patch(`${ENDPOINT}/${id}`, data);
+  // mutate(`${ENDPOINT}/${id}`);
 }

@@ -88,8 +88,6 @@ export async function createDirection(directionData) {
   mutate(
     DIRECTION_ENDPOINT,
     (currentData) => {
-      // eslint-disable-next-line no-debugger
-      debugger;
       const currentDirections = currentData?.events;
 
       const events = [...currentDirections, directionData];
@@ -117,8 +115,6 @@ export async function createSubsidiary(subsidiaryData) {
   mutate(
     SUBSIDIARY_ENDPOINT,
     (currentData) => {
-      // eslint-disable-next-line no-debugger
-      debugger;
       const currentDirections = currentData?.events;
 
       const events = [...currentDirections, subsidiaryData];

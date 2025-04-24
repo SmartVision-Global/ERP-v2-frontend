@@ -23,7 +23,7 @@ export const NewProductSchema = zod.object({
 
 export function MachineNewEditForm({ currentProduct }) {
   // const { sites, sitesLoading } = useGetSites();
-  const { data: workshops } = useGetLookups('workshops');
+  const { data: workshops } = useGetLookups('settings/lookups/workshops');
   const router = useRouter();
   const defaultValues = {
     name: '',

@@ -5,25 +5,47 @@ import ListItemText from '@mui/material/ListItemText';
 
 import { RouterLink } from 'src/routes/components';
 
-import { fDate } from 'src/utils/format-time';
+import { fDate, fTime } from 'src/utils/format-time';
 
 import { Label } from 'src/components/label';
 
 // ----------------------------------------------------------------------
 
+export const ABS_TYPE_OPTIONS = {
+  1: 'MALADIE',
+  2: 'CONGE ANNUEL',
+  3: 'ABSENCE AUTORISEE PAYE',
+  4: 'ABSENCE AUTORISEE NON PAYE',
+  5: 'ABSENCE NON AUTORISEE',
+  6: 'CONGE EXCEPTIONNEL',
+  7: 'CONGE SANS SOLDE',
+  8: 'SORTIE AUTORISEE PAYE',
+  9: 'SORTIE AUTORISEE NON PAYE',
+  10: 'SORTIE NON AUTORISEE',
+  11: 'RETARD PAYE',
+  12: 'RETARD NON PAYE',
+};
+
+export const STATUS_VALIDATION_OPTIONS = {
+  1: 'En attente',
+  2: 'Validé',
+  3: 'Archivé',
+  4: 'Annulée',
+};
+
 export function RenderCellFullname({ params }) {
-  return <Typography variant="body2">LAMARA - HOSSEM</Typography>;
+  return <Typography variant="body2">{params.row?.personal?.name}</Typography>;
 }
 export function RenderCellType({ params }) {
   return (
     <Label variant="soft" color={params.row.publish === 'published' ? 'info' : 'default'}>
-      ABSENCE AUTORISÉE NON PAYÉ
+      {ABS_TYPE_OPTIONS[params.row.type]}
     </Label>
   );
 }
 
 export function RenderCellSite({ params }) {
-  return <Typography variant="body2">ST-BERBES</Typography>;
+  return <Typography variant="body2">{params.row?.site?.name}</Typography>;
 }
 export function RenderCellFunction({ params }) {
   return <Typography variant="body2">AGENT POLYVALENT NIV 2</Typography>;
@@ -38,32 +60,32 @@ export function RenderCellIntermidiate({ params }) {
 export function RenderCellStartAt({ params }) {
   return (
     <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
-      <span>{fDate(params.row.createdAt)}</span>
+      <span>{fDate(params.row.from_date)}</span>
     </Box>
   );
 }
 export function RenderCellEndAt({ params }) {
   return (
     <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
-      <span>{fDate(params.row.createdAt)}</span>
+      <span>{fDate(params.row.to_date)}</span>
     </Box>
   );
 }
 
 export function RenderCellDesignation({ params }) {
-  return <Typography variant="body2">absence non autorise</Typography>;
+  return <Typography variant="body2">{params.row.observation}</Typography>;
 }
 
 export function RenderCellStatus({ params }) {
   return (
-    <Label variant="soft" color={params.row.publish === 'published' ? 'info' : 'default'}>
-      Valider
+    <Label variant="soft" color={params.row.status === '1' ? 'info' : 'error'}>
+      {STATUS_VALIDATION_OPTIONS[params.row.status]}
     </Label>
   );
 }
 
 export function RenderCellValideBy({ params }) {
-  return <Typography variant="body2">MEZNANE ILYES</Typography>;
+  return <Typography variant="body2">-</Typography>;
 }
 
 export function RenderCellExercice({ params }) {
@@ -73,10 +95,10 @@ export function RenderCellExercice({ params }) {
 export function RenderCellCreatedAt({ params }) {
   return (
     <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
-      <span>{fDate(params.row.createdAt)}</span>
-      {/* <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
-        {fTime(params.row.createdAt)}
-      </Box> */}
+      <span>{fDate(params.row.created_at)}</span>
+      <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
+        {fTime(params.row.created_at)}
+      </Box>
     </Box>
   );
 }
@@ -95,7 +117,7 @@ export function RenderCellId({ params, href }) {
       <ListItemText
         primary={
           <Link component={RouterLink} href={href} color="inherit">
-            {Math.floor(Math.random() * 1000) + 1}
+            {params.row.id}
           </Link>
         }
         // secondary={params.row.category}

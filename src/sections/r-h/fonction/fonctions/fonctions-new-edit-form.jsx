@@ -10,8 +10,8 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { USER_STATUS_OPTIONS } from 'src/_mock';
-import { createJob } from 'src/actions/function';
-import { useGetLookups } from 'src/actions/lookups';
+import { useMultiLookups } from 'src/actions/lookups';
+import { createJob, updateJob } from 'src/actions/function';
 
 import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
@@ -60,12 +60,22 @@ export const NewProductSchema = zod.object({
 
 export function FonctionsNewEditForm({ currentProduct }) {
   const router = useRouter();
-  const { data: sites } = useGetLookups('sites');
-  const { data: salaryCategories } = useGetLookups('salary_categories');
-  const { data: salaryGrids } = useGetLookups('salary_grids');
-  const { data: directions } = useGetLookups('directions');
-  const { data: services } = useGetLookups('services');
-  const { data: jobs } = useGetLookups('jobs');
+
+  const { dataLookups, dataLoading, dataError } = useMultiLookups([
+    { entity: 'sites', url: 'settings/lookups/sites' },
+    { entity: 'salaryCategories', url: 'hr/lookups/identification/salary_category' },
+    { entity: 'salaryGrids', url: 'hr/lookups/salary_grids' },
+    { entity: 'directions', url: 'hr/lookups/identification/direction' },
+    { entity: 'services', url: 'settings/lookups/service' },
+    { entity: 'jobs', url: 'hr/lookups/jobs' },
+  ]);
+
+  const sites = dataLookups.sites;
+  const salaryCategories = dataLookups.salaryCategories;
+  const salaryGrids = dataLookups.salaryGrids;
+  const directions = dataLookups.directions;
+  const services = dataLookups.services;
+  const jobs = dataLookups.jobs;
 
   const defaultValues = {
     name: '',
@@ -90,16 +100,38 @@ export function FonctionsNewEditForm({ currentProduct }) {
   const methods = useForm({
     resolver: zodResolver(NewProductSchema),
     defaultValues,
-    values: currentProduct,
+    values: {
+      name: currentProduct?.name,
+      designation: currentProduct?.designation,
+      site_id: currentProduct?.site_id ? currentProduct?.site_id.toString() : '',
+      salary_category_id: currentProduct?.salary_category_id?.toString() || '',
+      salary_grids: currentProduct?.salary_grids,
+      job_employee_quota: currentProduct?.job_employee_quota,
+      protective_clothing: currentProduct?.protective_clothing ? 'yes' : 'no',
+      have_premium: currentProduct?.have_premium ? 'yes' : 'no',
+      premium_amount: currentProduct?.premium_amount,
+      max_absence_allowed: currentProduct?.max_absence_allowed,
+      key_post: currentProduct?.key_post ? 'yes' : 'no',
+      direction_id: currentProduct?.direction_id?.toString() || '',
+      service_id: currentProduct?.service_id?.toString() || '',
+      job_code: currentProduct?.job_code,
+      manager_job_id: currentProduct?.manager_job_id?.toString() || '',
+      mission_id: currentProduct?.mission_id?.toString() || '',
+      action_id: currentProduct?.action_id?.toString() || '',
+    },
   });
 
   const {
     reset,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = methods;
 
+  console.log('err', errors);
+
   const onSubmit = handleSubmit(async (data) => {
+    // eslint-disable-next-line no-debugger
+    debugger;
     const updatedData = {
       // ...data,
       name: data.name,
@@ -118,12 +150,17 @@ export function FonctionsNewEditForm({ currentProduct }) {
       have_premium: data.have_premium === 'yes' ? true : false,
       premium_amount: data.premium_amount,
       max_absence_allowed: data.max_absence_allowed,
-      salary_grids: [parseInt(data.salary_grids)],
+      salaryGrids: [parseInt(data.salary_grids)],
     };
 
     try {
       // await new Promise((resolve) => setTimeout(resolve, 500));
-      await createJob(updatedData);
+      if (currentProduct) {
+        await updateJob(currentProduct.id, updatedData);
+      } else {
+        await createJob(updatedData);
+      }
+
       reset();
       toast.success(currentProduct ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.rh.fonction.fonctions);

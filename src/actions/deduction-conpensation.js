@@ -35,19 +35,43 @@ export function useGetDeductionsCompensations() {
   return memoizedValue;
 }
 
-// ----------------------------------------------------------------------
-
-export function useGetDeductionCompensation(personalId) {
-  const url = personalId ? [`${endpoints.personal}/${personalId}`] : '';
+export function useGetDeductionsCompensationsByContributoryImposable(contributory_imposable) {
+  // const url = endpoints.deductionsCompensations;
+  const url = contributory_imposable
+    ? [endpoints.deductionsCompensations, { params: { contributory_imposable } }]
+    : '';
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({
-      personal: data?.data,
-      personalLoading: isLoading,
-      personalError: error,
-      personalValidating: isValidating,
+      deductionsCompensations: data?.data?.records || [],
+      deductionsCompensationsLoading: isLoading,
+      deductionsCompensationsError: error,
+      deductionsCompensationsValidating: isValidating,
+      deductionsCompensationsEmpty: !isLoading && !isValidating && !data?.data?.records.length,
+    }),
+    [data?.data?.records, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
+
+// ----------------------------------------------------------------------
+
+export function useGetDeductionCompensation(deductionCompensationId) {
+  const url = deductionCompensationId
+    ? [`${endpoints.deductionsCompensations}/${deductionCompensationId}`]
+    : '';
+
+  const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
+
+  const memoizedValue = useMemo(
+    () => ({
+      deductionCompensation: data?.data,
+      deductionCompensationLoading: isLoading,
+      deductionCompensationError: error,
+      deductionCompensationValidating: isValidating,
     }),
     [data?.data, error, isLoading, isValidating]
   );

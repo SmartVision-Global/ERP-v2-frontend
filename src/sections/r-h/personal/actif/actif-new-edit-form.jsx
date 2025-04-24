@@ -17,6 +17,9 @@ import {
   Typography,
 } from '@mui/material';
 
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
+
 import { useMultiLookups } from 'src/actions/lookups';
 import { createPersonal, updatePersonal } from 'src/actions/personal';
 import {
@@ -32,6 +35,7 @@ import {
   COMMUN_NATIONAL_SERVICE_STATUS_OPTIONS,
 } from 'src/_mock';
 
+import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
 export const NewProductSchema = zod
@@ -191,80 +195,27 @@ export const NewProductSchema = zod
   });
 
 export function ActifNewEditForm({ currentProduct }) {
-  // Lookups
-  //   subsidiary_id
-  // const { data: subsidiaries=dataLookups?. || [] } = useGetLookups('subsidiaries');
-  // // direction_id
-  // const { data: directions=dataLookups?. || [] } = useGetLookups('directions');
-
-  // // site_id
-  // const { data: sites=dataLookups?. || [] } = useGetLookups('sites');
-
-  // // division_id
-  // const { data: divisions=dataLookups?. || [] } = useGetLookups('divisions');
-
-  // // department_id
-  // const { data: departments=dataLookups?. || [] } = useGetLookups('departments');
-
-  // // section_id
-  // const { data: sections=dataLookups?. || [] } = useGetLookups('sections');
-
-  // // rung_id
-  // const { data: rungs=dataLookups?. || [] } = useGetLookups('rungs');
-
-  // // workshop_id
-  // const { data: workshops=dataLookups?. || [] } = useGetLookups('workshops');
-
-  // // machine_id
-  // const { data: machines=dataLookups?. || [] } = useGetLookups('machines');
-
-  // // zone_id
-  // const { data: zones=dataLookups?. || [] } = useGetLookups('zones');
-
-  // // enterprise_id
-  // const { data: enterprises=dataLookups?. || [] } = useGetLookups('enterprises');
-
-  // // job_id
-  // const { data: jobs=dataLookups?. || [] } = useGetLookups('jobs');
-
-  // // salary_category_id
-  // const { data: salaryCategories=dataLookups?. || [] } = useGetLookups('salary_categories');
-
-  // // salary_grid_id
-  // const { data: salaryGrids=dataLookups?. || [] } = useGetLookups('salary_grids');
-  // // salary_scale_levels_id
-  // const { data: salaryScaleLevels=dataLookups?. || [] } = useGetLookups('salary_scale_levels');
-
-  // // agency_id
-  // const { data: agencies=dataLookups?. || [] } = useGetLookups('agencies');
-
-  // // bank_id
-  // const { data: banks=dataLookups?. || [] } = useGetLookups('banks');
-  // // rate_id
-  // const { data: rates=dataLookups?. || [] } = useGetLookups('rates');
-
-  // const { data: nationalities=dataLookups?. || [] } = useGetLookups('nationalities');
-
+  const router = useRouter();
   const { dataLookups, dataLoading, dataError } = useMultiLookups([
-    'subsidiaries',
-    'directions',
-    'sites',
-    'divisions',
-    'departments',
-    'sections',
-    'rungs',
-    'workshops',
-    'machines',
-    'zones',
-    'enterprises',
-    'jobs',
-    'salary_categories',
-    'salary_grids',
-    'salary_scale_levels',
-    'agencies',
-    'banks',
-    'rates',
-    'nationalities',
+    { entity: 'subsidiaries', url: 'hr/lookups/identification/subsidiary' },
+    { entity: 'directions', url: 'hr/lookups/identification/direction' },
+    { entity: 'sites', url: 'settings/lookups/sites' },
+    { entity: 'divisions', url: 'hr/lookups/identification/division' },
+    { entity: 'departments', url: 'hr/lookups/identification/department' },
+    { entity: 'sections', url: 'hr/lookups/identification/section' },
+    { entity: 'rungs', url: 'hr/lookups/identification/rung' },
+    { entity: 'workshops', url: 'settings/lookups/workshops' },
+    { entity: 'machines', url: 'settings/lookups/machines' },
+    { entity: 'zones', url: 'hr/lookups/zones' },
+    { entity: 'enterprises', url: 'settings/lookups/enterprises' },
+    { entity: 'jobs', url: 'hr/lookups/jobs' },
+    { entity: 'salary_categories', url: 'hr/lookups/identification/salary_category' },
+    { entity: 'salary_grids', url: 'hr/lookups/salary_grids' },
+    { entity: 'salary_scale_levels', url: 'hr/lookups/identification/salary_scale_level' },
+    { entity: 'agencies', url: 'hr/lookups/agencies' },
+    { entity: 'banks', url: 'hr/lookups/identification/bank' },
+    { entity: 'rates', url: 'hr/lookups/rates' },
+    { entity: 'nationalities', url: 'hr/lookups/identification/nationality' },
   ]);
 
   const subsidiaries = dataLookups?.subsidiaries || [];
@@ -501,17 +452,15 @@ export function ActifNewEditForm({ currentProduct }) {
     };
 
     try {
-      // eslint-disable-next-line no-debugger
-      debugger;
       // await new Promise((resolve) => setTimeout(resolve, 500));
       if (currentProduct) {
         await updatePersonal(currentProduct?.id, updatedData);
       } else {
         await createPersonal(updatedData);
       }
-      // reset();
-      // toast.success(currentProduct ? 'Update success!' : 'Create success!');
-      // router.push(paths.dashboard.product.root);
+      reset();
+      toast.success(currentProduct ? 'Update success!' : 'Create success!');
+      router.push(paths.dashboard.rh.personal.root);
       console.info('DATA', updatedData);
     } catch (error) {
       console.error(error);
