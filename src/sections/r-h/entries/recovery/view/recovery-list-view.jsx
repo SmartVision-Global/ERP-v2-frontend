@@ -14,7 +14,12 @@ import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetRecoveries, validateRecovery } from 'src/actions/recovery';
+import {
+  cancelRecovery,
+  archiveRecovery,
+  useGetRecoveries,
+  validateRecovery,
+} from 'src/actions/recovery';
 import {
   ACTIF_NAMES,
   PRODUCT_SITE_OPTIONS,
@@ -158,14 +163,16 @@ const FILTERS_OPTIONS = [
 
 export function RecoveryListView() {
   const confirmDialog = useBoolean();
+  const confirmDialogArchive = useBoolean();
   const confirmDialogCancel = useBoolean();
 
   const [selectedRow, setSelectedRow] = useState('');
   const [message, setMessage] = useState('');
+  const [error, setError] = useState(false);
+
   const [cancellationReason, setCancellationReason] = useState('');
 
   const { recoveries, recoveriesLoading } = useGetRecoveries();
-
   const [tableData, setTableData] = useState(recoveries);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
@@ -186,6 +193,11 @@ export function RecoveryListView() {
 
   const handleOpenValidateConfirmDialog = (id) => {
     confirmDialog.onTrue();
+    setSelectedRow(id);
+  };
+
+  const handleOpenArchiveConfirmDialog = (id) => {
+    confirmDialogArchive.onTrue();
     setSelectedRow(id);
   };
 
@@ -395,6 +407,22 @@ export function RecoveryListView() {
           // href={paths.dashboard.product.details(params.row.id)}
           // href={paths.dashboard.root}
         />,
+        <GridActionsClickItem
+          showInMenu
+          icon={<Iconify icon="solar:eye-bold" />}
+          label="Archiver"
+          onClick={() => handleOpenArchiveConfirmDialog(params.row.id)}
+          // href={paths.dashboard.product.details(params.row.id)}
+          // href={paths.dashboard.root}
+        />,
+        <GridActionsClickItem
+          showInMenu
+          icon={<Iconify icon="solar:eye-bold" />}
+          label="Annuler la validation"
+          onClick={() => handleOpenCancelConfirmDialog(params.row.id)}
+          // href={paths.dashboard.product.details(params.row.id)}
+          // href={paths.dashboard.root}
+        />,
         <GridActionsLinkItem
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}
@@ -428,7 +456,14 @@ export function RecoveryListView() {
         //   Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
         // </>
         <Box my={2}>
-          <TextField label="Message" fullWidth multiline rows={3} />
+          <TextField
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            label="Message"
+            fullWidth
+            multiline
+            rows={3}
+          />
         </Box>
       }
       action={
@@ -442,6 +477,54 @@ export function RecoveryListView() {
           }}
         >
           Valider
+        </Button>
+      }
+    />
+  );
+  const renderConfirmArchiveDialog = () => (
+    <ConfirmDialog
+      open={confirmDialogArchive.value}
+      onClose={() => {
+        confirmDialogArchive.onFalse();
+        setCancellationReason('');
+      }}
+      title="Archiver"
+      content={
+        // <>
+        //   Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
+        // </>
+        <Box my={2}>
+          <TextField
+            label="Raison"
+            fullWidth
+            multiline
+            rows={3}
+            value={cancellationReason}
+            onChange={(e) => {
+              setError(false);
+              setCancellationReason(e.target.value);
+            }}
+            required
+            helperText={error ? 'Veuillez remplir ce champ' : ''}
+            error={error}
+          />
+        </Box>
+      }
+      action={
+        <Button
+          variant="contained"
+          color="info"
+          onClick={async () => {
+            if (!cancellationReason) {
+              setError(true);
+            } else {
+              // handleDeleteRows();
+              await archiveRecovery(selectedRow, { cancellation_reason: cancellationReason });
+              confirmDialogArchive.onFalse();
+            }
+          }}
+        >
+          Archiver
         </Button>
       }
     />
@@ -449,14 +532,30 @@ export function RecoveryListView() {
   const renderConfirmCancelDialog = () => (
     <ConfirmDialog
       open={confirmDialogCancel.value}
-      onClose={confirmDialogCancel.onFalse}
+      onClose={() => {
+        confirmDialogCancel.onFalse();
+        setCancellationReason('');
+      }}
       title="Annuler la validation"
       content={
         // <>
         //   Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
         // </>
         <Box my={2}>
-          <TextField label="Message" fullWidth multiline rows={3} />
+          <TextField
+            label="Raison"
+            fullWidth
+            multiline
+            rows={3}
+            value={cancellationReason}
+            onChange={(e) => {
+              setError(false);
+              setCancellationReason(e.target.value);
+            }}
+            required
+            helperText={error ? 'Veuillez remplir ce champ' : ''}
+            error={error}
+          />
         </Box>
       }
       action={
@@ -464,40 +563,21 @@ export function RecoveryListView() {
           variant="contained"
           color="info"
           onClick={async () => {
-            // handleDeleteRows();
-            await validateRecovery(selectedRow, { message: 'validation' });
-            confirmDialog.onFalse();
+            if (!cancellationReason) {
+              setError(true);
+            } else {
+              // handleDeleteRows();
+              await cancelRecovery(selectedRow, { cancellation_reason: cancellationReason });
+              confirmDialogCancel.onFalse();
+              setCancellationReason('');
+            }
           }}
         >
-          Valider
+          Annuler la validation
         </Button>
       }
     />
   );
-  // const renderConfirmCancelationDialog = () => (
-  //   <ConfirmDialog
-  //     open={confirmDialog.value}
-  //     onClose={confirmDialog.onFalse}
-  //     title="Delete"
-  //     content={
-  //       <>
-  //         Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
-  //       </>
-  //     }
-  //     action={
-  //       <Button
-  //         variant="contained"
-  //         color="error"
-  //         onClick={() => {
-  //           handleDeleteRows();
-  //           confirmDialog.onFalse();
-  //         }}
-  //       >
-  //         Delete
-  //       </Button>
-  //     }
-  //   />
-  // );
 
   return (
     <>
@@ -591,6 +671,8 @@ export function RecoveryListView() {
       </DashboardContent>
 
       {renderConfirmValidationDialog()}
+      {renderConfirmArchiveDialog()}
+      {renderConfirmCancelDialog()}
     </>
   );
 }

@@ -88,7 +88,7 @@ export async function archiveRecovery(id, data) {
    * Work on server
    */
   // const data = { directionData };
-  await axios.patch(`${ENDPOINT}/${id}/archive`, data);
+  await axios.post(`${ENDPOINT}/${id}/archive`, data);
   //   mutate(endpoints.site);
 }
 
@@ -97,6 +97,6 @@ export async function cancelRecovery(id, data) {
    * Work on server
    */
   // const data = { directionData };
-  await axios.patch(`${ENDPOINT}/${id}/archive`, data);
+  await axios.post(`${ENDPOINT}/${id}/cancel`, data);
   //   mutate(endpoints.site);
 }
