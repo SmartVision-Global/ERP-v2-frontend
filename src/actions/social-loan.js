@@ -1,5 +1,5 @@
-import useSWR from 'swr';
 import { useMemo } from 'react';
+import useSWR, { mutate } from 'swr';
 
 // import { fetcher, endpoints } from 'src/lib/axios';
 import axios, { fetcher, endpoints } from 'src/lib/axios';
@@ -80,7 +80,7 @@ export async function validateSocialLoan(id, data) {
    */
   // const data = { directionData };
   await axios.post(`${ENDPOINT}/${id}/validate`, data);
-  //   mutate(endpoints.site);
+  mutate(ENDPOINT);
 }
 
 export async function archiveSocialLoan(id, data) {
@@ -88,8 +88,9 @@ export async function archiveSocialLoan(id, data) {
    * Work on server
    */
   // const data = { directionData };
-  await axios.patch(`${ENDPOINT}/${id}/archive`, data);
+  await axios.post(`${ENDPOINT}/${id}/archive`, data);
   //   mutate(endpoints.site);
+  mutate(ENDPOINT);
 }
 
 export async function cancelSocialLoan(id, data) {
@@ -97,6 +98,7 @@ export async function cancelSocialLoan(id, data) {
    * Work on server
    */
   // const data = { directionData };
-  await axios.patch(`${ENDPOINT}/${id}/archive`, data);
+  await axios.post(`${ENDPOINT}/${id}/cancel`, data);
   //   mutate(endpoints.site);
+  mutate(ENDPOINT);
 }

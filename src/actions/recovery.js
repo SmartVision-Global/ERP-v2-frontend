@@ -90,6 +90,7 @@ export async function archiveRecovery(id, data) {
   // const data = { directionData };
   await axios.post(`${ENDPOINT}/${id}/archive`, data);
   //   mutate(endpoints.site);
+  mutate(ENDPOINT);
 }
 
 export async function cancelRecovery(id, data) {
@@ -98,5 +99,7 @@ export async function cancelRecovery(id, data) {
    */
   // const data = { directionData };
   await axios.post(`${ENDPOINT}/${id}/cancel`, data);
+  mutate(ENDPOINT);
+
   //   mutate(endpoints.site);
 }

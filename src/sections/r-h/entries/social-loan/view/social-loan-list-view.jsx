@@ -14,8 +14,13 @@ import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetSocialLoans } from 'src/actions/social-loan';
 import { ACTIF_NAMES, PRODUCT_STOCK_OPTIONS, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
+import {
+  cancelSocialLoan,
+  archiveSocialLoan,
+  useGetSocialLoans,
+  validateSocialLoan,
+} from 'src/actions/social-loan';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -24,6 +29,7 @@ import { EmptyContent } from 'src/components/empty-content';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
+import { GridActionsClickItem } from '../../recovery/view';
 import {
   RenderCellId,
   RenderCellStatus,
@@ -114,6 +120,14 @@ const FILTERS_OPTIONS = [
 
 export function SocialLoanListView() {
   const confirmDialog = useBoolean();
+  const confirmDialogArchive = useBoolean();
+  const confirmDialogCancel = useBoolean();
+
+  const [selectedRow, setSelectedRow] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState(false);
+
+  const [cancellationReason, setCancellationReason] = useState('');
 
   const { socialLoans, socialLoansLoading } = useGetSocialLoans();
 
@@ -135,16 +149,20 @@ export function SocialLoanListView() {
 
   const dataFiltered = tableData;
 
-  const handleDeleteRow = useCallback(
-    (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
+  const handleOpenValidateConfirmDialog = (id) => {
+    confirmDialog.onTrue();
+    setSelectedRow(id);
+  };
 
-      toast.success('Delete success!');
+  const handleOpenArchiveConfirmDialog = (id) => {
+    confirmDialogArchive.onTrue();
+    setSelectedRow(id);
+  };
 
-      setTableData(deleteRow);
-    },
-    [tableData]
-  );
+  const handleOpenCancelConfirmDialog = (id) => {
+    confirmDialogCancel.onTrue();
+    setSelectedRow(id);
+  };
 
   const handleDeleteRows = useCallback(() => {
     const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
@@ -269,13 +287,30 @@ export function SocialLoanListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => [
-        // <GridActionsLinkItem
-        //   showInMenu
-        //   icon={<Iconify icon="solar:eye-bold" />}
-        //   label="View"
-        //   // href={paths.dashboard.product.details(params.row.id)}
-        //   href={paths.dashboard.root}
-        // />,
+        <GridActionsClickItem
+          showInMenu
+          icon={<Iconify icon="solar:eye-bold" />}
+          label="Valider"
+          onClick={() => handleOpenValidateConfirmDialog(params.row.id)}
+          // href={paths.dashboard.product.details(params.row.id)}
+          // href={paths.dashboard.root}
+        />,
+        <GridActionsClickItem
+          showInMenu
+          icon={<Iconify icon="solar:eye-bold" />}
+          label="Archiver"
+          onClick={() => handleOpenArchiveConfirmDialog(params.row.id)}
+          // href={paths.dashboard.product.details(params.row.id)}
+          // href={paths.dashboard.root}
+        />,
+        <GridActionsClickItem
+          showInMenu
+          icon={<Iconify icon="solar:eye-bold" />}
+          label="Annuler la validation"
+          onClick={() => handleOpenCancelConfirmDialog(params.row.id)}
+          // href={paths.dashboard.product.details(params.row.id)}
+          // href={paths.dashboard.root}
+        />,
         <GridActionsLinkItem
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}
@@ -283,13 +318,6 @@ export function SocialLoanListView() {
           // href={paths.dashboard.product.edit(params.row.id)}
           href={paths.dashboard.rh.entries.editSocialLoan(params.row.id)}
         />,
-        // <GridActionsCellItem
-        //   showInMenu
-        //   icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-        //   label="Delete"
-        //   onClick={() => handleDeleteRow(params.row.id)}
-        //   sx={{ color: 'error.main' }}
-        // />,
       ],
     },
   ];
@@ -299,26 +327,134 @@ export function SocialLoanListView() {
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
 
-  const renderConfirmDialog = () => (
+  const renderConfirmValidationDialog = () => (
     <ConfirmDialog
       open={confirmDialog.value}
       onClose={confirmDialog.onFalse}
-      title="Delete"
+      title="Valider récupération"
       content={
-        <>
-          Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
-        </>
+        // <>
+        //   Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
+        // </>
+        <Box my={2}>
+          <TextField
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            label="Message"
+            fullWidth
+            multiline
+            rows={3}
+          />
+        </Box>
       }
       action={
         <Button
           variant="contained"
-          color="error"
-          onClick={() => {
-            handleDeleteRows();
+          color="info"
+          onClick={async () => {
+            // handleDeleteRows();
+            await validateSocialLoan(selectedRow, { message: 'validation' });
             confirmDialog.onFalse();
           }}
         >
-          Delete
+          Valider
+        </Button>
+      }
+    />
+  );
+  const renderConfirmArchiveDialog = () => (
+    <ConfirmDialog
+      open={confirmDialogArchive.value}
+      onClose={() => {
+        confirmDialogArchive.onFalse();
+        setCancellationReason('');
+      }}
+      title="Archiver"
+      content={
+        // <>
+        //   Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
+        // </>
+        <Box my={2}>
+          <TextField
+            label="Raison"
+            fullWidth
+            multiline
+            rows={3}
+            value={cancellationReason}
+            onChange={(e) => {
+              setError(false);
+              setCancellationReason(e.target.value);
+            }}
+            required
+            helperText={error ? 'Veuillez remplir ce champ' : ''}
+            error={error}
+          />
+        </Box>
+      }
+      action={
+        <Button
+          variant="contained"
+          color="info"
+          onClick={async () => {
+            if (!cancellationReason) {
+              setError(true);
+            } else {
+              // handleDeleteRows();
+              await archiveSocialLoan(selectedRow, { cancellation_reason: cancellationReason });
+              confirmDialogArchive.onFalse();
+            }
+          }}
+        >
+          Archiver
+        </Button>
+      }
+    />
+  );
+  const renderConfirmCancelDialog = () => (
+    <ConfirmDialog
+      open={confirmDialogCancel.value}
+      onClose={() => {
+        confirmDialogCancel.onFalse();
+        setCancellationReason('');
+      }}
+      title="Annuler la validation"
+      content={
+        // <>
+        //   Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
+        // </>
+        <Box my={2}>
+          <TextField
+            label="Raison"
+            fullWidth
+            multiline
+            rows={3}
+            value={cancellationReason}
+            onChange={(e) => {
+              setError(false);
+              setCancellationReason(e.target.value);
+            }}
+            required
+            helperText={error ? 'Veuillez remplir ce champ' : ''}
+            error={error}
+          />
+        </Box>
+      }
+      action={
+        <Button
+          variant="contained"
+          color="info"
+          onClick={async () => {
+            if (!cancellationReason) {
+              setError(true);
+            } else {
+              // handleDeleteRows();
+              await cancelSocialLoan(selectedRow, { cancellation_reason: cancellationReason });
+              confirmDialogCancel.onFalse();
+              setCancellationReason('');
+            }
+          }}
+        >
+          Annuler la validation
         </Button>
       }
     />
@@ -415,7 +551,9 @@ export function SocialLoanListView() {
         </Card>
       </DashboardContent>
 
-      {renderConfirmDialog()}
+      {renderConfirmValidationDialog()}
+      {renderConfirmArchiveDialog()}
+      {renderConfirmCancelDialog()}
     </>
   );
 }
