@@ -57,29 +57,34 @@ export function DeductionsCompensationNewEditForm({ currentProduct }) {
       subject_absence: currentProduct?.subject_absence ? 'yes' : 'no',
       is_deletable: currentProduct?.is_deletable ? 'yes' : 'no',
       is_updatable: currentProduct?.is_updatable ? 'yes' : 'no',
+      calculation_base: currentProduct?.calculation_base || '1',
+      periodic: currentProduct?.periodic || '1',
+      display_base: currentProduct?.display_base || '1',
     },
   });
 
   const {
+    watch,
     reset,
     handleSubmit,
     formState: { isSubmitting, errors },
   } = methods;
-  console.log('err', errors);
+  const values = watch();
+  console.log('err', values);
 
   const onSubmit = handleSubmit(async (data) => {
     const updatedData = {
-      type: data.type,
-      code: data.code,
-      name: data.name,
-      designation: data.designation,
+      type: data?.type,
+      code: data?.code,
+      name: data?.name,
+      designation: data?.designation,
       subject_absence: data.type === 'yes' ? true : false,
-      contributory_imposable: data.contributory_imposable,
-      is_deletable: data.is_deletable === 'yes' ? true : false,
-      is_updatable: data.is_updatable === 'yes' ? true : false,
-      periodic: data.periodic,
-      calculation_base: data.calculation_base,
-      display_base: data.display_base,
+      contributory_imposable: data?.contributory_imposable,
+      is_deletable: data?.is_deletable === 'yes' ? true : false,
+      is_updatable: data?.is_updatable === 'yes' ? true : false,
+      periodic: data?.periodic,
+      calculation_base: data?.calculation_base,
+      display_base: data?.display_base,
       // ...data,
       // taxes: includeTaxes ? defaultValues.taxes : data.taxes,
     };

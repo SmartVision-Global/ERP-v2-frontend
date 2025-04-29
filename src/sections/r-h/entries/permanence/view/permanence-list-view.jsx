@@ -1,5 +1,5 @@
 import { useBoolean } from 'minimal-shared/hooks';
-import { useState, useEffect, forwardRef, useCallback } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -7,28 +7,34 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import { TextField, FormControl, InputAdornment } from '@mui/material';
-import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
+import { TextField, IconButton, FormControl, InputAdornment } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetPermanencies } from 'src/actions/permanence';
 import {
   ACTIF_NAMES,
   PRODUCT_SITE_OPTIONS,
   PRODUCT_STOCK_OPTIONS,
   DOCUMENT_STATUS_OPTIONS,
 } from 'src/_mock';
+import {
+  cancelPermanency,
+  archivePermanency,
+  useGetPermanencies,
+  validatePermanency,
+} from 'src/actions/permanence';
 
-import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
+import { GridActionsClickItem } from '../../recovery/view';
+import { PermanenceAbsenceHistoryDialog } from '../permanence-history-dialog';
 import {
   RenderCellId,
   RenderCellSite,
@@ -142,6 +148,15 @@ const FILTERS_OPTIONS = [
 
 export function PermanenceListView() {
   const confirmDialog = useBoolean();
+  const confirmDialogArchive = useBoolean();
+  const confirmDialogCancel = useBoolean();
+  const dialogHistory = useBoolean();
+
+  const [selectedRow, setSelectedRow] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState(false);
+
+  const [cancellationReason, setCancellationReason] = useState('');
 
   const { permanencies, permanenciesLoading } = useGetPermanencies();
 
@@ -163,24 +178,24 @@ export function PermanenceListView() {
 
   const dataFiltered = tableData;
 
-  const handleDeleteRow = useCallback(
-    (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
+  const handleOpenValidateConfirmDialog = (id) => {
+    confirmDialog.onTrue();
+    setSelectedRow(id);
+  };
 
-      toast.success('Delete success!');
+  const handleOpenArchiveConfirmDialog = (id) => {
+    confirmDialogArchive.onTrue();
+    setSelectedRow(id);
+  };
 
-      setTableData(deleteRow);
-    },
-    [tableData]
-  );
-
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
-
-    toast.success('Delete success!');
-
-    setTableData(deleteRows);
-  }, [selectedRowIds, tableData]);
+  const handleOpenCancelConfirmDialog = (id) => {
+    confirmDialogCancel.onTrue();
+    setSelectedRow(id);
+  };
+  const handleOpenHistoryDialog = (id) => {
+    dialogHistory.onTrue();
+    setSelectedRow(id);
+  };
 
   const columns = [
     { field: 'category', headerName: 'Category', filterable: false },
@@ -351,26 +366,43 @@ export function PermanenceListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => [
-        <GridActionsLinkItem
+        <GridActionsClickItem
           showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
-          label="View"
+          icon={<Iconify icon="eva:checkmark-fill" />}
+          label="Valider"
+          onClick={() => handleOpenValidateConfirmDialog(params.row.id)}
           // href={paths.dashboard.product.details(params.row.id)}
-          href={paths.dashboard.root}
+          // href={paths.dashboard.root}
+        />,
+        <GridActionsClickItem
+          showInMenu
+          icon={<Iconify icon="eva:archive-fill" />}
+          label="Archiver"
+          onClick={() => handleOpenArchiveConfirmDialog(params.row.id)}
+          // href={paths.dashboard.product.details(params.row.id)}
+          // href={paths.dashboard.root}
+        />,
+        <GridActionsClickItem
+          showInMenu
+          icon={<Iconify icon="eva:flip-2-fill" />}
+          label="Annuler la validation"
+          onClick={() => handleOpenCancelConfirmDialog(params.row.id)}
+          // href={paths.dashboard.product.details(params.row.id)}
+          // href={paths.dashboard.root}
         />,
         <GridActionsLinkItem
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}
           label="Edit"
           // href={paths.dashboard.product.edit(params.row.id)}
-          href={paths.dashboard.root}
+          href={paths.dashboard.rh.entries.editPermanence(params.row.id)}
         />,
-        <GridActionsCellItem
+        <GridActionsClickItem
           showInMenu
-          icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-          label="Delete"
-          onClick={() => handleDeleteRow(params.row.id)}
-          sx={{ color: 'error.main' }}
+          icon={<Iconify icon="solar:eye-bold" />}
+          label="Historique de modification"
+          // href={paths.dashboard.product.edit(params.row.id)}
+          onClick={() => handleOpenHistoryDialog(params.row.id)}
         />,
       ],
     },
@@ -381,26 +413,134 @@ export function PermanenceListView() {
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
 
-  const renderConfirmDialog = () => (
+  const renderConfirmValidationDialog = () => (
     <ConfirmDialog
       open={confirmDialog.value}
       onClose={confirmDialog.onFalse}
-      title="Delete"
+      title="Valider récupération"
       content={
-        <>
-          Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
-        </>
+        // <>
+        //   Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
+        // </>
+        <Box my={2}>
+          <TextField
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            label="Message"
+            fullWidth
+            multiline
+            rows={3}
+          />
+        </Box>
       }
       action={
         <Button
           variant="contained"
-          color="error"
-          onClick={() => {
-            handleDeleteRows();
+          color="info"
+          onClick={async () => {
+            // handleDeleteRows();
+            await validatePermanency(selectedRow, { message: 'validation' });
             confirmDialog.onFalse();
           }}
         >
-          Delete
+          Valider
+        </Button>
+      }
+    />
+  );
+  const renderConfirmArchiveDialog = () => (
+    <ConfirmDialog
+      open={confirmDialogArchive.value}
+      onClose={() => {
+        confirmDialogArchive.onFalse();
+        setCancellationReason('');
+      }}
+      title="Archiver"
+      content={
+        // <>
+        //   Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
+        // </>
+        <Box my={2}>
+          <TextField
+            label="Raison"
+            fullWidth
+            multiline
+            rows={3}
+            value={cancellationReason}
+            onChange={(e) => {
+              setError(false);
+              setCancellationReason(e.target.value);
+            }}
+            required
+            helperText={error ? 'Veuillez remplir ce champ' : ''}
+            error={error}
+          />
+        </Box>
+      }
+      action={
+        <Button
+          variant="contained"
+          color="info"
+          onClick={async () => {
+            if (!cancellationReason) {
+              setError(true);
+            } else {
+              // handleDeleteRows();
+              await archivePermanency(selectedRow, { cancellation_reason: cancellationReason });
+              confirmDialogArchive.onFalse();
+            }
+          }}
+        >
+          Archiver
+        </Button>
+      }
+    />
+  );
+  const renderConfirmCancelDialog = () => (
+    <ConfirmDialog
+      open={confirmDialogCancel.value}
+      onClose={() => {
+        confirmDialogCancel.onFalse();
+        setCancellationReason('');
+      }}
+      title="Annuler la validation"
+      content={
+        // <>
+        //   Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
+        // </>
+        <Box my={2}>
+          <TextField
+            label="Raison"
+            fullWidth
+            multiline
+            rows={3}
+            value={cancellationReason}
+            onChange={(e) => {
+              setError(false);
+              setCancellationReason(e.target.value);
+            }}
+            required
+            helperText={error ? 'Veuillez remplir ce champ' : ''}
+            error={error}
+          />
+        </Box>
+      }
+      action={
+        <Button
+          variant="contained"
+          color="info"
+          onClick={async () => {
+            if (!cancellationReason) {
+              setError(true);
+            } else {
+              // handleDeleteRows();
+              await cancelPermanency(selectedRow, { cancellation_reason: cancellationReason });
+              confirmDialogCancel.onFalse();
+              setCancellationReason('');
+            }
+          }}
+        >
+          Annuler la validation
         </Button>
       }
     />
@@ -497,7 +637,23 @@ export function PermanenceListView() {
         </Card>
       </DashboardContent>
 
-      {renderConfirmDialog()}
+      {renderConfirmValidationDialog()}
+      {renderConfirmArchiveDialog()}
+      {renderConfirmCancelDialog()}
+      {dialogHistory.value && (
+        <PermanenceAbsenceHistoryDialog
+          open={dialogHistory.value}
+          onClose={dialogHistory.onFalse}
+          title="Historique de modification"
+          entity="permanencies"
+          id={selectedRow}
+          action={
+            <IconButton onClick={dialogHistory.onFalse}>
+              <Iconify icon="eva:close-fill" sx={{ color: 'text.disabled' }} />
+            </IconButton>
+          }
+        />
+      )}
     </>
   );
 }

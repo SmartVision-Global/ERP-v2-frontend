@@ -279,6 +279,9 @@ const SettingsMachineNew = lazy(() => import('src/pages/dashboard/settings/machi
 const SettingsEntrepriseList = lazy(() => import('src/pages/dashboard/settings/entreprises/list'));
 const SettingsEntrepriseNew = lazy(() => import('src/pages/dashboard/settings/entreprises/new'));
 
+const SettingsServiceList = lazy(() => import('src/pages/dashboard/settings/services/list'));
+const SettingsServiceNew = lazy(() => import('src/pages/dashboard/settings/services/new'));
+
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
 function SuspenseOutlet() {
@@ -524,6 +527,13 @@ export const dashboardRoutes = [
             children: [
               { index: true, element: <SettingsSiteList /> },
               { path: 'new', element: <SettingsSiteNew /> },
+            ],
+          },
+          {
+            path: 'service',
+            children: [
+              { index: true, element: <SettingsServiceList /> },
+              { path: 'new', element: <SettingsServiceNew /> },
             ],
           },
           {

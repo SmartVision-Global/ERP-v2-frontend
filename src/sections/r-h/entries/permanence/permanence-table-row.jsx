@@ -13,7 +13,7 @@ import { STATUS_VALIDATION_OPTIONS } from '../leave-absence/leave-absence-table-
 
 // ----------------------------------------------------------------------
 
-const NATURE = {
+export const NATURE = {
   1: 'Jour supplémentaire +50%',
   2: 'Jour supplémentaire +75%',
   3: 'Jour supplémentaire +100%',
@@ -71,16 +71,7 @@ export function RenderCellStatus({ params }) {
 }
 export function RenderCellNature({ params }) {
   return (
-    <Label
-      variant="soft"
-      color={
-        params.row.refund_nature === '1'
-          ? 'info'
-          : params.row.refund_nature === '1'
-            ? 'warning'
-            : 'default'
-      }
-    >
+    <Label variant="soft" color="default">
       {NATURE[params.row.refund_nature]}
     </Label>
   );

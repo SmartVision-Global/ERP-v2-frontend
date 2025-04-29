@@ -14,6 +14,6 @@ export const defaultSettings = {
   primaryColor: 'default',
   navColor: 'integrate',
   compactLayout: false,
-  fontSize: 16,
+  fontSize: 14,
   fontFamily: themeConfig.fontFamily.primary,
 };

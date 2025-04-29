@@ -1,5 +1,5 @@
 import { useBoolean } from 'minimal-shared/hooks';
-import { useState, useEffect, forwardRef, useCallback } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -8,7 +8,7 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { DataGrid, gridClasses } from '@mui/x-data-grid';
-import { TextField, FormControl, InputAdornment } from '@mui/material';
+import { TextField, IconButton, FormControl, InputAdornment } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -22,7 +22,6 @@ import {
   validateSocialLoan,
 } from 'src/actions/social-loan';
 
-import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
@@ -30,6 +29,7 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { GridActionsClickItem } from '../../recovery/view';
+import { HistoryListDialog } from '../history-list-dialog';
 import {
   RenderCellId,
   RenderCellStatus,
@@ -122,6 +122,7 @@ export function SocialLoanListView() {
   const confirmDialog = useBoolean();
   const confirmDialogArchive = useBoolean();
   const confirmDialogCancel = useBoolean();
+  const dialogHistory = useBoolean();
 
   const [selectedRow, setSelectedRow] = useState('');
   const [message, setMessage] = useState('');
@@ -163,14 +164,10 @@ export function SocialLoanListView() {
     confirmDialogCancel.onTrue();
     setSelectedRow(id);
   };
-
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
-
-    toast.success('Delete success!');
-
-    setTableData(deleteRows);
-  }, [selectedRowIds, tableData]);
+  const handleOpenHistoryDialog = (id) => {
+    dialogHistory.onTrue();
+    setSelectedRow(id);
+  };
 
   const columns = [
     { field: 'category', headerName: 'Category', filterable: false },
@@ -289,7 +286,7 @@ export function SocialLoanListView() {
       getActions: (params) => [
         <GridActionsClickItem
           showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
+          icon={<Iconify icon="eva:checkmark-fill" />}
           label="Valider"
           onClick={() => handleOpenValidateConfirmDialog(params.row.id)}
           // href={paths.dashboard.product.details(params.row.id)}
@@ -297,7 +294,7 @@ export function SocialLoanListView() {
         />,
         <GridActionsClickItem
           showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
+          icon={<Iconify icon="eva:archive-fill" />}
           label="Archiver"
           onClick={() => handleOpenArchiveConfirmDialog(params.row.id)}
           // href={paths.dashboard.product.details(params.row.id)}
@@ -305,7 +302,7 @@ export function SocialLoanListView() {
         />,
         <GridActionsClickItem
           showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
+          icon={<Iconify icon="eva:flip-2-fill" />}
           label="Annuler la validation"
           onClick={() => handleOpenCancelConfirmDialog(params.row.id)}
           // href={paths.dashboard.product.details(params.row.id)}
@@ -317,6 +314,13 @@ export function SocialLoanListView() {
           label="Modifier"
           // href={paths.dashboard.product.edit(params.row.id)}
           href={paths.dashboard.rh.entries.editSocialLoan(params.row.id)}
+        />,
+        <GridActionsClickItem
+          showInMenu
+          icon={<Iconify icon="solar:eye-bold" />}
+          label="Historique de modification"
+          // href={paths.dashboard.product.edit(params.row.id)}
+          onClick={() => handleOpenHistoryDialog(params.row.id)}
         />,
       ],
     },
@@ -459,6 +463,7 @@ export function SocialLoanListView() {
       }
     />
   );
+  console.log('dialogHistory', dialogHistory.value);
 
   return (
     <>
@@ -554,6 +559,20 @@ export function SocialLoanListView() {
       {renderConfirmValidationDialog()}
       {renderConfirmArchiveDialog()}
       {renderConfirmCancelDialog()}
+      {dialogHistory.value && (
+        <HistoryListDialog
+          open={dialogHistory.value}
+          onClose={dialogHistory.onFalse}
+          title="Historique de modification"
+          entity="personal_loans"
+          id={selectedRow}
+          action={
+            <IconButton onClick={dialogHistory.onFalse}>
+              <Iconify icon="eva:close-fill" sx={{ color: 'text.disabled' }} />
+            </IconButton>
+          }
+        />
+      )}
     </>
   );
 }

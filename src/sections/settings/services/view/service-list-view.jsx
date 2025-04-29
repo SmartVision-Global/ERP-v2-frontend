@@ -7,15 +7,15 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import { TextField, FormControl, InputAdornment } from '@mui/material';
-import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
+import { useGetServices } from 'src/actions/service';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetSalaryGrids } from 'src/actions/salary-grid';
-import { SALARY_ECHEL_OPTIONS, SALARY_CATEGORY_OPTIONS } from 'src/_mock';
+import { PRODUCT_STOCK_OPTIONS, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -26,20 +26,10 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import {
   RenderCellId,
-  RenderCellIrg,
-  RenderCellCode,
-  RenderCellLevel,
-  RenderCellEchelle,
+  RenderCellName,
   RenderCellCreatedAt,
-  RenderCellNetSalary,
-  RenderCellBaseSalary,
-  RenderCellSumTaxable,
-  RenderCellPostSalary,
   RenderCellDesignation,
-  RenderCellCategorySocio,
-  RenderCellSumContributor,
-  RenderCellNetSalaryPayable,
-} from '../salary-grid-table-row';
+} from '../service-table-row';
 
 // ----------------------------------------------------------------------
 
@@ -56,37 +46,28 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 const FILTERS_OPTIONS = [
   {
-    id: 'code',
+    id: 'designation',
     type: 'input',
-    label: 'Code',
-    cols: 3,
-    width: 1,
+    label: 'Designation',
+    cols: 12,
+    width: 0.24,
   },
   {
-    id: 'base_salary',
-    type: 'input',
-    label: 'Salaire de base',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'echelle',
+    id: 'status',
     type: 'select',
-    options: SALARY_ECHEL_OPTIONS,
-    label: 'Echelons',
+    options: DOCUMENT_STATUS_OPTIONS,
+    label: 'Etat',
     cols: 3,
     width: 1,
   },
-
   {
-    id: 'category',
+    id: 'valideur',
     type: 'select',
-    options: SALARY_CATEGORY_OPTIONS,
-    label: 'Catégorie socioprofessionnelle',
+    options: PRODUCT_STOCK_OPTIONS,
+    label: 'Valideur',
     cols: 3,
     width: 1,
   },
-
   {
     id: 'start_date',
     type: 'date',
@@ -103,12 +84,12 @@ const FILTERS_OPTIONS = [
   },
 ];
 
-export function SalaryGridListView() {
+export function ServiceListView() {
   const confirmDialog = useBoolean();
 
-  const { salaryGrids, salaryGridsLoading } = useGetSalaryGrids();
+  const { services, servicesLoading } = useGetServices();
 
-  const [tableData, setTableData] = useState(salaryGrids);
+  const [tableData, setTableData] = useState(services);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
@@ -116,10 +97,10 @@ export function SalaryGridListView() {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (salaryGrids.length) {
-      setTableData(salaryGrids);
+    if (services.length) {
+      setTableData(services);
     }
-  }, [salaryGrids]);
+  }, [services]);
   const handleReset = () => {
     setEditedFilters([]);
   };
@@ -153,189 +134,92 @@ export function SalaryGridListView() {
       //   flex: 0.5,
       flex: 1,
 
-      minWidth: 100,
+      width: 100,
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
         <RenderCellId params={params} href={paths.dashboard.root} />
       ),
     },
+    // {
+    //   field: 'site',
+    //   headerName: 'Site',
+    //   flex: 1,
+    //   minWidth: 160,
+    //   hideable: false,
+    //   renderCell: (params) => (
+    //     // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+    //     <RenderCellSite params={params} href={paths.dashboard.root} />
+    //   ),
+    // },
     {
-      field: 'code',
-      headerName: 'Code',
+      field: 'name',
+      headerName: 'Service',
       flex: 1,
-      minWidth: 320,
-      hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellCode params={params} href={paths.dashboard.root} />
-      ),
-    },
-    {
-      field: 'base_salary',
-      headerName: 'Salaire de base',
-      flex: 1,
-      minWidth: 160,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellBaseSalary params={params} />,
+      width: 110,
+      // type: 'singleSelect',
+      // editable: true,
+      // valueOptions: SEX_OPTIONS,
+      renderCell: (params) => <RenderCellName params={params} />,
     },
     {
       field: 'designation',
       headerName: 'Designation',
-      //   flex: 0.5,
       flex: 1,
-      minWidth: 100,
-      hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellDesignation params={params} href={paths.dashboard.root} />
-      ),
-    },
-    {
-      field: 'rung',
-      headerName: 'Echellons',
-      //   flex: 0.5,
-      flex: 1,
-      minWidth: 100,
-      hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellEchelle params={params} href={paths.dashboard.root} />
-      ),
-    },
-    {
-      field: 'salary_category',
-      headerName: 'Catégorie socioprofessionnelle',
-      //   flex: 0.5,
-      flex: 1,
-      minWidth: 100,
-      hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellCategorySocio params={params} href={paths.dashboard.root} />
-      ),
-    },
-    {
-      field: 'salary_scale_level',
-      headerName: 'Niveau',
-      //   flex: 0.5,
-      flex: 1,
-      minWidth: 100,
-      hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellLevel params={params} href={paths.dashboard.root} />
-      ),
-    },
-    {
-      field: 'sum_contributor',
-      headerName: 'Salaire cotisable',
-      flex: 1,
-      minWidth: 160,
+      width: 110,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellSumContributor params={params} />,
+      renderCell: (params) => <RenderCellDesignation params={params} />,
     },
-    {
-      field: 'salary',
-      headerName: 'Salaire de poste',
-      flex: 1,
-      minWidth: 160,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellPostSalary params={params} />,
-    },
-    {
-      field: 'sum_taxable',
-      headerName: 'Salaire imposable',
-      flex: 1,
-      minWidth: 160,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellSumTaxable params={params} />,
-    },
-    {
-      field: 'irg',
-      headerName: 'Retenue IRG',
-      flex: 1,
-      minWidth: 160,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellIrg params={params} />,
-    },
-    {
-      field: 'net_salary',
-      headerName: 'Salaire Net',
-      flex: 1,
-      minWidth: 160,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellNetSalary params={params} />,
-    },
-
-    {
-      field: 'net_salary_payable',
-      headerName: 'Salaire Net a payer',
-      flex: 1,
-      minWidth: 160,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellNetSalaryPayable params={params} />,
-    },
-
+    // {
+    //   field: 'address',
+    //   headerName: 'Addresse',
+    //   flex: 1,
+    //   width: 110,
+    //   type: 'singleSelect',
+    //   editable: true,
+    //   valueOptions: SEX_OPTIONS,
+    //   renderCell: (params) => <RenderCellAddress params={params} />,
+    // },
     {
       field: 'createdAt',
       headerName: 'Date de création',
       flex: 1,
-      minWidth: 150,
+      width: 110,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
     },
 
-    {
-      type: 'actions',
-      field: 'actions',
-      headerName: ' ',
-      align: 'right',
-      headerAlign: 'right',
-      width: 80,
-      sortable: false,
-      filterable: false,
-      disableColumnMenu: true,
-      getActions: (params) => [
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
-          label="View"
-          // href={paths.dashboard.product.details(params.row.id)}
-          href={paths.dashboard.root}
-        />,
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:pen-bold" />}
-          label="Edit"
-          // href={paths.dashboard.product.edit(params.row.id)}
-          href={paths.dashboard.root}
-        />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-          label="Delete"
-          onClick={() => handleDeleteRow(params.row.id)}
-          sx={{ color: 'error.main' }}
-        />,
-      ],
-    },
+    // {
+    //   type: 'actions',
+    //   field: 'actions',
+    //   headerName: ' ',
+    //   align: 'right',
+    //   headerAlign: 'right',
+    //   width: 80,
+    //   sortable: false,
+    //   filterable: false,
+    //   disableColumnMenu: true,
+    //   getActions: (params) => [
+    //     <GridActionsLinkItem
+    //       showInMenu
+    //       icon={<Iconify icon="solar:pen-bold" />}
+    //       label="Edit"
+    //       // href={paths.dashboard.product.edit(params.row.id)}
+    //       href={paths.dashboard.settings.service}
+    //     />,
+    //     // <GridActionsCellItem
+    //     //   showInMenu
+    //     //   icon={<Iconify icon="solar:trash-bin-trash-bold" />}
+    //     //   label="Delete"
+    //     //   onClick={() => handleDeleteRow(params.row.id)}
+    //     //   sx={{ color: 'error.main' }}
+    //     // />,
+    //   ],
+    // },
   ];
 
   const getTogglableColumns = () =>
@@ -372,16 +256,16 @@ export function SalaryGridListView() {
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <CustomBreadcrumbs
-          heading="Grille de salaire"
+          heading="List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Ressources humaine', href: paths.dashboard.root },
-            { name: 'Grille de salaire' },
+            // { name: 'Ressources humaine', href: paths.dashboard.root },
+            { name: 'Services' },
           ]}
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.rh.rhSettings.newSalaryGrid}
+              href={paths.dashboard.settings.service.newService}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
@@ -436,7 +320,7 @@ export function SalaryGridListView() {
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}
-            loading={salaryGridsLoading}
+            loading={servicesLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}

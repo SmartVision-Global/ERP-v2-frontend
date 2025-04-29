@@ -1,17 +1,23 @@
 import { z as zod } from 'zod';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Box, Card, Stack, Divider, CardHeader } from '@mui/material';
 
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
+
 import { useMultiLookups } from 'src/actions/lookups';
 import { createSalaryGrid } from 'src/actions/salary-grid';
 
+import { toast } from 'src/components/snackbar';
+import { NumberInput } from 'src/components/number-input';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { FieldContainer } from 'src/components/form-validation-view';
 
+import { salaryCalculation } from './utils';
 import { ImposCotisNewEditForm } from './impos-cotis-new-edit-form';
 import { NoCotisImposNewEditForm } from './no-cotis-impos-new-edit-form';
 import { NoCotisNoImposNewEditForm } from './no-cotis-no-impos-new-edit-form';
@@ -33,10 +39,16 @@ export const NewProductSchema = zod.object({
   salary_scale_level_id: zod.string().min(1, { message: 'Name is required!' }),
   cotis_impos_items: zod.array(
     zod.object({
+      id: zod.number(),
       code: zod.string().min(1, { message: 'Title is required!' }),
       name: zod.string().min(1, { message: 'Service is required!' }),
-      percent: zod.number().int().positive().min(1, { message: 'Quantity must be more than 0' }),
-      amount: zod.number().int().positive().min(1, { message: 'Quantity must be more than 0' }),
+      percent: zod
+        .number()
+        // .int()
+        .positive()
+        .min(0, { message: 'Quantity must be more than 0' })
+        .max(100, { message: 'Quantity must be less than 100' }),
+      amount: zod.number().int().positive().min(0, { message: 'Quantity must be more than 0' }),
 
       // Not required
     })
@@ -47,10 +59,17 @@ export const NewProductSchema = zod.object({
   salary_position_retenue: zod.string().optional(),
   cotis_no_impos_items: zod.array(
     zod.object({
+      id: zod.number(),
       code: zod.string().min(1, { message: 'Title is required!' }),
       name: zod.string().min(1, { message: 'Service is required!' }),
-      percent: zod.number().int().positive().min(1, { message: 'Quantity must be more than 0' }),
-      amount: zod.number().int().positive().min(1, { message: 'Quantity must be more than 0' }),
+      percent: zod
+        .number()
+        // .int()
+        .positive()
+        .min(0, { message: 'Quantity must be more than 0' })
+        .max(100, { message: 'Quantity must be less than 100' }),
+      amount: zod.number().int().positive().min(0, { message: 'Quantity must be more than 0' }),
+
       // Not required
     })
   ),
@@ -59,10 +78,16 @@ export const NewProductSchema = zod.object({
   net_salary: zod.string().optional(),
   no_cotis_no_impos_items: zod.array(
     zod.object({
+      id: zod.number(),
       code: zod.string().min(1, { message: 'Title is required!' }),
       name: zod.string().min(1, { message: 'Service is required!' }),
-      percent: zod.number().int().positive().min(1, { message: 'Quantity must be more than 0' }),
-      amount: zod.number().int().positive().min(1, { message: 'Quantity must be more than 0' }),
+      percent: zod
+        .number()
+        // .f()
+        .positive()
+        .min(0, { message: 'Quantity must be more than 0' })
+        .max(100, { message: 'Quantity must be less than 100' }),
+      amount: zod.number().int().positive().min(0, { message: 'Quantity must be more than 0' }),
       // Not required
     })
   ),
@@ -70,6 +95,7 @@ export const NewProductSchema = zod.object({
 });
 
 export function SalaryGridNewEditForm({ currentProduct }) {
+  const router = useRouter();
   const { dataLookups } = useMultiLookups([
     { entity: 'rungs', url: 'hr/lookups/identification/rung' },
     { entity: 'salaryCategories', url: 'hr/lookups/identification/salary_category' },
@@ -88,7 +114,7 @@ export function SalaryGridNewEditForm({ currentProduct }) {
     rung_id: '',
     salary_scale_level_id: '',
     cotis_impos_items: [],
-    salary_position: '',
+    salary_position: 0,
     s_s_retenue: '',
     salary_position_retenue: '',
     cotis_no_impos_items: 0,
@@ -107,21 +133,46 @@ export function SalaryGridNewEditForm({ currentProduct }) {
   });
 
   const {
-    // watch,
     reset,
+    control,
+    setValue,
+    watch,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
-  // const values=watch()
+  const values = watch();
+  console.log('val', values);
 
   const onSubmit = handleSubmit(async (data) => {
+    const deductionsCompensationsItems = [
+      ...data.cotis_impos_items,
+      ...data.cotis_no_impos_items,
+      ...data.no_cotis_no_impos_items,
+    ];
+    // eslint-disable-next-line no-debugger
+    debugger;
+    const newArray = deductionsCompensationsItems.map((item) => ({
+      deduction_compensation_id: 30,
+      percentage_amount: item.percent,
+    }));
+    // const newArray = [
+    //   {
+    //     deduction_compensation_id: 30,
+    //     percentage_amount: 54.22,
+    //   },
+    //   {
+    //     deduction_compensation_id: 31,
+    //     percentage_amount: 30.98,
+    //   },
+    // ];
     // const updatedData = {
     //   ...data,
     //   // taxes: includeTaxes ? defaultValues.taxes : data.taxes,
     // };
 
     try {
+      // const elements=
       // await new Promise((resolve) => setTimeout(resolve, 500));
       const newData = {
         code: data.code,
@@ -130,18 +181,21 @@ export function SalaryGridNewEditForm({ currentProduct }) {
         rung_id: parseInt(data.rung_id),
         salary_category_id: parseInt(data.salary_category_id),
         salary_scale_level_id: parseInt(data.salary_scale_level_id),
-        retenueIRG: parseInt(data.retenueIRG),
+        elements: newArray,
+        // retenueIRG: parseInt(data.retenueIRG),
       };
       await createSalaryGrid(newData);
-      // reset();
-      // toast.success(currentProduct ? 'Update success!' : 'Create success!');
-      // router.push(paths.dashboard.product.root);
+      reset();
+      toast.success(currentProduct ? 'Update success!' : 'Create success!');
+      router.push(paths.dashboard.rh.rhSettings.salaryGrid);
       console.info('DATA', newData);
     } catch (error) {
       console.error(error);
     }
   });
 
+  // console.log('deductionsCompensations', deductionsCompensations);
+  // const { }=salaryCalculation(values.salary)
   const renderDetails = () => (
     <Card>
       <CardHeader
@@ -159,7 +213,46 @@ export function SalaryGridNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <FieldContainer label="Salaire de base" sx={{ alignItems: 'center' }} direction="row">
-              <Field.NumberInput name="salary" />
+              {/* <Field.NumberInput name="salary" /> */}
+              <Controller
+                name="salary"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <NumberInput
+                    {...field}
+                    // value={watchedAmount ?? 0}
+                    // onChange={(event, value) => field.onChange(value)}
+                    onChange={(event, value) => {
+                      const newSalary = value ?? 0;
+                      field.onChange(newSalary); // update amount
+                      const deductionsCompensations = [
+                        ...values.cotis_impos_items,
+                        ...values.cotis_no_impos_items,
+                        ...values.no_cotis_no_impos_items,
+                      ];
+                      const {
+                        postSalary,
+                        socialSecurityRetenue,
+                        postSalaryMinSSRetunue,
+                        salaryWithTax,
+                        retenueIRG,
+                        netSalary,
+                        netPaySalary,
+                      } = salaryCalculation(newSalary, deductionsCompensations);
+                      setValue('salary_position', postSalary);
+                      setValue('s_s_retenue', socialSecurityRetenue);
+                      setValue('salary_position_retenue', postSalaryMinSSRetunue);
+                      setValue('salary_impos', salaryWithTax);
+                      setValue('retenueIRG', retenueIRG);
+                      setValue('net_salary', netSalary);
+
+                      setValue('net_salary_payer', netPaySalary);
+                    }}
+                    error={!!error}
+                    helperText={error?.message ?? ''}
+                  />
+                )}
+              />
             </FieldContainer>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
@@ -202,7 +295,7 @@ export function SalaryGridNewEditForm({ currentProduct }) {
               ))}
             </Field.Select> */}
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 12 }}>
             <Field.Text name="designation" label="Observation" multiline rows={3} />
           </Grid>
         </Grid>

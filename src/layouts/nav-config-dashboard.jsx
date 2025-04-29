@@ -236,6 +236,10 @@ export const navData = [
             title: 'Machines',
             path: paths.dashboard.settings.machine.root,
           },
+          {
+            title: 'Services',
+            path: paths.dashboard.settings.service.root,
+          },
         ],
       },
     ],

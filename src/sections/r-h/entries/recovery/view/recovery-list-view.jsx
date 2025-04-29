@@ -8,7 +8,7 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { DataGrid, gridClasses } from '@mui/x-data-grid';
-import { TextField, FormControl, InputAdornment } from '@mui/material';
+import { TextField, IconButton, FormControl, InputAdornment } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -34,6 +34,7 @@ import { EmptyContent } from 'src/components/empty-content';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
+import { RecoveryHistoryDialog } from '../recovery-history-dialog';
 import {
   RenderCellId,
   RenderCellSite,
@@ -165,6 +166,7 @@ export function RecoveryListView() {
   const confirmDialog = useBoolean();
   const confirmDialogArchive = useBoolean();
   const confirmDialogCancel = useBoolean();
+  const dialogHistory = useBoolean();
 
   const [selectedRow, setSelectedRow] = useState('');
   const [message, setMessage] = useState('');
@@ -203,6 +205,10 @@ export function RecoveryListView() {
 
   const handleOpenCancelConfirmDialog = (id) => {
     confirmDialogCancel.onTrue();
+    setSelectedRow(id);
+  };
+  const handleOpenHistoryDialog = (id) => {
+    dialogHistory.onTrue();
     setSelectedRow(id);
   };
 
@@ -401,7 +407,7 @@ export function RecoveryListView() {
       getActions: (params) => [
         <GridActionsClickItem
           showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
+          icon={<Iconify icon="eva:checkmark-fill" />}
           label="Valider"
           onClick={() => handleOpenValidateConfirmDialog(params.row.id)}
           // href={paths.dashboard.product.details(params.row.id)}
@@ -409,7 +415,7 @@ export function RecoveryListView() {
         />,
         <GridActionsClickItem
           showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
+          icon={<Iconify icon="eva:archive-fill" />}
           label="Archiver"
           onClick={() => handleOpenArchiveConfirmDialog(params.row.id)}
           // href={paths.dashboard.product.details(params.row.id)}
@@ -417,7 +423,7 @@ export function RecoveryListView() {
         />,
         <GridActionsClickItem
           showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
+          icon={<Iconify icon="eva:flip-2-fill" />}
           label="Annuler la validation"
           onClick={() => handleOpenCancelConfirmDialog(params.row.id)}
           // href={paths.dashboard.product.details(params.row.id)}
@@ -430,13 +436,13 @@ export function RecoveryListView() {
           // href={paths.dashboard.product.edit(params.row.id)}
           href={paths.dashboard.rh.entries.editRecovery(params.row.id)}
         />,
-        // <GridActionsCellItem
-        //   showInMenu
-        //   icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-        //   label="Delete"
-        //   onClick={() => handleDeleteRow(params.row.id)}
-        //   sx={{ color: 'error.main' }}
-        // />,
+        <GridActionsClickItem
+          showInMenu
+          icon={<Iconify icon="solar:eye-bold" />}
+          label="Historique de modification"
+          // href={paths.dashboard.product.edit(params.row.id)}
+          onClick={() => handleOpenHistoryDialog(params.row.id)}
+        />,
       ],
     },
   ];
@@ -673,6 +679,20 @@ export function RecoveryListView() {
       {renderConfirmValidationDialog()}
       {renderConfirmArchiveDialog()}
       {renderConfirmCancelDialog()}
+      {dialogHistory.value && (
+        <RecoveryHistoryDialog
+          open={dialogHistory.value}
+          onClose={dialogHistory.onFalse}
+          title="Historique de modification"
+          entity="recuperations"
+          id={selectedRow}
+          action={
+            <IconButton onClick={dialogHistory.onFalse}>
+              <Iconify icon="eva:close-fill" sx={{ color: 'text.disabled' }} />
+            </IconButton>
+          }
+        />
+      )}
     </>
   );
 }

@@ -13,7 +13,7 @@ import { STATUS_VALIDATION_OPTIONS } from '../leave-absence/leave-absence-table-
 
 // ----------------------------------------------------------------------
 
-const NATURE = {
+export const NATURE = {
   1: 'A payer',
   2: 'A récupérer',
 };

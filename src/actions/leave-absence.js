@@ -1,5 +1,5 @@
-import useSWR from 'swr';
 import { useMemo } from 'react';
+import useSWR, { mutate } from 'swr';
 
 // import { fetcher, endpoints } from 'src/lib/axios';
 import axios, { fetcher, endpoints } from 'src/lib/axios';
@@ -71,5 +71,35 @@ export async function updateLeaveAbesence(id, data) {
    */
   // const data = { directionData };
   await axios.patch(`${ENDPOINT}/${id}`, data);
+  //   mutate(endpoints.site);
+}
+
+export async function validateLeaveAbesence(id, data) {
+  /**
+   * Work on server
+   */
+  // const data = { directionData };
+  await axios.post(`${ENDPOINT}/${id}/validate`, data);
+  mutate(ENDPOINT);
+}
+
+export async function archiveLeaveAbesence(id, data) {
+  /**
+   * Work on server
+   */
+  // const data = { directionData };
+  await axios.post(`${ENDPOINT}/${id}/archive`, data);
+  //   mutate(endpoints.site);
+  mutate(ENDPOINT);
+}
+
+export async function cancelLeaveAbesence(id, data) {
+  /**
+   * Work on server
+   */
+  // const data = { directionData };
+  await axios.post(`${ENDPOINT}/${id}/cancel`, data);
+  mutate(ENDPOINT);
+
   //   mutate(endpoints.site);
 }

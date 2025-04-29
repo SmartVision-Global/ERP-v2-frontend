@@ -1,46 +1,30 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useBoolean } from 'minimal-shared/hooks';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 
-import { DataGrid } from '@mui/x-data-grid';
-import { Box, Stack, Button, Divider, Typography, IconButton } from '@mui/material';
+import { Box, Stack, Table, Button, Divider, TableBody, IconButton } from '@mui/material';
 
 import { Iconify } from 'src/components/iconify';
+import { Scrollbar } from 'src/components/scrollbar';
+import { TableHeadCustom } from 'src/components/table';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 
 import { ProductListDialog } from './product-list-dialog';
+import { NoCotisNoImposTableRow } from './no-cotis-no-impos-table-row';
 
-const getFieldNames = (index) => ({
-  code: `cotis_impos_items[${index}].code`,
-  name: `cotis_impos_items[${index}].name`,
-  percent: `cotis_impos_items[${index}].percent`,
-  amount: `cotis_impos_items[${index}].amount`,
-});
-
-const PRODUCT_LIST = [
-  {
-    id: '30',
-    code: 'PN',
-    ref: 'Panier',
-    type: 'Indemnités',
-    abs: 'Oui',
-    nature: 'Non Cotisable-Imposable',
-  },
-  {
-    id: '31',
-    code: 'TR',
-    ref: 'Transport',
-    type: 'Indemnités',
-    abs: 'Oui',
-    nature: 'Non Cotisable-Imposable',
-  },
+const TABLE_HEAD = [
+  { id: 'code', label: 'Code' },
+  { id: 'name', label: 'Nature' },
+  { id: 'percent', label: 'Percent' },
+  { id: 'amount', label: 'Amount' },
+  { id: '' },
 ];
 
 export function NoCotisNoImposNewEditForm() {
   const [openProductDialog, setOpenProductDialog] = useState(false);
   const confirmDialog = useBoolean();
 
-  const { control, setValue, getValues } = useFormContext();
+  const { control } = useFormContext();
 
   const { fields, append, remove, update } = useFieldArray({
     control,
@@ -53,57 +37,7 @@ export function NoCotisNoImposNewEditForm() {
   const handleCloseProductDialog = () => {
     setOpenProductDialog(false);
   };
-  const columns = [
-    // { field: 'category', headerName: 'Category', filterable: false },
 
-    {
-      field: 'code',
-      headerName: 'Code',
-      flex: 1,
-      minWidth: 160,
-      hideable: false,
-      renderCell: (params) => (
-        <Box>
-          <Typography>{params.row.id}</Typography>
-        </Box>
-      ),
-    },
-
-    {
-      field: 'ref',
-      headerName: 'Nom',
-      flex: 1,
-      minWidth: 160,
-      hideable: false,
-      renderCell: (params) => (
-        <Box>
-          <Typography>{params.row.ref}</Typography>
-        </Box>
-      ),
-    },
-    {
-      field: 'percent',
-      headerName: '%',
-      flex: 1,
-      minWidth: 160,
-      hideable: false,
-      type: 'number',
-      editable: true,
-      align: 'left',
-      headerAlign: 'left',
-    },
-    {
-      field: 'amount',
-      headerName: 'Montant',
-      flex: 1,
-      minWidth: 160,
-      hideable: false,
-      type: 'number',
-      editable: true,
-      align: 'left',
-      headerAlign: 'left',
-    },
-  ];
   const handleSelectProduct = (product) => {
     console.log('product', product);
 
@@ -121,54 +55,12 @@ export function NoCotisNoImposNewEditForm() {
       confirmDialog.onTrue();
     }
   };
-  // const handleCellEditStop = (params, event) => {
-  //   // event.defaultMuiPrevented = true;
 
-  //   console.log('params.row', params.row);
-  // };
-  // const handleCellEditStop = useCallback(
-  //   (params, event) => {
-  //     event.defaultMuiPrevented = true;
-  //     // Find the index of the item with the matching ID
-  //     const index = fields.findIndex((field) => field.id === params.row.id);
-  //     console.log('params.row', params);
-  //     if (index !== -1) {
-  //       // Directly update the matching item
-  //       update(index, {
-  //         ...fields[index], // Keep the existing data
-  //         // ...params.row, // Overwrite with new values from params.row
-  //         percent: params.row.percent,
-  //       });
-  //     }
-  //   },
-  //   [fields, update]
-  // );
   console.log('FIELDS', fields);
-  const handleRowUpdate = useCallback(
-    (newRow) => {
-      const index = fields.findIndex((field) => field.id === newRow.id);
 
-      if (index !== -1) {
-        update(index, {
-          ...fields[index],
-          ...newRow, // Apply all the new values from the row
-        });
-      }
-
-      return newRow; // Required to let DataGrid know the update was successful
-    },
-    [fields, update]
-  );
   return (
     <Box sx={{ p: 2 }}>
-      {/* <Typography variant="h6" sx={{ color: 'text.disabled', mb: 3 }}>
-        Cotisable - Imposable:
-      </Typography> */}
-
-      <Stack
-        // divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />}
-        spacing={3}
-      >
+      <Stack spacing={3}>
         <Box
           sx={{
             gap: 3,
@@ -188,42 +80,48 @@ export function NoCotisNoImposNewEditForm() {
             Ajouter
           </Button>
         </Box>
-        <DataGrid
-          rows={fields}
-          columns={columns}
-          processRowUpdate={handleRowUpdate}
-          // onCellEdit={handleCellEditStop}
-          onProcessRowUpdateError={(error) => console.error(error)}
-          experimentalFeatures={{ newEditingApi: true }} // Ens
-          // onCellEditStop={(params, event) => {
-          //   if (params.reason === GridCellEditStopReasons.cellFocusOut) {
-          //     event.defaultMuiPrevented = true;
-          //   }
-          // }}
-        />
+        <Scrollbar>
+          <Table size="small" sx={{ minWidth: 800 }}>
+            <TableHeadCustom headCells={TABLE_HEAD} />
+
+            <TableBody>
+              {fields.map((row, index) => (
+                <NoCotisNoImposTableRow
+                  key={row.id}
+                  row={row}
+                  index={index}
+                  onDeleteRow={() => remove(index)}
+                  update={update}
+                  fields={fields}
+                />
+              ))}
+            </TableBody>
+          </Table>
+        </Scrollbar>
       </Stack>
 
       <Divider sx={{ my: 2, borderStyle: 'dashed' }} />
-
-      <ProductListDialog
-        title="Liste des produits"
-        open={openProductDialog}
-        onClose={handleCloseProductDialog}
-        // selected={(selectedId) => invoiceFrom?.id === selectedId}
-        selected={() => false}
-        onSelect={(address) => handleSelectProduct(address)}
-        list={PRODUCT_LIST}
-        action={
-          <IconButton
-            size="small"
-            // startIcon={<Iconify icon="mdi:close" />}
-            // sx={{ alignSelf: 'flex-end' }}
-            onClick={handleCloseProductDialog}
-          >
-            <Iconify icon="mdi:close" />
-          </IconButton>
-        }
-      />
+      {openProductDialog && (
+        <ProductListDialog
+          title="Liste des produits"
+          open={openProductDialog}
+          onClose={handleCloseProductDialog}
+          // selected={(selectedId) => invoiceFrom?.id === selectedId}
+          selected={() => false}
+          onSelect={(address) => handleSelectProduct(address)}
+          action={
+            <IconButton
+              size="small"
+              // startIcon={<Iconify icon="mdi:close" />}
+              // sx={{ alignSelf: 'flex-end' }}
+              onClick={handleCloseProductDialog}
+            >
+              <Iconify icon="mdi:close" />
+            </IconButton>
+          }
+          type="3"
+        />
+      )}
       <ConfirmDialog
         open={confirmDialog.value}
         onClose={confirmDialog.onFalse}

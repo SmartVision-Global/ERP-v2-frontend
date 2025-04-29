@@ -1,15 +1,16 @@
-import { useState, forwardRef, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Dialog from '@mui/material/Dialog';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { MenuItem, ListItemIcon } from '@mui/material';
 import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import InputAdornment from '@mui/material/InputAdornment';
 
-import { useGetDeductionsCompensationsByContributoryImposable } from 'src/actions/deduction-conpensation';
+import { fDate, fTime } from 'src/utils/format-time';
+
+import { useGetHistory } from 'src/actions/history';
 
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
@@ -21,20 +22,11 @@ import { SearchNotFound } from 'src/components/search-not-found';
 
 const HIDE_COLUMNS = { category: false };
 
-export function ProductListDialog({
-  open,
-  action,
-  onClose,
-  selected,
-  onSelect,
-  title = 'Address book',
-  type,
-}) {
-  const { deductionsCompensations } = useGetDeductionsCompensationsByContributoryImposable(type);
+export function HistoryListDialog({ open, action, onClose, title = 'Address book', entity, id }) {
+  const { history } = useGetHistory(id, entity);
   const [searchAddress, setSearchAddress] = useState('');
-  // const [selectedRowIds, setSelectedRowIds] = useState([]);
 
-  const dataFiltered = applyFilter({ inputData: deductionsCompensations, query: searchAddress });
+  const dataFiltered = applyFilter({ inputData: history, query: searchAddress });
 
   const notFound = !dataFiltered.length && !!searchAddress;
 
@@ -42,28 +34,9 @@ export function ProductListDialog({
     setSearchAddress(event.target.value);
   }, []);
 
-  const handleSelectAddress = useCallback(
-    (address) => {
-      console.log('address', address);
-      onSelect(address);
-      setSearchAddress('');
-      //   onClose();
-    },
-    [onSelect]
-  );
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
-  const TYPE = {
-    1: 'Retenues',
-    2: 'Indemnités',
-  };
-  const CONTRIBUTORY_IMPOSABLE = {
-    1: 'COTISABLE - IMPOSABLE',
-    2: 'NON COTISABLE - IMPOSABLE',
 
-    3: 'NON COTISABLE - NON IMPOSABLE',
-  };
   const columns = [
-    // { field: 'category', headerName: 'Category', filterable: false },
     {
       field: 'id',
       headerName: 'ID',
@@ -78,86 +51,88 @@ export function ProductListDialog({
       ),
     },
     {
-      field: 'code',
-      headerName: 'Code',
+      field: 'fullname',
+      headerName: 'Nom - Prénom',
       flex: 1,
       minWidth: 160,
       hideable: false,
       renderCell: (params) => (
         <Box>
-          <Typography>{params.row?.code}</Typography>
+          <Typography>{params.row?.personal?.name}</Typography>
         </Box>
       ),
     },
 
     {
-      field: 'name',
-      headerName: 'Référence',
+      field: 'amount',
+      headerName: 'Montant',
       flex: 1,
-      minWidth: 300,
+      minWidth: 120,
       hideable: false,
       renderCell: (params) => (
         <Box>
-          <Typography>{params.row?.name}</Typography>
+          <Typography>{params.row?.data?.loan_amount}</Typography>
         </Box>
       ),
     },
     {
-      field: 'type',
-      headerName: 'Type',
+      field: 'start_date',
+      headerName: 'Au',
       flex: 1,
-      minWidth: 160,
+      minWidth: 140,
       hideable: false,
       renderCell: (params) => (
-        <Label variant="soft" color="info">
-          {TYPE[params.row.type]}
-        </Label>
+        <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
+          <span>{fDate(params.row?.data?.start_date)}</span>
+        </Box>
       ),
     },
     {
-      field: 'abs',
-      headerName: 'Soumis aux absence',
+      field: 'observation',
+      headerName: 'Designation',
       flex: 1,
-      minWidth: 160,
+      minWidth: 200,
       hideable: false,
-      renderCell: (params) => (
-        <Label variant="soft" color={params.row.abs ? 'warning' : 'info'}>
-          {params.row.abs ? 'Oui' : 'Non'}
-        </Label>
-      ),
+      renderCell: (params) => <Typography>{params.row?.data?.observation}</Typography>,
     },
     {
-      field: 'nature',
-      headerName: 'Nature',
+      field: 'status',
+      headerName: 'Est comptabilé',
       flex: 1,
       minWidth: 250,
       hideable: false,
       renderCell: (params) => (
-        <Label variant="soft" color="info">
-          {CONTRIBUTORY_IMPOSABLE[params.row.contributory_imposable]}
+        <Label variant="soft" color={params.row?.data?.status === '1' ? 'primary' : 'default'}>
+          {params.row?.data?.status === '1' ? 'Oui' : 'Non'}
         </Label>
       ),
     },
     {
-      type: 'actions',
-      field: 'actions',
-      headerName: ' ',
-      align: 'right',
-      headerAlign: 'right',
-      width: 80,
-      sortable: false,
-      filterable: false,
-      disableColumnMenu: true,
-      getActions: (params) => [
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="mingcute:add-line" />}
-          label="Ajouter"
-          onClick={() => handleSelectAddress(params.row)}
-          // href={paths.dashboard.product.details(params.row.id)}
-          // href={paths.dashboard.root}
-        />,
-      ],
+      field: 'updated_by',
+      headerName: 'Modifier par',
+      flex: 1,
+      minWidth: 160,
+      hideable: false,
+      renderCell: (params) => (
+        <Box>
+          <Typography>{params.row?.user?.full_name}</Typography>
+        </Box>
+      ),
+    },
+    {
+      field: 'updated_at',
+      headerName: 'Date de modification',
+      flex: 1,
+      minWidth: 180,
+      hideable: false,
+      renderCell: (params) => (
+        <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
+          <span>{fDate(params.row?.updated_at)}</span>
+          <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
+            {fTime(params.row.updated_at)}
+          </Box>
+        </Box>
+      ),
     },
   ];
   const productsLoading = false;
@@ -165,7 +140,6 @@ export function ProductListDialog({
   const renderList = () => (
     <Scrollbar sx={{ p: 4, maxHeight: 480 }}>
       <DataGrid
-        // checkboxSelection
         disableRowSelectionOnClick
         rows={dataFiltered}
         columns={columns}
@@ -173,20 +147,12 @@ export function ProductListDialog({
         getRowHeight={() => 'auto'}
         pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
         initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-        // onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
         columnVisibilityModel={columnVisibilityModel}
         onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
-        // disableColumnFilter
         slots={{
-          // toolbar: CustomToolbarCallback,
           noRowsOverlay: () => <EmptyContent />,
           noResultsOverlay: () => <EmptyContent title="No results found" />,
         }}
-        //   slotProps={{
-        //     toolbar: { setFilterButtonEl },
-        //     panel: { anchorEl: filterButtonEl },
-        //     columnsManagement: { getTogglableColumns },
-        //   }}
         sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
       />
     </Scrollbar>
@@ -242,26 +208,8 @@ function applyFilter({ inputData, query }) {
     return inputData;
   }
 
-  return inputData.filter(({ code, name }) =>
-    [name, code].some((field) => field?.toLowerCase().includes(query.toLowerCase()))
-  );
+  return inputData.filter(({ personal, data }) => {
+    const { name } = personal;
+    return [name].some((field) => field?.toLowerCase().includes(query.toLowerCase()));
+  });
 }
-
-export const GridActionsLinkItem = forwardRef((props, ref) => {
-  const { label, icon, onClick, sx } = props;
-
-  return (
-    <MenuItem ref={ref} sx={sx} onClick={onClick}>
-      {icon && <ListItemIcon>{icon}</ListItemIcon>}
-      <Typography variant="body2">{label}</Typography>
-      {/* <Link
-          underline="none"
-          color="inherit"
-          sx={{ width: 1, display: 'flex', alignItems: 'center' }}
-        >
-          {icon && <ListItemIcon>{icon}</ListItemIcon>}
-          {label}
-        </Link> */}
-    </MenuItem>
-  );
-});

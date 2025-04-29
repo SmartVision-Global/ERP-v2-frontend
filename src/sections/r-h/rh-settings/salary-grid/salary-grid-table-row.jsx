@@ -17,14 +17,18 @@ export function RenderCellPrice({ params }) {
 }
 
 export function RenderCellSumContributor({ params }) {
-  return <Typography variant="body2">{params.row.sum_contributor}</Typography>;
+  return <Typography variant="body2">{params.row.contributory_salary}</Typography>;
 }
 export function RenderCellSalary({ params }) {
   return <Typography variant="body2">{params.row.salary}</Typography>;
 }
 
+export function RenderCellPostSalary({ params }) {
+  return <Typography variant="body2">{params.row.post_salary}</Typography>;
+}
+
 export function RenderCellSumTaxable({ params }) {
-  return <Typography variant="body2">{params.row.sum_taxable}</Typography>;
+  return <Typography variant="body2">{params.row.taxable_wages}</Typography>;
 }
 
 export function RenderCellIrg({ params }) {
@@ -33,6 +37,12 @@ export function RenderCellIrg({ params }) {
 
 export function RenderCellBaseSalary({ params }) {
   return <Typography variant="body2">{params.row.salary}</Typography>;
+}
+export function RenderCellNetSalary({ params }) {
+  return <Typography variant="body2">{params.row.net_salary}</Typography>;
+}
+export function RenderCellNetSalaryPayable({ params }) {
+  return <Typography variant="body2">{params.row.net_salary_payable}</Typography>;
 }
 
 export function RenderCellCode({ params }) {

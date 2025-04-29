@@ -194,6 +194,10 @@ export const paths = {
         root: `${ROOTS.DASHBOARD}/settings/site`,
         newSite: `${ROOTS.DASHBOARD}/settings/site/new`,
       },
+      service: {
+        root: `${ROOTS.DASHBOARD}/settings/service`,
+        newService: `${ROOTS.DASHBOARD}/settings/service/new`,
+      },
       // enterprise: {
       //   root: `${ROOTS.DASHBOARD}/settings/enterprise`,
       //   newEnterprise: `${ROOTS.DASHBOARD}/settings/enterprise/new`,

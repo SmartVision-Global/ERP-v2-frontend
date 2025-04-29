@@ -87,6 +87,8 @@ export const endpoints = {
 
   site: '/v1/settings/sites',
   workshop: '/v1/settings/workshops',
+  service: '/v1/settings/services',
+
   machine: '/v1/settings/machines',
   society: '/v1/settings/enterprises',
   function: '/v1/hr/function/jobs',

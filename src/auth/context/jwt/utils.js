@@ -82,9 +82,10 @@ export async function setSession(accessToken, exp) {
       if (exp) {
         // tokenExpired(decodedToken.exp);
         tokenExpired(exp);
-      } else {
-        throw new Error('Invalid access token!');
       }
+      // else {
+      //   throw new Error('Invalid access token!');
+      // }
     } else {
       sessionStorage.removeItem(JWT_STORAGE_KEY);
       delete axios.defaults.headers.common.Authorization;
