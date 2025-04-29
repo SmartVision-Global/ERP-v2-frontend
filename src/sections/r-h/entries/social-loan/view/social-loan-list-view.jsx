@@ -283,46 +283,98 @@ export function SocialLoanListView() {
       sortable: false,
       filterable: false,
       disableColumnMenu: true,
-      getActions: (params) => [
-        <GridActionsClickItem
-          showInMenu
-          icon={<Iconify icon="eva:checkmark-fill" />}
-          label="Valider"
-          onClick={() => handleOpenValidateConfirmDialog(params.row.id)}
-          // href={paths.dashboard.product.details(params.row.id)}
-          // href={paths.dashboard.root}
-        />,
-        <GridActionsClickItem
-          showInMenu
-          icon={<Iconify icon="eva:archive-fill" />}
-          label="Archiver"
-          onClick={() => handleOpenArchiveConfirmDialog(params.row.id)}
-          // href={paths.dashboard.product.details(params.row.id)}
-          // href={paths.dashboard.root}
-        />,
-        <GridActionsClickItem
-          showInMenu
-          icon={<Iconify icon="eva:flip-2-fill" />}
-          label="Annuler la validation"
-          onClick={() => handleOpenCancelConfirmDialog(params.row.id)}
-          // href={paths.dashboard.product.details(params.row.id)}
-          // href={paths.dashboard.root}
-        />,
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:pen-bold" />}
-          label="Modifier"
-          // href={paths.dashboard.product.edit(params.row.id)}
-          href={paths.dashboard.rh.entries.editSocialLoan(params.row.id)}
-        />,
-        <GridActionsClickItem
-          showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
-          label="Historique de modification"
-          // href={paths.dashboard.product.edit(params.row.id)}
-          onClick={() => handleOpenHistoryDialog(params.row.id)}
-        />,
-      ],
+      getActions: (params) => {
+        let actions = [];
+        switch (params.row.status) {
+          case '1':
+            actions = [
+              <GridActionsClickItem
+                showInMenu
+                icon={<Iconify icon="eva:checkmark-fill" />}
+                label="Valider"
+                onClick={() => handleOpenValidateConfirmDialog(params.row.id)}
+              />,
+              <GridActionsClickItem
+                showInMenu
+                icon={<Iconify icon="eva:archive-fill" />}
+                label="Archiver"
+                onClick={() => handleOpenArchiveConfirmDialog(params.row.id)}
+              />,
+
+              <GridActionsLinkItem
+                showInMenu
+                icon={<Iconify icon="solar:pen-bold" />}
+                label="Modifier"
+                href={paths.dashboard.rh.entries.editSocialLoan(params.row.id)}
+              />,
+              <GridActionsClickItem
+                showInMenu
+                icon={<Iconify icon="solar:eye-bold" />}
+                label="Historique de modification"
+                onClick={() => handleOpenHistoryDialog(params.row.id)}
+              />,
+            ];
+            break;
+          case '2':
+            actions = [
+              <GridActionsClickItem
+                showInMenu
+                icon={<Iconify icon="eva:flip-2-fill" />}
+                label="Annuler la validation"
+                onClick={() => handleOpenCancelConfirmDialog(params.row.id)}
+              />,
+              <GridActionsClickItem
+                showInMenu
+                icon={<Iconify icon="solar:eye-bold" />}
+                label="Historique de modification"
+                onClick={() => handleOpenHistoryDialog(params.row.id)}
+              />,
+            ];
+            break;
+          case '3':
+            actions = [
+              <GridActionsClickItem
+                showInMenu
+                icon={<Iconify icon="solar:eye-bold" />}
+                label="Historique de modification"
+                onClick={() => handleOpenHistoryDialog(params.row.id)}
+              />,
+            ];
+            break;
+          case '4':
+            actions = [
+              <GridActionsClickItem
+                showInMenu
+                icon={<Iconify icon="eva:checkmark-fill" />}
+                label="Valider"
+                onClick={() => handleOpenValidateConfirmDialog(params.row.id)}
+              />,
+              <GridActionsClickItem
+                showInMenu
+                icon={<Iconify icon="eva:archive-fill" />}
+                label="Archiver"
+                onClick={() => handleOpenArchiveConfirmDialog(params.row.id)}
+              />,
+
+              <GridActionsLinkItem
+                showInMenu
+                icon={<Iconify icon="solar:pen-bold" />}
+                label="Modifier"
+                href={paths.dashboard.rh.entries.editSocialLoan(params.row.id)}
+              />,
+              <GridActionsClickItem
+                showInMenu
+                icon={<Iconify icon="solar:eye-bold" />}
+                label="Historique de modification"
+                onClick={() => handleOpenHistoryDialog(params.row.id)}
+              />,
+            ];
+            break;
+          default:
+            break;
+        }
+        return actions;
+      },
     },
   ];
 
