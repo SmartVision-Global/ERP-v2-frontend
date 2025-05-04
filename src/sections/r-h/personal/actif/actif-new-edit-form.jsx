@@ -40,41 +40,41 @@ import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
 export const NewProductSchema = zod
   .object({
-    firstname_fr: zod.string().min(1, { message: 'firstname_fr is required!' }),
-    lastname_fr: zod.string().min(1, { message: 'lastname_fr is required!' }),
-    firstname_ar: zod.string().min(1, { message: 'firstname_ar is required!' }),
-    lastname_ar: zod.string().min(1, { message: 'lastname_ar is required!' }),
-    birth_date: schemaHelper.date({ message: { required: 'birthday is required!' } }),
-    location_fr: zod.string().min(1, { message: 'location_fr is required!' }),
-    location_ar: zod.string().min(1, { message: 'location_ar is required!' }),
-    gender: zod.string().min(1, { message: 'sex is required!' }),
-    blood_group: zod.string().min(1, { message: 'blood_type code is required!' }),
-    nationality_id: zod.string().min(1, { message: 'nationality is required!' }),
+    firstname_fr: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    lastname_fr: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    firstname_ar: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    lastname_ar: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    birth_date: schemaHelper.date({ message: { required: 'Veuillez remplir ce champ' } }),
+    location_fr: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    location_ar: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    gender: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    blood_group: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    nationality_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
 
-    phone: zod.string().min(1, { message: 'phone is required!' }),
-    national_service_situation: zod
-      .string()
-      .min(1, { message: 'national_service_situation is required!' }),
-    email: zod.string().min(1, { message: 'email is required!' }),
-    social_security_number: zod.string().min(1, { message: 'social_number is required!' }),
-    adressFr: zod.string().min(1, { message: 'adressFr is required!' }),
-    adressAr: zod.string().min(1, { message: 'adressAr is required!' }),
+    phone: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    national_service_situation: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    email: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    social_security_number: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    adressFr: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    adressAr: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
 
-    national_number: zod.string().min(1, { message: 'national_number is required!' }),
-    act_of_birth_number: zod.string().min(1, { message: 'birth_certificate_number is required!' }),
+    national_number: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    act_of_birth_number: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
     image: schemaHelper.file().optional(),
     employment_certificate: schemaHelper.file().optional(),
-    father_firstname_fr: zod.string().min(1, { message: 'father_firstname_fr is required!' }),
-    father_firstname_ar: zod.string().min(1, { message: 'father_firstname_ar is required!' }),
-    mother_firstname_fr: zod.string().min(1, { message: 'mother_firstname_fr is required!' }),
-    mother_lastname_fr: zod.string().min(1, { message: 'mother_lastname_fr is required!' }),
-    mother_firstname_ar: zod.string().min(1, { message: 'mother_firstname_ar is required!' }),
-    mother_lastname_ar: zod.string().min(1, { message: 'mother_lastname_ar is required!' }),
+    father_firstname_fr: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    father_firstname_ar: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    mother_firstname_fr: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    mother_lastname_fr: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    mother_firstname_ar: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    mother_lastname_ar: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
 
     // Informations Familiales
-    family_situation: zod.string().min(1, { message: 'family_situation is required!' }),
-    children: schemaHelper.nullableInput(zod.number({ coerce: true }).optional()),
-    minor_children: schemaHelper.nullableInput(zod.number({ coerce: true }).optional()),
+    family_situation: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    // children: schemaHelper.nullableInput(zod.number({ coerce: true }).optional().nullable()),
+    // minor_children: schemaHelper.nullableInput(zod.number({ coerce: true }).optional().nullable()),
+    children: zod.number({ coerce: true }).optional().nullable(),
+    minor_children: zod.number({ coerce: true }).optional().nullable(),
     spouse_fullname_fr: zod.string().optional(),
     spouse_fullname_ar: zod.string().optional(),
     spouse_situation: zod.string().optional(),
@@ -85,39 +85,39 @@ export const NewProductSchema = zod
     speciality: zod.string().optional(),
 
     // Emplacement et Structure Organisationnelle
-    subsidiary_id: zod.string().min(1, { message: 'subsidiary is required!' }),
-    direction_id: zod.string().min(1, { message: 'direction is required!' }),
-    site_id: zod.string().min(1, { message: 'site is required!' }),
+    subsidiary_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    direction_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    site_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
     // lieu: zod.string().min(1, { message: 'lieu is required!' }),
 
-    division_id: zod.string().min(1, { message: 'division is required!' }),
-    department_id: zod.string().min(1, { message: 'department is required!' }),
-    section_id: zod.string().min(1, { message: 'sections is required!' }),
-    workshop_id: zod.string().min(1, { message: 'workshop is required!' }),
-    machine_id: zod.string().min(1, { message: 'machine is required!' }),
-    zone_id: zod.string().min(1, { message: 'area is required!' }),
+    division_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    department_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    section_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    workshop_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    machine_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    zone_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
 
     // Informations sur l'Emploi
-    enterprise_id: zod.string().min(1, { message: 'company is required!' }),
-    job_id: zod.string().min(1, { message: 'function is required!' }),
-    salary_category_id: zod.string().min(1, { message: 'category is required!' }),
-    rung_id: zod.string().min(1, { message: 'steps is required!' }),
-    salary_scale_level_id: zod.string().min(1, { message: 'salary_grid_level is required!' }),
+    enterprise_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    job_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    salary_category_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    rung_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    salary_scale_level_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
 
-    salary_grid_id: zod.string().min(1, { message: 'salary_grid_id is required!' }),
-    salary_supplemental: zod.string().min(1, { message: 'salary_supplement is required!' }),
-    job_regime: zod.string().min(1, { message: 'work_schedule is required!' }),
-    agency_id: zod.string().min(1, { message: 'agencies is required!' }),
+    salary_grid_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    salary_supplemental: zod.number().optional(),
+    job_regime: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    agency_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
     allowed_overtime: zod.boolean(),
     allowed_exit_voucher: zod.boolean(),
     pea_exist: zod.boolean(),
-    rate_id: zod.string().min(1, { message: 'contribution_scheme is required!' }),
-    payroll_calculation: zod.string().min(1, { message: 'calculation_method is required!' }),
+    rate_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    payroll_calculation: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
     days_per_month: schemaHelper.nullableInput(
       zod
         .number({ coerce: true })
-        .min(1, { message: 'days_per_month is required!' })
-        .max(99, { message: 'days_per_month must be between 1 and 99' }),
+        .min(1, { message: 'Veuillez remplir ce champ' })
+        .max(30, { message: 'days_per_month must be between 1 and 30' }),
       // message for null value
       { message: 'days_per_month is required!' }
     ),
@@ -125,27 +125,27 @@ export const NewProductSchema = zod
       zod
         .number({ coerce: true })
         .min(1, { message: 'hours_per_month is required!' })
-        .max(159, { message: 'hours_per_month must be between 1 and 99' }),
+        .max(173.33, { message: 'hours_per_month must be between 1 and 173.33' }),
       // message for null value
       { message: 'hours_per_month is required!' }
     ),
-    declaration_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
-    service_start: schemaHelper.date({ message: { required: 'entry_date is required!' } }),
+    declaration_date: schemaHelper.date({ message: { required: 'Veuillez remplir ce champ' } }),
+    service_start: schemaHelper.date({ message: { required: 'Veuillez remplir ce champ' } }),
 
     // Informations de la contra
-    contract_type: zod.string().min(1, { message: 'contract_type is required!' }),
-    from_date: schemaHelper.date({ message: { required: 'start_date is required!' } }),
-    to_date: schemaHelper.date({ message: { required: 'end_date is required!' } }),
+    contract_type: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    from_date: schemaHelper.date({ message: { required: 'Veuillez remplir ce champ' } }),
+    to_date: schemaHelper.date({ message: { required: 'Veuillez remplir ce champ' } }),
     contract_probation: schemaHelper.nullableInput(
-      zod.number({ coerce: true }).min(1, { message: 'probation is required!' }),
+      zod.number({ coerce: true }).min(1, { message: 'Veuillez remplir ce champ' }),
       {
         // message for null value
-        message: 'probation is required!',
+        message: 'Veuillez remplir ce champ',
       }
     ),
-    payment_type: zod.string().min(1, { message: 'paymant_type is required!' }),
-    rib: zod.string().min(1, { message: 'rib is required!' }),
-    bank_id: zod.string().min(1, { message: 'bank is required!' }),
+    payment_type: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    rib: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    bank_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
   })
   .superRefine((data, ctx) => {
     if (data.family_situation === '3') {
@@ -250,7 +250,7 @@ export function ActifNewEditForm({ currentProduct }) {
     location_ar: '',
     /********/
     gender: '1',
-    blood_group: '',
+    blood_group: '1',
     nationality_id: '',
     phone: '',
     national_service_situation: '',
@@ -272,7 +272,7 @@ export function ActifNewEditForm({ currentProduct }) {
     mother_lastname_ar: '',
 
     // Informations Familiales
-    family_situation: '',
+    family_situation: '1',
     children: 0,
     minor_children: 0,
     spouse_fullname_fr: '',
@@ -310,14 +310,14 @@ export function ActifNewEditForm({ currentProduct }) {
     pea_exist: false,
     rate_id: '',
     payroll_calculation: '1',
-    days_per_month: 22,
-    hours_per_month: 130,
+    days_per_month: 30,
+    hours_per_month: 173.33,
     declaration_date: null,
     service_start: null,
     contract_type: '1',
     from_date: null,
     to_date: null,
-    contract_probation: '',
+    contract_probation: 0,
     payment_type: '1',
     rib: '',
     bank_id: '',
@@ -328,20 +328,30 @@ export function ActifNewEditForm({ currentProduct }) {
     defaultValues,
     values: {
       ...currentProduct,
-      firstname_fr: currentProduct?.first_name?.fr,
-      firstname_ar: currentProduct?.first_name?.ar,
-      lastname_fr: currentProduct?.last_name?.fr,
-      lastname_ar: currentProduct?.last_name?.ar,
-      location_fr: currentProduct?.birth_place?.fr,
-      location_ar: currentProduct?.birth_place?.ar,
-      adressFr: currentProduct?.address?.fr,
-      adressAr: currentProduct?.address?.ar,
-      father_firstname_fr: currentProduct?.first_name_father?.fr,
-      father_firstname_ar: currentProduct?.first_name_father?.ar,
-      mother_firstname_fr: currentProduct?.first_name_mother?.fr,
-      mother_firstname_ar: currentProduct?.first_name_mother?.ar,
-      mother_lastname_fr: currentProduct?.last_name_mother?.fr,
-      mother_lastname_ar: currentProduct?.last_name_mother?.ar,
+      firstname_fr: currentProduct?.first_name?.fr || '',
+      firstname_ar: currentProduct?.first_name?.ar || '',
+      lastname_fr: currentProduct?.last_name?.fr || '',
+      lastname_ar: currentProduct?.last_name?.ar || '',
+      location_fr: currentProduct?.birth_place?.fr || '',
+      location_ar: currentProduct?.birth_place?.ar || '',
+      adressFr: currentProduct?.address?.fr || '',
+      adressAr: currentProduct?.address?.ar || '',
+      gender: currentProduct?.gender || '1',
+      blood_group: currentProduct?.blood_group || '1',
+      phone: currentProduct?.phone || '',
+      national_service_situation: currentProduct?.national_service_situation || '4',
+      email: currentProduct?.email || '',
+      social_security_number: currentProduct?.social_security_number || '',
+      national_number: currentProduct?.national_number || '',
+      act_of_birth_number: currentProduct?.act_of_birth_number || '',
+      family_situation: currentProduct?.family_situation || '1',
+      birth_date: currentProduct?.birth_date || null,
+      father_firstname_fr: currentProduct?.first_name_father?.fr || '',
+      father_firstname_ar: currentProduct?.first_name_father?.ar || '',
+      mother_firstname_fr: currentProduct?.first_name_mother?.fr || '',
+      mother_firstname_ar: currentProduct?.first_name_mother?.ar || '',
+      mother_lastname_fr: currentProduct?.last_name_mother?.fr || '',
+      mother_lastname_ar: currentProduct?.last_name_mother?.ar || '',
       nationality_id: currentProduct?.nationality_id?.toString() || '',
       subsidiary_id: currentProduct?.subsidiary_id?.toString() || '',
       direction_id: currentProduct?.direction_id?.toString() || '',
@@ -361,9 +371,25 @@ export function ActifNewEditForm({ currentProduct }) {
       agency_id: currentProduct?.agency_id?.toString() || '',
       rate_id: currentProduct?.rate_id?.toString() || '',
       bank_id: currentProduct?.bank_id?.toString() || '',
-      // salary_supplemental:parsecurrentProduct?.salary_supplemental
+      salary_supplemental: currentProduct?.salary_supplemental || 0,
+      job_regime: currentProduct?.job_regime || '2',
       spouse_phone: currentProduct?.spouse_phone || '',
       spouse_situation: currentProduct?.spouse_situation || '',
+      allowed_overtime: currentProduct?.allowed_overtime || false,
+      allowed_exit_voucher: currentProduct?.allowed_exit_voucher || false,
+      pea_exist: currentProduct?.pea_exist || false,
+      payroll_calculation: currentProduct?.payroll_calculation || '1',
+      days_per_month: currentProduct?.days_per_month || 30,
+      hours_per_month: currentProduct?.hours_per_month || 173.33,
+      declaration_date: currentProduct?.declaration_date || null,
+      service_start: currentProduct?.service_start || null,
+      contract_type: currentProduct?.contract_type || '1',
+
+      from_date: currentProduct?.from_date || null,
+      to_date: currentProduct?.to_date || null,
+      contract_probation: currentProduct?.contract_probation || 0,
+      payment_type: currentProduct?.payment_type || '1',
+      rib: currentProduct?.rib || '',
     },
   });
 
@@ -378,7 +404,8 @@ export function ActifNewEditForm({ currentProduct }) {
   } = methods;
 
   const values = watch();
-  console.log('vallllllllllll', errors);
+  console.log('errrrr', errors);
+  console.log('vallllllllllll', values);
 
   const handleRemoveImage = useCallback(() => {
     setValue('image', null);
@@ -939,7 +966,7 @@ export function ActifNewEditForm({ currentProduct }) {
               name="salary_supplemental"
               label="Complément Salaire"
               placeholder="0"
-              // type="number"
+              type="number"
               slotProps={{ inputLabel: { shrink: true } }}
             />
           </Grid>
@@ -1065,16 +1092,6 @@ export function ActifNewEditForm({ currentProduct }) {
             <Field.DatePicker name="to_date" label="Au" />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            {/* <Field.Text
-              name="probation"
-              label="Probation"
-              placeholder="0"
-              type="number"
-              slotProps={{ inputLabel: { shrink: true } }}
-            /> */}
-            {/* <FieldContainer label="Probation" sx={{ alignItems: 'center' }}>
-              <Field.NumberInput name="probation" />
-            </FieldContainer> */}
             <Field.Number name="contract_probation" label="Probation" type="number" />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
