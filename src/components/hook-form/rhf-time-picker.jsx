@@ -17,8 +17,13 @@ export function RHFTimePicker({ name, slotProps, ...other }) {
       render={({ field, fieldState: { error } }) => (
         <TimePicker
           {...field}
-          value={dayjs(field.value)}
-          onChange={(newValue) => field.onChange(dayjs(newValue).format())}
+          value={field.value ? dayjs(`1970-01-01T${field.value}`) : null}
+          // onChange={(newValue) => field.onChange(dayjs(newValue).format())}
+          onChange={(newValue) => {
+            const formattedTime = newValue ? dayjs(newValue).format('HH:mm') : null;
+            field.onChange(formattedTime);
+          }}
+          // format="HH:mm"
           format={formatPatterns.time}
           // format="HH:mm"
           ampm={false}

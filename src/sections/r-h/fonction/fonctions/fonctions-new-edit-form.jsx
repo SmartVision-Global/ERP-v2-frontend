@@ -56,6 +56,8 @@ export const NewProductSchema = zod.object({
   manager_job_id: zod.string().optional(),
   mission_id: zod.string().min(1, { message: 'Name is required!' }),
   action_id: zod.string().min(1, { message: 'Name is required!' }),
+  careerKnowledges: zod.array(zod.string()),
+  dutiesResponsibilities: zod.array(zod.string()),
 });
 
 export function FonctionsNewEditForm({ currentProduct }) {
@@ -66,8 +68,10 @@ export function FonctionsNewEditForm({ currentProduct }) {
     { entity: 'salaryCategories', url: 'hr/lookups/identification/salary_category' },
     { entity: 'salaryGrids', url: 'hr/lookups/salary_grids' },
     { entity: 'directions', url: 'hr/lookups/identification/direction' },
-    { entity: 'services', url: 'settings/lookups/service' },
+    { entity: 'services', url: 'settings/lookups/services' },
     { entity: 'jobs', url: 'hr/lookups/jobs' },
+    { entity: 'dutiesResponsibilities', url: 'hr/lookups/duties_responsibilities' },
+    { entity: 'careerKnowledges', url: 'hr/lookups/career_knowledges' },
   ]);
 
   const sites = dataLookups.sites;
@@ -76,6 +80,8 @@ export function FonctionsNewEditForm({ currentProduct }) {
   const directions = dataLookups.directions;
   const services = dataLookups.services;
   const jobs = dataLookups.jobs;
+  const dutiesResponsibilities = dataLookups.dutiesResponsibilities;
+  const careerKnowledges = dataLookups.careerKnowledges;
 
   const defaultValues = {
     name: '',
@@ -95,6 +101,8 @@ export function FonctionsNewEditForm({ currentProduct }) {
     manager_job_id: '',
     mission_id: '',
     action_id: '',
+    careerKnowledges: [],
+    dutiesResponsibilities: [],
   };
 
   const methods = useForm({
@@ -118,16 +126,20 @@ export function FonctionsNewEditForm({ currentProduct }) {
       manager_job_id: currentProduct?.manager_job_id?.toString() || '',
       mission_id: currentProduct?.mission_id?.toString() || '',
       action_id: currentProduct?.action_id?.toString() || '',
+      dutiesResponsibilities: currentProduct?.dutiesResponsibilities || [],
+      careerKnowledges: currentProduct?.careerKnowledges || [],
     },
   });
 
   const {
+    watch,
     reset,
     handleSubmit,
     formState: { isSubmitting, errors },
   } = methods;
-
+  const values = watch();
   console.log('err', errors);
+  console.log('values', values);
 
   const onSubmit = handleSubmit(async (data) => {
     // eslint-disable-next-line no-debugger
@@ -151,6 +163,8 @@ export function FonctionsNewEditForm({ currentProduct }) {
       premium_amount: data.premium_amount,
       max_absence_allowed: data.max_absence_allowed,
       salaryGrids: [parseInt(data.salary_grids)],
+      careerKnowledges: data.careerKnowledges,
+      dutiesResponsibilities: data.dutiesResponsibilities,
     };
 
     try {
@@ -353,6 +367,44 @@ export function FonctionsNewEditForm({ currentProduct }) {
       </Stack>
     </Card>
   );
+  const renderTasks = () => (
+    <Card>
+      <CardHeader title="Les Tâches" sx={{ mb: 3 }} />
+
+      <Divider />
+
+      <Stack spacing={3} sx={{ p: 3 }}>
+        <Grid container spacing={3}>
+          <Grid size={{ xs: 12, md: 12 }}>
+            <Field.MultiCheckboxLookup
+              name="dutiesResponsibilities"
+              label="Taches et resp"
+              options={dutiesResponsibilities}
+            />
+          </Grid>
+        </Grid>
+      </Stack>
+    </Card>
+  );
+  const renderEducation = () => (
+    <Card>
+      <CardHeader title="Éducation et Expérience" sx={{ mb: 3 }} />
+
+      <Divider />
+
+      <Stack spacing={3} sx={{ p: 3 }}>
+        <Grid container spacing={3}>
+          <Grid size={{ xs: 12, md: 12 }}>
+            <Field.MultiCheckboxLookup
+              name="careerKnowledges"
+              label="Taches et resp"
+              options={careerKnowledges}
+            />
+          </Grid>
+        </Grid>
+      </Stack>
+    </Card>
+  );
   const renderActions = () => (
     <Box
       sx={{
@@ -374,6 +426,8 @@ export function FonctionsNewEditForm({ currentProduct }) {
         {renderDetails()}
         {renderOptionelInfo()}
         {renderJobDescription()}
+        {renderTasks()}
+        {renderEducation()}
         {renderActions()}
       </Stack>
     </Form>

@@ -72,3 +72,12 @@ export async function updateJob(id, data) {
   await axios.patch(`${ENDPOINT}/${id}`, data);
   // mutate(`${ENDPOINT}/${id}`);
 }
+
+export async function archiveJob(id, data) {
+  /**
+   * Work on server
+   */
+  // const data = { directionData };
+  await axios.delete(`${ENDPOINT}/${id}`);
+  // mutate(`${ENDPOINT}/${id}`);
+}

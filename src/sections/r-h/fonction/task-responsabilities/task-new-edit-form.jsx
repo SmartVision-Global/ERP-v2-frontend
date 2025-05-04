@@ -34,10 +34,10 @@ export function TaskNewEditForm({ currentProduct }) {
     resolver: zodResolver(NewProductSchema),
     defaultValues,
     values: {
-      type: currentProduct?.type,
-      label_french: currentProduct.label?.fr,
-      label_english: currentProduct.label?.en,
-      label_arabic: currentProduct.label?.ar,
+      type: currentProduct?.type || '',
+      label_french: currentProduct?.label?.fr || '',
+      label_english: currentProduct?.label?.en || '',
+      label_arabic: currentProduct?.label?.ar || '',
     },
   });
 

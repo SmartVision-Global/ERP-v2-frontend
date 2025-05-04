@@ -10,7 +10,7 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useMultiLookups } from 'src/actions/lookups';
-import { createSalaryGrid } from 'src/actions/salary-grid';
+import { createSalaryGrid, updateSalaryGrid } from 'src/actions/salary-grid';
 
 import { toast } from 'src/components/snackbar';
 import { NumberInput } from 'src/components/number-input';
@@ -153,7 +153,7 @@ export function SalaryGridNewEditForm({ currentProduct }) {
     // eslint-disable-next-line no-debugger
     debugger;
     const newArray = deductionsCompensationsItems.map((item) => ({
-      deduction_compensation_id: 30,
+      deduction_compensation_id: item.id,
       percentage_amount: item.percent,
     }));
     // const newArray = [
@@ -184,7 +184,11 @@ export function SalaryGridNewEditForm({ currentProduct }) {
         elements: newArray,
         // retenueIRG: parseInt(data.retenueIRG),
       };
-      await createSalaryGrid(newData);
+      if (currentProduct) {
+        await updateSalaryGrid(currentProduct.id, newData);
+      } else {
+        await createSalaryGrid(newData);
+      }
       reset();
       toast.success(currentProduct ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.rh.rhSettings.salaryGrid);

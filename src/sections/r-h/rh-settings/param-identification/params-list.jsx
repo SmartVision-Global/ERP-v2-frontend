@@ -1,35 +1,50 @@
-import { useCallback } from 'react';
-
 import Box from '@mui/material/Box';
 
+import { useGetSocieties } from 'src/actions/society';
+import { useGetWorkshops } from 'src/actions/atelier';
 import {
   createBank,
   createRung,
+  updateBank,
+  updateRung,
   createGrade,
+  updateGrade,
   createSection,
+  updateSection,
   createDivision,
   createTeamType,
+  updateDivision,
+  updateTeamType,
   createDirection,
+  updateDirection,
   createDepartment,
   createSubsidiary,
+  updateSubsidiary,
+  updateDepartment,
   createNationality,
   createPpeCategory,
+  updateNationality,
+  updatePpeCategory,
   createSalaryCategory,
+  updateSalaryCategory,
   createSalaryScaleLevel,
+  updateSalaryScaleLevel,
   createLoanAssistancePattern,
   createPpeComplianceStandard,
+  updatePpeComplianceStandard,
+  updateLoanAssistancePattern,
   createCompensationLeavePattern,
+  updateCompensationLeavePattern,
 } from 'src/actions/identification';
 
 import { ParamItem } from './param-item';
+import { EnterpriseItem } from './enterprise-item';
 
 // ----------------------------------------------------------------------
 
 export function JobList({ data }) {
-  const handleDelete = useCallback((id) => {
-    console.info('DELETE', id);
-  }, []);
-
+  const { societies } = useGetSocieties();
+  const { ateliers } = useGetWorkshops();
   return (
     <>
       <Box
@@ -51,7 +66,7 @@ export function JobList({ data }) {
         {/* entreprises */}
 
         {/* direction */}
-        <ParamItem title="Entreprises" data={[]} icon="mdi:company" uuid="1" />
+        <EnterpriseItem title="Entreprises" data={societies} icon="mdi:company" />
         <ParamItem
           title="Direction"
           data={data?.direction}
@@ -59,8 +74,9 @@ export function JobList({ data }) {
           icon="mdi:direct-current"
           uuid="2"
           onCreate={createDirection}
+          onUpdate={updateDirection}
         />
-        <ParamItem title="Ateliers" data={[]} icon="mdi:direct-current" uuid="1" />
+        <ParamItem title="Ateliers" data={ateliers} icon="mdi:direct-current" />
         <ParamItem
           title="Filiales"
           data={data?.subsidiary}
@@ -68,6 +84,7 @@ export function JobList({ data }) {
           uuid="4"
           canAdd
           onCreate={createSubsidiary}
+          onUpdate={updateSubsidiary}
         />
         <ParamItem
           title="Division"
@@ -76,6 +93,7 @@ export function JobList({ data }) {
           uuid="5"
           canAdd
           onCreate={createDivision}
+          onUpdate={updateDivision}
         />
         <ParamItem
           title="Départements"
@@ -84,6 +102,7 @@ export function JobList({ data }) {
           uuid="6"
           canAdd
           onCreate={createDepartment}
+          onUpdate={updateDepartment}
         />
         <ParamItem
           title="Sections"
@@ -92,6 +111,7 @@ export function JobList({ data }) {
           uuid="7"
           canAdd
           onCreate={createSection}
+          onUpdate={updateSection}
         />
         <ParamItem
           title="Nationalités"
@@ -100,6 +120,7 @@ export function JobList({ data }) {
           uuid="8"
           canAdd
           onCreate={createNationality}
+          onUpdate={updateNationality}
         />
         <ParamItem
           title="Catégories EPI"
@@ -108,6 +129,7 @@ export function JobList({ data }) {
           uuid="9"
           canAdd
           onCreate={createPpeCategory}
+          onUpdate={updatePpeCategory}
         />
         <ParamItem
           title="Normes de conformité EPI"
@@ -116,6 +138,7 @@ export function JobList({ data }) {
           uuid="10"
           canAdd
           onCreate={createPpeComplianceStandard}
+          onUpdate={updatePpeComplianceStandard}
         />
         <ParamItem
           title="Grades"
@@ -124,6 +147,7 @@ export function JobList({ data }) {
           uuid="11"
           canAdd
           onCreate={createGrade}
+          onUpdate={updateGrade}
         />
         <ParamItem
           title="Banques"
@@ -132,6 +156,7 @@ export function JobList({ data }) {
           uuid="12"
           canAdd
           onCreate={createBank}
+          onUpdate={updateBank}
         />
         <ParamItem
           title="Type d'équipe"
@@ -140,6 +165,7 @@ export function JobList({ data }) {
           uuid="13"
           canAdd
           onCreate={createTeamType}
+          onUpdate={updateTeamType}
         />
         <ParamItem
           title="Catégorie socioprofessionnelle"
@@ -148,6 +174,7 @@ export function JobList({ data }) {
           uuid="14"
           canAdd
           onCreate={createSalaryCategory}
+          onUpdate={updateSalaryCategory}
         />
         <ParamItem
           title="Échelons"
@@ -156,6 +183,7 @@ export function JobList({ data }) {
           uuid="15"
           canAdd
           onCreate={createRung}
+          onUpdate={updateRung}
         />
         <ParamItem
           title="Niveau de la grille salariale"
@@ -164,6 +192,7 @@ export function JobList({ data }) {
           uuid="16"
           canAdd
           onCreate={createSalaryScaleLevel}
+          onUpdate={updateSalaryScaleLevel}
         />
         <ParamItem
           title="Motifs - Sortie, Congé et Récupération"
@@ -172,6 +201,7 @@ export function JobList({ data }) {
           uuid="17"
           canAdd
           onCreate={createCompensationLeavePattern}
+          onUpdate={updateCompensationLeavePattern}
         />
 
         <ParamItem
@@ -181,6 +211,7 @@ export function JobList({ data }) {
           uuid="18"
           canAdd
           onCreate={createLoanAssistancePattern}
+          onUpdate={updateLoanAssistancePattern}
         />
       </Box>
       {/* {jobs.length > 8 && (

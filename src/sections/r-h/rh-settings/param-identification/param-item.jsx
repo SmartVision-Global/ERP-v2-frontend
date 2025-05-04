@@ -59,11 +59,23 @@ export function ParamItem({
   uuid,
   // , editHref, detailsHref, onDelete
   onCreate,
+  onUpdate,
   sx,
   ...other
 }) {
   // const menuActions = usePopover();
   const [openDialog, setOpenDialog] = useState('');
+  const [selectedRow, setSelectedRow] = useState(null);
+  const handleRowClick = (row) => {
+    setSelectedRow(row);
+    setOpenDialog(uuid);
+  };
+  const handleCloseDialog = () => {
+    setOpenDialog('');
+    setSelectedRow(null);
+  };
+  console.log('openDialog', openDialog);
+
   // const renderMenuActions = () => (
   //   <CustomPopover
   //     open={menuActions.open}
@@ -164,7 +176,19 @@ export function ParamItem({
           }}
         >
           {data.map((item) => (
-            <Box key={item.id}>
+            <Box
+              key={item.id}
+              onClick={() => handleRowClick(item)}
+              sx={{
+                px: 1,
+                py: 0.5,
+                borderRadius: 1,
+                cursor: 'pointer',
+                ':hover': {
+                  backgroundColor: 'lightgrey',
+                },
+              }}
+            >
               <Stack direction="row" spacing={2} display="flex" alignItems="center">
                 <Box
                   sx={{
@@ -203,10 +227,12 @@ export function ParamItem({
       {DIALOG_OPEN.includes(openDialog) && (
         <AddDivisionsDialog
           open={DIALOG_OPEN.includes(openDialog)}
-          onClose={() => setOpenDialog('')}
+          onClose={handleCloseDialog}
           name={NAME_OPTIONS[uuid].name}
           title={NAME_OPTIONS[uuid].title}
           onCreate={onCreate}
+          onUpdate={onUpdate}
+          currentProduct={selectedRow}
         />
       )}
       {/* {renderMenuActions()} */}

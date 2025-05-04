@@ -19,6 +19,7 @@ export function TableToolbarCustom({ filterOptions, filters, setFilters, onReset
   console.log('filters', filters);
 
   const [selectedOptions, setSelectedOptions] = useState(null);
+  console.log('selectedOptions', selectedOptions);
 
   const getInput = useCallback(
     (event, type) => {
@@ -55,10 +56,10 @@ export function TableToolbarCustom({ filterOptions, filters, setFilters, onReset
   };
 
   const renderValues = useCallback(
-    (selectedIds, options) =>
+    (selectedIds, options, serverData = false) =>
       options
-        .filter((option) => selectedIds.includes(option.value))
-        .map((option) => option.label)
+        .filter((option) => selectedIds.includes(`${option.value}`))
+        .map((option) => (serverData ? option.text : option.label))
         .join(', '),
     []
   );
@@ -89,20 +90,20 @@ export function TableToolbarCustom({ filterOptions, filters, setFilters, onReset
                     value={selectedOptions?.[item.id] || []}
                     onChange={(e) => getInput(e, item.type)}
                     input={<OutlinedInput label={item.label} />}
-                    renderValue={(ids) => renderValues(ids, item?.options)}
+                    renderValue={(ids) => renderValues(ids, item?.options, item?.serverData)}
                     inputProps={{ id: item.id }}
                     sx={{ textTransform: 'capitalize' }}
                   >
                     {item.options.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
+                      <MenuItem key={`${option.value}`} value={`${option.value}`}>
                         <Checkbox
                           disableRipple
                           size="small"
                           // checked={item.options.includes(option.value)}
-                          checked={(selectedOptions?.[item.id] || []).includes(option.value)}
+                          checked={(selectedOptions?.[item.id] || []).includes(`${option.value}`)}
                           // checked
                         />
-                        {option.label}
+                        {item?.serverData ? option.text : option.label}
                       </MenuItem>
                     ))}
                     {/* <MenuItem

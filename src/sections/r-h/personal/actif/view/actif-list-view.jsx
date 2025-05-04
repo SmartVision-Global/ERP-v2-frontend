@@ -1,4 +1,3 @@
-import { useBoolean, useSetState } from 'minimal-shared/hooks';
 import { useState, useEffect, forwardRef, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
@@ -11,7 +10,6 @@ import { TextField, FormControl, InputAdornment } from '@mui/material';
 import {
   DataGrid,
   gridClasses,
-  GridActionsCellItem,
   GridToolbarContainer,
   GridToolbarColumnsButton,
 } from '@mui/x-data-grid';
@@ -19,25 +17,21 @@ import {
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
+import { useMultiLookups } from 'src/actions/lookups';
 import { useGetPersonals } from 'src/actions/personal';
 import { DashboardContent } from 'src/layouts/dashboard';
 import {
-  ACTIF_NAMES,
-  PRODUCT_BANQ_OPTIONS,
-  PRODUCT_SITE_OPTIONS,
+  COMMUN_SEXE_OPTIONS,
   PRODUCT_STATUS_OPTIONS,
   PRODUCT_PAYMANT_OPTIONS,
   PRODUCT_CONTRACT_OPTIONS,
   PRODUCT_TEAM_TYPE_OPTIONS,
-  PRODUCT_DEPARTEMENT_OPTIONS,
   PRODUCT_WORK_DEPARTEMENT_OPTIONS,
 } from 'src/_mock';
 
-import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import {
@@ -91,47 +85,65 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 // ----------------------------------------------------------------------
 
-const FILTERS_OPTIONS = [
-  { id: 'id', type: 'input', label: 'ID', inputType: 'number' },
-  { id: 'full_name', type: 'select', options: ACTIF_NAMES, label: 'Nom-Prénom' },
-  { id: 'sex', type: 'select', options: SEX_OPTIONS, label: 'Sexe' },
-  { id: 'status', type: 'select', options: PRODUCT_STATUS_OPTIONS, label: 'Etat' },
-  {
-    id: 'paymantType',
-    type: 'select',
-    options: PRODUCT_PAYMANT_OPTIONS,
-    label: 'Type de paiement',
-  },
-  { id: 'teamType', type: 'select', options: PRODUCT_TEAM_TYPE_OPTIONS, label: 'Type équipe' },
-  { id: 'banc', type: 'select', options: PRODUCT_BANQ_OPTIONS, label: 'Banque' },
-  {
-    id: 'contractType',
-    type: 'select',
-    options: PRODUCT_CONTRACT_OPTIONS,
-    label: 'Type de contrat',
-  },
-  {
-    id: 'workDepartment',
-    type: 'select',
-    options: PRODUCT_WORK_DEPARTEMENT_OPTIONS,
-    label: 'Lieu de travail',
-  },
-  { id: 'departement', type: 'select', options: PRODUCT_DEPARTEMENT_OPTIONS, label: 'Département' },
-  { id: 'site', type: 'select', options: PRODUCT_SITE_OPTIONS, label: 'Site' },
-];
-
 export function ActifListView() {
-  const confirmDialog = useBoolean();
-
   const { personals, personalsLoading } = useGetPersonals();
 
+  const { dataLookups, dataLoading, dataError } = useMultiLookups([
+    { entity: 'personalsLookup', url: 'hr/lookups/personals' },
+    { entity: 'banks', url: 'hr/lookups/identification/bank' },
+    { entity: 'departments', url: 'hr/lookups/identification/department' },
+    { entity: 'sites', url: 'settings/lookups/sites' },
+  ]);
+
+  const personalsLookup = dataLookups.personalsLookup;
+  const banks = dataLookups.banks;
+  const departments = dataLookups.departments;
+  const sites = dataLookups.sites;
+
+  const FILTERS_OPTIONS = [
+    { id: 'id', type: 'input', label: 'ID', inputType: 'number' },
+    {
+      id: 'full_name',
+      type: 'select',
+      options: personalsLookup,
+      label: 'Nom-Prénom',
+      serverData: true,
+    },
+    { id: 'sex', type: 'select', options: COMMUN_SEXE_OPTIONS, label: 'Sexe' },
+    { id: 'status', type: 'select', options: PRODUCT_STATUS_OPTIONS, label: 'Etat' },
+    {
+      id: 'paymant_type',
+      type: 'select',
+      options: PRODUCT_PAYMANT_OPTIONS,
+      label: 'Type de paiement',
+    },
+    { id: 'teamType', type: 'select', options: PRODUCT_TEAM_TYPE_OPTIONS, label: 'Type équipe' },
+
+    { id: 'banc', type: 'select', options: banks, label: 'Banque', serverData: true },
+    {
+      id: 'contractType',
+      type: 'select',
+      options: PRODUCT_CONTRACT_OPTIONS,
+      label: 'Type de contrat',
+    },
+    {
+      id: 'workDepartment',
+      type: 'select',
+      options: PRODUCT_WORK_DEPARTEMENT_OPTIONS,
+      label: 'Lieu de travail',
+    },
+    {
+      id: 'departement',
+      type: 'select',
+      options: departments,
+      label: 'Département',
+      serverData: true,
+    },
+    { id: 'site', type: 'select', options: sites, label: 'Site', serverData: true },
+  ];
   const [tableData, setTableData] = useState(personals);
-  const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
-
-  const filters = useSetState({ id: '', publish: [], stock: [], full_name: '' });
-  const { state: currentFilters } = filters;
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
@@ -140,46 +152,16 @@ export function ActifListView() {
       setTableData(personals);
     }
   }, [personals]);
+
   const handleReset = () => {
     setEditedFilters([]);
   };
-  // const canReset =
-  //   currentFilters.publish.length > 0 || currentFilters.stock.length > 0 || !!currentFilters.id;
-  const canReset = editedFilters.length > 0;
+
   const dataFiltered = tableData;
 
-  const handleDeleteRow = useCallback(
-    (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-
-      toast.success('Delete success!');
-
-      setTableData(deleteRow);
-    },
-    [tableData]
-  );
-
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
-
-    toast.success('Delete success!');
-
-    setTableData(deleteRows);
-  }, [selectedRowIds, tableData]);
-
   const CustomToolbarCallback = useCallback(
-    () => (
-      <CustomToolbar
-        filters={filters}
-        canReset={canReset}
-        selectedRowIds={selectedRowIds}
-        setFilterButtonEl={setFilterButtonEl}
-        filteredResults={dataFiltered.length}
-        onOpenConfirmDeleteRows={confirmDialog.onTrue}
-      />
-    ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [currentFilters, selectedRowIds, editedFilters]
+    () => <CustomToolbar setFilterButtonEl={setFilterButtonEl} />,
+    []
   );
 
   const columns = [
@@ -190,10 +172,7 @@ export function ActifListView() {
       flex: 1,
       minWidth: 100,
       hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellId params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellId params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'name',
@@ -201,28 +180,19 @@ export function ActifListView() {
       flex: 1,
       minWidth: 260,
       hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellUser params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellUser params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'expiration',
       headerName: 'Expiration',
       flex: 1,
       minWidth: 260,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellExpiration params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellExpiration params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'status',
       headerName: 'Etat',
       width: 110,
-      type: 'singleSelect',
-      // editable: true,
-      valueOptions: SEX_OPTIONS,
       renderCell: (params) => <RenderCellStatus params={params} />,
     },
 
@@ -230,9 +200,6 @@ export function ActifListView() {
       field: 'sex',
       headerName: 'Sex',
       minWidth: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
       renderCell: (params) => <RenderCellSex params={params} />,
     },
 
@@ -241,36 +208,24 @@ export function ActifListView() {
       field: 'company',
       headerName: 'Entreprise',
       minWidth: 260,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
       renderCell: (params) => <RenderCellCompany params={params} />,
     },
     {
       field: 'site',
       headerName: 'Site',
       minWidth: 120,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
       renderCell: (params) => <RenderCellSite params={params} />,
     },
     {
       field: 'fonction',
       headerName: 'Fonction',
       width: 210,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
       renderCell: (params) => <RenderCellFunction params={params} />,
     },
     {
       field: 'net',
       headerName: 'Salaire net á payer',
       width: 210,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
       renderCell: (params) => <RenderCellPrice params={params} />,
     },
     {
@@ -285,45 +240,27 @@ export function ActifListView() {
       width: 200,
       renderCell: (params) => <RenderCellServiceEnd params={params} />,
     },
-    // {
-    //   field: 'postal_code',
-    //   headerName: 'Code postal',
-    //   flex: 1,
-    //   minWidth: 150,
-    //   renderCell: (params) => (
-    //     // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-    //     <RenderCellPostalCode params={params} href={paths.dashboard.root} />
-    //   ),
-    // },
+
     {
       field: 'blood_type',
       headerName: 'Groupe sanguin',
       flex: 1,
       minWidth: 150,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellBlood params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellBlood params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'nationality',
       headerName: 'Nationalité',
       flex: 1,
       minWidth: 150,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellNationality params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellNationality params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'birthday',
       headerName: 'Date de naissance',
       flex: 1,
       minWidth: 150,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellBirthday params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellBirthday params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'birthday_location',
@@ -331,7 +268,6 @@ export function ActifListView() {
       flex: 1,
       minWidth: 150,
       renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
         <RenderCellBirthLocation params={params} href={paths.dashboard.root} />
       ),
     },
@@ -341,10 +277,7 @@ export function ActifListView() {
       headerName: 'Situation Service National',
       flex: 1,
       minWidth: 200,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellMilitary params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellMilitary params={params} href={paths.dashboard.root} />,
     },
 
     {
@@ -352,20 +285,14 @@ export function ActifListView() {
       headerName: 'Numéro de sécurité sociale',
       flex: 1,
       minWidth: 200,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellNss params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellNss params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'address',
       headerName: 'Address',
       flex: 1,
       minWidth: 200,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellAdress params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellAdress params={params} href={paths.dashboard.root} />,
     },
 
     {
@@ -374,157 +301,105 @@ export function ActifListView() {
       flex: 1,
       minWidth: 200,
       renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
         <RenderCellFamilySituation params={params} href={paths.dashboard.root} />
       ),
     },
-    // {
-    //   field: 'lieu',
-    //   headerName: 'Lieu',
-    //   flex: 1,
-    //   minWidth: 100,
-    //   renderCell: (params) => (
-    //     // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-    //     <RenderCellLieu params={params} href={paths.dashboard.root} />
-    //   ),
-    // },
+
     {
       field: 'department',
       headerName: 'Département',
       flex: 1,
       minWidth: 260,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellDepartment params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellDepartment params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'direction',
       headerName: 'Direction',
       flex: 1,
       minWidth: 200,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellDirection params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellDirection params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'filiale',
       headerName: 'Filiale',
       flex: 1,
       minWidth: 200,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellFiliale params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellFiliale params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'section',
       headerName: 'Section',
       flex: 1,
       minWidth: 200,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellSection params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellSection params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'atelier',
       headerName: 'Atelier',
       flex: 1,
       minWidth: 200,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellAtelier params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellAtelier params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'paymant_type',
       headerName: 'Type de payment',
       flex: 1,
       minWidth: 200,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellPaymantType params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellPaymantType params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'banq',
       headerName: 'Banque',
       flex: 1,
       minWidth: 200,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellBanq params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellBanq params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'rib',
       headerName: 'Rib',
       flex: 1,
       minWidth: 200,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellRib params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellRib params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'created_at',
       headerName: 'Date de création',
       flex: 1,
       minWidth: 200,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellCreatedAt params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellCreatedAt params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'updated_at',
       headerName: 'Date de mise à jour',
       flex: 1,
       minWidth: 200,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellUpdatedAt params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellUpdatedAt params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'team_type',
       headerName: 'Type équipe',
       flex: 1,
       minWidth: 200,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellTeamType params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellTeamType params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'salary_grid',
       headerName: 'Grille',
       flex: 1,
       minWidth: 240,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellGrid params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellGrid params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'phone',
       headerName: 'Telephone',
       flex: 1,
       minWidth: 200,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellPhone params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellPhone params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'contrat',
       headerName: 'Contrat',
       width: 110,
-      type: 'singleSelect',
-      editable: false,
-      valueOptions: SEX_OPTIONS,
       renderCell: (params) => <RenderCellContract params={params} />,
     },
 
@@ -555,23 +430,21 @@ export function ActifListView() {
           showInMenu
           icon={<Iconify icon="solar:eye-bold" />}
           label="View"
-          // href={paths.dashboard.product.details(params.row.id)}
           href={paths.dashboard.root}
         />,
         <GridActionsLinkItem
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}
           label="Edit"
-          // href={paths.dashboard.product.edit(params.row.id)}
           href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
         />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-          label="Delete"
-          onClick={() => handleDeleteRow(params.row.id)}
-          sx={{ color: 'error.main' }}
-        />,
+        // <GridActionsCellItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:trash-bin-trash-bold" />}
+        //   label="Delete"
+        //   onClick={() => handleDeleteRow(params.row.id)}
+        //   sx={{ color: 'error.main' }}
+        // />,
       ],
     },
   ];
@@ -581,131 +454,95 @@ export function ActifListView() {
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
 
-  const renderConfirmDialog = () => (
-    <ConfirmDialog
-      open={confirmDialog.value}
-      onClose={confirmDialog.onFalse}
-      title="Delete"
-      content={
-        <>
-          Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
-        </>
-      }
-      action={
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => {
-            handleDeleteRows();
-            confirmDialog.onFalse();
-          }}
-        >
-          Delete
-        </Button>
-      }
-    />
-  );
-
   return (
-    <>
-      <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-        <CustomBreadcrumbs
-          heading="List"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Ressources humaine', href: paths.dashboard.root },
-            { name: 'Employés' },
-          ]}
-          action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.rh.personal.newPersonel}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              Ajouter Personnel
-            </Button>
-          }
-          sx={{ mb: { xs: 3, md: 5 } }}
+    <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+      <CustomBreadcrumbs
+        heading="List"
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Ressources humaine', href: paths.dashboard.root },
+          { name: 'Employés' },
+        ]}
+        action={
+          <Button
+            component={RouterLink}
+            href={paths.dashboard.rh.personal.newPersonel}
+            variant="contained"
+            startIcon={<Iconify icon="mingcute:add-line" />}
+          >
+            Ajouter Personnel
+          </Button>
+        }
+        sx={{ mb: { xs: 3, md: 5 } }}
+      />
+
+      <Card
+        sx={{
+          flexGrow: { md: 1 },
+          display: { md: 'flex' },
+          flexDirection: { md: 'column' },
+        }}
+      >
+        <TableToolbarCustom
+          filterOptions={FILTERS_OPTIONS}
+          filters={editedFilters}
+          setFilters={setEditedFilters}
+          onReset={handleReset}
         />
-
-        <Card
-          sx={{
-            flexGrow: { md: 1 },
-            display: { md: 'flex' },
-            flexDirection: { md: 'column' },
+        <Box paddingX={4} paddingY={2} sx={{}}>
+          <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
+            <TextField
+              fullWidth
+              // value={currentFilters.name}
+              // onChange={handleFilterName}
+              placeholder="Search "
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+              size="small"
+            />
+          </FormControl>
+        </Box>
+        <DataGrid
+          // checkboxSelection
+          disableColumnMenu
+          disableRowSelectionOnClick
+          rows={dataFiltered}
+          columns={columns}
+          loading={personalsLoading}
+          getRowHeight={() => 'auto'}
+          pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
+          initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
+          columnVisibilityModel={columnVisibilityModel}
+          onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
+          // disableColumnFilter
+          slots={{
+            toolbar: CustomToolbarCallback,
+            noRowsOverlay: () => <EmptyContent />,
+            noResultsOverlay: () => <EmptyContent title="No results found" />,
           }}
-        >
-          {/* <ActifTableToolbar
-            filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={setEditedFilters}
-            onReset={handleReset}
-          /> */}
-          <TableToolbarCustom
-            filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={setEditedFilters}
-            onReset={handleReset}
-          />
-          <Box paddingX={4} paddingY={2} sx={{}}>
-            <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
-              <TextField
-                fullWidth
-                // value={currentFilters.name}
-                // onChange={handleFilterName}
-                placeholder="Search "
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-                size="small"
-              />
-            </FormControl>
-          </Box>
-          <DataGrid
-            checkboxSelection
-            disableColumnMenu
-            disableRowSelectionOnClick
-            rows={dataFiltered}
-            columns={columns}
-            loading={personalsLoading}
-            getRowHeight={() => 'auto'}
-            pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
-            initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-            onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
-            columnVisibilityModel={columnVisibilityModel}
-            onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
-            // disableColumnFilter
-            slots={{
-              toolbar: CustomToolbarCallback,
-              noRowsOverlay: () => <EmptyContent />,
-              noResultsOverlay: () => <EmptyContent title="No results found" />,
-            }}
-            slotProps={{
-              toolbar: { setFilterButtonEl },
-              panel: { anchorEl: filterButtonEl },
-              columnsManagement: { getTogglableColumns },
-            }}
-            sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
-            density="compact"
-          />
-        </Card>
-      </DashboardContent>
-
-      {renderConfirmDialog()}
-    </>
+          slotProps={{
+            toolbar: { setFilterButtonEl },
+            panel: { anchorEl: filterButtonEl },
+            columnsManagement: { getTogglableColumns },
+          }}
+          sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
+          density="compact"
+        />
+      </Card>
+    </DashboardContent>
   );
 }
 
 // ----------------------------------------------------------------------
 
-function CustomToolbar({ selectedRowIds, setFilterButtonEl, onOpenConfirmDeleteRows }) {
+function CustomToolbar({ setFilterButtonEl }) {
   return (
     <>
       {/* <ProductTableToolbar
@@ -729,7 +566,7 @@ function CustomToolbar({ selectedRowIds, setFilterButtonEl, onOpenConfirmDeleteR
             justifyContent: 'flex-end',
           }}
         >
-          {!!selectedRowIds.length && (
+          {/* {!!selectedRowIds.length && (
             <Button
               size="small"
               color="error"
@@ -738,7 +575,7 @@ function CustomToolbar({ selectedRowIds, setFilterButtonEl, onOpenConfirmDeleteR
             >
               Delete ({selectedRowIds.length})
             </Button>
-          )}
+          )} */}
 
           <GridToolbarColumnsButton ref={setFilterButtonEl} />
           {/* <GridToolbarFilterButton ref={setFilterButtonEl} /> */}

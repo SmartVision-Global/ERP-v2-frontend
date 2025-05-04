@@ -8,6 +8,7 @@ import { RHFSelect, RHFMultiSelect } from './rhf-select';
 import { RHFSwitch, RHFMultiSwitch } from './rhf-switch';
 import { RHFLookup, RHFLookupMultiSelect } from './rhf-lookup';
 import { RHFCheckbox, RHFMultiCheckbox } from './rhf-checkbox';
+import { RHFMultiCheckboxLookup } from './rhf-multicheckbox-lookup';
 import { RHFUpload, RHFUploadBox, RHFUploadAvatar } from './rhf-upload';
 import { RHFDatePicker, RHFMobileDateTimePicker } from './rhf-date-picker';
 
@@ -34,4 +35,5 @@ export const Field = {
   Lookup: RHFLookup,
   LookupMultiSelect: RHFLookupMultiSelect,
   RotationDays: RHFRotationDays,
+  MultiCheckboxLookup: RHFMultiCheckboxLookup,
 };

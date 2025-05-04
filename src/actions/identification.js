@@ -25,9 +25,9 @@ const SECTION_ENDPOINT = endpoints.identification.section;
 const TEAM_TYPE_ENDPOINT = endpoints.identification.teamType;
 
 const swrOptions = {
-  revalidateIfStale: false,
-  revalidateOnFocus: false,
-  revalidateOnReconnect: false,
+  revalidateIfStale: enableServer || false,
+  revalidateOnFocus: enableServer || false,
+  revalidateOnReconnect: enableServer || false,
 };
 
 // ----------------------------------------------------------------------
@@ -80,22 +80,17 @@ export async function createDirection(directionData) {
     await axios.post(DIRECTION_ENDPOINT, directionData);
     mutate(endpoints.identification.list);
   }
+}
 
+export async function updateDirection(id, directionData) {
   /**
-   * Work in local
+   * Work on server
    */
-
-  mutate(
-    DIRECTION_ENDPOINT,
-    (currentData) => {
-      const currentDirections = currentData?.events;
-
-      const events = [...currentDirections, directionData];
-
-      return { ...currentData, events };
-    },
-    false
-  );
+  if (enableServer) {
+    // const data = { directionData };
+    await axios.patch(`${DIRECTION_ENDPOINT}/${id}`, directionData);
+    mutate(endpoints.identification.list);
+  }
 }
 
 export async function createSubsidiary(subsidiaryData) {
@@ -107,22 +102,17 @@ export async function createSubsidiary(subsidiaryData) {
     await axios.post(SUBSIDIARY_ENDPOINT, subsidiaryData);
     mutate(endpoints.identification.list);
   }
+}
 
+export async function updateSubsidiary(id, subsidiaryData) {
   /**
-   * Work in local
+   * Work on server
    */
-
-  mutate(
-    SUBSIDIARY_ENDPOINT,
-    (currentData) => {
-      const currentDirections = currentData?.events;
-
-      const events = [...currentDirections, subsidiaryData];
-
-      return { ...currentData, events };
-    },
-    false
-  );
+  if (enableServer) {
+    // const data = { directionData };
+    await axios.patch(`${SUBSIDIARY_ENDPOINT}/${id}`, subsidiaryData);
+    mutate(endpoints.identification.list);
+  }
 }
 
 export async function createDivision(data) {
@@ -132,6 +122,17 @@ export async function createDivision(data) {
   if (enableServer) {
     // const data = { directionData };
     await axios.post(DIVISION_ENDPOINT, data);
+    mutate(endpoints.identification.list);
+  }
+}
+
+export async function updateDivision(id, data) {
+  /**
+   * Work on server
+   */
+  if (enableServer) {
+    // const data = { directionData };
+    await axios.patch(`${DIVISION_ENDPOINT}/${id}`, data);
     mutate(endpoints.identification.list);
   }
 }
@@ -147,6 +148,17 @@ export async function createBank(data) {
   }
 }
 
+export async function updateBank(id, data) {
+  /**
+   * Work on server
+   */
+  if (enableServer) {
+    // const data = { directionData };
+    await axios.patch(`${BANK_ENDPOINT}/${id}`, data);
+    mutate(endpoints.identification.list);
+  }
+}
+
 export async function createCompensationLeavePattern(data) {
   /**
    * Work on server
@@ -154,6 +166,17 @@ export async function createCompensationLeavePattern(data) {
   if (enableServer) {
     // const data = { directionData };
     await axios.post(COMPENSATION_ENDPOINT, data);
+    mutate(endpoints.identification.list);
+  }
+}
+
+export async function updateCompensationLeavePattern(id, data) {
+  /**
+   * Work on server
+   */
+  if (enableServer) {
+    // const data = { directionData };
+    await axios.patch(`${COMPENSATION_ENDPOINT}/${id}`, data);
     mutate(endpoints.identification.list);
   }
 }
@@ -169,6 +192,17 @@ export async function createDepartment(data) {
   }
 }
 
+export async function updateDepartment(id, data) {
+  /**
+   * Work on server
+   */
+  if (enableServer) {
+    // const data = { directionData };
+    await axios.patch(`${DEPARTMENT_ENDPOINT}/${id}`, data);
+    mutate(endpoints.identification.list);
+  }
+}
+
 export async function createRung(data) {
   /**
    * Work on server
@@ -176,6 +210,17 @@ export async function createRung(data) {
   if (enableServer) {
     // const data = { directionData };
     await axios.post(RUNG_ENDPOINT, data);
+    mutate(endpoints.identification.list);
+  }
+}
+
+export async function updateRung(id, data) {
+  /**
+   * Work on server
+   */
+  if (enableServer) {
+    // const data = { directionData };
+    await axios.patch(`${RUNG_ENDPOINT}/${id}`, data);
     mutate(endpoints.identification.list);
   }
 }
@@ -191,6 +236,17 @@ export async function createGrade(data) {
   }
 }
 
+export async function updateGrade(id, data) {
+  /**
+   * Work on server
+   */
+  if (enableServer) {
+    // const data = { directionData };
+    await axios.patch(`${GRADE_ENDPOINT}/${id}`, data);
+    mutate(endpoints.identification.list);
+  }
+}
+
 export async function createLoanAssistancePattern(data) {
   /**
    * Work on server
@@ -198,6 +254,17 @@ export async function createLoanAssistancePattern(data) {
   if (enableServer) {
     // const data = { directionData };
     await axios.post(LOAN_ASSISTANCE_ENDPOINT, data);
+    mutate(endpoints.identification.list);
+  }
+}
+
+export async function updateLoanAssistancePattern(id, data) {
+  /**
+   * Work on server
+   */
+  if (enableServer) {
+    // const data = { directionData };
+    await axios.patch(`${LOAN_ASSISTANCE_ENDPOINT}/${id}`, data);
     mutate(endpoints.identification.list);
   }
 }
@@ -213,6 +280,17 @@ export async function createNationality(data) {
   }
 }
 
+export async function updateNationality(id, data) {
+  /**
+   * Work on server
+   */
+  if (enableServer) {
+    // const data = { directionData };
+    await axios.patch(`${NATIONALITY_ENDPOINT}/${id}`, data);
+    mutate(endpoints.identification.list);
+  }
+}
+
 export async function createPpeCategory(data) {
   /**
    * Work on server
@@ -220,6 +298,17 @@ export async function createPpeCategory(data) {
   if (enableServer) {
     // const data = { directionData };
     await axios.post(PPE_CATEGORY_ENDPOINT, data);
+    mutate(endpoints.identification.list);
+  }
+}
+
+export async function updatePpeCategory(id, data) {
+  /**
+   * Work on server
+   */
+  if (enableServer) {
+    // const data = { directionData };
+    await axios.patch(`${PPE_CATEGORY_ENDPOINT}/${id}`, data);
     mutate(endpoints.identification.list);
   }
 }
@@ -235,6 +324,17 @@ export async function createSalaryCategory(data) {
   }
 }
 
+export async function updateSalaryCategory(id, data) {
+  /**
+   * Work on server
+   */
+  if (enableServer) {
+    // const data = { directionData };
+    await axios.patch(`${SALARY_CATEGORY_ENDPOINT}/${id}`, data);
+    mutate(endpoints.identification.list);
+  }
+}
+
 export async function createPpeComplianceStandard(data) {
   /**
    * Work on server
@@ -242,6 +342,17 @@ export async function createPpeComplianceStandard(data) {
   if (enableServer) {
     // const data = { directionData };
     await axios.post(PPE_COMPLIANCE_ENDPOINT, data);
+    mutate(endpoints.identification.list);
+  }
+}
+
+export async function updatePpeComplianceStandard(id, data) {
+  /**
+   * Work on server
+   */
+  if (enableServer) {
+    // const data = { directionData };
+    await axios.patch(`${PPE_COMPLIANCE_ENDPOINT}/${id}`, data);
     mutate(endpoints.identification.list);
   }
 }
@@ -257,6 +368,17 @@ export async function createSalaryScaleLevel(data) {
   }
 }
 
+export async function updateSalaryScaleLevel(id, data) {
+  /**
+   * Work on server
+   */
+  if (enableServer) {
+    // const data = { directionData };
+    await axios.patch(`${SALARY_SCALE_ENDPOINT}/${id}`, data);
+    mutate(endpoints.identification.list);
+  }
+}
+
 export async function createSection(data) {
   /**
    * Work on server
@@ -268,6 +390,17 @@ export async function createSection(data) {
   }
 }
 
+export async function updateSection(id, data) {
+  /**
+   * Work on server
+   */
+  if (enableServer) {
+    // const data = { directionData };
+    await axios.patch(`${SECTION_ENDPOINT}/${id}`, data);
+    mutate(endpoints.identification.list);
+  }
+}
+
 export async function createTeamType(data) {
   /**
    * Work on server
@@ -275,6 +408,17 @@ export async function createTeamType(data) {
   if (enableServer) {
     // const data = { directionData };
     await axios.post(TEAM_TYPE_ENDPOINT, data);
+    mutate(endpoints.identification.list);
+  }
+}
+
+export async function updateTeamType(id, data) {
+  /**
+   * Work on server
+   */
+  if (enableServer) {
+    // const data = { directionData };
+    await axios.patch(`${TEAM_TYPE_ENDPOINT}/${id}`, data);
     mutate(endpoints.identification.list);
   }
 }

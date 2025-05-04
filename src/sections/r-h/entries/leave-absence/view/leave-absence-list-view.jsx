@@ -186,7 +186,7 @@ export function LeaveAbsenceListView() {
   const { leavesAbesences, leavesAbesencesLoading } = useGetLeavesAbesences();
 
   const [tableData, setTableData] = useState(leavesAbesences);
-  const [selectedRowIds, setSelectedRowIds] = useState([]);
+  // const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
 
@@ -231,10 +231,7 @@ export function LeaveAbsenceListView() {
 
       minWidth: 100,
       hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellId params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellId params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'fullname',
@@ -242,10 +239,7 @@ export function LeaveAbsenceListView() {
       flex: 1,
       minWidth: 160,
       hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellFullname params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellFullname params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'type',
@@ -253,10 +247,7 @@ export function LeaveAbsenceListView() {
       flex: 1,
       minWidth: 240,
       hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellType params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellType params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'site',
@@ -276,10 +267,7 @@ export function LeaveAbsenceListView() {
       flex: 1,
       minWidth: 200,
       hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellFunction params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellFunction params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'atelier',
@@ -288,23 +276,9 @@ export function LeaveAbsenceListView() {
       flex: 1,
       minWidth: 100,
       hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellAtelier params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellAtelier params={params} href={paths.dashboard.root} />,
     },
-    // {
-    //   field: 'interm',
-    //   headerName: 'Intériminaire',
-    //   //   flex: 0.5,
-    //   flex: 1,
-    //   minWidth: 100,
-    //   hideable: false,
-    //   renderCell: (params) => (
-    //     // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-    //     <RenderCellIntermidiate params={params} href={paths.dashboard.root} />
-    //   ),
-    // },
+
     {
       field: 'start_date',
       headerName: 'De',
@@ -312,10 +286,7 @@ export function LeaveAbsenceListView() {
       flex: 1,
       minWidth: 200,
       hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellStartAt params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellStartAt params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'end_date',
@@ -324,10 +295,7 @@ export function LeaveAbsenceListView() {
       flex: 1,
       minWidth: 200,
       hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellEndAt params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellEndAt params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'designation',
@@ -336,10 +304,7 @@ export function LeaveAbsenceListView() {
       flex: 1,
       minWidth: 200,
       hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellDesignation params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellDesignation params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'status',
@@ -348,10 +313,7 @@ export function LeaveAbsenceListView() {
       flex: 1,
       minWidth: 100,
       hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellStatus params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellStatus params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'valide_par',
@@ -365,18 +327,6 @@ export function LeaveAbsenceListView() {
         <RenderCellValideBy params={params} href={paths.dashboard.root} />
       ),
     },
-    // {
-    //   field: 'exercice',
-    //   headerName: 'Exercice',
-    //   //   flex: 0.5,
-    //   flex: 1,
-    //   minWidth: 100,
-    //   hideable: false,
-    //   renderCell: (params) => (
-    //     // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-    //     <RenderCellExercice params={params} href={paths.dashboard.root} />
-    //   ),
-    // },
     {
       field: 'createdAt',
       headerName: 'Date de création',
@@ -703,7 +653,7 @@ export function LeaveAbsenceListView() {
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-            onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
+            // onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
             columnVisibilityModel={columnVisibilityModel}
             onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
             // disableColumnFilter

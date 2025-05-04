@@ -54,15 +54,15 @@ export const ACTIF_NAMES = [
   { value: 'SEBIA - BILLAL', label: 'SEBIA - BILLAL' },
 ];
 export const PRODUCT_STATUS_OPTIONS = [
-  { value: 'pending', label: 'En cours' },
-  { value: 'actif', label: 'Actif' },
-  { value: 'bloquer', label: 'Bloquer' },
+  { value: '1', label: 'En cours' },
+  { value: '2', label: 'Actif' },
+  { value: '3', label: 'Bloquer' },
 ];
 
 export const PRODUCT_PAYMANT_OPTIONS = [
-  { value: 'virement', label: 'Virement' },
-  { value: 'actif', label: 'Actif' },
-  { value: 'esp', label: 'Especes' },
+  { label: 'Virement', value: '1' },
+  { label: 'Especes', value: '2' },
+  { label: 'Autre', value: '3' },
 ];
 
 export const PRODUCT_TEAM_TYPE_OPTIONS = [

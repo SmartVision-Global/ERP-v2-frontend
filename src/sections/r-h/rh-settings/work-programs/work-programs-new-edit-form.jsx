@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { z as zod } from 'zod';
-import { useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useFieldArray } from 'react-hook-form';
 
@@ -93,6 +93,7 @@ export function WorkProgramsNewEditForm({ currentProduct }) {
   const methods = useForm({
     resolver: zodResolver(NewProductSchema),
     defaultValues,
+    // values: { ...currentProduct, rotation_days: currentProduct?.days?.length || 1 },
     values: currentProduct,
   });
 
@@ -124,10 +125,16 @@ export function WorkProgramsNewEditForm({ currentProduct }) {
         // ...item,
         is_work_day: item.is_work_day === 'true' ? true : false,
         absence_value: item.absence_value,
-        break_end: item.break_end ? dayjs(new Date(item.break_end)).format('HH:mm') : null,
-        break_start: item.break_start ? dayjs(new Date(item.break_start)).format('HH:mm') : null,
-        end_time: item.end_time ? dayjs(new Date(item.end_time)).format('HH:mm') : null,
-        start_time: item.start_time ? dayjs(new Date(item.start_time)).format('HH:mm') : null,
+        // break_end: item.break_end ? dayjs(new Date(item.break_end)).format('HH:mm') : null,
+        // break_start: item.break_start ? dayjs(new Date(item.break_start)).format('HH:mm') : null,
+        // end_time: item.end_time ? dayjs(new Date(item.end_time)).format('HH:mm') : null,
+        // start_time: item.start_time ? dayjs(new Date(item.start_time)).format('HH:mm') : null,
+        //  TODO the response from server is HH:mm:ss but the body request is HH:mm
+        break_end: item.break_end ? item.break_end : null,
+        break_start: item.break_start ? item.break_start : null,
+        end_time: item.end_time ? item.end_time : null,
+        start_time: item.start_time ? item.start_time : null,
+
         // end_time: item.end_time ? item.end_time : null,
         // start_time: item.start_time ? item.start_time : null,
       }));
@@ -154,6 +161,16 @@ export function WorkProgramsNewEditForm({ currentProduct }) {
       console.error(error);
     }
   });
+  useEffect(() => {
+    if (currentProduct) {
+      methods.reset({
+        ...currentProduct,
+        // rotation_days: currentProduct?.days?.length || 1,
+      });
+    }
+  }, [currentProduct, methods]);
+  console.log('fields', fields);
+
   const handleRemove = useCallback(
     (ind) => {
       remove(ind);

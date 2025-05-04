@@ -17,7 +17,7 @@ export function SalaryGridEditView({ salaryGrid }) {
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           { name: 'Grille de salaire', href: paths.dashboard.rh.rhSettings.salaryGrid },
-          { name: salaryGrid?.name },
+          { name: salaryGrid?.code },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />

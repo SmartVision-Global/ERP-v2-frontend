@@ -19,7 +19,15 @@ export const NewProductSchema = zod.object({
   designation: zod.string().min(1, { message: 'Name is required!' }),
 });
 
-export function AddDivisionsDialog({ open, onClose, currentProduct, name, title, onCreate }) {
+export function AddDivisionsDialog({
+  open,
+  onClose,
+  currentProduct,
+  name,
+  title,
+  onCreate,
+  onUpdate,
+}) {
   const defaultValues = {
     name: '',
     designation: '',
@@ -50,7 +58,11 @@ export function AddDivisionsDialog({ open, onClose, currentProduct, name, title,
 
     try {
       // await new Promise((resolve) => setTimeout(resolve, 500));
-      await onCreate(updatedData);
+      if (currentProduct) {
+        await onUpdate(currentProduct.id, updatedData);
+      } else {
+        await onCreate(updatedData);
+      }
       reset();
       onClose();
       // toast.success(currentProduct ? 'Update success!' : 'Create success!');
@@ -65,7 +77,9 @@ export function AddDivisionsDialog({ open, onClose, currentProduct, name, title,
     <div>
       <Dialog open={open} onClose={onClose} sx={{ minWidth: '400px' }}>
         <Form methods={methods} onSubmit={onSubmit}>
-          <DialogTitle>Ajouter {title}</DialogTitle>
+          <DialogTitle>
+            {currentProduct ? 'modifier' : 'Ajouter'} {title}
+          </DialogTitle>
 
           <DialogContent sx={{ minWidth: 400 }}>
             {/* <Typography sx={{ mb: 3 }}>

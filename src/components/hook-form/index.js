@@ -24,3 +24,5 @@ export * from './rhf-number-input';
 export * from './rhf-number-field';
 
 export * from './rhf-rotation-days';
+
+export * from './rhf-multicheckbox-lookup';

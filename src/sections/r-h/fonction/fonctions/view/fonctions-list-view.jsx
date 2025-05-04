@@ -1,5 +1,5 @@
 import { useBoolean } from 'minimal-shared/hooks';
-import { useState, useEffect, forwardRef, useCallback } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -13,10 +13,8 @@ import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetJobs } from 'src/actions/function';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { COMMUN_OUI_NON_OPTIONS } from 'src/_mock/_commun';
-import { DEDUCTIONS_TYPE_OPTIONS, DEDUCTIONS_NATURE_OPTIONS } from 'src/_mock';
+import { archiveJob, useGetJobs } from 'src/actions/function';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -37,11 +35,6 @@ import {
 } from '../fonctions-table-row';
 
 // ----------------------------------------------------------------------
-
-const SEX_OPTIONS = [
-  { value: 'man', label: 'Homme' },
-  { value: 'woman', label: 'Femme' },
-];
 
 const HIDE_COLUMNS = { category: false };
 
@@ -64,14 +57,14 @@ const FILTERS_OPTIONS = [
     cols: 3,
     width: 1,
   },
-  {
-    id: 'type',
-    type: 'select',
-    options: DEDUCTIONS_TYPE_OPTIONS,
-    label: 'Type',
-    cols: 3,
-    width: 1,
-  },
+  // {
+  //   id: 'type',
+  //   type: 'select',
+  //   options: DEDUCTIONS_TYPE_OPTIONS,
+  //   label: 'Type',
+  //   cols: 3,
+  //   width: 1,
+  // },
   {
     id: 'designation',
     type: 'input',
@@ -79,22 +72,22 @@ const FILTERS_OPTIONS = [
     cols: 3,
     width: 1,
   },
-  {
-    id: 'absence',
-    type: 'select',
-    options: COMMUN_OUI_NON_OPTIONS,
-    label: 'Soumis aux absence',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'nature',
-    type: 'select',
-    options: DEDUCTIONS_NATURE_OPTIONS,
-    label: 'Nature',
-    cols: 3,
-    width: 1,
-  },
+  // {
+  //   id: 'absence',
+  //   type: 'select',
+  //   options: COMMUN_OUI_NON_OPTIONS,
+  //   label: 'Soumis aux absence',
+  //   cols: 3,
+  //   width: 1,
+  // },
+  // {
+  //   id: 'nature',
+  //   type: 'select',
+  //   options: DEDUCTIONS_NATURE_OPTIONS,
+  //   label: 'Nature',
+  //   cols: 3,
+  //   width: 1,
+  // },
   { id: 'startDate', type: 'date', label: 'Date de début' },
 
   { id: 'endDate', type: 'date', label: 'Date de début' },
@@ -106,7 +99,8 @@ export function FonctionsListView() {
   const { jobs, jobsLoading } = useGetJobs();
 
   const [tableData, setTableData] = useState(jobs);
-  const [selectedRowIds, setSelectedRowIds] = useState([]);
+  const [selectedRowId, setSelectedRowId] = useState('');
+
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
 
@@ -123,39 +117,35 @@ export function FonctionsListView() {
 
   const dataFiltered = tableData;
 
-  const handleDeleteRow = useCallback(
-    (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
+  const handleOpenConfirmArchiveRow = (id) => {
+    setSelectedRowId(id);
+    confirmDialog.onTrue();
+  };
 
-      toast.success('Delete success!');
+  // const handleDeleteRow = useCallback(
+  //   (id) => {
+  //     const deleteRow = tableData.filter((row) => row.id !== id);
 
-      setTableData(deleteRow);
-    },
-    [tableData]
-  );
+  //     toast.success('Delete success!');
 
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
-
+  //     setTableData(deleteRow);
+  //   },
+  //   [tableData]
+  // );
+  const handleDeleteRow = async () => {
+    await archiveJob(selectedRowId);
     toast.success('Delete success!');
-
-    setTableData(deleteRows);
-  }, [selectedRowIds, tableData]);
+  };
 
   const columns = [
     { field: 'category', headerName: 'Category', filterable: false },
     {
       field: 'id',
       headerName: 'ID',
-      //   flex: 0.5,
       flex: 1,
-
       width: 100,
       hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellId params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellId params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'fonction_name',
@@ -163,8 +153,6 @@ export function FonctionsListView() {
       flex: 1,
       minWidth: 320,
       type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
       renderCell: (params) => <RenderCellName params={params} />,
     },
     {
@@ -172,10 +160,7 @@ export function FonctionsListView() {
       headerName: 'Site',
       flex: 1,
       minWidth: 200,
-
       type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
       renderCell: (params) => <RenderCellSite params={params} />,
     },
     // {
@@ -196,8 +181,7 @@ export function FonctionsListView() {
       minWidth: 100,
 
       type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellPresentPrime params={params} />,
     },
     {
@@ -206,9 +190,7 @@ export function FonctionsListView() {
       flex: 1,
 
       minWidth: 100,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellAmount params={params} />,
     },
     {
@@ -217,21 +199,14 @@ export function FonctionsListView() {
       flex: 1,
       minWidth: 100,
 
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
       renderCell: (params) => <RenderCellKeyPost params={params} />,
     },
     {
       field: 'status',
       headerName: 'Etat',
       flex: 1,
-      // width: 110,
       minWidth: 100,
 
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
       renderCell: (params) => <RenderCellStatus params={params} />,
     },
 
@@ -240,9 +215,7 @@ export function FonctionsListView() {
       headerName: 'Date de création',
       flex: 1,
       minWidth: 200,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
     },
 
@@ -257,6 +230,7 @@ export function FonctionsListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => [
+        // TODO valider job
         <GridActionsLinkItem
           showInMenu
           icon={<Iconify icon="solar:eye-bold" />}
@@ -271,11 +245,13 @@ export function FonctionsListView() {
           // href={paths.dashboard.product.edit(params.row.id)}
           href={paths.dashboard.rh.fonction.editFonction(params.row.id)}
         />,
+
         <GridActionsCellItem
           showInMenu
           icon={<Iconify icon="solar:trash-bin-trash-bold" />}
           label="Archiver"
-          onClick={() => handleDeleteRow(params.row.id)}
+          // onClick={() => handleDeleteRow(params.row.id)}
+          onClick={() => handleOpenConfirmArchiveRow(params.row.id)}
           sx={{ color: 'error.main' }}
         />,
       ],
@@ -286,31 +262,6 @@ export function FonctionsListView() {
     columns
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
-
-  const renderConfirmDialog = () => (
-    <ConfirmDialog
-      open={confirmDialog.value}
-      onClose={confirmDialog.onFalse}
-      title="Delete"
-      content={
-        <>
-          Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
-        </>
-      }
-      action={
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => {
-            handleDeleteRows();
-            confirmDialog.onFalse();
-          }}
-        >
-          Delete
-        </Button>
-      }
-    />
-  );
 
   return (
     <>
@@ -342,12 +293,6 @@ export function FonctionsListView() {
             flexDirection: { md: 'column' },
           }}
         >
-          {/* <ActifTableToolbar
-            filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={setEditedFilters}
-            onReset={handleReset}
-          /> */}
           <TableToolbarCustom
             filterOptions={FILTERS_OPTIONS}
             filters={editedFilters}
@@ -375,7 +320,7 @@ export function FonctionsListView() {
             </FormControl>
           </Box>
           <DataGrid
-            checkboxSelection
+            // checkboxSelection
             disableColumnMenu
             disableRowSelectionOnClick
             rows={dataFiltered}
@@ -384,12 +329,10 @@ export function FonctionsListView() {
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-            onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
+            // onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
             columnVisibilityModel={columnVisibilityModel}
             onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
-            // disableColumnFilter
             slots={{
-              // toolbar: CustomToolbarCallback,
               noRowsOverlay: () => <EmptyContent />,
               noResultsOverlay: () => <EmptyContent title="No results found" />,
             }}
@@ -402,8 +345,30 @@ export function FonctionsListView() {
           />
         </Card>
       </DashboardContent>
-
-      {renderConfirmDialog()}
+      {confirmDialog.value && selectedRowId !== '' && (
+        <ConfirmDialog
+          open={confirmDialog.value}
+          onClose={confirmDialog.onFalse}
+          title="Archiver"
+          content={
+            <>
+              Are you sure want to delete <strong> {selectedRowId} </strong>?
+            </>
+          }
+          action={
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => {
+                handleDeleteRow();
+                confirmDialog.onFalse();
+              }}
+            >
+              Delete
+            </Button>
+          }
+        />
+      )}
     </>
   );
 }

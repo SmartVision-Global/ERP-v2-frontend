@@ -61,3 +61,12 @@ export async function createSalaryGrid(data) {
   await axios.post(ENDPOINT, data);
   //   mutate(endpoints.site);
 }
+
+export async function updateSalaryGrid(id, data) {
+  /**
+   * Work on server
+   */
+  // const data = { directionData };
+  await axios.patch(`${ENDPOINT}/${id}`, data);
+  //   mutate(endpoints.site);
+}

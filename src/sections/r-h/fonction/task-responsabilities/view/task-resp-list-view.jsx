@@ -1,5 +1,4 @@
-import { useBoolean } from 'minimal-shared/hooks';
-import { useState, useEffect, forwardRef, useCallback } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -17,11 +16,9 @@ import { TASK_NATURE_OPTIONS } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useGetDutiesResponsibilities } from 'src/actions/task';
 
-import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import {
@@ -32,11 +29,6 @@ import {
 } from '../task-table-row';
 
 // ----------------------------------------------------------------------
-
-const SEX_OPTIONS = [
-  { value: 'man', label: 'Homme' },
-  { value: 'woman', label: 'Femme' },
-];
 
 const HIDE_COLUMNS = { category: false };
 
@@ -56,12 +48,9 @@ const FILTERS_OPTIONS = [
 ];
 
 export function TaskRespListView() {
-  const confirmDialog = useBoolean();
-
   const { dutiesResponsibilities, dutiesResponsibilitiesLoading } = useGetDutiesResponsibilities();
 
   const [tableData, setTableData] = useState(dutiesResponsibilities);
-  const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
 
@@ -78,25 +67,6 @@ export function TaskRespListView() {
 
   const dataFiltered = tableData;
 
-  const handleDeleteRow = useCallback(
-    (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-
-      toast.success('Delete success!');
-
-      setTableData(deleteRow);
-    },
-    [tableData]
-  );
-
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
-
-    toast.success('Delete success!');
-
-    setTableData(deleteRows);
-  }, [selectedRowIds, tableData]);
-
   const columns = [
     { field: 'category', headerName: 'Category', filterable: false },
     {
@@ -105,10 +75,7 @@ export function TaskRespListView() {
       flex: 1,
       minWidth: 50,
       hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellId params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellId params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'type',
@@ -116,10 +83,7 @@ export function TaskRespListView() {
       flex: 1,
       minWidth: 160,
       hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellNature params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellNature params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'label',
@@ -127,8 +91,6 @@ export function TaskRespListView() {
       flex: 1,
       width: 110,
       type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
       renderCell: (params) => <RenderCellLib params={params} />,
     },
     {
@@ -137,8 +99,6 @@ export function TaskRespListView() {
       flex: 1,
       width: 110,
       type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
     },
 
@@ -153,13 +113,6 @@ export function TaskRespListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => [
-        // <GridActionsLinkItem
-        //   showInMenu
-        //   icon={<Iconify icon="solar:eye-bold" />}
-        //   label="View"
-        //   // href={paths.dashboard.product.details(params.row.id)}
-        //   href={paths.dashboard.root}
-        // />,
         <GridActionsLinkItem
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}
@@ -167,13 +120,6 @@ export function TaskRespListView() {
           // href={paths.dashboard.product.edit(params.row.id)}
           href={paths.dashboard.rh.fonction.editTask(params.row.id)}
         />,
-        // <GridActionsCellItem
-        //   showInMenu
-        //   icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-        //   label="Delete"
-        //   onClick={() => handleDeleteRow(params.row.id)}
-        //   sx={{ color: 'error.main' }}
-        // />,
       ],
     },
   ];
@@ -183,124 +129,94 @@ export function TaskRespListView() {
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
 
-  const renderConfirmDialog = () => (
-    <ConfirmDialog
-      open={confirmDialog.value}
-      onClose={confirmDialog.onFalse}
-      title="Delete"
-      content={
-        <>
-          Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
-        </>
-      }
-      action={
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => {
-            handleDeleteRows();
-            confirmDialog.onFalse();
-          }}
-        >
-          Delete
-        </Button>
-      }
-    />
-  );
-
   return (
-    <>
-      <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-        <CustomBreadcrumbs
-          heading="List"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            // { name: 'Ressources humaine', href: paths.dashboard.root },
-            { name: 'Tâche et responsabilité' },
-          ]}
-          action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.rh.fonction.newTask}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              Ajouter
-            </Button>
-          }
-          sx={{ mb: { xs: 3, md: 5 } }}
-        />
+    <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+      <CustomBreadcrumbs
+        heading="List"
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
+          // { name: 'Ressources humaine', href: paths.dashboard.root },
+          { name: 'Tâche et responsabilité' },
+        ]}
+        action={
+          <Button
+            component={RouterLink}
+            href={paths.dashboard.rh.fonction.newTask}
+            variant="contained"
+            startIcon={<Iconify icon="mingcute:add-line" />}
+          >
+            Ajouter
+          </Button>
+        }
+        sx={{ mb: { xs: 3, md: 5 } }}
+      />
 
-        <Card
-          sx={{
-            flexGrow: { md: 1 },
-            display: { md: 'flex' },
-            flexDirection: { md: 'column' },
-          }}
-        >
-          {/* <ActifTableToolbar
+      <Card
+        sx={{
+          flexGrow: { md: 1 },
+          display: { md: 'flex' },
+          flexDirection: { md: 'column' },
+        }}
+      >
+        {/* <ActifTableToolbar
             filterOptions={FILTERS_OPTIONS}
             filters={editedFilters}
             setFilters={setEditedFilters}
             onReset={handleReset}
           /> */}
-          <TableToolbarCustom
-            filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={setEditedFilters}
-            onReset={handleReset}
-          />
-          <Box paddingX={4} paddingY={2} sx={{}}>
-            <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
-              <TextField
-                fullWidth
-                // value={currentFilters.name}
-                // onChange={handleFilterName}
-                placeholder="Search "
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-                size="small"
-              />
-            </FormControl>
-          </Box>
-          <DataGrid
-            checkboxSelection
-            disableRowSelectionOnClick
-            disableColumnMenu
-            rows={dataFiltered}
-            columns={columns}
-            loading={dutiesResponsibilitiesLoading}
-            getRowHeight={() => 'auto'}
-            pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
-            initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-            onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
-            columnVisibilityModel={columnVisibilityModel}
-            onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
-            // disableColumnFilter
-            slots={{
-              // toolbar: CustomToolbarCallback,
-              noRowsOverlay: () => <EmptyContent />,
-              noResultsOverlay: () => <EmptyContent title="No results found" />,
-            }}
-            slotProps={{
-              toolbar: { setFilterButtonEl },
-              panel: { anchorEl: filterButtonEl },
-              columnsManagement: { getTogglableColumns },
-            }}
-            sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
-          />
-        </Card>
-      </DashboardContent>
-
-      {renderConfirmDialog()}
-    </>
+        <TableToolbarCustom
+          filterOptions={FILTERS_OPTIONS}
+          filters={editedFilters}
+          setFilters={setEditedFilters}
+          onReset={handleReset}
+        />
+        <Box paddingX={4} paddingY={2} sx={{}}>
+          <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
+            <TextField
+              fullWidth
+              // value={currentFilters.name}
+              // onChange={handleFilterName}
+              placeholder="Search "
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+              size="small"
+            />
+          </FormControl>
+        </Box>
+        <DataGrid
+          checkboxSelection
+          disableRowSelectionOnClick
+          disableColumnMenu
+          rows={dataFiltered}
+          columns={columns}
+          loading={dutiesResponsibilitiesLoading}
+          getRowHeight={() => 'auto'}
+          pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
+          initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
+          columnVisibilityModel={columnVisibilityModel}
+          onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
+          // disableColumnFilter
+          slots={{
+            // toolbar: CustomToolbarCallback,
+            noRowsOverlay: () => <EmptyContent />,
+            noResultsOverlay: () => <EmptyContent title="No results found" />,
+          }}
+          slotProps={{
+            toolbar: { setFilterButtonEl },
+            panel: { anchorEl: filterButtonEl },
+            columnsManagement: { getTogglableColumns },
+          }}
+          sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
+        />
+      </Card>
+    </DashboardContent>
   );
 }
 
