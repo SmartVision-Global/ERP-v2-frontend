@@ -1,3 +1,4 @@
+import { useBoolean } from 'minimal-shared/hooks';
 import { useState, useEffect, forwardRef, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
@@ -18,8 +19,8 @@ import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { useMultiLookups } from 'src/actions/lookups';
-import { useGetPersonals } from 'src/actions/personal';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useGetPersonals, validatePersonal } from 'src/actions/personal';
 import {
   COMMUN_SEXE_OPTIONS,
   PRODUCT_STATUS_OPTIONS,
@@ -32,7 +33,10 @@ import {
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
+import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+
+import { GridActionsClickItem } from 'src/sections/r-h/entries/recovery/view';
 
 import {
   RenderCellId,
@@ -86,6 +90,8 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 // ----------------------------------------------------------------------
 
 export function ActifListView() {
+  const confirmDialog = useBoolean();
+  const [selectedRow, setSelectedRow] = useState('');
   const { personals, personalsLoading } = useGetPersonals();
 
   const { dataLookups, dataLoading, dataError } = useMultiLookups([
@@ -94,7 +100,10 @@ export function ActifListView() {
     { entity: 'departments', url: 'hr/lookups/identification/department' },
     { entity: 'sites', url: 'settings/lookups/sites' },
   ]);
-
+  const handleOpenValidateConfirmDialog = (id) => {
+    confirmDialog.onTrue();
+    setSelectedRow(id);
+  };
   const personalsLookup = dataLookups.personalsLookup;
   const banks = dataLookups.banks;
   const departments = dataLookups.departments;
@@ -158,6 +167,42 @@ export function ActifListView() {
   };
 
   const dataFiltered = tableData;
+
+  const renderConfirmValidationDialog = () => (
+    <ConfirmDialog
+      open={confirmDialog.value}
+      onClose={confirmDialog.onFalse}
+      title="Valider récupération"
+      content={
+        // <>
+        //   Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
+        // </>
+        <Box my={2}>
+          <TextField
+            // value={message}
+            // onChange={(e) => setMessage(e.target.value)}
+            label="Message"
+            fullWidth
+            multiline
+            rows={3}
+          />
+        </Box>
+      }
+      action={
+        <Button
+          variant="contained"
+          color="info"
+          onClick={async () => {
+            // handleDeleteRows();
+            await validatePersonal(selectedRow, { message: 'validation' });
+            confirmDialog.onFalse();
+          }}
+        >
+          Valider
+        </Button>
+      }
+    />
+  );
 
   const CustomToolbarCallback = useCallback(
     () => <CustomToolbar setFilterButtonEl={setFilterButtonEl} />,
@@ -426,18 +471,26 @@ export function ActifListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => [
-        <GridActionsLinkItem
+        // <GridActionsLinkItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:eye-bold" />}
+        //   label="View"
+        //   href={paths.dashboard.root}
+        // />,
+        <GridActionsClickItem
           showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
-          label="View"
-          href={paths.dashboard.root}
+          icon={<Iconify icon="eva:checkmark-fill" />}
+          label="Valider"
+          onClick={() => handleOpenValidateConfirmDialog(params.row.id)}
+          // href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
         />,
         <GridActionsLinkItem
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}
-          label="Edit"
+          label="Modifier"
           href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
         />,
+
         // <GridActionsCellItem
         //   showInMenu
         //   icon={<Iconify icon="solar:trash-bin-trash-bold" />}
@@ -455,88 +508,91 @@ export function ActifListView() {
       .map((column) => column.field);
 
   return (
-    <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-      <CustomBreadcrumbs
-        heading="List"
-        links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Ressources humaine', href: paths.dashboard.root },
-          { name: 'Employés' },
-        ]}
-        action={
-          <Button
-            component={RouterLink}
-            href={paths.dashboard.rh.personal.newPersonel}
-            variant="contained"
-            startIcon={<Iconify icon="mingcute:add-line" />}
-          >
-            Ajouter Personnel
-          </Button>
-        }
-        sx={{ mb: { xs: 3, md: 5 } }}
-      />
+    <>
+      <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+        <CustomBreadcrumbs
+          heading="List"
+          links={[
+            { name: 'Dashboard', href: paths.dashboard.root },
+            { name: 'Ressources humaine', href: paths.dashboard.root },
+            { name: 'Employés' },
+          ]}
+          action={
+            <Button
+              component={RouterLink}
+              href={paths.dashboard.rh.personal.newPersonel}
+              variant="contained"
+              startIcon={<Iconify icon="mingcute:add-line" />}
+            >
+              Ajouter Personnel
+            </Button>
+          }
+          sx={{ mb: { xs: 3, md: 5 } }}
+        />
 
-      <Card
-        sx={{
-          flexGrow: { md: 1 },
-          display: { md: 'flex' },
-          flexDirection: { md: 'column' },
-        }}
-      >
-        <TableToolbarCustom
-          filterOptions={FILTERS_OPTIONS}
-          filters={editedFilters}
-          setFilters={setEditedFilters}
-          onReset={handleReset}
-        />
-        <Box paddingX={4} paddingY={2} sx={{}}>
-          <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
-            <TextField
-              fullWidth
-              // value={currentFilters.name}
-              // onChange={handleFilterName}
-              placeholder="Search "
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-              size="small"
-            />
-          </FormControl>
-        </Box>
-        <DataGrid
-          // checkboxSelection
-          disableColumnMenu
-          disableRowSelectionOnClick
-          rows={dataFiltered}
-          columns={columns}
-          loading={personalsLoading}
-          getRowHeight={() => 'auto'}
-          pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
-          initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-          columnVisibilityModel={columnVisibilityModel}
-          onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
-          // disableColumnFilter
-          slots={{
-            toolbar: CustomToolbarCallback,
-            noRowsOverlay: () => <EmptyContent />,
-            noResultsOverlay: () => <EmptyContent title="No results found" />,
+        <Card
+          sx={{
+            flexGrow: { md: 1 },
+            display: { md: 'flex' },
+            flexDirection: { md: 'column' },
           }}
-          slotProps={{
-            toolbar: { setFilterButtonEl },
-            panel: { anchorEl: filterButtonEl },
-            columnsManagement: { getTogglableColumns },
-          }}
-          sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
-          density="compact"
-        />
-      </Card>
-    </DashboardContent>
+        >
+          <TableToolbarCustom
+            filterOptions={FILTERS_OPTIONS}
+            filters={editedFilters}
+            setFilters={setEditedFilters}
+            onReset={handleReset}
+          />
+          <Box paddingX={4} paddingY={2} sx={{}}>
+            <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
+              <TextField
+                fullWidth
+                // value={currentFilters.name}
+                // onChange={handleFilterName}
+                placeholder="Search "
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+                size="small"
+              />
+            </FormControl>
+          </Box>
+          <DataGrid
+            // checkboxSelection
+            disableColumnMenu
+            disableRowSelectionOnClick
+            rows={dataFiltered}
+            columns={columns}
+            loading={personalsLoading}
+            getRowHeight={() => 'auto'}
+            pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
+            initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
+            columnVisibilityModel={columnVisibilityModel}
+            onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
+            // disableColumnFilter
+            slots={{
+              toolbar: CustomToolbarCallback,
+              noRowsOverlay: () => <EmptyContent />,
+              noResultsOverlay: () => <EmptyContent title="No results found" />,
+            }}
+            slotProps={{
+              toolbar: { setFilterButtonEl },
+              panel: { anchorEl: filterButtonEl },
+              columnsManagement: { getTogglableColumns },
+            }}
+            sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
+            density="compact"
+          />
+        </Card>
+      </DashboardContent>
+      {renderConfirmValidationDialog()}
+    </>
   );
 }
 

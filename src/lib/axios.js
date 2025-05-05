@@ -102,4 +102,6 @@ export const endpoints = {
   overtime: '/v1/hr/writings/overtime_works',
   leaveAbesence: '/v1/hr/writings/holiday_absences',
   permanence: '/v1/hr/writings/permanencies',
+  // treatment
+  relocation: '/v1/hr/treatment/personal_relocations',
 };

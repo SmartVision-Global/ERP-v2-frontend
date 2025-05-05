@@ -201,6 +201,9 @@ const PageRhTreatmentLocationAssignment = lazy(
 const PageRhTreatmentLocationAssignmentNew = lazy(
   () => import('src/pages/dashboard/r-h/treatment/location-assignment/new')
 );
+const PageRhTreatmentLocationAssignmentEdit = lazy(
+  () => import('src/pages/dashboard/r-h/treatment/location-assignment/edit')
+);
 
 const PageRhTreatmentPromotionDemotion = lazy(
   () => import('src/pages/dashboard/r-h/treatment/promotion-demotion/list')
@@ -208,21 +211,27 @@ const PageRhTreatmentPromotionDemotion = lazy(
 const PageRhTreatmentPromotionDemotionNew = lazy(
   () => import('src/pages/dashboard/r-h/treatment/promotion-demotion/new')
 );
-
+const PageRhTreatmentPromotionDemotionEdit = lazy(
+  () => import('src/pages/dashboard/r-h/treatment/promotion-demotion/edit')
+);
 const PageRhTreatmentRenewalContract = lazy(
   () => import('src/pages/dashboard/r-h/treatment/renewal-contract/list')
 );
 const PageRhTreatmentRenewalContractNew = lazy(
   () => import('src/pages/dashboard/r-h/treatment/renewal-contract/new')
 );
-
+const PageRhTreatmentRenewalContractEdit = lazy(
+  () => import('src/pages/dashboard/r-h/treatment/renewal-contract/edit')
+);
 const PageRhTreatmentEndRelationship = lazy(
   () => import('src/pages/dashboard/r-h/treatment/end-relationship/list')
 );
 const PageRhTreatmentEndRelationshipNew = lazy(
   () => import('src/pages/dashboard/r-h/treatment/end-relationship/new')
 );
-
+const PageRhTreatmentEndRelationshipEdit = lazy(
+  () => import('src/pages/dashboard/r-h/treatment/end-relationship/edit')
+);
 // HSE
 // const PageRhHseEpi = lazy(() => import('src/pages/dashboard/r-h/hse/epi/list'));
 // const PageRhHseEpiNew = lazy(() => import('src/pages/dashboard/r-h/hse/epi/new'));
@@ -439,15 +448,31 @@ export const dashboardRoutes = [
                 path: 'location-assignment/new',
                 element: <PageRhTreatmentLocationAssignmentNew />,
               },
+              {
+                path: 'location-assignment/:id/edit',
+                element: <PageRhTreatmentLocationAssignmentEdit />,
+              },
 
               { path: 'promotion-demotion', element: <PageRhTreatmentPromotionDemotion /> },
               { path: 'promotion-demotion/new', element: <PageRhTreatmentPromotionDemotionNew /> },
+              {
+                path: 'promotion-demotion/:id/edit',
+                element: <PageRhTreatmentPromotionDemotionEdit />,
+              },
 
               { path: 'renewal-contract', element: <PageRhTreatmentRenewalContract /> },
               { path: 'renewal-contract/new', element: <PageRhTreatmentRenewalContractNew /> },
+              {
+                path: 'renewal-contract/:id/edit',
+                element: <PageRhTreatmentRenewalContractEdit />,
+              },
 
               { path: 'end-relationship', element: <PageRhTreatmentEndRelationship /> },
               { path: 'end-relationship/new', element: <PageRhTreatmentEndRelationshipNew /> },
+              {
+                path: 'end-relationship/:id/edit',
+                element: <PageRhTreatmentEndRelationshipEdit />,
+              },
             ],
           },
           {

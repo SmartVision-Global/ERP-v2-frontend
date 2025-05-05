@@ -7,8 +7,8 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import { TextField, FormControl, InputAdornment } from '@mui/material';
-import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -231,13 +231,13 @@ export function FonctionsListView() {
       disableColumnMenu: true,
       getActions: (params) => [
         // TODO valider job
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
-          label="Valider"
-          // href={paths.dashboard.product.details(params.row.id)}
-          href={paths.dashboard.root}
-        />,
+        // <GridActionsLinkItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:eye-bold" />}
+        //   label="Valider"
+        //   // href={paths.dashboard.product.details(params.row.id)}
+        //   href={paths.dashboard.root}
+        // />,
         <GridActionsLinkItem
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}
@@ -246,14 +246,14 @@ export function FonctionsListView() {
           href={paths.dashboard.rh.fonction.editFonction(params.row.id)}
         />,
 
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-          label="Archiver"
-          // onClick={() => handleDeleteRow(params.row.id)}
-          onClick={() => handleOpenConfirmArchiveRow(params.row.id)}
-          sx={{ color: 'error.main' }}
-        />,
+        // <GridActionsCellItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:trash-bin-trash-bold" />}
+        //   label="Archiver"
+        //   // onClick={() => handleDeleteRow(params.row.id)}
+        //   onClick={() => handleOpenConfirmArchiveRow(params.row.id)}
+        //   sx={{ color: 'error.main' }}
+        // />,
       ],
     },
   ];

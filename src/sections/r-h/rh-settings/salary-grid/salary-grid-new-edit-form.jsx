@@ -129,7 +129,15 @@ export function SalaryGridNewEditForm({ currentProduct }) {
     mode: 'all',
     resolver: zodResolver(NewProductSchema),
     defaultValues,
-    values: currentProduct,
+    values: {
+      ...currentProduct,
+      cotis_impos_items:
+        currentProduct?.salary_deductions_compensations?.filter((item) => item.type === '1') || [],
+      cotis_no_impos_items:
+        currentProduct?.salary_deductions_compensations?.filter((item) => item.type === '2') || [],
+      no_cotis_no_impos_items:
+        currentProduct?.salary_deductions_compensations?.filter((item) => item.type === '3') || [],
+    },
   });
 
   const {
@@ -197,9 +205,48 @@ export function SalaryGridNewEditForm({ currentProduct }) {
       console.error(error);
     }
   });
-
+  // const watchedSalary = watch('salary');
+  // const cotisImposItems = watch('cotis_impos_items');
+  // const cotisNoImposItems = watch('cotis_no_impos_items');
+  // const noCotisNoImposItems = watch('no_cotis_no_impos_items');
+  // const deductionsCompensationsMemo = useMemo(
+  //   () => [
+  //     ...(cotisImposItems || []),
+  //     ...(cotisNoImposItems || []),
+  //     ...(noCotisNoImposItems || []),
+  //   ],
+  //   [cotisImposItems, cotisNoImposItems, noCotisNoImposItems]
+  // );
   // console.log('deductionsCompensations', deductionsCompensations);
   // const { }=salaryCalculation(values.salary)
+  // useEffect(() => {
+  //   if (watchedSalary != null) {
+  //     const {
+  //       postSalary,
+  //       socialSecurityRetenue,
+  //       postSalaryMinSSRetunue,
+  //       salaryWithTax,
+  //       retenueIRG,
+  //       netSalary,
+  //       netPaySalary,
+  //     } = salaryCalculation(watchedSalary, deductionsCompensationsMemo);
+
+  //     setValue('salary_position', postSalary);
+  //     setValue('s_s_retenue', socialSecurityRetenue);
+  //     setValue('salary_position_retenue', postSalaryMinSSRetunue);
+  //     setValue('salary_impos', salaryWithTax);
+  //     setValue('retenueIRG', retenueIRG);
+  //     setValue('net_salary', netSalary);
+  //     setValue('net_salary_payer', netPaySalary);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [
+  //   setValue,
+  //   watchedSalary,
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  //   JSON.stringify(deductionsCompensationsMemo), // stable serialization
+  //   // deductionsCompensations
+  // ]);
   const renderDetails = () => (
     <Card>
       <CardHeader
@@ -249,7 +296,6 @@ export function SalaryGridNewEditForm({ currentProduct }) {
                       setValue('salary_impos', salaryWithTax);
                       setValue('retenueIRG', retenueIRG);
                       setValue('net_salary', netSalary);
-
                       setValue('net_salary_payer', netPaySalary);
                     }}
                     error={!!error}

@@ -1,6 +1,7 @@
 export const CE_MISSION_NATURE_OPTIONS = [
-  { label: "Changement d'emplacement", value: 'CE' },
-  { label: 'Ordre de mission', value: 'OM' },
-  { label: 'Prolongation de mission', value: 'PM' },
-  { label: 'Retour de mission', value: 'RM' },
+  { label: 'Affectation', value: '1' },
+  { label: "Changement d'emplacement", value: '2' },
+  { label: 'Ordre de mission', value: '3' },
+  { label: 'Prolongation de mission', value: '4' },
+  { label: 'Retour de mission', value: '5' },
 ];

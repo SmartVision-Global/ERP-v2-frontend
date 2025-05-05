@@ -105,12 +105,12 @@ export function salaryCalculation(salary, deductionCompensations) {
   // eslint-disable-next-line no-debugger
   debugger;
   return {
-    postSalary: salaryWithSumContributor.toFixed(2),
-    socialSecurityRetenue: socialSecurityRetenue.toFixed(2),
-    postSalaryMinSSRetunue: postSalaryMinSSRetunue.toFixed(2),
-    salaryWithTax: salaryWithTax.toFixed(2),
-    retenueIRG: retenueIRG.toFixed(2),
-    netSalary: netSalary.toFixed(2),
-    netPaySalary: netPaySalary.toFixed(2),
+    postSalary: salaryWithSumContributor?.toFixed(2),
+    socialSecurityRetenue: socialSecurityRetenue?.toFixed(2),
+    postSalaryMinSSRetunue: postSalaryMinSSRetunue?.toFixed(2),
+    salaryWithTax: salaryWithTax?.toFixed(2),
+    retenueIRG: retenueIRG?.toFixed(2),
+    netSalary: netSalary?.toFixed(2),
+    netPaySalary: netPaySalary?.toFixed(2),
   };
 }

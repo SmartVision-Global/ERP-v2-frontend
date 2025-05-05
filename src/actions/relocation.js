@@ -1,5 +1,5 @@
-import useSWR from 'swr';
 import { useMemo } from 'react';
+import useSWR, { mutate } from 'swr';
 
 // import { fetcher, endpoints } from 'src/lib/axios';
 import axios, { fetcher, endpoints } from 'src/lib/axios';
@@ -12,22 +12,22 @@ const swrOptions = {
   revalidateOnReconnect: true,
 };
 
-const ENDPOINT = endpoints.personal;
+const ENDPOINT = endpoints.relocation;
 
 // ----------------------------------------------------------------------
 
-export function useGetPersonals() {
-  const url = endpoints.personal;
+export function useGetRelocations() {
+  const url = endpoints.relocation;
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({
-      personals: data?.data?.records || [],
-      personalsLoading: isLoading,
-      personalsError: error,
-      personalsValidating: isValidating,
-      personalsEmpty: !isLoading && !isValidating && !data?.data?.records.length,
+      relocations: data?.data?.records || [],
+      relocationsLoading: isLoading,
+      relocationsError: error,
+      relocationsValidating: isValidating,
+      relocationsEmpty: !isLoading && !isValidating && !data?.data?.records.length,
     }),
     [data?.data?.records, error, isLoading, isValidating]
   );
@@ -37,17 +37,17 @@ export function useGetPersonals() {
 
 // ----------------------------------------------------------------------
 
-export function useGetPersonal(personalId) {
-  const url = personalId ? [`${endpoints.personal}/${personalId}`] : '';
+export function useGetRelocation(productId) {
+  const url = productId ? [`${endpoints.relocation}/${productId}`] : '';
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({
-      personal: data?.data,
-      personalLoading: isLoading,
-      personalError: error,
-      personalValidating: isValidating,
+      relocation: data?.data,
+      relocationLoading: isLoading,
+      relocationError: error,
+      relocationValidating: isValidating,
     }),
     [data?.data, error, isLoading, isValidating]
   );
@@ -55,30 +55,38 @@ export function useGetPersonal(personalId) {
   return memoizedValue;
 }
 
-export async function createPersonal(data) {
+export async function createRelocation(data) {
   /**
    * Work on server
    */
   // const data = { directionData };
   await axios.post(ENDPOINT, data);
-
   //   mutate(endpoints.site);
 }
 
-export async function updatePersonal(id, data) {
+export async function updateRelocation(id, data) {
   /**
    * Work on server
    */
   // const data = { directionData };
   await axios.patch(`${ENDPOINT}/${id}`, data);
-  //   mutate(endpoints.site);
+  // mutate(`${ENDPOINT}/${id}`);
 }
 
-export async function validatePersonal(id, data) {
+export async function archiveRelocation(id, data) {
+  /**
+   * Work on server
+   */
+  // const data = { directionData };
+  await axios.delete(`${ENDPOINT}/${id}`);
+  // mutate(`${ENDPOINT}/${id}`);
+}
+
+export async function validateRelocation(id, data) {
   /**
    * Work on server
    */
   // const data = { directionData };
   await axios.post(`${ENDPOINT}/${id}/validate`, data);
-  //   mutate(endpoints.site);
+  mutate(`${ENDPOINT}`);
 }

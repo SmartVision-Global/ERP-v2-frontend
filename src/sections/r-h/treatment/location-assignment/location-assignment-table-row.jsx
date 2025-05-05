@@ -8,10 +8,21 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { RouterLink } from 'src/routes/components';
 
 import { fCurrency } from 'src/utils/format-number';
+import { fDate, fTime } from 'src/utils/format-time';
 
 import { Label } from 'src/components/label';
 
 // ----------------------------------------------------------------------
+
+const TYPE_OPTIONS = {
+  1: 'Affectation',
+  2: "Changement d'emplacement",
+  3: 'Ordre de mission',
+  4: 'Prolongation de mission',
+  5: 'Retour de mission',
+};
+
+const STATUS_OPTIONS = { 1: 'En attente', 2: 'Validé', 3: 'Archivé', 4: 'Validation annulé' };
 
 export function RenderCellPrice({ params }) {
   return fCurrency(params.row.price);
@@ -44,37 +55,44 @@ export function RenderCellAddress({ params }) {
   return <Typography variant="body2">SETIF</Typography>;
 }
 export function RenderCellFullname({ params }) {
-  return <Typography variant="body2">GUENDOUZ - MESSAOUD</Typography>;
+  return <Typography variant="body2">{params.row?.personal?.name}</Typography>;
 }
 export function RenderCellCode({ params }) {
   return <Typography variant="body2">ATF-1</Typography>;
 }
 export function RenderCellNature({ params }) {
   return (
-    <Label variant="soft" color="warning">
-      DEMARRAGE
+    <Label variant="soft" color={params.row.source_type === 'START' ? 'info' : 'warning'}>
+      {params.row.source_type === 'START' ? 'DEMARRAGE' : 'TRAITEMENT'}
     </Label>
   );
 }
 export function RenderCellObservation({ params }) {
-  return <Typography variant="body2">-</Typography>;
+  return <Typography variant="body2">{params.row?.observation || '-'}</Typography>;
 }
 
 export function RenderCellAtelier({ params }) {
-  return <Typography variant="body2">-</Typography>;
+  return <Typography variant="body2">{params.row?.workshop?.name}</Typography>;
 }
 export function RenderCellMachine({ params }) {
-  return <Typography variant="body2">-</Typography>;
+  return <Typography variant="body2">{params.row?.machine?.name}</Typography>;
 }
 
 export function RenderCellMissionEndDate({ params }) {
-  return <Typography variant="body2">-</Typography>;
+  return (
+    <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
+      {params.row.end_relocation_date ? <span>{fDate(params.row.end_relocation_date)}</span> : '-'}
+      {/* <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
+        {fTime(params.row.created_at)}
+      </Box> */}
+    </Box>
+  );
 }
 
 export function RenderCellType({ params }) {
   return (
     <Label variant="soft" color="info">
-      AFFECTATION
+      {TYPE_OPTIONS[params.row.relocation_type]}
     </Label>
   );
 }
@@ -89,7 +107,7 @@ export function RenderCellAbs({ params }) {
 export function RenderCellStatus({ params }) {
   return (
     <Label variant="soft" color="primary">
-      Validé
+      {STATUS_OPTIONS[params.row.status]}
     </Label>
   );
 }
@@ -135,7 +153,7 @@ export function RenderCellWorkStop({ params }) {
 export function RenderCellSite({ params }) {
   return (
     <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
-      <span>ST-BERBES</span>
+      <span>{params.row?.site?.name}</span>
       {/* <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
         {fTime(params.row.createdAt)}
       </Box> */}
@@ -146,10 +164,10 @@ export function RenderCellSite({ params }) {
 export function RenderCellCreatedAt({ params }) {
   return (
     <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
-      <span>{params.row.createdAt}</span>
-      {/* <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
-        {fTime(params.row.createdAt)}
-      </Box> */}
+      <span>{fDate(params.row.created_at)}</span>
+      <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
+        {fTime(params.row.created_at)}
+      </Box>
     </Box>
   );
 }
@@ -227,7 +245,7 @@ export function RenderCellId({ params, href }) {
       <ListItemText
         primary={
           <Link component={RouterLink} href={href} color="inherit">
-            {Math.floor(Math.random() * 1000) + 1}
+            {params.row.id}
           </Link>
         }
         // secondary={params.row.category}

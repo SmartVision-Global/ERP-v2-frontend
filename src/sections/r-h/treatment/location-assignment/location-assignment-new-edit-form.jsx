@@ -6,34 +6,63 @@ import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 
-import {
-  ACTIF_NAMES,
-  PRODUCT_SITE_OPTIONS,
-  CE_MISSION_NATURE_OPTIONS,
-  PRODUCT_DEPARTEMENT_OPTIONS,
-} from 'src/_mock';
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
 
-import { Form, Field } from 'src/components/hook-form';
+import { useMultiLookups } from 'src/actions/lookups';
+import { CE_MISSION_NATURE_OPTIONS } from 'src/_mock';
+import { createRelocation, updateRelocation } from 'src/actions/relocation';
 
-export const NewTauxCnasSchema = zod.object({
-  employer: zod.string().min(1, { message: 'Category is required!' }),
-  nature: zod.string().min(1, { message: 'Category is required!' }),
-  direction: zod.string().min(1, { message: 'Category is required!' }),
-  site: zod.string().min(1, { message: 'Category is required!' }),
-  atelier: zod.string().min(1, { message: 'Category is required!' }),
-  machine: zod.string().min(1, { message: 'Category is required!' }),
-  observation: zod.string().min(1, { message: 'Category is required!' }),
-});
+import { toast } from 'src/components/snackbar';
+import { LoadingScreen } from 'src/components/loading-screen';
+import { Form, Field, schemaHelper } from 'src/components/hook-form';
+
+export const NewTauxCnasSchema = zod
+  .object({
+    personal_id: zod.string().min(1, { message: 'Veuillez remplir ce champ!' }).or(zod.number()),
+    relocation_type: zod.string().min(1, { message: 'Veuillez remplir ce champ!' }),
+    direction_id: zod.string().min(1, { message: 'Veuillez remplir ce champ!' }).or(zod.number()),
+    site_id: zod.string().min(1, { message: 'Veuillez remplir ce champ!' }).or(zod.number()),
+    workshop_id: zod.string().min(1, { message: 'Veuillez remplir ce champ!' }).or(zod.number()),
+    machine_id: zod.string().min(1, { message: 'Veuillez remplir ce champ!' }).or(zod.number()),
+    end_relocation_date: schemaHelper.date().nullable(),
+    observation: zod.string().min(1, { message: 'Veuillez remplir ce champ!' }),
+  })
+  .superRefine((data, ctx) => {
+    if (data.relocation_type === '2') {
+      if (!data.end_relocation_date) {
+        ctx.addIssue({
+          code: zod.ZodIssueCode.custom,
+          message: 'Veuillez remplir ce champ!',
+          path: ['end_relocation_date'],
+        });
+      }
+    }
+  });
 
 export function LocationAssignmentNewEditForm({ currentTaux }) {
+  const router = useRouter();
+  const { dataLookups, dataLoading } = useMultiLookups([
+    { entity: 'personals', url: 'hr/lookups/personals' },
+    { entity: 'directions', url: 'hr/lookups/identification/direction' },
+    { entity: 'sites', url: 'settings/lookups/sites' },
+    { entity: 'workshops', url: 'settings/lookups/workshops' },
+    { entity: 'machines', url: 'settings/lookups/machines' },
+  ]);
+  const personals = dataLookups.personals;
+  const directions = dataLookups.directions;
+  const sites = dataLookups.sites;
+  const workshops = dataLookups.workshops;
+  const machines = dataLookups.machines;
   const defaultValues = {
-    employer: '',
-    nature: '',
-    direction: '',
-    site: '',
-    atelier: '',
-    machine: '',
+    personal_id: '',
+    relocation_type: '',
+    direction_id: '',
+    site_id: '',
+    workshop_id: '',
+    machine_id: '',
     observation: '',
+    end_relocation_date: null,
   };
 
   const methods = useForm({
@@ -43,40 +72,53 @@ export function LocationAssignmentNewEditForm({ currentTaux }) {
   });
 
   const {
+    watch,
     reset,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = methods;
+  console.log('err', errors);
+
+  const values = watch();
 
   const onSubmit = handleSubmit(async (data) => {
+    const updatedData = {
+      ...data,
+      end_relocation_date: data?.end_relocation_date
+        ? new Date(data.end_relocation_date).toLocaleDateString('en-CA')
+        : null,
+    };
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      if (currentTaux) {
+        await updateRelocation(currentTaux.id, updatedData);
+      } else {
+        await createRelocation(updatedData);
+      }
       reset();
+      toast.success(currentTaux ? 'Update success!' : 'Create success!');
+      router.push(paths.dashboard.rh.treatment.locationAssignment);
+
       console.info('DATA', data);
     } catch (error) {
       console.error(error);
     }
   });
 
+  if (dataLoading) return <LoadingScreen />;
+
   const renderDetails = () => (
     <Card>
-      <CardHeader title="Ajouter CE - Mission" sx={{ mb: 3 }} />
+      <CardHeader title="CE - Mission" sx={{ mb: 3 }} />
 
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="employer" label="Employé" size="small">
-              {ACTIF_NAMES.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select>
+            <Field.Lookup name="personal_id" label="Employé" data={personals} />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="nature" label="Nature" size="small">
+            <Field.Select name="relocation_type" label="Nature" size="small">
               {CE_MISSION_NATURE_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
@@ -84,41 +126,22 @@ export function LocationAssignmentNewEditForm({ currentTaux }) {
               ))}
             </Field.Select>
           </Grid>
+          {values.relocation_type === '2' && (
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.DatePicker name="end_relocation_date" label="Fin de mission" />
+            </Grid>
+          )}
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="direction" label="Direction" size="small">
-              {PRODUCT_DEPARTEMENT_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select>
+            <Field.Lookup name="direction_id" label="Direction" data={directions} />
           </Grid>{' '}
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="site" label="Site" size="small">
-              {PRODUCT_SITE_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select>
+            <Field.Lookup name="site_id" label="Site" data={sites} />
           </Grid>{' '}
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="atelier" label="Atelier" size="small">
-              {PRODUCT_SITE_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select>
+            <Field.Lookup name="workshop_id" label="Atelier" data={workshops} />
           </Grid>{' '}
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="machine" label="Machine" size="small">
-              {PRODUCT_SITE_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select>
+            <Field.Lookup name="machine_id" label="Machine" data={machines} />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Text name="observation" label="Observation" multiline rows={3} />
@@ -127,7 +150,7 @@ export function LocationAssignmentNewEditForm({ currentTaux }) {
 
         <Stack alignItems="flex-end" sx={{ mt: 3 }}>
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            {currentTaux ? 'Sauvegarder les modifications' : 'Créer Pret Social'}
+            {currentTaux ? 'Sauvegarder les modifications' : 'Ajouter'}
           </LoadingButton>
         </Stack>
       </Stack>

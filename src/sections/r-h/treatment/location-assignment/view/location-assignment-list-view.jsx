@@ -1,5 +1,5 @@
 import { useBoolean } from 'minimal-shared/hooks';
-import { useState, useEffect, forwardRef, useCallback } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -7,26 +7,26 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import { TextField, FormControl, InputAdornment } from '@mui/material';
-import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetProducts } from 'src/actions/product';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useGetRelocations } from 'src/actions/relocation';
 import { ACTIF_NAMES, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
 
-import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
+import { GridActionsClickItem } from 'src/sections/r-h/entries/recovery/view';
+
+import { UploadFileDialog } from '../validate-location-dialog';
 import {
   RenderCellId,
-  RenderCellCode,
   RenderCellType,
   RenderCellSite,
   RenderCellStatus,
@@ -94,46 +94,31 @@ const FILTERS_OPTIONS = [
 ];
 
 export function LocationAssignmentListView() {
-  const confirmDialog = useBoolean();
+  const confirmDialogValidation = useBoolean();
 
-  const { products, productsLoading } = useGetProducts();
+  const { relocations, relocationsLoading } = useGetRelocations();
 
-  const [tableData, setTableData] = useState(products);
-  const [selectedRowIds, setSelectedRowIds] = useState([]);
+  const [tableData, setTableData] = useState(relocations);
+  const [selectedRow, setSelectedRow] = useState('');
+
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
-
+  const handleOpenValidateConfirmDialog = (id) => {
+    confirmDialogValidation.onTrue();
+    setSelectedRow(id);
+  };
   useEffect(() => {
-    if (products.length) {
-      setTableData(products);
+    if (relocations.length) {
+      setTableData(relocations);
     }
-  }, [products]);
+  }, [relocations]);
   const handleReset = () => {
     setEditedFilters([]);
   };
 
   const dataFiltered = tableData;
-
-  const handleDeleteRow = useCallback(
-    (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-
-      toast.success('Delete success!');
-
-      setTableData(deleteRow);
-    },
-    [tableData]
-  );
-
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
-
-    toast.success('Delete success!');
-
-    setTableData(deleteRows);
-  }, [selectedRowIds, tableData]);
 
   const columns = [
     { field: 'category', headerName: 'Category', filterable: false },
@@ -147,14 +132,14 @@ export function LocationAssignmentListView() {
       hideable: false,
       renderCell: (params) => <RenderCellId params={params} href={paths.dashboard.root} />,
     },
-    {
-      field: 'code',
-      headerName: 'Code',
-      flex: 1,
-      minWidth: 100,
-      hideable: false,
-      renderCell: (params) => <RenderCellCode params={params} href={paths.dashboard.root} />,
-    },
+    // {
+    //   field: 'code',
+    //   headerName: 'Code',
+    //   flex: 1,
+    //   minWidth: 100,
+    //   hideable: false,
+    //   renderCell: (params) => <RenderCellCode params={params} href={paths.dashboard.root} />,
+    // },
     {
       field: 'fullname',
       headerName: 'Nom-Prénom',
@@ -181,12 +166,9 @@ export function LocationAssignmentListView() {
       field: 'type',
       headerName: 'Type',
       flex: 1,
-      minWidth: 160,
+      minWidth: 220,
       hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellType params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellType params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'site',
@@ -276,29 +258,26 @@ export function LocationAssignmentListView() {
       sortable: false,
       filterable: false,
       disableColumnMenu: true,
-      getActions: (params) => [
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
-          label="View"
-          // href={paths.dashboard.product.details(params.row.id)}
-          href={paths.dashboard.root}
-        />,
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:pen-bold" />}
-          label="Edit"
-          // href={paths.dashboard.product.edit(params.row.id)}
-          href={paths.dashboard.root}
-        />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-          label="Delete"
-          onClick={() => handleDeleteRow(params.row.id)}
-          sx={{ color: 'error.main' }}
-        />,
-      ],
+      getActions: (params) => {
+        if (params.row.status === '1') {
+          return [
+            <GridActionsClickItem
+              showInMenu
+              icon={<Iconify icon="solar:eye-bold" />}
+              label="Valider"
+              onClick={() => handleOpenValidateConfirmDialog(params.row.id)}
+            />,
+            <GridActionsLinkItem
+              showInMenu
+              icon={<Iconify icon="solar:pen-bold" />}
+              label="Modifier"
+              href={paths.dashboard.rh.treatment.editLocationAssignment(params.row.id)}
+            />,
+          ];
+        } else {
+          return [];
+        }
+      },
     },
   ];
 
@@ -306,31 +285,6 @@ export function LocationAssignmentListView() {
     columns
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
-
-  const renderConfirmDialog = () => (
-    <ConfirmDialog
-      open={confirmDialog.value}
-      onClose={confirmDialog.onFalse}
-      title="Delete"
-      content={
-        <>
-          Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
-        </>
-      }
-      action={
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => {
-            handleDeleteRows();
-            confirmDialog.onFalse();
-          }}
-        >
-          Delete
-        </Button>
-      }
-    />
-  );
 
   return (
     <>
@@ -395,16 +349,16 @@ export function LocationAssignmentListView() {
             </FormControl>
           </Box>
           <DataGrid
-            checkboxSelection
+            // checkboxSelection
             disableColumnMenu
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}
-            loading={productsLoading}
+            loading={relocationsLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-            onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
+            // onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
             columnVisibilityModel={columnVisibilityModel}
             onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
             // disableColumnFilter
@@ -422,8 +376,13 @@ export function LocationAssignmentListView() {
           />
         </Card>
       </DashboardContent>
-
-      {renderConfirmDialog()}
+      {confirmDialogValidation.value && (
+        <UploadFileDialog
+          open={confirmDialogValidation.value}
+          onClose={confirmDialogValidation.onFalse}
+          id={selectedRow}
+        />
+      )}
     </>
   );
 }

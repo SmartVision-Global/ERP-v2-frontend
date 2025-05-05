@@ -139,15 +139,23 @@ export const paths = {
 
         locationAssignment: `${ROOTS.DASHBOARD}/humain-ressource/treatment/location-assignment`,
         newLocationAssignment: `${ROOTS.DASHBOARD}/humain-ressource/treatment/location-assignment/new`,
+        editLocationAssignment: (id) =>
+          `${ROOTS.DASHBOARD}/humain-ressource/treatment/location-assignment/${id}/edit`,
 
         promotionDemotion: `${ROOTS.DASHBOARD}/humain-ressource/treatment/promotion-demotion`,
         newPromotionDemotion: `${ROOTS.DASHBOARD}/humain-ressource/treatment/promotion-demotion/new`,
+        editPromotionDemotion: (id) =>
+          `${ROOTS.DASHBOARD}/humain-ressource/treatment/promotion-demotion/${id}/edit`,
 
         renewalContract: `${ROOTS.DASHBOARD}/humain-ressource/treatment/renewal-contract`,
         newRenewalContract: `${ROOTS.DASHBOARD}/humain-ressource/treatment/renewal-contract/new`,
+        editRenewalContract: (id) =>
+          `${ROOTS.DASHBOARD}/humain-ressource/treatment/renewal-contract/${id}/edit`,
 
         endRelationship: `${ROOTS.DASHBOARD}/humain-ressource/treatment/end-relationship`,
         newEndRelationship: `${ROOTS.DASHBOARD}/humain-ressource/treatment/end-relationship/new`,
+        editEndRelationship: (id) =>
+          `${ROOTS.DASHBOARD}/humain-ressource/treatment/end-relationship/${id}/edit`,
       },
       hse: {
         root: `${ROOTS.DASHBOARD}/humain-ressource/hse/epi`,

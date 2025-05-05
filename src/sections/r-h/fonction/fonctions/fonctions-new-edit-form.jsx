@@ -126,8 +126,9 @@ export function FonctionsNewEditForm({ currentProduct }) {
       manager_job_id: currentProduct?.manager_job_id?.toString() || '',
       mission_id: currentProduct?.mission_id?.toString() || '',
       action_id: currentProduct?.action_id?.toString() || '',
-      dutiesResponsibilities: currentProduct?.dutiesResponsibilities || [],
-      careerKnowledges: currentProduct?.careerKnowledges || [],
+      dutiesResponsibilities:
+        currentProduct?.duties_responsibilities?.map((item) => `${item}`) || [],
+      careerKnowledges: currentProduct?.career_knowledges?.map((item) => `${item}`) || [],
     },
   });
 
@@ -346,6 +347,7 @@ export function FonctionsNewEditForm({ currentProduct }) {
             </Field.Select> */}
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
+            {/* TODO  */}
             <Field.Select name="mission_id" label="Missions" size="small">
               {USER_STATUS_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
@@ -355,6 +357,7 @@ export function FonctionsNewEditForm({ currentProduct }) {
             </Field.Select>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
+            {/* TODO */}
             <Field.Select name="action_id" label="Actes de Fonction" size="small">
               {USER_STATUS_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>

@@ -51,8 +51,8 @@ export function RHFUploadBox({ name, ...other }) {
 
 // ----------------------------------------------------------------------
 
-export function RHFUpload({ name, multiple, helperText, ...other }) {
-  const { control, setValue } = useFormContext();
+export function RHFUpload({ name, multiple, onDrop, helperText, ...other }) {
+  const { control } = useFormContext();
 
   return (
     <Controller
@@ -64,12 +64,6 @@ export function RHFUpload({ name, multiple, helperText, ...other }) {
           accept: { 'image/*': [] },
           error: !!error,
           helperText: error?.message ?? helperText,
-        };
-
-        const onDrop = (acceptedFiles) => {
-          const value = multiple ? [...field.value, ...acceptedFiles] : acceptedFiles[0];
-
-          setValue(name, value, { shouldValidate: true });
         };
 
         return <Upload {...uploadProps} value={field.value} onDrop={onDrop} {...other} />;
