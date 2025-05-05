@@ -34,9 +34,9 @@ export const NewProductSchema = zod.object({
     // message for null value
     { message: 'Quantity is required!' }
   ),
-  salary_category_id: zod.string().min(1, { message: 'Name is required!' }),
-  rung_id: zod.string().min(1, { message: 'Name is required!' }),
-  salary_scale_level_id: zod.string().min(1, { message: 'Name is required!' }),
+  salary_category_id: zod.string().min(1, { message: 'Name is required!' }).or(zod.number()),
+  rung_id: zod.string().min(1, { message: 'Name is required!' }).or(zod.number()),
+  salary_scale_level_id: zod.string().min(1, { message: 'Name is required!' }).or(zod.number()),
   cotis_impos_items: zod.array(
     zod.object({
       id: zod.number(),
@@ -48,7 +48,7 @@ export const NewProductSchema = zod.object({
         .positive()
         .min(0, { message: 'Quantity must be more than 0' })
         .max(100, { message: 'Quantity must be less than 100' }),
-      amount: zod.number().int().positive().min(0, { message: 'Quantity must be more than 0' }),
+      amount: zod.number().positive().min(0, { message: 'Quantity must be more than 0' }),
 
       // Not required
     })
@@ -68,7 +68,7 @@ export const NewProductSchema = zod.object({
         .positive()
         .min(0, { message: 'Quantity must be more than 0' })
         .max(100, { message: 'Quantity must be less than 100' }),
-      amount: zod.number().int().positive().min(0, { message: 'Quantity must be more than 0' }),
+      amount: zod.number().positive().min(0, { message: 'Quantity must be more than 0' }),
 
       // Not required
     })
@@ -87,7 +87,7 @@ export const NewProductSchema = zod.object({
         .positive()
         .min(0, { message: 'Quantity must be more than 0' })
         .max(100, { message: 'Quantity must be less than 100' }),
-      amount: zod.number().int().positive().min(0, { message: 'Quantity must be more than 0' }),
+      amount: zod.number().positive().min(0, { message: 'Quantity must be more than 0' }),
       // Not required
     })
   ),

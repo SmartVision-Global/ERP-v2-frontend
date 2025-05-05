@@ -20,6 +20,7 @@ import {
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { uploadMedia } from 'src/actions/media';
 import { useMultiLookups } from 'src/actions/lookups';
 import { createPersonal, updatePersonal } from 'src/actions/personal';
 import {
@@ -61,7 +62,9 @@ export const NewProductSchema = zod
     national_number: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
     act_of_birth_number: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
     image: schemaHelper.file().optional(),
-    employment_certificate: schemaHelper.file().optional(),
+    certificate: schemaHelper.file().optional(),
+    photo: zod.string().optional(),
+    employment_certificate: zod.string().optional(),
     father_firstname_fr: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
     father_firstname_ar: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
     mother_firstname_fr: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
@@ -402,7 +405,37 @@ export function ActifNewEditForm({ currentProduct }) {
 
     formState: { isSubmitting, errors },
   } = methods;
+  const onDropImage = async (acceptedFiles) => {
+    const value = acceptedFiles[0];
+    const newData = new FormData();
+    newData.append('type', 'image');
+    newData.append('file', value);
+    newData.append('collection', 'photos');
+    setValue('image', value, { shouldValidate: true });
 
+    try {
+      const response = await uploadMedia(newData);
+      setValue('photo', response?.uuid, { shouldValidate: true });
+    } catch (error) {
+      console.log('error in upload file', error);
+    }
+  };
+
+  const onDropCertificate = async (acceptedFiles) => {
+    const value = acceptedFiles[0];
+    const newData = new FormData();
+    newData.append('type', 'image');
+    newData.append('file', value);
+    newData.append('collection', 'certifications');
+    setValue('certificate', value, { shouldValidate: true });
+
+    try {
+      const response = await uploadMedia(newData);
+      setValue('employment_certificate', response?.uuid, { shouldValidate: true });
+    } catch (error) {
+      console.log('error in upload file', error);
+    }
+  };
   const values = watch();
   console.log('errrrr', errors);
   console.log('vallllllllllll', values);
@@ -476,6 +509,8 @@ export function ActifNewEditForm({ currentProduct }) {
       bank_id: parseInt(data.bank_id),
       rib: data.rib,
       address: { fr: data.adressFr, ar: data.adressAr },
+      photo: data.photo ?? null,
+      employment_certificate: data.employment_certificate ?? null,
     };
 
     try {
@@ -624,16 +659,22 @@ export function ActifNewEditForm({ currentProduct }) {
           <Grid size={{ xs: 12, md: 6 }}>
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Photo de l&apos;employé</Typography>
-              <Field.Upload name="image" maxSize={3145728} onDelete={handleRemoveImage} />
+              <Field.Upload
+                name="image"
+                maxSize={3145728}
+                onDelete={handleRemoveImage}
+                onDrop={onDropImage}
+              />
             </Stack>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Certificat d&apos;embauche</Typography>
               <Field.Upload
-                name="employment_certificate"
+                name="certificate"
                 maxSize={3145728}
                 onDelete={handleRemoveCertificate}
+                onDrop={onDropCertificate}
               />
             </Stack>
           </Grid>
