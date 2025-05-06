@@ -1,4 +1,4 @@
-import { useState, useEffect, forwardRef } from 'react';
+import { useState, useEffect, forwardRef, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -14,7 +14,7 @@ import { RouterLink } from 'src/routes/components';
 
 import { TASK_NATURE_OPTIONS } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetDutiesResponsibilities } from 'src/actions/task';
+import { getFiltredTasks, useGetDutiesResponsibilities } from 'src/actions/task';
 
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
@@ -38,7 +38,7 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 const FILTERS_OPTIONS = [
   {
-    id: 'nature',
+    id: 'type',
     type: 'select',
     options: TASK_NATURE_OPTIONS,
     label: 'Nature',
@@ -48,24 +48,54 @@ const FILTERS_OPTIONS = [
 ];
 
 export function TaskRespListView() {
-  const { dutiesResponsibilities, dutiesResponsibilitiesLoading } = useGetDutiesResponsibilities();
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 2,
+  });
+  const [editedFilters, setEditedFilters] = useState([]);
+  const [filterButtonEl, setFilterButtonEl] = useState(null);
+  const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
+
+  const { dutiesResponsibilities, dutiesResponsibilitiesLoading, dutiesResponsibilitiesCount } =
+    useGetDutiesResponsibilities({ limit: 2, offset: 0 });
 
   const [tableData, setTableData] = useState(dutiesResponsibilities);
-  const [filterButtonEl, setFilterButtonEl] = useState(null);
-  const [editedFilters, setEditedFilters] = useState([]);
-
-  const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
+  const [rowCount, setRowCount] = useState(dutiesResponsibilitiesCount);
 
   useEffect(() => {
     if (dutiesResponsibilities.length) {
       setTableData(dutiesResponsibilities);
+      setRowCount(dutiesResponsibilitiesCount);
     }
-  }, [dutiesResponsibilities]);
-  const handleReset = () => {
-    setEditedFilters([]);
-  };
+  }, [dutiesResponsibilities, dutiesResponsibilitiesCount]);
 
-  const dataFiltered = tableData;
+  const handleReset = useCallback(async () => {
+    setEditedFilters([]);
+    setPaginationModel({
+      page: 0,
+      pageSize: 2,
+    });
+    const response = await getFiltredTasks({
+      limit: 2,
+      offset: 0,
+    });
+    setTableData(response.data?.data?.records);
+    setRowCount(response.data?.data?.total);
+  }, []);
+
+  const handleFilter = useCallback(
+    async (data) => {
+      try {
+        const response = await getFiltredTasks(data);
+        setTableData(response.data?.data?.records);
+        setRowCount(response.data?.data?.total);
+      } catch (error) {
+        console.log('Error in search filters tasks', error);
+      }
+    },
+
+    []
+  );
 
   const columns = [
     { field: 'category', headerName: 'Category', filterable: false },
@@ -124,6 +154,26 @@ export function TaskRespListView() {
     },
   ];
 
+  const handlePaginationModelChange = async (newModel) => {
+    try {
+      const newEditedInput = editedFilters.filter((item) => item.value !== '');
+      const result = newEditedInput.reduce((acc, item) => {
+        acc[item.field] = item.value;
+        return acc;
+      }, {});
+      const newData = {
+        ...result,
+        limit: newModel.pageSize,
+        offset: newModel.page,
+      };
+      const response = await getFiltredTasks(newData);
+      setTableData(response.data?.data?.records);
+      setPaginationModel(newModel);
+    } catch (error) {
+      console.log('error in pagination search request', error);
+    }
+  };
+
   const getTogglableColumns = () =>
     columns
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
@@ -135,7 +185,6 @@ export function TaskRespListView() {
         heading="List"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          // { name: 'Ressources humaine', href: paths.dashboard.root },
           { name: 'Tâche et responsabilité' },
         ]}
         action={
@@ -158,24 +207,19 @@ export function TaskRespListView() {
           flexDirection: { md: 'column' },
         }}
       >
-        {/* <ActifTableToolbar
-            filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={setEditedFilters}
-            onReset={handleReset}
-          /> */}
         <TableToolbarCustom
           filterOptions={FILTERS_OPTIONS}
           filters={editedFilters}
           setFilters={setEditedFilters}
           onReset={handleReset}
+          handleFilter={handleFilter}
+          setPaginationModel={setPaginationModel}
+          paginationModel={paginationModel}
         />
         <Box paddingX={4} paddingY={2} sx={{}}>
           <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
             <TextField
               fullWidth
-              // value={currentFilters.name}
-              // onChange={handleFilterName}
               placeholder="Search "
               slotProps={{
                 input: {
@@ -191,20 +235,20 @@ export function TaskRespListView() {
           </FormControl>
         </Box>
         <DataGrid
-          checkboxSelection
           disableRowSelectionOnClick
           disableColumnMenu
-          rows={dataFiltered}
+          rows={tableData}
+          rowCount={rowCount}
           columns={columns}
           loading={dutiesResponsibilitiesLoading}
           getRowHeight={() => 'auto'}
-          pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
-          initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
+          paginationModel={paginationModel}
+          paginationMode="server"
+          onPaginationModelChange={(model) => handlePaginationModelChange(model)}
+          pageSizeOptions={[2, 10, 20, { value: -1, label: 'All' }]}
           columnVisibilityModel={columnVisibilityModel}
           onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
-          // disableColumnFilter
           slots={{
-            // toolbar: CustomToolbarCallback,
             noRowsOverlay: () => <EmptyContent />,
             noResultsOverlay: () => <EmptyContent title="No results found" />,
           }}

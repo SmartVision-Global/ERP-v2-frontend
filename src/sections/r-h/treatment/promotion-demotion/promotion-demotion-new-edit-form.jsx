@@ -6,20 +6,24 @@ import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
+
 import { useMultiLookups } from 'src/actions/lookups';
 import { COMMUN_CALCULATION_METHOD_OPTIONS } from 'src/_mock';
 import { createDecision, updateDecision } from 'src/actions/decision';
 
+import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { FieldContainer } from 'src/components/form-validation-view';
 
 export const NewTauxCnasSchema = zod.object({
-  personal_id: zod.string().min(1, { message: 'Category is required!' }),
-  job_id: zod.string().min(1, { message: 'Category is required!' }),
-  salary_category_id: zod.string().min(1, { message: 'Category is required!' }),
-  rung_id: zod.string().min(1, { message: 'Category is required!' }),
-  salary_scale_level_id: zod.string().min(1, { message: 'Category is required!' }),
-  salary_grid_id: zod.string().min(1, { message: 'Category is required!' }),
+  personal_id: zod.string().min(1, { message: 'Category is required!' }).or(zod.number()),
+  job_id: zod.string().min(1, { message: 'Category is required!' }).or(zod.number()),
+  salary_category_id: zod.string().min(1, { message: 'Category is required!' }).or(zod.number()),
+  rung_id: zod.string().min(1, { message: 'Category is required!' }).or(zod.number()),
+  salary_scale_level_id: zod.string().min(1, { message: 'Category is required!' }).or(zod.number()),
+  salary_grid_id: zod.string().min(1, { message: 'Category is required!' }).or(zod.number()),
   salary_supplemental: schemaHelper.nullableInput(
     zod
       .number({ coerce: true })
@@ -28,7 +32,7 @@ export const NewTauxCnasSchema = zod.object({
     // message for null value
     { message: 'Quantity is required!' }
   ),
-  rate_id: zod.string().min(1, { message: 'Category is required!' }),
+  rate_id: zod.string().min(1, { message: 'Category is required!' }).or(zod.number()),
   payroll_calculation: zod.string().min(1, { message: 'Category is required!' }),
   days_per_month: schemaHelper.nullableInput(
     zod
@@ -51,6 +55,7 @@ export const NewTauxCnasSchema = zod.object({
 });
 
 export function PromotionDemotionNewEditForm({ currentTaux }) {
+  const router = useRouter();
   const { dataLookups } = useMultiLookups([
     { entity: 'personals', url: 'hr/lookups/personals' },
     { entity: 'jobs', url: 'hr/lookups/jobs' },
@@ -106,7 +111,9 @@ export function PromotionDemotionNewEditForm({ currentTaux }) {
         await createDecision(data);
       }
       // await new Promise((resolve) => setTimeout(resolve, 500));
-      // reset();
+      reset();
+      toast.success(currentTaux ? 'Update success!' : 'Create success!');
+      router.push(paths.dashboard.rh.treatment.promotionDemotion);
       console.info('DATA', data);
     } catch (error) {
       console.error(error);

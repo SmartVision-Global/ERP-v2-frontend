@@ -15,7 +15,15 @@ import {
   OutlinedInput,
 } from '@mui/material';
 
-export function TableToolbarCustom({ filterOptions, filters, setFilters, onReset }) {
+export function TableToolbarCustom({
+  filterOptions,
+  filters,
+  setFilters,
+  onReset,
+  handleFilter,
+  setPaginationModel,
+  paginationModel,
+}) {
   console.log('filters', filters);
 
   const [selectedOptions, setSelectedOptions] = useState(null);
@@ -63,6 +71,26 @@ export function TableToolbarCustom({ filterOptions, filters, setFilters, onReset
         .join(', '),
     []
   );
+
+  const onSubmitFilters = () => {
+    const newEditedInput = filters.filter((item) => item.value !== '');
+    const result = newEditedInput.reduce((acc, item) => {
+      acc[item.field] = item.value;
+      return acc;
+    }, {});
+
+    setPaginationModel({
+      ...paginationModel,
+      page: 0,
+    });
+    const newData = {
+      ...result,
+      limit: 2,
+      offset: 0,
+    };
+    handleFilter(newData);
+  };
+
   return (
     <Stack direction="column" spacing={2} paddingX={4} paddingY={2}>
       <Grid container spacing={2}>
@@ -139,7 +167,7 @@ export function TableToolbarCustom({ filterOptions, filters, setFilters, onReset
         ))}
       </Grid>
       <Stack direction="row" spacing={1}>
-        <Button variant="contained" sx={{ px: 2, py: 1 }}>
+        <Button variant="contained" sx={{ px: 2, py: 1 }} onClick={onSubmitFilters}>
           Chercher
         </Button>
         {filters.length > 0 && (

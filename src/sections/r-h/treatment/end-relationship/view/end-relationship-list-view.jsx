@@ -7,8 +7,8 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import { TextField, FormControl, InputAdornment } from '@mui/material';
-import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -24,6 +24,9 @@ import { EmptyContent } from 'src/components/empty-content';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
+import { GridActionsClickItem } from 'src/sections/r-h/entries/recovery/view';
+
+import { ValidateEndRelationshipDialog } from '../validate-end-relationship-dialog';
 import {
   RenderCellId,
   RenderCellCode,
@@ -91,10 +94,13 @@ const FILTERS_OPTIONS = [
 
 export function EndRelationshipListView() {
   const confirmDialog = useBoolean();
+  const confirmDialogValidation = useBoolean();
 
   const { endContracts, endContractsLoading } = useGetEndContracts();
 
   const [tableData, setTableData] = useState(endContracts);
+  const [selectedRow, setSelectedRow] = useState('');
+
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
@@ -111,17 +117,10 @@ export function EndRelationshipListView() {
   };
 
   const dataFiltered = tableData;
-
-  const handleDeleteRow = useCallback(
-    (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-
-      toast.success('Delete success!');
-
-      setTableData(deleteRow);
-    },
-    [tableData]
-  );
+  const handleOpenValidateConfirmDialog = (id) => {
+    confirmDialogValidation.onTrue();
+    setSelectedRow(id);
+  };
 
   const handleDeleteRows = useCallback(() => {
     const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
@@ -243,29 +242,26 @@ export function EndRelationshipListView() {
       sortable: false,
       filterable: false,
       disableColumnMenu: true,
-      getActions: (params) => [
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
-          label="View"
-          // href={paths.dashboard.product.details(params.row.id)}
-          href={paths.dashboard.root}
-        />,
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:pen-bold" />}
-          label="Edit"
-          // href={paths.dashboard.product.edit(params.row.id)}
-          href={paths.dashboard.root}
-        />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-          label="Delete"
-          onClick={() => handleDeleteRow(params.row.id)}
-          sx={{ color: 'error.main' }}
-        />,
-      ],
+      getActions: (params) => {
+        if (params.row.status === '1') {
+          return [
+            <GridActionsClickItem
+              showInMenu
+              icon={<Iconify icon="solar:eye-bold" />}
+              label="Valider"
+              onClick={() => handleOpenValidateConfirmDialog(params.row.id)}
+            />,
+            <GridActionsLinkItem
+              showInMenu
+              icon={<Iconify icon="solar:pen-bold" />}
+              label="Modifier"
+              href={paths.dashboard.rh.treatment.editEndRelationship(params.row.id)}
+            />,
+          ];
+        } else {
+          return [];
+        }
+      },
     },
   ];
 
@@ -383,7 +379,13 @@ export function EndRelationshipListView() {
           />
         </Card>
       </DashboardContent>
-
+      {confirmDialogValidation.value && (
+        <ValidateEndRelationshipDialog
+          open={confirmDialogValidation.value}
+          onClose={confirmDialogValidation.onFalse}
+          id={selectedRow}
+        />
+      )}
       {renderConfirmDialog()}
     </>
   );
