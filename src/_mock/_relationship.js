@@ -1,5 +1,5 @@
 export const RELATIONSHIP_NATURE_OPTIONS = [
-  { label: 'Fin Contrat', value: 'contract_end' },
-  { label: 'Démission', value: 'demission' },
-  { label: 'Expulsion', value: 'Expulsion' },
+  { label: 'Fin Contrat', value: '1' },
+  { label: 'Démission', value: '2' },
+  { label: 'Expulsion', value: '3' },
 ];

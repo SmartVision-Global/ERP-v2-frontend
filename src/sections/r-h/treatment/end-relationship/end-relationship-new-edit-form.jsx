@@ -6,22 +6,30 @@ import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 
-import { ACTIF_NAMES, RELATIONSHIP_NATURE_OPTIONS } from 'src/_mock';
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
 
+import { useGetLookups } from 'src/actions/lookups';
+import { RELATIONSHIP_NATURE_OPTIONS } from 'src/_mock';
+import { createEndContract, updateEndContract } from 'src/actions/end-contract';
+
+import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
 export const NewTauxCnasSchema = zod.object({
-  employer: zod.string().min(1, { message: 'Category is required!' }),
-  nature: zod.string().min(1, { message: 'Category is required!' }),
-  start_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
-  observation: zod.string().min(1, { message: 'Category is required!' }),
+  personal_id: zod.string().min(1, { message: 'Category is required!' }),
+  service_end_reason: zod.string().min(1, { message: 'Category is required!' }),
+  service_end_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
+  observation: zod.string().optional(),
 });
 
 export function EndRelationshipNewEditForm({ currentTaux }) {
+  const router = useRouter();
+  const { data: personals } = useGetLookups('hr/lookups/personals');
   const defaultValues = {
-    employer: '',
-    nature: '',
-    start_date: null,
+    personal_id: '',
+    service_end_reason: '',
+    service_end_date: null,
     observation: '',
   };
 
@@ -38,9 +46,22 @@ export function EndRelationshipNewEditForm({ currentTaux }) {
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
+    const updatedData = {
+      ...data,
+      service_end_date: data?.service_end_date
+        ? new Date(data.service_end_date).toLocaleDateString('en-CA')
+        : null,
+    };
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      if (currentTaux) {
+        await updateEndContract(currentTaux.id, updatedData);
+      } else {
+        await createEndContract(updatedData);
+      }
+      // await new Promise((resolve) => setTimeout(resolve, 500));
       reset();
+      toast.success(currentTaux ? 'Update success!' : 'Create success!');
+      router.push(paths.dashboard.rh.treatment.endRelationship);
       console.info('DATA', data);
     } catch (error) {
       console.error(error);
@@ -56,16 +77,10 @@ export function EndRelationshipNewEditForm({ currentTaux }) {
       <Stack spacing={3} sx={{ p: 3 }}>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="employer" label="Employé" size="small">
-              {ACTIF_NAMES.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select>
+            <Field.Lookup name="personal_id" label="Employé" data={personals} />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="nature" label="Nature" size="small">
+            <Field.Select name="service_end_reason" label="Nature" size="small">
               {RELATIONSHIP_NATURE_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
@@ -74,17 +89,17 @@ export function EndRelationshipNewEditForm({ currentTaux }) {
             </Field.Select>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.DatePicker name="start_date" label="Date fin de service" />
+            <Field.DatePicker name="service_end_date" label="Date fin de service" />
           </Grid>
 
-          <Grid size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 12 }}>
             <Field.Text name="observation" label="Observation" multiline rows={3} />
           </Grid>
         </Grid>
 
         <Stack alignItems="flex-end" sx={{ mt: 3 }}>
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            {currentTaux ? 'Sauvegarder les modifications' : 'Valider'}
+            {currentTaux ? 'Sauvegarder les modifications' : 'Ajouter'}
           </LoadingButton>
         </Stack>
       </Stack>

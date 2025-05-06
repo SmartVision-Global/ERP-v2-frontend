@@ -15,7 +15,7 @@ export function RenewalContractCreateView() {
         heading="Ajouter Contrat"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Ressource humain', href: paths.dashboard.rh.personal },
+          { name: 'Contracts', href: paths.dashboard.rh.treatment.renewalContract },
           { name: 'Ajouter Contrat' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

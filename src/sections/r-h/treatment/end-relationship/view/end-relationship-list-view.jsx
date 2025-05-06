@@ -13,8 +13,8 @@ import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetProducts } from 'src/actions/product';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useGetEndContracts } from 'src/actions/end-contract';
 import { ACTIF_NAMES, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
 
 import { toast } from 'src/components/snackbar';
@@ -92,9 +92,9 @@ const FILTERS_OPTIONS = [
 export function EndRelationshipListView() {
   const confirmDialog = useBoolean();
 
-  const { products, productsLoading } = useGetProducts();
+  const { endContracts, endContractsLoading } = useGetEndContracts();
 
-  const [tableData, setTableData] = useState(products);
+  const [tableData, setTableData] = useState(endContracts);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
@@ -102,10 +102,10 @@ export function EndRelationshipListView() {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (products.length) {
-      setTableData(products);
+    if (endContracts.length) {
+      setTableData(endContracts);
     }
-  }, [products]);
+  }, [endContracts]);
   const handleReset = () => {
     setEditedFilters([]);
   };
@@ -361,7 +361,7 @@ export function EndRelationshipListView() {
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}
-            loading={productsLoading}
+            loading={endContractsLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}

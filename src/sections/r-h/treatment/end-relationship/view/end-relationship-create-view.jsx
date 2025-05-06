@@ -15,7 +15,7 @@ export function EndRelationshipCreateView() {
         heading="Ajouter Fin de relation"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Ressource humain', href: paths.dashboard.rh.personal },
+          { name: 'Fin de relation', href: paths.dashboard.rh.treatment.endRelationship },
           { name: 'Ajouter Fin de relation' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

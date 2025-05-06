@@ -104,4 +104,7 @@ export const endpoints = {
   permanence: '/v1/hr/writings/permanencies',
   // treatment
   relocation: '/v1/hr/treatment/personal_relocations',
+  decision: '/v1/hr/treatment/personal_job_changes',
+  newContract: '/v1/hr/treatment/personal_contracts',
+  endContract: '/v1/hr/treatment/personal_end_services',
 };

@@ -6,40 +6,35 @@ import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 
-import {
-  ACTIF_NAMES,
-  SALARY_GRID_LEVEL,
-  SALARY_ECHEL_OPTIONS,
-  SALARY_CATEGORY_OPTIONS,
-  COMMUN_CALCULATION_METHOD_OPTIONS,
-  COMMUN_CONTRIBUTION_SCHEME_OPTIONS,
-} from 'src/_mock';
+import { useMultiLookups } from 'src/actions/lookups';
+import { COMMUN_CALCULATION_METHOD_OPTIONS } from 'src/_mock';
+import { createDecision, updateDecision } from 'src/actions/decision';
 
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { FieldContainer } from 'src/components/form-validation-view';
 
 export const NewTauxCnasSchema = zod.object({
-  employer: zod.string().min(1, { message: 'Category is required!' }),
-  function: zod.string().min(1, { message: 'Category is required!' }),
-  category: zod.string().min(1, { message: 'Category is required!' }),
-  echelle: zod.string().min(1, { message: 'Category is required!' }),
-  grid_salary_level: zod.string().min(1, { message: 'Category is required!' }),
-  net: zod.string().min(1, { message: 'Category is required!' }),
-  salary_complement: schemaHelper.nullableInput(
+  personal_id: zod.string().min(1, { message: 'Category is required!' }),
+  job_id: zod.string().min(1, { message: 'Category is required!' }),
+  salary_category_id: zod.string().min(1, { message: 'Category is required!' }),
+  rung_id: zod.string().min(1, { message: 'Category is required!' }),
+  salary_scale_level_id: zod.string().min(1, { message: 'Category is required!' }),
+  salary_grid_id: zod.string().min(1, { message: 'Category is required!' }),
+  salary_supplemental: schemaHelper.nullableInput(
     zod
       .number({ coerce: true })
-      .min(1, { message: 'Quantity is required!' })
-      .max(99, { message: 'Quantity must be between 1 and 99' }),
+      .min(0, { message: 'Quantity is required!' })
+      .max(9999999, { message: 'Quantity must be between 1 and 99' }),
     // message for null value
     { message: 'Quantity is required!' }
   ),
-  cotisation: zod.string().min(1, { message: 'Category is required!' }),
-  calculation_method: zod.string().min(1, { message: 'Category is required!' }),
+  rate_id: zod.string().min(1, { message: 'Category is required!' }),
+  payroll_calculation: zod.string().min(1, { message: 'Category is required!' }),
   days_per_month: schemaHelper.nullableInput(
     zod
       .number({ coerce: true })
       .min(1, { message: 'Quantity is required!' })
-      .max(99, { message: 'Quantity must be between 1 and 99' }),
+      .max(30, { message: 'Quantity must be between 1 and 99' }),
     // message for null value
     { message: 'Quantity is required!' }
   ),
@@ -47,27 +42,44 @@ export const NewTauxCnasSchema = zod.object({
     zod
       .number({ coerce: true })
       .min(1, { message: 'Quantity is required!' })
-      .max(99, { message: 'Quantity must be between 1 and 99' }),
+      .max(174, { message: 'Quantity must be between 1 and 99' }),
     // message for null value
     { message: 'Quantity is required!' }
   ),
 
-  observation: zod.string().min(1, { message: 'Category is required!' }),
+  observation: zod.string().optional(),
 });
 
 export function PromotionDemotionNewEditForm({ currentTaux }) {
+  const { dataLookups } = useMultiLookups([
+    { entity: 'personals', url: 'hr/lookups/personals' },
+    { entity: 'jobs', url: 'hr/lookups/jobs' },
+    { entity: 'salaryCategories', url: 'hr/lookups/identification/salary_category' },
+    { entity: 'rungs', url: 'hr/lookups/identification/rung' },
+    { entity: 'salaryScaleLevels', url: 'hr/lookups/identification/salary_scale_level' },
+    { entity: 'salaryGrids', url: 'hr/lookups/salary_grids' },
+    { entity: 'rates', url: 'hr/lookups/rates' },
+  ]);
+  const personals = dataLookups.personals;
+  const jobs = dataLookups.jobs;
+  const salaryCategories = dataLookups.salaryCategories;
+  const rungs = dataLookups.rungs;
+  const salaryScaleLevels = dataLookups.salaryScaleLevels;
+  const salaryGrids = dataLookups.salaryGrids;
+  const rates = dataLookups.rates;
+
   const defaultValues = {
-    employer: '',
-    function: '',
-    category: '',
-    echelle: '',
-    grid_salary_level: '',
-    net: '',
-    salary_complement: 0,
-    cotisation: '',
-    calculation_method: '',
+    personal_id: '',
+    job_id: '',
+    salary_category_id: '',
+    rung_id: '',
+    salary_scale_level_id: '',
+    salary_grid_id: '',
+    salary_supplemental: 0,
+    rate_id: '',
+    payroll_calculation: '',
     days_per_month: 30,
-    hours_per_month: 173,
+    hours_per_month: 173.33,
     observation: '',
   };
 
@@ -84,9 +96,17 @@ export function PromotionDemotionNewEditForm({ currentTaux }) {
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
+    // const updatedData={
+
+    // }
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
+      if (currentTaux) {
+        await updateDecision(currentTaux.id, data);
+      } else {
+        await createDecision(data);
+      }
+      // await new Promise((resolve) => setTimeout(resolve, 500));
+      // reset();
       console.info('DATA', data);
     } catch (error) {
       console.error(error);
@@ -101,78 +121,44 @@ export function PromotionDemotionNewEditForm({ currentTaux }) {
       <Stack spacing={3} sx={{ p: 3 }}>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="employer" label="Employé" size="small">
-              {ACTIF_NAMES.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select>
+            <Field.Lookup name="personal_id" label="Employé" data={personals} />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="function" label="Fonction" size="small">
-              {ACTIF_NAMES.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select>
+            <Field.Lookup name="job_id" label="Fonction" data={jobs} />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="category" label="Catégorie socio-professionnelle" size="small">
-              {SALARY_CATEGORY_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select>
+            <Field.Lookup
+              name="salary_category_id"
+              label="Catégorie socio-professionnelle"
+              data={salaryCategories}
+            />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="echelle" label="Échelons" size="small">
-              {SALARY_ECHEL_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select>
+            <Field.Lookup name="rung_id" label="Échelons" data={rungs} />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="grid_salary_level" label="Niveau de grille salariale" size="small">
-              {SALARY_GRID_LEVEL.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select>
+            <Field.Lookup
+              name="salary_scale_level_id"
+              label="Niveau de grille salariale"
+              data={salaryScaleLevels}
+            />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="net" label="Net à payer" size="small">
-              {SALARY_ECHEL_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select>
+            <Field.Lookup name="salary_grid_id" label="Net à payer" data={salaryGrids} />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <FieldContainer label="Complément Salaire" sx={{ alignItems: 'flex-start' }}>
-              <Field.NumberInput name="salary_complement" />
+              <Field.NumberInput name="salary_supplemental" />
             </FieldContainer>
           </Grid>
         </Grid>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="cotisation" label="Regime de cotisation" size="small">
-              {COMMUN_CONTRIBUTION_SCHEME_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select>
+            <Field.Lookup name="rate_id" label="Regime de cotisation" data={rates} />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select
-              name="calculation_method"
+              name="payroll_calculation"
               label="Méthode de calcul de la paie"
               size="small"
             >

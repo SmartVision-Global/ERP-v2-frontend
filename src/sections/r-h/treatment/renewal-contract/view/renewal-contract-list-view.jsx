@@ -7,14 +7,14 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import { TextField, FormControl, InputAdornment } from '@mui/material';
-import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetProducts } from 'src/actions/product';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useGetContracts } from 'src/actions/new-contract';
 import { ACTIF_NAMES, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
 
 import { toast } from 'src/components/snackbar';
@@ -24,9 +24,11 @@ import { EmptyContent } from 'src/components/empty-content';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
+import { GridActionsClickItem } from 'src/sections/r-h/entries/recovery/view';
+
+import { ValidateContractDialog } from '../validate-contract-dialog';
 import {
   RenderCellId,
-  RenderCellCode,
   RenderCellSite,
   RenderCellEndAt,
   RenderCellStatus,
@@ -97,23 +99,30 @@ const FILTERS_OPTIONS = [
 
 export function RenewalContractListView() {
   const confirmDialog = useBoolean();
+  const confirmDialogValidation = useBoolean();
 
-  const { products, productsLoading } = useGetProducts();
+  const { contracts, contractsLoading } = useGetContracts();
 
-  const [tableData, setTableData] = useState(products);
+  const [tableData, setTableData] = useState(contracts);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
+  const [selectedRow, setSelectedRow] = useState('');
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (products.length) {
-      setTableData(products);
+    if (contracts.length) {
+      setTableData(contracts);
     }
-  }, [products]);
+  }, [contracts]);
   const handleReset = () => {
     setEditedFilters([]);
+  };
+
+  const handleOpenValidateConfirmDialog = (id) => {
+    confirmDialogValidation.onTrue();
+    setSelectedRow(id);
   };
 
   const dataFiltered = tableData;
@@ -149,14 +158,14 @@ export function RenewalContractListView() {
       hideable: false,
       renderCell: (params) => <RenderCellId params={params} href={paths.dashboard.root} />,
     },
-    {
-      field: 'code',
-      headerName: 'Code',
-      flex: 1,
-      minWidth: 100,
-      hideable: false,
-      renderCell: (params) => <RenderCellCode params={params} href={paths.dashboard.root} />,
-    },
+    // {
+    //   field: 'code',
+    //   headerName: 'Code',
+    //   flex: 1,
+    //   minWidth: 100,
+    //   hideable: false,
+    //   renderCell: (params) => <RenderCellCode params={params} href={paths.dashboard.root} />,
+    // },
     {
       field: 'fullname',
       headerName: 'Nom-Prénom',
@@ -213,7 +222,7 @@ export function RenewalContractListView() {
       ),
     },
     {
-      field: 'start_at',
+      field: 'from_date',
       headerName: 'Partir de la date',
       flex: 1,
       minWidth: 160,
@@ -250,9 +259,7 @@ export function RenewalContractListView() {
       headerName: 'Grille Salariale',
       flex: 1,
       minWidth: 250,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellGridSalary params={params} />,
     },
 
@@ -286,9 +293,6 @@ export function RenewalContractListView() {
       headerName: 'Date de création',
       flex: 1,
       minWidth: 150,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
     },
 
@@ -302,29 +306,26 @@ export function RenewalContractListView() {
       sortable: false,
       filterable: false,
       disableColumnMenu: true,
-      getActions: (params) => [
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
-          label="View"
-          // href={paths.dashboard.product.details(params.row.id)}
-          href={paths.dashboard.root}
-        />,
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:pen-bold" />}
-          label="Edit"
-          // href={paths.dashboard.product.edit(params.row.id)}
-          href={paths.dashboard.root}
-        />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-          label="Delete"
-          onClick={() => handleDeleteRow(params.row.id)}
-          sx={{ color: 'error.main' }}
-        />,
-      ],
+      getActions: (params) => {
+        if (params.row.status === '1') {
+          return [
+            <GridActionsClickItem
+              showInMenu
+              icon={<Iconify icon="solar:eye-bold" />}
+              label="Valider"
+              onClick={() => handleOpenValidateConfirmDialog(params.row.id)}
+            />,
+            <GridActionsLinkItem
+              showInMenu
+              icon={<Iconify icon="solar:pen-bold" />}
+              label="Modifier"
+              href={paths.dashboard.rh.treatment.editRenewalContract(params.row.id)}
+            />,
+          ];
+        } else {
+          return [];
+        }
+      },
     },
   ];
 
@@ -420,7 +421,7 @@ export function RenewalContractListView() {
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}
-            loading={productsLoading}
+            loading={contractsLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
@@ -442,7 +443,13 @@ export function RenewalContractListView() {
           />
         </Card>
       </DashboardContent>
-
+      {confirmDialogValidation.value && (
+        <ValidateContractDialog
+          open={confirmDialogValidation.value}
+          onClose={confirmDialogValidation.onFalse}
+          id={selectedRow}
+        />
+      )}
       {renderConfirmDialog()}
     </>
   );
