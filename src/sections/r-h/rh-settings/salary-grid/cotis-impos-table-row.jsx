@@ -157,8 +157,6 @@ export function CotisImposTableRow({
                 value={watchedPercent ?? 0}
                 // onChange={(event, value) => field.onChange(value)}
                 onChange={(event, value) => {
-                  // eslint-disable-next-line no-debugger
-                  debugger;
                   const newPercent = value ?? 0;
                   field.onChange(newPercent); // update percent
                   const calculatedAmount = (newPercent * values.salary) / 100;
@@ -210,8 +208,6 @@ export function CotisImposTableRow({
                 value={watchedAmount ?? 0}
                 // onChange={(event, value) => field.onChange(value)}
                 onChange={(event, value) => {
-                  // eslint-disable-next-line no-debugger
-                  debugger;
                   const newAmount = value ?? 0;
                   field.onChange(newAmount); // update amount
                   const calculatedPercent =

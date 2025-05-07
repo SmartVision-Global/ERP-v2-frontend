@@ -158,8 +158,6 @@ export function SalaryGridNewEditForm({ currentProduct }) {
       ...data.cotis_no_impos_items,
       ...data.no_cotis_no_impos_items,
     ];
-    // eslint-disable-next-line no-debugger
-    debugger;
     const newArray = deductionsCompensationsItems.map((item) => ({
       deduction_compensation_id: item.id,
       percentage_amount: item.percent,

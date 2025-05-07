@@ -102,8 +102,6 @@ export function salaryCalculation(salary, deductionCompensations) {
 
   const netSalary = taxableWages - retenueIRG;
   const netPaySalary = netSalary + sumNoConNoTax;
-  // eslint-disable-next-line no-debugger
-  debugger;
   return {
     postSalary: salaryWithSumContributor?.toFixed(2),
     socialSecurityRetenue: socialSecurityRetenue?.toFixed(2),

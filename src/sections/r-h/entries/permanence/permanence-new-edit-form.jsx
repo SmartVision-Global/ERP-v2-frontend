@@ -68,8 +68,6 @@ export function PermanenceNewEditForm({ currentTaux }) {
       to_date: dayjs(data.to_date).format('YYYY-MM-DD HH:mm:ss'),
     };
     try {
-      // eslint-disable-next-line no-debugger
-      debugger;
       // await new Promise((resolve) => setTimeout(resolve, 500));
       if (currentTaux) {
         await updatePermanency(currentTaux.id, updatedData);

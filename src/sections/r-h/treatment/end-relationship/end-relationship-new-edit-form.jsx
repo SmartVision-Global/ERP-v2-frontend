@@ -17,7 +17,7 @@ import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
 export const NewTauxCnasSchema = zod.object({
-  personal_id: zod.string().min(1, { message: 'Category is required!' }),
+  personal_id: zod.string().min(1, { message: 'Category is required!' }).or(zod.number()),
   service_end_reason: zod.string().min(1, { message: 'Category is required!' }),
   service_end_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
   observation: zod.string().optional(),

@@ -29,7 +29,6 @@ import { GridActionsClickItem } from 'src/sections/r-h/entries/recovery/view';
 import { ValidateEndRelationshipDialog } from '../validate-end-relationship-dialog';
 import {
   RenderCellId,
-  RenderCellCode,
   RenderCellEndAt,
   RenderCellStatus,
   RenderCellNature,
@@ -142,14 +141,14 @@ export function EndRelationshipListView() {
       hideable: false,
       renderCell: (params) => <RenderCellId params={params} href={paths.dashboard.root} />,
     },
-    {
-      field: 'code',
-      headerName: 'Code',
-      flex: 1,
-      minWidth: 100,
-      hideable: false,
-      renderCell: (params) => <RenderCellCode params={params} href={paths.dashboard.root} />,
-    },
+    // {
+    //   field: 'code',
+    //   headerName: 'Code',
+    //   flex: 1,
+    //   minWidth: 100,
+    //   hideable: false,
+    //   renderCell: (params) => <RenderCellCode params={params} href={paths.dashboard.root} />,
+    // },
     {
       field: 'fullname',
       headerName: 'Nom-Prénom',

@@ -36,7 +36,7 @@ export const NewTauxCnasSchema = zod
         .max(9999999, { message: 'Quantity must be between 1 and 99' })
         .optional()
     ),
-    observation: zod.string().optional(),
+    observation: zod.string().optional().nullable(),
     contract_probation: schemaHelper.nullableInput(
       zod.number({ coerce: true }).min(1, { message: 'Veuillez remplir ce champ' }),
       {
@@ -159,6 +159,7 @@ export function RenewalContractNewEditForm({ currentTaux }) {
       console.info('DATA', updatedData);
     } catch (error) {
       console.error(error);
+      toast.error(error?.message || 'Something went wrong');
     }
   });
 

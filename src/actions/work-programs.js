@@ -46,8 +46,7 @@ export function useGetWorkProgram(workProgramId) {
   const url = workProgramId ? [`${endpoints.workPrograms}/${workProgramId}`] : '';
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
-  // eslint-disable-next-line no-debugger
-  debugger;
+
   // const newData = {
   //   ...data?.data,
   //   days: data?.data?.days.map((day) =>

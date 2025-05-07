@@ -143,8 +143,6 @@ export function FonctionsNewEditForm({ currentProduct }) {
   console.log('values', values);
 
   const onSubmit = handleSubmit(async (data) => {
-    // eslint-disable-next-line no-debugger
-    debugger;
     const updatedData = {
       // ...data,
       name: data.name,
