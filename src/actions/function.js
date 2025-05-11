@@ -16,26 +16,34 @@ const ENDPOINT = endpoints.function;
 
 // ----------------------------------------------------------------------
 
-export function useGetJobs() {
-  const url = endpoints.function;
+export function useGetJobs(params) {
+  // const url = endpoints.function;
+  const url = params ? [endpoints.function, { params }] : endpoints.function;
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({
       jobs: data?.data?.records || [],
+      jobsCount: data?.data?.total || 0,
       jobsLoading: isLoading,
       jobsError: error,
       jobsValidating: isValidating,
       jobsEmpty: !isLoading && !isValidating && !data?.data?.records.length,
     }),
-    [data?.data?.records, error, isLoading, isValidating]
+    [data?.data?.records, data?.data?.total, error, isLoading, isValidating]
   );
 
   return memoizedValue;
 }
 
 // ----------------------------------------------------------------------
+export async function getFiltredJobs(params) {
+  const response = await axios.get(`${ENDPOINT}`, {
+    params,
+  });
+  return response;
+}
 
 export function useGetJob(productId) {
   const url = productId ? [`${endpoints.function}/${productId}`] : '';

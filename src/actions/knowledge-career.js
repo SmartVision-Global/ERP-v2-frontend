@@ -16,14 +16,17 @@ const ENDPOINT = endpoints.careerKnowledges;
 
 // ----------------------------------------------------------------------
 
-export function useGetCareerKnowledges() {
-  const url = endpoints.careerKnowledges;
+export function useGetCareerKnowledges(params) {
+  // const url = endpoints.careerKnowledges;
+  const url = params ? [endpoints.careerKnowledges, { params }] : endpoints.careerKnowledges;
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({
       careerKnowledges: data?.data?.records || [],
+      careerKnowledgesCount: data?.data?.total || 0,
+
       careerKnowledgesLoading: isLoading,
       careerKnowledgesError: error,
       careerKnowledgesValidating: isValidating,
@@ -36,6 +39,12 @@ export function useGetCareerKnowledges() {
 }
 
 // ----------------------------------------------------------------------
+export async function getFiltredCareerKnowledges(params) {
+  const response = await axios.get(`${ENDPOINT}`, {
+    params,
+  });
+  return response;
+}
 
 export function useGetCareerKnowledge(personalId) {
   const url = personalId ? [`${endpoints.careerKnowledges}/${personalId}`] : '';

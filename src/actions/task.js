@@ -25,8 +25,7 @@ export function useGetDutiesResponsibilities(params) {
   const memoizedValue = useMemo(
     () => ({
       dutiesResponsibilities: data?.data?.records || [],
-      dutiesResponsibilitiesCount: data?.data?.total,
-
+      dutiesResponsibilitiesCount: data?.data?.total || 0,
       dutiesResponsibilitiesLoading: isLoading,
       dutiesResponsibilitiesError: error,
       dutiesResponsibilitiesValidating: isValidating,

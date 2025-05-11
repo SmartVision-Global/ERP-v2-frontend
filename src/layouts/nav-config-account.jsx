@@ -25,12 +25,12 @@ export const _account = [
       </SvgIcon>
     ),
   },
-  {
-    label: 'Tasks',
-    href: '#',
-    icon: <Iconify icon="solar:notes-bold-duotone" />,
-    info: '3',
-  },
+  // {
+  //   label: 'Tasks',
+  //   href: '#',
+  //   icon: <Iconify icon="solar:notes-bold-duotone" />,
+  //   info: '3',
+  // },
   // {
   //   label: 'Subscription',
   //   href: '#',
@@ -55,5 +55,5 @@ export const _account = [
   //   ),
   // },
   // { label: 'Security', href: '#', icon: <Iconify icon="solar:shield-keyhole-bold-duotone" /> },
-  { label: 'Parametres', href: '#', icon: <Iconify icon="solar:settings-bold-duotone" /> },
+  // { label: 'Parametres', href: '#', icon: <Iconify icon="solar:settings-bold-duotone" /> },
 ];

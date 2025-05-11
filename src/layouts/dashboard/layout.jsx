@@ -6,8 +6,6 @@ import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 import { iconButtonClasses } from '@mui/material/IconButton';
 
-import { _contacts, _notifications } from 'src/_mock';
-
 import { Logo } from 'src/components/logo';
 import { useSettingsContext } from 'src/components/settings';
 
@@ -19,17 +17,12 @@ import { NavHorizontal } from './nav-horizontal';
 import { _account } from '../nav-config-account';
 import { MainSection } from '../core/main-section';
 import { Searchbar } from '../components/searchbar';
-import { _workspaces } from '../nav-config-workspace';
 import { MenuButton } from '../components/menu-button';
 import { HeaderSection } from '../core/header-section';
 import { LayoutSection } from '../core/layout-section';
 import { AccountDrawer } from '../components/account-drawer';
-import { SettingsButton } from '../components/settings-button';
-import { ContactsPopover } from '../components/contacts-popover';
-import { WorkspacesPopover } from '../components/workspaces-popover';
 import { navData as dashboardNavData } from '../nav-config-dashboard';
 import { dashboardLayoutVars, dashboardNavColorVars } from './css-vars';
-import { NotificationsDrawer } from '../components/notifications-drawer';
 
 // ----------------------------------------------------------------------
 
@@ -97,10 +90,10 @@ export function DashboardLayout({ sx, cssVars, children, slotProps, layoutQuery 
           )}
 
           {/** @slot Workspace popover */}
-          <WorkspacesPopover
+          {/* <WorkspacesPopover
             data={_workspaces}
             sx={{ color: 'var(--layout-nav-text-primary-color)' }}
-          />
+          /> */}
         </>
       ),
       rightArea: (
@@ -120,13 +113,13 @@ export function DashboardLayout({ sx, cssVars, children, slotProps, layoutQuery 
           /> */}
 
           {/** @slot Notifications popover */}
-          <NotificationsDrawer data={_notifications} />
+          {/* <NotificationsDrawer data={_notifications} /> */}
 
           {/** @slot Contacts popover */}
-          <ContactsPopover data={_contacts} />
+          {/* <ContactsPopover data={_contacts} /> */}
 
           {/** @slot Settings button */}
-          <SettingsButton />
+          {/* <SettingsButton /> */}
 
           {/** @slot Account drawer */}
           <AccountDrawer data={_account} />

@@ -1,6 +1,6 @@
 export const COMMUN_OUI_NON_OPTIONS = [
-  { label: 'Oui', value: 'oui' },
-  { label: 'Non', value: 'non' },
+  { label: 'Oui', value: '1' },
+  { label: 'Non', value: '0' },
 ];
 
 export const COMMUN_SERVICE_OPTIONS = [

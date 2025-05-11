@@ -1,5 +1,5 @@
 import { useBoolean } from 'minimal-shared/hooks';
-import { useState, useEffect, forwardRef } from 'react';
+import { useState, useEffect, forwardRef, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -13,8 +13,9 @@ import { TextField, FormControl, InputAdornment } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
+import { CONFIG } from 'src/global-config';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { archiveJob, useGetJobs } from 'src/actions/function';
+import { archiveJob, useGetJobs, getFiltredJobs } from 'src/actions/function';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -44,7 +45,7 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 const FILTERS_OPTIONS = [
   {
-    id: 'code',
+    id: 'job_code',
     type: 'input',
     label: 'Code',
     cols: 3,
@@ -92,11 +93,17 @@ const FILTERS_OPTIONS = [
 
   { id: 'endDate', type: 'date', label: 'Date de début' },
 ];
+const PAGE_SIZE = CONFIG.pagination.pageSize;
 
 export function FonctionsListView() {
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: PAGE_SIZE,
+  });
   const confirmDialog = useBoolean();
 
-  const { jobs, jobsLoading } = useGetJobs();
+  const { jobs, jobsLoading, jobsCount } = useGetJobs({ limit: 2, offset: 0 });
+  const [rowCount, setRowCount] = useState(jobsCount);
 
   const [tableData, setTableData] = useState(jobs);
   const [selectedRowId, setSelectedRowId] = useState('');
@@ -109,18 +116,61 @@ export function FonctionsListView() {
   useEffect(() => {
     if (jobs.length) {
       setTableData(jobs);
+      setRowCount(jobsCount);
     }
-  }, [jobs]);
-  const handleReset = () => {
+  }, [jobs, jobsCount]);
+
+  const handleReset = useCallback(async () => {
     setEditedFilters([]);
+    setPaginationModel({
+      page: 0,
+      pageSize: PAGE_SIZE,
+    });
+    const response = await getFiltredJobs({
+      limit: PAGE_SIZE,
+      offset: 0,
+    });
+    setTableData(response.data?.data?.records);
+    setRowCount(response.data?.data?.total);
+  }, []);
+
+  const handleFilter = useCallback(
+    async (data) => {
+      try {
+        const response = await getFiltredJobs(data);
+        setTableData(response.data?.data?.records);
+        setRowCount(response.data?.data?.total);
+      } catch (error) {
+        console.log('Error in search filters tasks', error);
+      }
+    },
+
+    []
+  );
+  const handlePaginationModelChange = async (newModel) => {
+    try {
+      const newEditedInput = editedFilters.filter((item) => item.value !== '');
+      const result = newEditedInput.reduce((acc, item) => {
+        acc[item.field] = item.value;
+        return acc;
+      }, {});
+      const newData = {
+        ...result,
+        limit: newModel.pageSize,
+        offset: newModel.page,
+      };
+      const response = await getFiltredJobs(newData);
+      setTableData(response.data?.data?.records);
+      setPaginationModel(newModel);
+    } catch (error) {
+      console.log('error in pagination search request', error);
+    }
   };
 
-  const dataFiltered = tableData;
-
-  const handleOpenConfirmArchiveRow = (id) => {
-    setSelectedRowId(id);
-    confirmDialog.onTrue();
-  };
+  // const handleOpenConfirmArchiveRow = (id) => {
+  //   setSelectedRowId(id);
+  //   confirmDialog.onTrue();
+  // };
 
   // const handleDeleteRow = useCallback(
   //   (id) => {
@@ -298,6 +348,9 @@ export function FonctionsListView() {
             filters={editedFilters}
             setFilters={setEditedFilters}
             onReset={handleReset}
+            handleFilter={handleFilter}
+            setPaginationModel={setPaginationModel}
+            paginationModel={paginationModel}
           />
           <Box paddingX={4} paddingY={2} sx={{}}>
             <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
@@ -320,16 +373,17 @@ export function FonctionsListView() {
             </FormControl>
           </Box>
           <DataGrid
-            // checkboxSelection
-            disableColumnMenu
             disableRowSelectionOnClick
-            rows={dataFiltered}
+            disableColumnMenu
+            rows={tableData}
+            rowCount={rowCount}
             columns={columns}
             loading={jobsLoading}
             getRowHeight={() => 'auto'}
-            pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
-            initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-            // onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
+            paginationModel={paginationModel}
+            paginationMode="server"
+            onPaginationModelChange={(model) => handlePaginationModelChange(model)}
+            pageSizeOptions={[2, 10, 20, { value: -1, label: 'All' }]}
             columnVisibilityModel={columnVisibilityModel}
             onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
             slots={{

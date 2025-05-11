@@ -1,4 +1,4 @@
-import { useState, useEffect, forwardRef } from 'react';
+import { useState, useEffect, forwardRef, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -12,10 +12,11 @@ import { TextField, FormControl, InputAdornment } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
+import { CONFIG } from 'src/global-config';
 import { CAREER_TYPE_OPTIONS } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { COMMUN_OUI_NON_OPTIONS } from 'src/_mock/_commun';
-import { useGetCareerKnowledges } from 'src/actions/knowledge-career';
+import { useGetCareerKnowledges, getFiltredCareerKnowledges } from 'src/actions/knowledge-career';
 
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
@@ -50,7 +51,7 @@ const FILTERS_OPTIONS = [
     width: 1,
   },
   {
-    id: 'speciality',
+    id: 'specialty_exist',
     type: 'select',
     options: COMMUN_OUI_NON_OPTIONS,
     label: 'A une spécialité',
@@ -58,7 +59,7 @@ const FILTERS_OPTIONS = [
     width: 1,
   },
   {
-    id: 'diploma',
+    id: 'diploma_required',
     type: 'select',
     options: COMMUN_OUI_NON_OPTIONS,
     label: 'A un Diplôme',
@@ -67,8 +68,16 @@ const FILTERS_OPTIONS = [
   },
 ];
 
+const PAGE_SIZE = CONFIG.pagination.pageSize;
+
 export function CareerListView() {
-  const { careerKnowledges, careerKnowledgesLoading } = useGetCareerKnowledges();
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: PAGE_SIZE,
+  });
+  const { careerKnowledges, careerKnowledgesLoading, careerKnowledgesCount } =
+    useGetCareerKnowledges({ limit: 2, offset: 0 });
+  const [rowCount, setRowCount] = useState(careerKnowledgesCount);
 
   const [tableData, setTableData] = useState(careerKnowledges);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
@@ -79,13 +88,55 @@ export function CareerListView() {
   useEffect(() => {
     if (careerKnowledges.length) {
       setTableData(careerKnowledges);
+      setRowCount(careerKnowledgesCount);
     }
-  }, [careerKnowledges]);
-  const handleReset = () => {
+  }, [careerKnowledges, careerKnowledgesCount]);
+  const handleReset = useCallback(async () => {
     setEditedFilters([]);
-  };
+    setPaginationModel({
+      page: 0,
+      pageSize: PAGE_SIZE,
+    });
+    const response = await getFiltredCareerKnowledges({
+      limit: PAGE_SIZE,
+      offset: 0,
+    });
+    setTableData(response.data?.data?.records);
+    setRowCount(response.data?.data?.total);
+  }, []);
 
-  const dataFiltered = tableData;
+  const handleFilter = useCallback(
+    async (data) => {
+      try {
+        const response = await getFiltredCareerKnowledges(data);
+        setTableData(response.data?.data?.records);
+        setRowCount(response.data?.data?.total);
+      } catch (error) {
+        console.log('Error in search filters tasks', error);
+      }
+    },
+
+    []
+  );
+  const handlePaginationModelChange = async (newModel) => {
+    try {
+      const newEditedInput = editedFilters.filter((item) => item.value !== '');
+      const result = newEditedInput.reduce((acc, item) => {
+        acc[item.field] = item.value;
+        return acc;
+      }, {});
+      const newData = {
+        ...result,
+        limit: newModel.pageSize,
+        offset: newModel.page,
+      };
+      const response = await getFiltredCareerKnowledges(newData);
+      setTableData(response.data?.data?.records);
+      setPaginationModel(newModel);
+    } catch (error) {
+      console.log('error in pagination search request', error);
+    }
+  };
 
   const columns = [
     { field: 'category', headerName: 'Category', filterable: false },
@@ -211,6 +262,9 @@ export function CareerListView() {
           filters={editedFilters}
           setFilters={setEditedFilters}
           onReset={handleReset}
+          handleFilter={handleFilter}
+          setPaginationModel={setPaginationModel}
+          paginationModel={paginationModel}
         />
         <Box paddingX={4} paddingY={2} sx={{}}>
           <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
@@ -231,19 +285,20 @@ export function CareerListView() {
           </FormControl>
         </Box>
         <DataGrid
-          checkboxSelection
-          disableColumnMenu
           disableRowSelectionOnClick
-          rows={dataFiltered}
+          disableColumnMenu
+          rows={tableData}
+          rowCount={rowCount}
           columns={columns}
           loading={careerKnowledgesLoading}
           getRowHeight={() => 'auto'}
-          pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
-          initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
+          paginationModel={paginationModel}
+          paginationMode="server"
+          onPaginationModelChange={(model) => handlePaginationModelChange(model)}
+          pageSizeOptions={[2, 10, 20, { value: -1, label: 'All' }]}
           columnVisibilityModel={columnVisibilityModel}
           onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
           slots={{
-            // toolbar: CustomToolbarCallback,
             noRowsOverlay: () => <EmptyContent />,
             noResultsOverlay: () => <EmptyContent title="No results found" />,
           }}

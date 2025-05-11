@@ -61,6 +61,7 @@ export function TaskRespListView() {
 
   const [tableData, setTableData] = useState(dutiesResponsibilities);
   const [rowCount, setRowCount] = useState(dutiesResponsibilitiesCount);
+  console.log('rowCount', rowCount);
 
   useEffect(() => {
     if (dutiesResponsibilities.length) {

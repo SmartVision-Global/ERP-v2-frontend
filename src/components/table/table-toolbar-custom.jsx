@@ -110,6 +110,31 @@ export function TableToolbarCustom({
               )}
               {item.type === 'select' && (
                 <>
+                  {/* <InputLabel htmlFor={item.id}>{item.label}</InputLabel> */}
+
+                  <TextField
+                    size="small"
+                    name={`${item.id}`}
+                    value={filters.find((inputItem) => inputItem.field === item.id)?.value || ''}
+                    onChange={(e) => getInput(e, item.type)}
+                    select
+                    fullWidth
+                    label={item.label}
+                    // error={!!error}
+                    // helperText={error?.message ?? helperText}
+                    // slotProps={merge(baseSlotProps, slotProps)}
+                    // {...other}
+                  >
+                    {item.options.map((option) => (
+                      <MenuItem key={`${option.value}`} value={`${option.value}`}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </>
+              )}
+              {item.type === 'multi-select' && (
+                <>
                   <InputLabel htmlFor={item.id}>{item.label}</InputLabel>
 
                   <Select
@@ -127,25 +152,11 @@ export function TableToolbarCustom({
                         <Checkbox
                           disableRipple
                           size="small"
-                          // checked={item.options.includes(option.value)}
                           checked={(selectedOptions?.[item.id] || []).includes(`${option.value}`)}
-                          // checked
                         />
                         {item?.serverData ? option.text : option.label}
                       </MenuItem>
                     ))}
-                    {/* <MenuItem
-                      sx={[
-                        (theme) => ({
-                          justifyContent: 'center',
-                          fontWeight: theme.typography.button,
-                          bgcolor: varAlpha(theme.vars.palette.grey['500Channel'], 0.08),
-                          border: `solid 1px ${varAlpha(theme.vars.palette.grey['500Channel'], 0.16)}`,
-                        }),
-                      ]}
-                    >
-                      Apply
-                    </MenuItem> */}
                   </Select>
                 </>
               )}

@@ -2,7 +2,6 @@ import { paths } from 'src/routes/paths';
 
 import { CONFIG } from 'src/global-config';
 
-import { Label } from 'src/components/label';
 import { SvgColor } from 'src/components/svg-color';
 
 // ----------------------------------------------------------------------
@@ -51,7 +50,7 @@ export const navData = [
         title: 'Dashboard',
         path: paths.dashboard.root,
         icon: ICONS.dashboard,
-        info: <Label>v{CONFIG.appVersion}</Label>,
+        // info: <Label>v{CONFIG.appVersion}</Label>,
       },
       // { title: 'Two', path: paths.dashboard.two, icon: ICONS.ecommerce },
       // { title: 'Three', path: paths.dashboard.three, icon: ICONS.analytics },
@@ -77,8 +76,8 @@ export const navData = [
             children: [
               { title: 'Actif', path: paths.dashboard.rh.personal.root },
               { title: 'Documents', path: paths.dashboard.rh.personal.documents },
-              { title: 'Bloque', path: paths.dashboard.rh.personal.bloc },
-              { title: 'DAS', path: paths.dashboard.rh.personal.das },
+              // { title: 'Bloque', path: paths.dashboard.rh.personal.bloc },
+              // { title: 'DAS', path: paths.dashboard.rh.personal.das },
             ],
           },
           // Parametrage RH
@@ -107,19 +106,19 @@ export const navData = [
             ],
           },
           // Demandes
-          {
-            title: 'Les Demandes',
-            // path: paths.dashboard.rh.demandes.root,
-            path: '/dashboard/humain-ressource/demandes',
+          // {
+          //   title: 'Les Demandes',
+          //   // path: paths.dashboard.rh.demandes.root,
+          //   path: '/dashboard/humain-ressource/demandes',
 
-            children: [
-              { title: 'Demande de sortie', path: paths.dashboard.rh.demandes.sortie },
-              { title: 'Demande de conge', path: paths.dashboard.rh.demandes.conge },
-              { title: 'Demande de recuperation', path: paths.dashboard.rh.demandes.recuperation },
-              { title: 'Demande de pret', path: paths.dashboard.rh.demandes.pret },
-              { title: "Demande d'aide", path: paths.dashboard.rh.demandes.aide },
-            ],
-          },
+          //   children: [
+          //     { title: 'Demande de sortie', path: paths.dashboard.rh.demandes.sortie },
+          //     { title: 'Demande de conge', path: paths.dashboard.rh.demandes.conge },
+          //     { title: 'Demande de recuperation', path: paths.dashboard.rh.demandes.recuperation },
+          //     { title: 'Demande de pret', path: paths.dashboard.rh.demandes.pret },
+          //     { title: "Demande d'aide", path: paths.dashboard.rh.demandes.aide },
+          //   ],
+          // },
           // HSE
           // {
           //   title: 'HSE',
