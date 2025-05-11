@@ -73,6 +73,8 @@ export function TableToolbarCustom({
   );
 
   const onSubmitFilters = () => {
+    // eslint-disable-next-line no-debugger
+    debugger;
     const newEditedInput = filters.filter((item) => item.value !== '');
     const result = newEditedInput.reduce((acc, item) => {
       acc[item.field] = item.value;
