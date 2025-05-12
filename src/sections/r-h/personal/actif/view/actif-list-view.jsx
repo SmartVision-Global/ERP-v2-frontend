@@ -28,7 +28,6 @@ import {
   PRODUCT_PAYMANT_OPTIONS,
   PRODUCT_CONTRACT_OPTIONS,
   PRODUCT_TEAM_TYPE_OPTIONS,
-  PRODUCT_WORK_DEPARTEMENT_OPTIONS,
 } from 'src/_mock';
 
 import { Iconify } from 'src/components/iconify';
@@ -75,7 +74,7 @@ import {
   RenderCellContractEndAt,
   RenderCellFamilySituation,
   RenderCellContractStartAt,
-} from '../product-table-row';
+} from '../actif-table-row';
 
 // ----------------------------------------------------------------------
 
@@ -118,13 +117,13 @@ export function ActifListView() {
 
   const FILTERS_OPTIONS = [
     // { id: 'id', type: 'input', label: 'ID', inputType: 'number' },
-    {
-      id: 'full_name',
-      type: 'select',
-      options: personalsLookup,
-      label: 'Nom-Prénom',
-      serverData: true,
-    },
+    // {
+    //   id: 'full_name',
+    //   type: 'select',
+    //   options: personalsLookup,
+    //   label: 'Nom-Prénom',
+    //   serverData: true,
+    // },
     { id: 'gender', type: 'select', options: COMMUN_SEXE_OPTIONS, label: 'Sexe' },
     { id: 'status', type: 'select', options: PRODUCT_STATUS_OPTIONS, label: 'Etat' },
     {
@@ -142,12 +141,12 @@ export function ActifListView() {
       options: PRODUCT_CONTRACT_OPTIONS,
       label: 'Type de contrat',
     },
-    {
-      id: 'workDepartment',
-      type: 'select',
-      options: PRODUCT_WORK_DEPARTEMENT_OPTIONS,
-      label: 'Lieu de travail',
-    },
+    // {
+    //   id: 'workDepartment',
+    //   type: 'select',
+    //   options: PRODUCT_WORK_DEPARTEMENT_OPTIONS,
+    //   label: 'Lieu de travail',
+    // },
     {
       id: 'departement',
       type: 'select',

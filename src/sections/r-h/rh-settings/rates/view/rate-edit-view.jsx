@@ -4,24 +4,25 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { ActifNewEditForm } from '../actif-new-edit-form';
+import { RateNewEditForm } from '../rate-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-export function PersonalCreateView() {
+export function RateEditView({ cnasRate }) {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Ajouter personnel"
+        heading="Edit"
+        backHref={paths.dashboard.rh.rhSettings.cnasRate}
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Personnels', href: paths.dashboard.rh.personal.root },
-          { name: 'Ajouter personnel' },
+          { name: 'Taux CNAS', href: paths.dashboard.rh.rhSettings.cnasRate },
+          { name: cnasRate?.name },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <ActifNewEditForm />
+      {cnasRate && <RateNewEditForm currentTaux={cnasRate} />}
     </DashboardContent>
   );
 }

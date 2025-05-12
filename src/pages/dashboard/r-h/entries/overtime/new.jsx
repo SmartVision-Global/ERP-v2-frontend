@@ -4,8 +4,6 @@ import { CONFIG } from 'src/global-config';
 
 import { OvertimeCreateView } from 'src/sections/r-h/entries/overtime/view';
 
-// import { PersonnelCreateView } from 'src/sections/r-h/personal/actif/view';
-
 // ----------------------------------------------------------------------
 
 const metadata = { title: `Ajouter Heures supplimentaires | Dashboard - ${CONFIG.appName}` };

@@ -22,7 +22,7 @@ import { EmptyContent } from 'src/components/empty-content';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { RenderCellStatus } from 'src/sections/r-h/fonction/fonctions/fonctions-table-row';
+import { RenderCellStatus } from 'src/sections/r-h/function/jobs/job-table-row';
 
 import {
   RenderCellId,

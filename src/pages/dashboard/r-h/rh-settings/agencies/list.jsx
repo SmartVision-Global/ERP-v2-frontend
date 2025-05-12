@@ -2,11 +2,11 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
-import { CareerListView } from 'src/sections/r-h/function/career-path/view';
+import { AgenciesListView } from 'src/sections/r-h/rh-settings/agencies/view';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Tâches et responsabilités | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `Agencies list | Dashboard - ${CONFIG.appName}` };
 
 export default function Page() {
   return (
@@ -15,7 +15,7 @@ export default function Page() {
         <title> {metadata.title}</title>
       </Helmet>
 
-      <CareerListView />
+      <AgenciesListView />
     </>
   );
 }

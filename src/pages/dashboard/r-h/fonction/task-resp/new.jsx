@@ -2,9 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
-import { TaskCreateView } from 'src/sections/r-h/fonction/task-responsabilities/view';
-
-// import { PersonnelCreateView } from 'src/sections/r-h/personal/actif/view';
+import { TaskCreateView } from 'src/sections/r-h/function/task-responsabilities/view';
 
 // ----------------------------------------------------------------------
 

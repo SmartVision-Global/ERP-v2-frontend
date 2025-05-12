@@ -13,9 +13,9 @@ import { TextField, FormControl, InputAdornment } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { MONTHS } from 'src/_mock';
-import { useGetProducts } from 'src/actions/product';
+import { useGetRates } from 'src/actions/cnas-rate';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { PRODUCT_STOCK_OPTIONS, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -25,22 +25,15 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import {
-  RenderCellAbs,
-  RenderCellIrg,
-  RenderCellNet,
-  RenderCellYear,
-  RenderCellMonth,
-  RenderCellCompany,
-  RenderCellOverdays,
-  RenderCellOvertime,
-  RenderCellPersonal,
-  RenderCellPrimeCotis,
-  RenderCellBaseSalary,
-  RenderCellCotisSalary,
-  RenderCellImposSalary,
-  RenderCellPrimeNonCotis,
-  RenderCellPositionSalary,
-} from '../calculation-table-row';
+  RenderCellId,
+  RenderCellType,
+  RenderCellCode,
+  RenderCellFnpos,
+  RenderCellCreatedAt,
+  RenderCellDesignation,
+  RenderCellEmployerRate,
+  RenderCellEmployeeRate,
+} from '../rate-table-row';
 
 // ----------------------------------------------------------------------
 
@@ -57,28 +50,51 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 const FILTERS_OPTIONS = [
   {
-    id: 'month',
+    id: 'designation',
+    type: 'input',
+    label: 'Designation',
+    cols: 12,
+    width: 0.24,
+  },
+  {
+    id: 'status',
     type: 'select',
-    options: MONTHS,
-    label: 'Mois',
+    options: DOCUMENT_STATUS_OPTIONS,
+    label: 'Etat',
     cols: 3,
     width: 1,
   },
   {
-    id: 'year',
-    type: 'input',
-    label: 'Année',
+    id: 'valideur',
+    type: 'select',
+    options: PRODUCT_STOCK_OPTIONS,
+    label: 'Valideur',
+    cols: 3,
+    width: 1,
+  },
+
+  {
+    id: 'start_date',
+    type: 'date',
+    label: 'Date début de création',
+    cols: 3,
+    width: 1,
+  },
+  {
+    id: 'end_date',
+    type: 'date',
+    label: 'Date fin de création',
     cols: 3,
     width: 1,
   },
 ];
 
-export function CalculationListView() {
+export function RateListView() {
   const confirmDialog = useBoolean();
 
-  const { products, productsLoading } = useGetProducts();
+  const { rates, ratesLoading } = useGetRates();
 
-  const [tableData, setTableData] = useState(products);
+  const [tableData, setTableData] = useState(rates);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
@@ -86,10 +102,10 @@ export function CalculationListView() {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (products.length) {
-      setTableData(products);
+    if (rates.length) {
+      setTableData(rates);
     }
-  }, [products]);
+  }, [rates]);
   const handleReset = () => {
     setEditedFilters([]);
   };
@@ -117,147 +133,133 @@ export function CalculationListView() {
 
   const columns = [
     { field: 'category', headerName: 'Category', filterable: false },
-    // {
-    //   field: 'id',
-    //   headerName: 'ID',
-    //   flex: 1,
-    //   minWidth: 70,
-    //   hideable: false,
-    //   renderCell: (params) => <RenderCellId params={params} href={paths.dashboard.root} />,
-    // },
     {
-      field: 'company',
-      headerName: 'Societé',
+      field: 'id',
+      headerName: 'ID',
+      //   flex: 0.5,
       flex: 1,
-      minWidth: 260,
+
+      minWidth: 100,
       hideable: false,
-      renderCell: (params) => <RenderCellCompany params={params} href={paths.dashboard.root} />,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellId params={params} href={paths.dashboard.root} />
+      ),
     },
     {
-      field: 'month',
-      headerName: 'Mois',
+      field: 'type',
+      headerName: 'Type',
       flex: 1,
       minWidth: 160,
       hideable: false,
-      renderCell: (params) => <RenderCellMonth params={params} href={paths.dashboard.root} />,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellType params={params} href={paths.dashboard.root} />
+      ),
     },
     {
-      field: 'year',
-      headerName: 'Année',
+      field: 'code',
+      headerName: 'Code',
       flex: 1,
       minWidth: 160,
       type: 'singleSelect',
       editable: true,
       valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellYear params={params} />,
+      renderCell: (params) => <RenderCellCode params={params} />,
     },
-
     {
-      field: 'personnels',
-      headerName: 'personnels',
+      field: 'lib',
+      headerName: 'Libelle',
+      //   flex: 0.5,
+      flex: 1,
+      minWidth: 250,
+      hideable: false,
+      renderCell: (params) => (
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellDesignation params={params} href={paths.dashboard.root} />
+      ),
+    },
+    {
+      field: 'employer_rate',
+      headerName: 'Taux Employeur',
       //   flex: 0.5,
       flex: 1,
       minWidth: 100,
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellPersonal params={params} href={paths.dashboard.root} />
+        <RenderCellEmployerRate params={params} href={paths.dashboard.root} />
       ),
     },
     {
-      field: 'abs',
-      headerName: 'Absences',
+      field: 'employee_rate',
+      headerName: 'Taux Salarié',
       //   flex: 0.5,
-      flex: 1,
-      minWidth: 100,
-      hideable: false,
-      renderCell: (params) => <RenderCellAbs params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'overdays',
-      headerName: 'Jours supplémentaires',
-      //   flex: 0.5,
-      flex: 1,
-      minWidth: 100,
-      hideable: false,
-      renderCell: (params) => <RenderCellOverdays params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'overtime',
-      headerName: 'Heures supplémentaires',
-      //   flex: 0.5,
-      flex: 1,
-      minWidth: 100,
-      hideable: false,
-      renderCell: (params) => <RenderCellOvertime params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'prime_cotis',
-      headerName: 'Primes Cotisable',
-      flex: 1,
-      minWidth: 100,
-      hideable: false,
-      renderCell: (params) => <RenderCellPrimeCotis params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'prime_non_cotis',
-      headerName: 'Primes Non Cotisable',
       flex: 1,
       minWidth: 100,
       hideable: false,
       renderCell: (params) => (
-        <RenderCellPrimeNonCotis params={params} href={paths.dashboard.root} />
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellEmployeeRate params={params} href={paths.dashboard.root} />
       ),
     },
     {
-      field: 'base_salary',
-      headerName: 'Salaire de base',
-      flex: 1,
-      minWidth: 100,
-      hideable: false,
-      renderCell: (params) => <RenderCellBaseSalary params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'cotis_salary',
-      headerName: 'Salaire Cotisable',
-      flex: 1,
-      minWidth: 100,
-      hideable: false,
-      renderCell: (params) => <RenderCellCotisSalary params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'position_salary',
-      headerName: 'Salaire de Poste',
+      field: 'fnpos',
+      headerName: 'FNPOS',
+      //   flex: 0.5,
       flex: 1,
       minWidth: 100,
       hideable: false,
       renderCell: (params) => (
-        <RenderCellPositionSalary params={params} href={paths.dashboard.root} />
+        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+        <RenderCellFnpos params={params} href={paths.dashboard.root} />
       ),
     },
+
     {
-      field: 'impos_salary',
-      headerName: 'Salaire Imposable',
+      field: 'createdAt',
+      headerName: 'Date de création',
       flex: 1,
-      minWidth: 100,
-      hideable: false,
-      renderCell: (params) => <RenderCellImposSalary params={params} href={paths.dashboard.root} />,
+      minWidth: 150,
+      type: 'singleSelect',
+      editable: true,
+      valueOptions: SEX_OPTIONS,
+      renderCell: (params) => <RenderCellCreatedAt params={params} />,
     },
+
     {
-      field: 'irg',
-      headerName: 'Retenue IRG',
-      flex: 1,
-      minWidth: 100,
-      hideable: false,
-      renderCell: (params) => <RenderCellIrg params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'net',
-      headerName: 'Salaire Net',
-      flex: 1,
-      minWidth: 100,
-      hideable: false,
-      renderCell: (params) => <RenderCellNet params={params} href={paths.dashboard.root} />,
+      type: 'actions',
+      field: 'actions',
+      headerName: ' ',
+      align: 'right',
+      headerAlign: 'right',
+      width: 80,
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      getActions: (params) => [
+        // <GridActionsLinkItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:eye-bold" />}
+        //   label="View"
+        //   // href={paths.dashboard.product.details(params.row.id)}
+        //   href={paths.dashboard.root}
+        // />,
+        <GridActionsLinkItem
+          showInMenu
+          icon={<Iconify icon="solar:pen-bold" />}
+          label="Modifier"
+          // href={paths.dashboard.product.edit(params.row.id)}
+          href={paths.dashboard.rh.rhSettings.editCnasRate(params.row.id)}
+        />,
+        // <GridActionsCellItem
+        //   showInMenu
+        //   icon={<Iconify icon="solar:trash-bin-trash-bold" />}
+        //   label="Delete"
+        //   onClick={() => handleDeleteRow(params.row.id)}
+        //   sx={{ color: 'error.main' }}
+        // />,
+      ],
     },
   ];
 
@@ -295,16 +297,16 @@ export function CalculationListView() {
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <CustomBreadcrumbs
-          heading="Calcul de la paie"
+          heading="Taux CNAS"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Ressources humaine', href: paths.dashboard.root },
-            { name: 'Calcul de la paie' },
+            { name: 'Taux CNAS' },
           ]}
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.rh.payrollManagement.newCalculation}
+              href={paths.dashboard.rh.rhSettings.newCnasRate}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
@@ -355,11 +357,11 @@ export function CalculationListView() {
           </Box>
           <DataGrid
             checkboxSelection
-            disableRowSelectionOnClick
             disableColumnMenu
+            disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}
-            loading={productsLoading}
+            loading={ratesLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}

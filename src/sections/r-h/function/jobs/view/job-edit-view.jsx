@@ -4,24 +4,25 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { ActifNewEditForm } from '../actif-new-edit-form';
+import { JobNewEditForm } from '../job-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-export function PersonalCreateView() {
+export function JobEditView({ fonction }) {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Ajouter personnel"
+        heading="Edit"
+        backHref={paths.dashboard.rh.personal.root}
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Personnels', href: paths.dashboard.rh.personal.root },
-          { name: 'Ajouter personnel' },
+          { name: 'Fonctions', href: paths.dashboard.rh.fonction.fonctions },
+          { name: fonction?.name },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <ActifNewEditForm />
+      {fonction && <JobNewEditForm currentProduct={fonction} />}
     </DashboardContent>
   );
 }

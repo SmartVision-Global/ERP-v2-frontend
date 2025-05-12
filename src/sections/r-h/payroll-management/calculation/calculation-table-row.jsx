@@ -24,7 +24,7 @@ export function RenderCellCompany({ params }) {
   return <Typography variant="body2">SARL EL DIOUANE IMPORT EXPORT ( Alger )</Typography>;
 }
 
-export function RenderCellPersonnel({ params }) {
+export function RenderCellPersonal({ params }) {
   return <Typography variant="body2">4</Typography>;
 }
 

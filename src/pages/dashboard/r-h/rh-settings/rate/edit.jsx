@@ -3,18 +3,18 @@ import { Helmet } from 'react-helmet-async';
 import { useParams } from 'src/routes/hooks';
 
 import { CONFIG } from 'src/global-config';
-import { useGetDutyResponsibility } from 'src/actions/task';
+import { useGetRate } from 'src/actions/cnas-rate';
 
-import { TaskEditView } from 'src/sections/r-h/function/task-responsabilities/view';
+import { RateEditView } from 'src/sections/r-h/rh-settings/rates/view';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Modifier tâches et responsabilités | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `Modifier Taux CNAS | Dashboard - ${CONFIG.appName}` };
 
 export default function Page() {
   const { id = '' } = useParams();
 
-  const { dutyResponsibility } = useGetDutyResponsibility(id);
+  const { rate } = useGetRate(id);
 
   return (
     <>
@@ -22,7 +22,7 @@ export default function Page() {
         <title> {metadata.title}</title>
       </Helmet>
 
-      <TaskEditView task={dutyResponsibility} />
+      <RateEditView cnasRate={rate} />
     </>
   );
 }
