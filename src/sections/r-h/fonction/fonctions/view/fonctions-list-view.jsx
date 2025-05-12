@@ -89,9 +89,9 @@ const FILTERS_OPTIONS = [
   //   cols: 3,
   //   width: 1,
   // },
-  { id: 'startDate', type: 'date', label: 'Date de début' },
+  { id: 'created_at', type: 'date-range', label: 'Date de création', cols: 3 },
 
-  { id: 'endDate', type: 'date', label: 'Date de début' },
+  // { id: 'endDate', type: 'date', label: 'Date de début' },
 ];
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 

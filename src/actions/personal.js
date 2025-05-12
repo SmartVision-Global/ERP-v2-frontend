@@ -16,23 +16,33 @@ const ENDPOINT = endpoints.personal;
 
 // ----------------------------------------------------------------------
 
-export function useGetPersonals() {
-  const url = endpoints.personal;
+export function useGetPersonals(params) {
+  // const url = endpoints.personal;
+  const url = params ? [endpoints.personal, { params }] : endpoints.personal;
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({
       personals: data?.data?.records || [],
+      personalsCount: data?.data?.total || 0,
+
       personalsLoading: isLoading,
       personalsError: error,
       personalsValidating: isValidating,
       personalsEmpty: !isLoading && !isValidating && !data?.data?.records.length,
     }),
-    [data?.data?.records, error, isLoading, isValidating]
+    [data?.data?.records, data?.data?.total, error, isLoading, isValidating]
   );
 
   return memoizedValue;
+}
+
+export async function getFiltredPersonals(params) {
+  const response = await axios.get(`${ENDPOINT}`, {
+    params,
+  });
+  return response;
 }
 
 // ----------------------------------------------------------------------

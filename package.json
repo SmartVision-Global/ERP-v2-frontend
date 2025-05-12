@@ -1,6 +1,6 @@
 {
-  "name": "@minimal-kit/starter-vite-js",
-  "author": "Minimals",
+  "name": "@smart-vision/starter",
+  "author": "Smart Vision",
   "version": "6.3.0",
   "description": "Vite Starter & JavaScript",
   "private": true,

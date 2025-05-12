@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import fr from 'dayjs/locale/fr';
 import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
@@ -82,7 +83,9 @@ export function fDate(date, template) {
     return 'Invalid date';
   }
 
-  return dayjs(date).format(template ?? formatPatterns.date);
+  return dayjs(date)
+    .locale(fr)
+    .format(template ?? formatPatterns.date);
 }
 
 // ----------------------------------------------------------------------
