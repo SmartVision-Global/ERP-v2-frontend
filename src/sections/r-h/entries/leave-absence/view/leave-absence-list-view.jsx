@@ -39,10 +39,8 @@ import {
   RenderCellSite,
   RenderCellEndAt,
   RenderCellStatus,
-  RenderCellAtelier,
   RenderCellStartAt,
   RenderCellFullname,
-  RenderCellFunction,
   RenderCellValideBy,
   RenderCellCreatedAt,
   RenderCellDesignation,
@@ -67,12 +65,12 @@ export function LeaveAbsenceListView() {
   ]);
   const personals = dataLookups.personals;
   const sites = dataLookups.sites;
-  const jobs = dataLookups.jobs;
-  const workshops = dataLookups.workshops;
+  // const jobs = dataLookups.jobs;
+  // const workshops = dataLookups.workshops;
 
   const FILTERS_OPTIONS = [
     {
-      id: 'personal_id',
+      id: 'personal',
       type: 'select',
       options: personals,
       label: 'Nom-Prénom',
@@ -89,7 +87,7 @@ export function LeaveAbsenceListView() {
       width: 1,
     },
     {
-      id: 'site_id',
+      id: 'site',
       type: 'select',
       options: sites,
       serverData: true,
@@ -98,26 +96,26 @@ export function LeaveAbsenceListView() {
       cols: 3,
       width: 1,
     },
-    {
-      id: 'job_id',
-      type: 'select',
-      options: jobs,
-      label: 'Fonction',
-      serverData: true,
+    // {
+    //   id: 'job_id',
+    //   type: 'select',
+    //   options: jobs,
+    //   label: 'Fonction',
+    //   serverData: true,
 
-      cols: 3,
-      width: 1,
-    },
-    {
-      id: 'workshop_id',
-      type: 'select',
-      options: workshops,
-      label: 'Atelier',
-      serverData: true,
+    //   cols: 3,
+    //   width: 1,
+    // },
+    // {
+    //   id: 'workshop_id',
+    //   type: 'select',
+    //   options: workshops,
+    //   label: 'Atelier',
+    //   serverData: true,
 
-      cols: 3,
-      width: 1,
-    },
+    //   cols: 3,
+    //   width: 1,
+    // },
     {
       id: 'from_date',
       type: 'date',
@@ -315,24 +313,24 @@ export function LeaveAbsenceListView() {
       renderCell: (params) => <RenderCellSite params={params} />,
     },
 
-    {
-      field: 'function',
-      headerName: 'Fonction',
-      //   flex: 0.5,
-      flex: 1,
-      minWidth: 200,
-      hideable: false,
-      renderCell: (params) => <RenderCellFunction params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'atelier',
-      headerName: 'Atelier',
-      //   flex: 0.5,
-      flex: 1,
-      minWidth: 100,
-      hideable: false,
-      renderCell: (params) => <RenderCellAtelier params={params} href={paths.dashboard.root} />,
-    },
+    // {
+    //   field: 'function',
+    //   headerName: 'Fonction',
+    //   //   flex: 0.5,
+    //   flex: 1,
+    //   minWidth: 200,
+    //   hideable: false,
+    //   renderCell: (params) => <RenderCellFunction params={params} href={paths.dashboard.root} />,
+    // },
+    // {
+    //   field: 'atelier',
+    //   headerName: 'Atelier',
+    //   //   flex: 0.5,
+    //   flex: 1,
+    //   minWidth: 100,
+    //   hideable: false,
+    //   renderCell: (params) => <RenderCellAtelier params={params} href={paths.dashboard.root} />,
+    // },
 
     {
       field: 'start_date',

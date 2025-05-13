@@ -15,8 +15,8 @@ import { RouterLink } from 'src/routes/components';
 
 import { CONFIG } from 'src/global-config';
 import { useGetLookups } from 'src/actions/lookups';
+import { DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { PRODUCT_STOCK_OPTIONS, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
 import {
   cancelSocialLoan,
   archiveSocialLoan,
@@ -57,10 +57,11 @@ const PAGE_SIZE = CONFIG.pagination.pageSize;
 
 export function SocialLoanListView() {
   const { data: personals } = useGetLookups('hr/lookups/personals');
+  const { data: users } = useGetLookups('settings/lookups/users');
 
   const FILTERS_OPTIONS = [
     {
-      id: 'personal_id',
+      id: 'personal',
       type: 'select',
       options: personals,
       label: 'Nom-Prénom',
@@ -68,13 +69,13 @@ export function SocialLoanListView() {
       cols: 3,
       width: 1,
     },
-    {
-      id: 'observation',
-      type: 'input',
-      label: 'Designation',
-      cols: 3,
-      width: 1,
-    },
+    // {
+    //   id: 'observation',
+    //   type: 'input',
+    //   label: 'Designation',
+    //   cols: 3,
+    //   width: 1,
+    // },
     {
       id: 'start_date',
       type: 'date',
@@ -100,8 +101,9 @@ export function SocialLoanListView() {
     {
       id: 'validated_by',
       type: 'select',
-      options: PRODUCT_STOCK_OPTIONS,
+      options: users,
       label: 'Valideur',
+      serverData: true,
       cols: 3,
       width: 1,
     },

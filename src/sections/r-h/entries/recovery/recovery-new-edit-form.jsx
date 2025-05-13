@@ -43,7 +43,7 @@ export const NewTauxCnasSchema = zod
       .date({ message: { required: 'Expired date is required!' } })
       .optional()
       .nullable(),
-    observation: zod.string().min(1, { message: 'Category is required!' }),
+    observation: zod.string().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.type === '1') {
@@ -147,6 +147,7 @@ export function RecoveryNewEditForm({ currentTaux }) {
     defaultValues,
     values: {
       ...currentTaux,
+      nature: currentTaux?.nature || '1',
       personal_id: currentTaux?.personal_id?.toString(),
       permanency_id: currentTaux?.permanency_id?.toString() || '',
       overtime_work_id: currentTaux?.overtime_work_id?.toString() || '',

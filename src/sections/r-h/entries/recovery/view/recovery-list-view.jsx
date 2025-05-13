@@ -42,7 +42,6 @@ import {
   RenderCellStartAt,
   RenderCellFullname,
   RenderCellValideBy,
-  RenderCellFunction,
   RenderCellCreatedAt,
   RenderCellPermanence,
   RenderCellDesignation,
@@ -67,12 +66,12 @@ export function RecoveryListView() {
   ]);
   const personals = dataLookups.personals;
   const sites = dataLookups.sites;
-  const jobs = dataLookups.jobs;
-  const workshops = dataLookups.workshops;
+  // const jobs = dataLookups.jobs;
+  // const workshops = dataLookups.workshops;
 
   const FILTERS_OPTIONS = [
     {
-      id: 'personal_id',
+      id: 'personal',
       type: 'select',
       options: personals,
       label: 'Nom-Prénom',
@@ -91,26 +90,26 @@ export function RecoveryListView() {
       cols: 3,
       width: 1,
     },
-    {
-      id: 'job_id',
-      type: 'select',
-      options: jobs,
-      label: 'Fonction',
-      serverData: true,
+    // {
+    //   id: 'job_id',
+    //   type: 'select',
+    //   options: jobs,
+    //   label: 'Fonction',
+    //   serverData: true,
 
-      cols: 3,
-      width: 1,
-    },
-    {
-      id: 'workshop_id',
-      type: 'select',
-      options: workshops,
-      label: 'Atelier',
-      serverData: true,
+    //   cols: 3,
+    //   width: 1,
+    // },
+    // {
+    //   id: 'workshop_id',
+    //   type: 'select',
+    //   options: workshops,
+    //   label: 'Atelier',
+    //   serverData: true,
 
-      cols: 3,
-      width: 1,
-    },
+    //   cols: 3,
+    //   width: 1,
+    // },
     {
       id: 'from_date',
       type: 'date',
@@ -299,14 +298,14 @@ export function RecoveryListView() {
 
       renderCell: (params) => <RenderCellSite params={params} />,
     },
-    {
-      field: 'function',
-      headerName: 'Fonction',
-      flex: 1,
-      minWidth: 200,
+    // {
+    //   field: 'function',
+    //   headerName: 'Fonction',
+    //   flex: 1,
+    //   minWidth: 200,
 
-      renderCell: (params) => <RenderCellFunction params={params} />,
-    },
+    //   renderCell: (params) => <RenderCellFunction params={params} />,
+    // },
     {
       field: 'type',
       headerName: 'Type',

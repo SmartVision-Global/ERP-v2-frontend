@@ -65,7 +65,7 @@ export function OvertimeListView() {
   const { data: personals } = useGetLookups('hr/lookups/personals');
   const FILTERS_OPTIONS = [
     {
-      id: 'personal_id',
+      id: 'personal',
       type: 'select',
       options: personals,
       serverData: true,
@@ -75,16 +75,9 @@ export function OvertimeListView() {
     },
 
     {
-      id: 'from_date',
+      id: 'overtime_work_date',
       type: 'date',
       label: 'Date début',
-      cols: 3,
-      width: 1,
-    },
-    {
-      id: 'to_date',
-      type: 'date',
-      label: 'Date fin',
       cols: 3,
       width: 1,
     },

@@ -90,7 +90,7 @@ export function SalaryGridListView() {
       width: 1,
     },
     {
-      id: 'rung_id',
+      id: 'rung',
       type: 'select',
       options: rungs,
       label: 'Echelons',
@@ -101,7 +101,7 @@ export function SalaryGridListView() {
     },
 
     {
-      id: 'salary_category_id',
+      id: 'salary_category',
       type: 'select',
       options: salaryCategories,
       label: 'Catégorie socioprofessionnelle',
