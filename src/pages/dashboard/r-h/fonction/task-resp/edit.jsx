@@ -5,7 +5,7 @@ import { useParams } from 'src/routes/hooks';
 import { CONFIG } from 'src/global-config';
 import { useGetDutyResponsibility } from 'src/actions/task';
 
-import { TaskEditView } from 'src/sections/r-h/fonction/task-responsabilities/view';
+import { TaskEditView } from 'src/sections/r-h/function/task-responsabilities/view';
 
 // ----------------------------------------------------------------------
 

@@ -16,26 +16,35 @@ const ENDPOINT = endpoints.permanence;
 
 // ----------------------------------------------------------------------
 
-export function useGetPermanencies() {
-  const url = endpoints.permanence;
+export function useGetPermanencies(params) {
+  const url = params ? [endpoints.permanence, { params }] : endpoints.permanence;
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({
       permanencies: data?.data?.records || [],
+      permanenciesCount: data?.data?.total || 0,
+
       permanenciesLoading: isLoading,
       permanenciesError: error,
       permanenciesValidating: isValidating,
       permanenciesEmpty: !isLoading && !isValidating && !data?.data?.records.length,
     }),
-    [data?.data?.records, error, isLoading, isValidating]
+    [data?.data?.records, data?.data?.total, error, isLoading, isValidating]
   );
 
   return memoizedValue;
 }
 
 // ----------------------------------------------------------------------
+
+export async function getFiltredPermanencies(params) {
+  const response = await axios.get(`${ENDPOINT}`, {
+    params,
+  });
+  return response;
+}
 
 export function useGetPermanency(rateId) {
   // const url = productId ? [endpoints.product.details, { params: { productId } }] : '';

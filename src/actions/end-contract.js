@@ -16,26 +16,37 @@ const ENDPOINT = endpoints.endContract;
 
 // ----------------------------------------------------------------------
 
-export function useGetEndContracts() {
-  const url = endpoints.endContract;
+export function useGetEndContracts(params) {
+  const url = params ? [endpoints.endContract, { params }] : endpoints.endContract;
+
+  // const url = endpoints.endContract;
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({
       endContracts: data?.data?.records || [],
+      endContractsCount: data?.data?.total || 0,
+
       endContractsLoading: isLoading,
       endContractsError: error,
       endContractsValidating: isValidating,
       endContractsEmpty: !isLoading && !isValidating && !data?.data?.records.length,
     }),
-    [data?.data?.records, error, isLoading, isValidating]
+    [data?.data?.records, data?.data?.total, error, isLoading, isValidating]
   );
 
   return memoizedValue;
 }
 
 // ----------------------------------------------------------------------
+
+export async function getFiltredEndContracts(params) {
+  const response = await axios.get(`${ENDPOINT}`, {
+    params,
+  });
+  return response;
+}
 
 export function useGetEndContract(productId) {
   const url = productId ? [`${endpoints.endContract}/${productId}`] : '';

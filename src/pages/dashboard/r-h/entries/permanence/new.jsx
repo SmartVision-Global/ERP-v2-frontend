@@ -4,8 +4,6 @@ import { CONFIG } from 'src/global-config';
 
 import { PermanenceCreateView } from 'src/sections/r-h/entries/permanence/view';
 
-// import { PersonnelCreateView } from 'src/sections/r-h/personal/actif/view';
-
 // ----------------------------------------------------------------------
 
 const metadata = { title: `Ajouter Permanence | Dashboard - ${CONFIG.appName}` };

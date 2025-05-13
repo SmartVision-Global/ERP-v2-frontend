@@ -4,8 +4,6 @@ import { CONFIG } from 'src/global-config';
 
 import { RecoveryCreateView } from 'src/sections/r-h/entries/recovery/view';
 
-// import { PersonnelCreateView } from 'src/sections/r-h/personal/actif/view';
-
 // ----------------------------------------------------------------------
 
 const metadata = { title: `Ajouter Récupération | Dashboard - ${CONFIG.appName}` };

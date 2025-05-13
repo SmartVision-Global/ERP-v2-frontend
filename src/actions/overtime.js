@@ -16,26 +16,35 @@ const ENDPOINT = endpoints.overtime;
 
 // ----------------------------------------------------------------------
 
-export function useGetOvertimeList() {
-  const url = endpoints.overtime;
+export function useGetOvertimeList(params) {
+  const url = params ? [endpoints.overtime, { params }] : endpoints.overtime;
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({
       overtimeWorks: data?.data?.records || [],
+      overtimeWorksCount: data?.data?.total || 0,
+
       overtimeWorksLoading: isLoading,
       overtimeWorksError: error,
       overtimeWorksValidating: isValidating,
       overtimeWorksEmpty: !isLoading && !isValidating && !data?.data?.records.length,
     }),
-    [data?.data?.records, error, isLoading, isValidating]
+    [data?.data?.records, data?.data?.total, error, isLoading, isValidating]
   );
 
   return memoizedValue;
 }
 
 // ----------------------------------------------------------------------
+
+export async function getFiltredOvertimeList(params) {
+  const response = await axios.get(`${ENDPOINT}`, {
+    params,
+  });
+  return response;
+}
 
 export function useGetOvertimeById(rateId) {
   // const url = productId ? [endpoints.product.details, { params: { productId } }] : '';

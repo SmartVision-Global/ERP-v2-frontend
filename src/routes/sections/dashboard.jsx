@@ -14,60 +14,46 @@ import { AuthGuard } from 'src/auth/guard';
 import { usePathname } from '../hooks';
 
 const IndexPage = lazy(() => import('src/pages/dashboard/one'));
-const PageTwo = lazy(() => import('src/pages/dashboard/two'));
-const PageThree = lazy(() => import('src/pages/dashboard/three'));
-const PageFour = lazy(() => import('src/pages/dashboard/four'));
-const PageFive = lazy(() => import('src/pages/dashboard/five'));
-const PageSix = lazy(() => import('src/pages/dashboard/six'));
 const PageRhList = lazy(() => import('src/pages/dashboard/r-h/personal/actif/list'));
 const PageRhDocumentsList = lazy(() => import('src/pages/dashboard/r-h/personal/documents/list'));
-const PageRhBloqueList = lazy(() => import('src/pages/dashboard/r-h/personal/bloque/list'));
+const PageRhBloqueList = lazy(() => import('src/pages/dashboard/r-h/personal/block/list'));
 const PageRhDasList = lazy(() => import('src/pages/dashboard/r-h/personal/das/list'));
-const PageRhPersonelNew = lazy(() => import('src/pages/dashboard/r-h/personal/actif/new'));
-const PageRhPersonelEdit = lazy(() => import('src/pages/dashboard/r-h/personal/actif/edit'));
+const PageRhPersonalNew = lazy(() => import('src/pages/dashboard/r-h/personal/actif/new'));
+const PageRhPersonalEdit = lazy(() => import('src/pages/dashboard/r-h/personal/actif/edit'));
 
-const PageRhDocumentPersonelNew = lazy(
+const PageRhDocumentPersonalNew = lazy(
   () => import('src/pages/dashboard/r-h/personal/documents/new')
 );
 
-const PageRhFonctionTaskList = lazy(
+const PageRhFunctionTaskList = lazy(
   () => import('src/pages/dashboard/r-h/fonction/task-resp/list')
 );
-const PageRhFonctionTaskNew = lazy(() => import('src/pages/dashboard/r-h/fonction/task-resp/new'));
-const PageRhFonctionTaskEdit = lazy(
+const PageRhFunctionTaskNew = lazy(() => import('src/pages/dashboard/r-h/fonction/task-resp/new'));
+const PageRhFunctionTaskEdit = lazy(
   () => import('src/pages/dashboard/r-h/fonction/task-resp/edit')
 );
 
-const PageRhFonctionCareerPathList = lazy(
+const PageRhFunctionCareerPathList = lazy(
   () => import('src/pages/dashboard/r-h/fonction/career-path/list')
 );
-const PageRhFonctionCareerPathNew = lazy(
+const PageRhFunctionCareerPathNew = lazy(
   () => import('src/pages/dashboard/r-h/fonction/career-path/new')
 );
 
-const PageRhFonctionCareerPathEdit = lazy(
+const PageRhFunctionCareerPathEdit = lazy(
   () => import('src/pages/dashboard/r-h/fonction/career-path/edit')
 );
 
-const PageRhFonctionFonctionsList = lazy(
-  () => import('src/pages/dashboard/r-h/fonction/fonctions/list')
-);
-const PageRhFonctionFonctionsNew = lazy(
-  () => import('src/pages/dashboard/r-h/fonction/fonctions/new')
-);
+const PageRhFunctionJobList = lazy(() => import('src/pages/dashboard/r-h/fonction/jobs/list'));
+const PageRhFunctionJobNew = lazy(() => import('src/pages/dashboard/r-h/fonction/jobs/new'));
 
-const PageRhFonctionFonctionsEdit = lazy(
-  () => import('src/pages/dashboard/r-h/fonction/fonctions/edit')
-);
+const PageRhFunctionJobEdit = lazy(() => import('src/pages/dashboard/r-h/fonction/jobs/edit'));
 
 // rh settings
 
 const PageRhSettingsIdentList = lazy(
-  () => import('src/pages/dashboard/r-h/rh-settings/param-identification/list')
+  () => import('src/pages/dashboard/r-h/rh-settings/identification-parameters/list')
 );
-// const PageRhSettingsIdentNew = lazy(
-//   () => import('src/pages/dashboard/r-h/rh-settings/param-identification/new')
-// );
 
 const PageRhSettingsZonesList = lazy(
   () => import('src/pages/dashboard/r-h/rh-settings/zones/list')
@@ -79,75 +65,61 @@ const PageRhSettingsZonesEdit = lazy(
 );
 
 const PageRhSettingsJobProgramsList = lazy(
-  () => import('src/pages/dashboard/r-h/rh-settings/programmes-travail/list')
+  () => import('src/pages/dashboard/r-h/rh-settings/work-programs/list')
 );
 const PageRhSettingsJobProgramsNew = lazy(
-  () => import('src/pages/dashboard/r-h/rh-settings/programmes-travail/new')
+  () => import('src/pages/dashboard/r-h/rh-settings/work-programs/new')
 );
 
 const PageRhSettingsJobProgramsEdit = lazy(
-  () => import('src/pages/dashboard/r-h/rh-settings/programmes-travail/edit')
+  () => import('src/pages/dashboard/r-h/rh-settings/work-programs/edit')
 );
 
 const PageRhSettingsDeductionsCompensationList = lazy(
-  () => import('src/pages/dashboard/r-h/rh-settings/retenue-indemnite/list')
+  () => import('src/pages/dashboard/r-h/rh-settings/deductions-compensations/list')
 );
 const PageRhSettingsDeductionsCompensationNew = lazy(
-  () => import('src/pages/dashboard/r-h/rh-settings/retenue-indemnite/new')
+  () => import('src/pages/dashboard/r-h/rh-settings/deductions-compensations/new')
 );
 
 const PageRhSettingsDeductionsCompensationEdit = lazy(
-  () => import('src/pages/dashboard/r-h/rh-settings/retenue-indemnite/edit')
+  () => import('src/pages/dashboard/r-h/rh-settings/deductions-compensations/edit')
 );
 
 const PageRhSettingsSalaryGridList = lazy(
-  () => import('src/pages/dashboard/r-h/rh-settings/grille-salaire/list')
+  () => import('src/pages/dashboard/r-h/rh-settings/salary-grid/list')
 );
 const PageRhSettingsSalaryGridNew = lazy(
-  () => import('src/pages/dashboard/r-h/rh-settings/grille-salaire/new')
+  () => import('src/pages/dashboard/r-h/rh-settings/salary-grid/new')
 );
 
 const PageRhSettingsSalaryGridEdit = lazy(
-  () => import('src/pages/dashboard/r-h/rh-settings/grille-salaire/edit')
+  () => import('src/pages/dashboard/r-h/rh-settings/salary-grid/edit')
 );
 
 const PageRhSettingsCnasRateList = lazy(
-  () => import('src/pages/dashboard/r-h/rh-settings/taux-cnas/list')
+  () => import('src/pages/dashboard/r-h/rh-settings/rate/list')
 );
 const PageRhSettingsCnasRateNew = lazy(
-  () => import('src/pages/dashboard/r-h/rh-settings/taux-cnas/new')
+  () => import('src/pages/dashboard/r-h/rh-settings/rate/new')
 );
 
 const PageRhSettingsCnasRateEdit = lazy(
-  () => import('src/pages/dashboard/r-h/rh-settings/taux-cnas/edit')
+  () => import('src/pages/dashboard/r-h/rh-settings/rate/edit')
 );
 
 const PageRhSettingsAgenciesList = lazy(
-  () => import('src/pages/dashboard/r-h/rh-settings/agences/list')
+  () => import('src/pages/dashboard/r-h/rh-settings/agencies/list')
 );
 const PageRhSettingsAgenciesNew = lazy(
-  () => import('src/pages/dashboard/r-h/rh-settings/agences/new')
+  () => import('src/pages/dashboard/r-h/rh-settings/agencies/new')
 );
 
 const PageRhSettingsAgenciesEdit = lazy(
-  () => import('src/pages/dashboard/r-h/rh-settings/agences/edit')
+  () => import('src/pages/dashboard/r-h/rh-settings/agencies/edit')
 );
 
 // ----------------------------------------------------------------------
-
-const PageRhDemandesSortie = lazy(() => import('src/pages/dashboard/r-h/demandes/sortie/list'));
-const PageRhDemandeCongieAgenciesNew = lazy(
-  () => import('src/pages/dashboard/r-h/demandes/sortie/list')
-);
-const PageRhDemandeRecupAgenciesNew = lazy(
-  () => import('src/pages/dashboard/r-h/demandes/sortie/list')
-);
-const PageRhDemandePretAgenciesNew = lazy(
-  () => import('src/pages/dashboard/r-h/demandes/sortie/list')
-);
-const PageRhDemandeAideAgenciesNew = lazy(
-  () => import('src/pages/dashboard/r-h/demandes/sortie/list')
-);
 
 // entries
 const PageRhEntriesSocialLoan = lazy(
@@ -188,7 +160,9 @@ const PageRhEntriesOvertimeEdit = lazy(
   () => import('src/pages/dashboard/r-h/entries/overtime/edit')
 );
 
-const PageRhEntriesRecovery = lazy(() => import('src/pages/dashboard/r-h/entries/recovery/list'));
+const PageRhEntriesRecoveryList = lazy(
+  () => import('src/pages/dashboard/r-h/entries/recovery/list')
+);
 const PageRhEntriesRecoveryNew = lazy(() => import('src/pages/dashboard/r-h/entries/recovery/new'));
 const PageRhEntriesRecoveryEdit = lazy(
   () => import('src/pages/dashboard/r-h/entries/recovery/edit')
@@ -279,14 +253,14 @@ const AccountChangePasswordPage = lazy(
 const SettingsSiteList = lazy(() => import('src/pages/dashboard/settings/sites/list'));
 const SettingsSiteNew = lazy(() => import('src/pages/dashboard/settings/sites/new'));
 
-const SettingsAtelierList = lazy(() => import('src/pages/dashboard/settings/ateliers/list'));
-const SettingsAtelierNew = lazy(() => import('src/pages/dashboard/settings/ateliers/new'));
+const SettingsAtelierList = lazy(() => import('src/pages/dashboard/settings/workshop/list'));
+const SettingsAtelierNew = lazy(() => import('src/pages/dashboard/settings/workshop/new'));
 
 const SettingsMachineList = lazy(() => import('src/pages/dashboard/settings/machines/list'));
 const SettingsMachineNew = lazy(() => import('src/pages/dashboard/settings/machines/new'));
 
-const SettingsEntrepriseList = lazy(() => import('src/pages/dashboard/settings/entreprises/list'));
-const SettingsEntrepriseNew = lazy(() => import('src/pages/dashboard/settings/entreprises/new'));
+const SettingsEntrepriseList = lazy(() => import('src/pages/dashboard/settings/enterprises/list'));
+const SettingsEntrepriseNew = lazy(() => import('src/pages/dashboard/settings/enterprises/new'));
 
 const SettingsServiceList = lazy(() => import('src/pages/dashboard/settings/services/list'));
 const SettingsServiceNew = lazy(() => import('src/pages/dashboard/settings/services/new'));
@@ -319,12 +293,9 @@ export const dashboardRoutes = [
     element: CONFIG.auth.skip ? dashboardLayout() : <AuthGuard>{dashboardLayout()}</AuthGuard>,
     children: [
       { element: <IndexPage />, index: true },
-      { path: 'two', element: <PageTwo /> },
-      { path: 'three', element: <PageThree /> },
       {
         path: 'humain-ressource',
         children: [
-          //  { element:<PageRhList /> ,index:true},
           {
             path: 'personal',
 
@@ -333,32 +304,26 @@ export const dashboardRoutes = [
               { path: 'documents', element: <PageRhDocumentsList /> },
               { path: 'bloc', element: <PageRhBloqueList /> },
               { path: 'das', element: <PageRhDasList /> },
-              { path: 'new', element: <PageRhPersonelNew /> },
-              { path: 'documents/new', element: <PageRhDocumentPersonelNew /> },
-              { path: ':id/edit', element: <PageRhPersonelEdit /> },
+              { path: 'new', element: <PageRhPersonalNew /> },
+              { path: 'documents/new', element: <PageRhDocumentPersonalNew /> },
+              { path: ':id/edit', element: <PageRhPersonalEdit /> },
             ],
           },
           {
             path: 'fonction',
 
             children: [
-              { path: 'task-responsabilities', element: <PageRhFonctionTaskList />, index: true },
-              { path: 'task-responsabilities/new', element: <PageRhFonctionTaskNew /> },
-              { path: 'task-responsabilities/:id/edit', element: <PageRhFonctionTaskEdit /> },
+              { path: 'task-responsabilities', element: <PageRhFunctionTaskList />, index: true },
+              { path: 'task-responsabilities/new', element: <PageRhFunctionTaskNew /> },
+              { path: 'task-responsabilities/:id/edit', element: <PageRhFunctionTaskEdit /> },
 
-              { path: 'career-path', element: <PageRhFonctionCareerPathList /> },
-              { path: 'career-path/new', element: <PageRhFonctionCareerPathNew /> },
-              { path: 'career-path/:id/edit', element: <PageRhFonctionCareerPathEdit /> },
+              { path: 'career-path', element: <PageRhFunctionCareerPathList /> },
+              { path: 'career-path/new', element: <PageRhFunctionCareerPathNew /> },
+              { path: 'career-path/:id/edit', element: <PageRhFunctionCareerPathEdit /> },
 
-              { path: 'fonctions', element: <PageRhFonctionFonctionsList /> },
-              { path: 'fonctions/new', element: <PageRhFonctionFonctionsNew /> },
-              { path: 'fonctions/:id/edit', element: <PageRhFonctionFonctionsEdit /> },
-
-              // { path: 'documents', element: <PageRhDocumentsList /> },
-              // { path: 'bloc', element: <PageRhBloqueList /> },
-              // { path: 'das', element: <PageRhDasList /> },
-              // { path: 'new', element: <PageRhPersonelNew /> },
-              // { path: 'documents/new', element: <PageRhDocumentPersonelNew /> },
+              { path: 'fonctions', element: <PageRhFunctionJobList /> },
+              { path: 'fonctions/new', element: <PageRhFunctionJobNew /> },
+              { path: 'fonctions/:id/edit', element: <PageRhFunctionJobEdit /> },
             ],
           },
           {
@@ -431,7 +396,7 @@ export const dashboardRoutes = [
               { path: 'overtime/new', element: <PageRhEntriesOvertimeNew /> },
               { path: 'overtime/:id/edit', element: <PageRhEntriesOvertimeEdit /> },
 
-              { path: 'recovery', element: <PageRhEntriesRecovery /> },
+              { path: 'recovery', element: <PageRhEntriesRecoveryList /> },
               { path: 'recovery/new', element: <PageRhEntriesRecoveryNew /> },
               { path: 'recovery/:id/edit', element: <PageRhEntriesRecoveryEdit /> },
             ],
@@ -593,15 +558,6 @@ export const dashboardRoutes = [
               { path: 'change-password', element: <AccountChangePasswordPage /> },
             ],
           },
-        ],
-      },
-
-      {
-        path: 'group',
-        children: [
-          { element: <PageFour />, index: true },
-          { path: 'five', element: <PageFive /> },
-          { path: 'six', element: <PageSix /> },
         ],
       },
     ],

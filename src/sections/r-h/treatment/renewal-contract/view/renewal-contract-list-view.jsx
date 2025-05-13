@@ -13,15 +13,14 @@ import { TextField, FormControl, InputAdornment } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
+import { CONFIG } from 'src/global-config';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetContracts } from 'src/actions/new-contract';
 import { ACTIF_NAMES, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
+import { useGetContracts, getFiltredContracts } from 'src/actions/new-contract';
 
-import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { GridActionsClickItem } from 'src/sections/r-h/entries/recovery/view';
@@ -45,11 +44,6 @@ import {
 
 // ----------------------------------------------------------------------
 
-const SEX_OPTIONS = [
-  { value: 'man', label: 'Homme' },
-  { value: 'woman', label: 'Femme' },
-];
-
 const HIDE_COLUMNS = { category: false };
 
 const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
@@ -57,13 +51,6 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 // ----------------------------------------------------------------------
 
 const FILTERS_OPTIONS = [
-  {
-    id: 'designation',
-    type: 'input',
-    label: 'Designation',
-    cols: 3,
-    width: 1,
-  },
   {
     id: 'status',
     type: 'select',
@@ -82,29 +69,30 @@ const FILTERS_OPTIONS = [
   },
 
   {
-    id: 'start_date',
+    id: 'created_at',
     type: 'date',
-    label: 'Date début de création',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'end_date',
-    type: 'date',
-    label: 'Date fin de création',
+    label: 'Date de création',
     cols: 3,
     width: 1,
   },
 ];
 
+const PAGE_SIZE = CONFIG.pagination.pageSize;
+
 export function RenewalContractListView() {
-  const confirmDialog = useBoolean();
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: PAGE_SIZE,
+  });
   const confirmDialogValidation = useBoolean();
 
-  const { contracts, contractsLoading } = useGetContracts();
+  const { contracts, contractsLoading, contractsCount } = useGetContracts({
+    limit: PAGE_SIZE,
+    offset: 0,
+  });
+  const [rowCount, setRowCount] = useState(contractsCount);
 
   const [tableData, setTableData] = useState(contracts);
-  const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
   const [selectedRow, setSelectedRow] = useState('');
@@ -114,37 +102,60 @@ export function RenewalContractListView() {
   useEffect(() => {
     if (contracts.length) {
       setTableData(contracts);
+      setRowCount(contractsCount);
     }
-  }, [contracts]);
-  const handleReset = () => {
+  }, [contracts, contractsCount]);
+  const handleReset = useCallback(async () => {
     setEditedFilters([]);
+    setPaginationModel({
+      page: 0,
+      pageSize: PAGE_SIZE,
+    });
+    const response = await getFiltredContracts({
+      limit: PAGE_SIZE,
+      offset: 0,
+    });
+    setTableData(response.data?.data?.records);
+    setRowCount(response.data?.data?.total);
+  }, []);
+
+  const handleFilter = useCallback(
+    async (data) => {
+      try {
+        const response = await getFiltredContracts(data);
+        setTableData(response.data?.data?.records);
+        setRowCount(response.data?.data?.total);
+      } catch (error) {
+        console.log('Error in search filters tasks', error);
+      }
+    },
+
+    []
+  );
+  const handlePaginationModelChange = async (newModel) => {
+    try {
+      const newEditedInput = editedFilters.filter((item) => item.value !== '');
+      const result = newEditedInput.reduce((acc, item) => {
+        acc[item.field] = item.value;
+        return acc;
+      }, {});
+      const newData = {
+        ...result,
+        limit: newModel.pageSize,
+        offset: newModel.page,
+      };
+      const response = await getFiltredContracts(newData);
+      setTableData(response.data?.data?.records);
+      setPaginationModel(newModel);
+    } catch (error) {
+      console.log('error in pagination search request', error);
+    }
   };
 
   const handleOpenValidateConfirmDialog = (id) => {
     confirmDialogValidation.onTrue();
     setSelectedRow(id);
   };
-
-  const dataFiltered = tableData;
-
-  const handleDeleteRow = useCallback(
-    (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-
-      toast.success('Delete success!');
-
-      setTableData(deleteRow);
-    },
-    [tableData]
-  );
-
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
-
-    toast.success('Delete success!');
-
-    setTableData(deleteRows);
-  }, [selectedRowIds, tableData]);
 
   const columns = [
     { field: 'category', headerName: 'Category', filterable: false },
@@ -334,31 +345,6 @@ export function RenewalContractListView() {
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
 
-  const renderConfirmDialog = () => (
-    <ConfirmDialog
-      open={confirmDialog.value}
-      onClose={confirmDialog.onFalse}
-      title="Delete"
-      content={
-        <>
-          Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
-        </>
-      }
-      action={
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => {
-            handleDeleteRows();
-            confirmDialog.onFalse();
-          }}
-        >
-          Delete
-        </Button>
-      }
-    />
-  );
-
   return (
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
@@ -394,6 +380,9 @@ export function RenewalContractListView() {
             filters={editedFilters}
             setFilters={setEditedFilters}
             onReset={handleReset}
+            handleFilter={handleFilter}
+            setPaginationModel={setPaginationModel}
+            paginationModel={paginationModel}
           />
           <Box paddingX={4} paddingY={2} sx={{}}>
             <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
@@ -416,21 +405,20 @@ export function RenewalContractListView() {
             </FormControl>
           </Box>
           <DataGrid
-            checkboxSelection
-            disableColumnMenu
             disableRowSelectionOnClick
-            rows={dataFiltered}
+            disableColumnMenu
+            rows={tableData}
+            rowCount={rowCount}
             columns={columns}
             loading={contractsLoading}
             getRowHeight={() => 'auto'}
-            pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
-            initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-            onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
+            paginationModel={paginationModel}
+            paginationMode="server"
+            onPaginationModelChange={(model) => handlePaginationModelChange(model)}
+            pageSizeOptions={[PAGE_SIZE, 10, 20, { value: -1, label: 'All' }]}
             columnVisibilityModel={columnVisibilityModel}
             onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
-            // disableColumnFilter
             slots={{
-              // toolbar: CustomToolbarCallback,
               noRowsOverlay: () => <EmptyContent />,
               noResultsOverlay: () => <EmptyContent title="No results found" />,
             }}
@@ -450,7 +438,6 @@ export function RenewalContractListView() {
           id={selectedRow}
         />
       )}
-      {renderConfirmDialog()}
     </>
   );
 }

@@ -5,7 +5,7 @@ import { useParams } from 'src/routes/hooks';
 import { CONFIG } from 'src/global-config';
 import { useGetCareerKnowledge } from 'src/actions/knowledge-career';
 
-import { CareerEditView } from 'src/sections/r-h/fonction/career-path/view';
+import { CareerEditView } from 'src/sections/r-h/function/career-path/view';
 
 // ----------------------------------------------------------------------
 

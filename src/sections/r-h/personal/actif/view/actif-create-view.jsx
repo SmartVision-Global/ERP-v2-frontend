@@ -8,7 +8,7 @@ import { ActifNewEditForm } from '../actif-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-export function PersonnelCreateView() {
+export function PersonalCreateView() {
   return (
     <DashboardContent>
       <CustomBreadcrumbs

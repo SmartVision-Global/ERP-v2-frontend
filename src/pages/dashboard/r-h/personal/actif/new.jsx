@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
-import { PersonnelCreateView } from 'src/sections/r-h/personal/actif/view';
+import { PersonalCreateView } from 'src/sections/r-h/personal/actif/view';
 
 // ----------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ export default function Page() {
         <title> {metadata.title}</title>
       </Helmet>
 
-      <PersonnelCreateView />
+      <PersonalCreateView />
     </>
   );
 }

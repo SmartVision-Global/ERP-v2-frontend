@@ -13,15 +13,14 @@ import { TextField, FormControl, InputAdornment } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetDecisions } from 'src/actions/decision';
+import { CONFIG } from 'src/global-config';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { ACTIF_NAMES, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
+import { useGetDecisions, getFiltredDecisions } from 'src/actions/decision';
 
-import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { GridActionsClickItem } from 'src/sections/r-h/entries/recovery/view';
@@ -40,11 +39,6 @@ import {
 
 // ----------------------------------------------------------------------
 
-const SEX_OPTIONS = [
-  { value: 'man', label: 'Homme' },
-  { value: 'woman', label: 'Femme' },
-];
-
 const HIDE_COLUMNS = { category: false };
 
 const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
@@ -52,13 +46,6 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 // ----------------------------------------------------------------------
 
 const FILTERS_OPTIONS = [
-  {
-    id: 'designation',
-    type: 'input',
-    label: 'Designation',
-    cols: 3,
-    width: 1,
-  },
   {
     id: 'status',
     type: 'select',
@@ -78,29 +65,30 @@ const FILTERS_OPTIONS = [
 
   {
     id: 'start_date',
-    type: 'date',
-    label: 'Date début de création',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'end_date',
-    type: 'date',
-    label: 'Date fin de création',
+    type: 'date-range',
+    label: 'Date de création',
     cols: 3,
     width: 1,
   },
 ];
 
+const PAGE_SIZE = CONFIG.pagination.pageSize;
+
 export function PromotionDemotionListView() {
-  const confirmDialog = useBoolean();
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: PAGE_SIZE,
+  });
   const confirmDialogValidation = useBoolean();
-  const { decisions, decisionsLoading } = useGetDecisions();
+  const { decisions, decisionsLoading, decisionsCount } = useGetDecisions({
+    limit: PAGE_SIZE,
+    offset: 0,
+  });
+  const [rowCount, setRowCount] = useState(decisionsCount);
 
   const [tableData, setTableData] = useState(decisions);
   const [selectedRow, setSelectedRow] = useState('');
 
-  const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
 
@@ -109,25 +97,60 @@ export function PromotionDemotionListView() {
   useEffect(() => {
     if (decisions.length) {
       setTableData(decisions);
+      setRowCount(decisionsCount);
     }
-  }, [decisions]);
-  const handleReset = () => {
+  }, [decisions, decisionsCount]);
+  const handleReset = useCallback(async () => {
     setEditedFilters([]);
+    setPaginationModel({
+      page: 0,
+      pageSize: PAGE_SIZE,
+    });
+    const response = await getFiltredDecisions({
+      limit: PAGE_SIZE,
+      offset: 0,
+    });
+    setTableData(response.data?.data?.records);
+    setRowCount(response.data?.data?.total);
+  }, []);
+
+  const handleFilter = useCallback(
+    async (data) => {
+      try {
+        const response = await getFiltredDecisions(data);
+        setTableData(response.data?.data?.records);
+        setRowCount(response.data?.data?.total);
+      } catch (error) {
+        console.log('Error in search filters tasks', error);
+      }
+    },
+
+    []
+  );
+  const handlePaginationModelChange = async (newModel) => {
+    try {
+      const newEditedInput = editedFilters.filter((item) => item.value !== '');
+      const result = newEditedInput.reduce((acc, item) => {
+        acc[item.field] = item.value;
+        return acc;
+      }, {});
+      const newData = {
+        ...result,
+        limit: newModel.pageSize,
+        offset: newModel.page,
+      };
+      const response = await getFiltredDecisions(newData);
+      setTableData(response.data?.data?.records);
+      setPaginationModel(newModel);
+    } catch (error) {
+      console.log('error in pagination search request', error);
+    }
   };
 
-  const dataFiltered = tableData;
   const handleOpenValidateConfirmDialog = (id) => {
     confirmDialogValidation.onTrue();
     setSelectedRow(id);
   };
-
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
-
-    toast.success('Delete success!');
-
-    setTableData(deleteRows);
-  }, [selectedRowIds, tableData]);
 
   const columns = [
     { field: 'category', headerName: 'Category', filterable: false },
@@ -187,9 +210,6 @@ export function PromotionDemotionListView() {
       headerName: 'Grille Salariale',
       flex: 1,
       minWidth: 250,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
       renderCell: (params) => <RenderCellGridSalary params={params} />,
     },
     // {
@@ -276,31 +296,6 @@ export function PromotionDemotionListView() {
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
 
-  const renderConfirmDialog = () => (
-    <ConfirmDialog
-      open={confirmDialog.value}
-      onClose={confirmDialog.onFalse}
-      title="Delete"
-      content={
-        <>
-          Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
-        </>
-      }
-      action={
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => {
-            handleDeleteRows();
-            confirmDialog.onFalse();
-          }}
-        >
-          Delete
-        </Button>
-      }
-    />
-  );
-
   return (
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
@@ -331,17 +326,14 @@ export function PromotionDemotionListView() {
             flexDirection: { md: 'column' },
           }}
         >
-          {/* <ActifTableToolbar
-            filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={setEditedFilters}
-            onReset={handleReset}
-          /> */}
           <TableToolbarCustom
             filterOptions={FILTERS_OPTIONS}
             filters={editedFilters}
             setFilters={setEditedFilters}
             onReset={handleReset}
+            handleFilter={handleFilter}
+            setPaginationModel={setPaginationModel}
+            paginationModel={paginationModel}
           />
           <Box paddingX={4} paddingY={2} sx={{}}>
             <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
@@ -364,16 +356,17 @@ export function PromotionDemotionListView() {
             </FormControl>
           </Box>
           <DataGrid
-            checkboxSelection
-            disableColumnMenu
             disableRowSelectionOnClick
-            rows={dataFiltered}
+            disableColumnMenu
+            rows={tableData}
+            rowCount={rowCount}
             columns={columns}
             loading={decisionsLoading}
             getRowHeight={() => 'auto'}
-            pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
-            initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-            onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
+            paginationModel={paginationModel}
+            paginationMode="server"
+            onPaginationModelChange={(model) => handlePaginationModelChange(model)}
+            pageSizeOptions={[PAGE_SIZE, 10, 20, { value: -1, label: 'All' }]}
             columnVisibilityModel={columnVisibilityModel}
             onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
             slots={{
@@ -396,7 +389,6 @@ export function PromotionDemotionListView() {
           id={selectedRow}
         />
       )}
-      {renderConfirmDialog()}
     </>
   );
 }

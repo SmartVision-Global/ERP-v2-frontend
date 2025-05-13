@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
-import { CareerListView } from 'src/sections/r-h/fonction/career-path/view';
+import { CareerListView } from 'src/sections/r-h/function/career-path/view';
 
 // ----------------------------------------------------------------------
 

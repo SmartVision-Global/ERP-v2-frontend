@@ -16,26 +16,37 @@ const ENDPOINT = endpoints.decision;
 
 // ----------------------------------------------------------------------
 
-export function useGetDecisions() {
-  const url = endpoints.decision;
+export function useGetDecisions(params) {
+  const url = params ? [endpoints.decision, { params }] : endpoints.decision;
+
+  // const url = endpoints.decision;
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({
       decisions: data?.data?.records || [],
+      decisionsCount: data?.data?.total || 0,
+
       decisionsLoading: isLoading,
       decisionsError: error,
       decisionsValidating: isValidating,
       decisionsEmpty: !isLoading && !isValidating && !data?.data?.records.length,
     }),
-    [data?.data?.records, error, isLoading, isValidating]
+    [data?.data?.records, data?.data?.total, error, isLoading, isValidating]
   );
 
   return memoizedValue;
 }
 
 // ----------------------------------------------------------------------
+
+export async function getFiltredDecisions(params) {
+  const response = await axios.get(`${ENDPOINT}`, {
+    params,
+  });
+  return response;
+}
 
 export function useGetDecision(productId) {
   const url = productId ? [`${endpoints.decision}/${productId}`] : '';

@@ -33,7 +33,7 @@ import {
   RenderCellCompany,
   RenderCellOverdays,
   RenderCellOvertime,
-  RenderCellPersonnel,
+  RenderCellPersonal,
   RenderCellPrimeCotis,
   RenderCellBaseSalary,
   RenderCellCotisSalary,
@@ -161,7 +161,7 @@ export function CalculationListView() {
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellPersonnel params={params} href={paths.dashboard.root} />
+        <RenderCellPersonal params={params} href={paths.dashboard.root} />
       ),
     },
     {

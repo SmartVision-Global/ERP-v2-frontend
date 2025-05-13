@@ -15,8 +15,12 @@ import {
   OutlinedInput,
 } from '@mui/material';
 
+import { fDate } from 'src/utils/format-time';
+
+import { useDateRangePicker, CustomDateRangePicker } from '../custom-date-range-picker';
+
 export function TableToolbarCustom({
-  filterOptions,
+  filterOptions = [],
   filters,
   setFilters,
   onReset,
@@ -25,6 +29,7 @@ export function TableToolbarCustom({
   paginationModel,
 }) {
   
+  const rangeCalendarPicker = useDateRangePicker(dayjs(new Date('2024/08/08')), null);
 
   const [selectedOptions, setSelectedOptions] = useState(null);
   console.log('selectedOptions', selectedOptions);
@@ -63,6 +68,23 @@ export function TableToolbarCustom({
     });
   };
 
+  const handleChangeDatePicker = (filterId, startDate, endDate) => {
+    setFilters((prevFilters) => {
+      const updatedFilters = prevFilters.filter((item) => item.field !== filterId);
+
+      if (startDate && endDate) {
+        rangeCalendarPicker.onChangeStartDate(startDate);
+        rangeCalendarPicker.onChangeEndDate(endDate);
+
+        updatedFilters.push({
+          field: filterId,
+          value: [startDate.format('YYYY-MM-DD'), endDate.format('YYYY-MM-DD')],
+        }); // Convert to string
+      }
+
+      return updatedFilters;
+    });
+  };
   const renderValues = useCallback(
     (selectedIds, options, serverData = false) =>
       options
@@ -85,7 +107,7 @@ export function TableToolbarCustom({
     });
     const newData = {
       ...result,
-      limit: 2,
+      limit: paginationModel.pageSize,
       offset: 0,
     };
     handleFilter(newData);
@@ -127,7 +149,7 @@ export function TableToolbarCustom({
                   >
                     {item.options.map((option) => (
                       <MenuItem key={`${option.value}`} value={`${option.value}`}>
-                        {option.label}
+                        {item?.serverData ? option.text : option.label}
                       </MenuItem>
                     ))}
                   </TextField>
@@ -173,26 +195,55 @@ export function TableToolbarCustom({
                   // sx={{ maxWidth: { md: 180 } }}
                 />
               )}
+              {item.type === 'date-range' && (
+                <>
+                  <Button variant="outlined" onClick={rangeCalendarPicker.onOpen}>
+                    {rangeCalendarPicker.startDate && rangeCalendarPicker.endDate
+                      ? `${fDate(rangeCalendarPicker.startDate)} - ${fDate(rangeCalendarPicker.endDate)}`
+                      : 'Date de création (Sélectionner un intervale)'}
+                  </Button>
+
+                  <CustomDateRangePicker
+                    name={item?.id}
+                    variant="calendar"
+                    open={rangeCalendarPicker.open}
+                    startDate={rangeCalendarPicker.startDate}
+                    endDate={rangeCalendarPicker.endDate}
+                    onChangeStartDate={(newValue) =>
+                      handleChangeDatePicker(item.id, newValue, rangeCalendarPicker.endDate)
+                    }
+                    onChangeEndDate={(newValue) =>
+                      handleChangeDatePicker(item.id, rangeCalendarPicker.startDate, newValue)
+                    }
+                    // onChangeEndDate={rangeCalendarPicker.onChangeEndDate}
+                    onClose={rangeCalendarPicker.onClose}
+                    error={rangeCalendarPicker.error}
+                    // onSubmit={handleChangeDatePicker}
+                  />
+                </>
+              )}
             </FormControl>
           </Grid>
         ))}
       </Grid>
-      <Stack direction="row" spacing={1}>
-        <Button variant="contained" sx={{ px: 2, py: 1 }} onClick={onSubmitFilters}>
-          Chercher
-        </Button>
-        {filters.length > 0 && (
-          <Button
-            variant="outlined"
-            onClick={() => {
-              setSelectedOptions(null);
-              onReset();
-            }}
-          >
-            Réinitialiser
+      {filterOptions.length > 0 && (
+        <Stack direction="row" spacing={1}>
+          <Button variant="contained" sx={{ px: 2, py: 1 }} onClick={onSubmitFilters}>
+            Chercher
           </Button>
-        )}
-      </Stack>
+          {filters.length > 0 && (
+            <Button
+              variant="outlined"
+              onClick={() => {
+                setSelectedOptions(null);
+                onReset();
+              }}
+            >
+              Réinitialiser
+            </Button>
+          )}
+        </Stack>
+      )}
     </Stack>
   );
 }

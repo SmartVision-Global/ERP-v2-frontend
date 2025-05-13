@@ -1,4 +1,3 @@
-import { useBoolean } from 'minimal-shared/hooks';
 import { useState, useEffect, forwardRef, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
@@ -13,15 +12,14 @@ import { TextField, FormControl, InputAdornment } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
+import { CONFIG } from 'src/global-config';
+import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetSalaryGrids } from 'src/actions/salary-grid';
-import { SALARY_ECHEL_OPTIONS, SALARY_CATEGORY_OPTIONS } from 'src/_mock';
+import { useGetSalaryGrids, getFiltredSalaryGrids } from 'src/actions/salary-grid';
 
-import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import {
@@ -54,96 +52,126 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 // ----------------------------------------------------------------------
 
-const FILTERS_OPTIONS = [
-  {
-    id: 'code',
-    type: 'input',
-    label: 'Code',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'base_salary',
-    type: 'input',
-    label: 'Salaire de base',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'echelle',
-    type: 'select',
-    options: SALARY_ECHEL_OPTIONS,
-    label: 'Echelons',
-    cols: 3,
-    width: 1,
-  },
-
-  {
-    id: 'category',
-    type: 'select',
-    options: SALARY_CATEGORY_OPTIONS,
-    label: 'Catégorie socioprofessionnelle',
-    cols: 3,
-    width: 1,
-  },
-
-  {
-    id: 'start_date',
-    type: 'date',
-    label: 'Date début de création',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'end_date',
-    type: 'date',
-    label: 'Date fin de création',
-    cols: 3,
-    width: 1,
-  },
-];
+const PAGE_SIZE = CONFIG.pagination.pageSize;
 
 export function SalaryGridListView() {
-  const confirmDialog = useBoolean();
-
-  const { salaryGrids, salaryGridsLoading } = useGetSalaryGrids();
-
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: PAGE_SIZE,
+  });
+  const { salaryGrids, salaryGridsCount, salaryGridsLoading } = useGetSalaryGrids({
+    limit: PAGE_SIZE,
+    offset: 0,
+  });
+  const [rowCount, setRowCount] = useState(salaryGridsCount);
   const [tableData, setTableData] = useState(salaryGrids);
-  const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
-
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
+  const { dataLookups } = useMultiLookups([
+    { entity: 'rungs', url: 'hr/lookups/identification/rung' },
+    { entity: 'salaryCategories', url: 'hr/lookups/identification/salary_category' },
+  ]);
+  const rungs = dataLookups?.rungs || [];
+  const salaryCategories = dataLookups?.salaryCategories || [];
+  const FILTERS_OPTIONS = [
+    {
+      id: 'code',
+      type: 'input',
+      label: 'Code',
+      cols: 3,
+      width: 1,
+    },
+    {
+      id: 'salary',
+      type: 'input',
+      label: 'Salaire de base',
+      cols: 3,
+      width: 1,
+    },
+    {
+      id: 'rung',
+      type: 'select',
+      options: rungs,
+      label: 'Echelons',
+      cols: 3,
+      serverData: true,
+
+      width: 1,
+    },
+
+    {
+      id: 'salary_category',
+      type: 'select',
+      options: salaryCategories,
+      label: 'Catégorie socioprofessionnelle',
+      cols: 3,
+      width: 1,
+      serverData: true,
+    },
+
+    {
+      id: 'created_at',
+      type: 'date-range',
+      label: 'Date début de création',
+      cols: 3,
+      width: 1,
+    },
+  ];
 
   useEffect(() => {
     if (salaryGrids.length) {
       setTableData(salaryGrids);
+      setRowCount(salaryGridsCount);
     }
-  }, [salaryGrids]);
-  const handleReset = () => {
+  }, [salaryGrids, salaryGridsCount]);
+
+  const handleReset = useCallback(async () => {
     setEditedFilters([]);
-  };
+    setPaginationModel({
+      page: 0,
+      pageSize: PAGE_SIZE,
+    });
+    const response = await getFiltredSalaryGrids({
+      limit: PAGE_SIZE,
+      offset: 0,
+    });
+    setTableData(response.data?.data?.records);
+    setRowCount(response.data?.data?.total);
+  }, []);
 
-  const dataFiltered = tableData;
-
-  const handleDeleteRow = useCallback(
-    (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-
-      toast.success('Delete success!');
-
-      setTableData(deleteRow);
+  const handleFilter = useCallback(
+    async (data) => {
+      try {
+        const response = await getFiltredSalaryGrids(data);
+        setTableData(response.data?.data?.records);
+        setRowCount(response.data?.data?.total);
+      } catch (error) {
+        console.log('Error in search filters tasks', error);
+      }
     },
-    [tableData]
+
+    []
   );
-
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
-
-    toast.success('Delete success!');
-
-    setTableData(deleteRows);
-  }, [selectedRowIds, tableData]);
+  const handlePaginationModelChange = async (newModel) => {
+    try {
+      const newEditedInput = editedFilters.filter((item) => item.value !== '');
+      const result = newEditedInput.reduce((acc, item) => {
+        acc[item.field] = item.value;
+        return acc;
+      }, {});
+      const newData = {
+        ...result,
+        limit: newModel.pageSize,
+        offset: newModel.page,
+      };
+      const response = await getFiltredSalaryGrids(newData);
+      setTableData(response.data?.data?.records);
+      setPaginationModel(newModel);
+    } catch (error) {
+      console.log('error in pagination search request', error);
+    }
+  };
 
   const columns = [
     { field: 'category', headerName: 'Category', filterable: false },
@@ -343,124 +371,91 @@ export function SalaryGridListView() {
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
 
-  const renderConfirmDialog = () => (
-    <ConfirmDialog
-      open={confirmDialog.value}
-      onClose={confirmDialog.onFalse}
-      title="Delete"
-      content={
-        <>
-          Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
-        </>
-      }
-      action={
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => {
-            handleDeleteRows();
-            confirmDialog.onFalse();
-          }}
-        >
-          Delete
-        </Button>
-      }
-    />
-  );
-
   return (
-    <>
-      <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-        <CustomBreadcrumbs
-          heading="Grille de salaire"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Ressources humaine', href: paths.dashboard.root },
-            { name: 'Grille de salaire' },
-          ]}
-          action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.rh.rhSettings.newSalaryGrid}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              Ajouter
-            </Button>
-          }
-          sx={{ mb: { xs: 3, md: 5 } }}
+    <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+      <CustomBreadcrumbs
+        heading="Grille de salaire"
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Ressources humaine', href: paths.dashboard.root },
+          { name: 'Grille de salaire' },
+        ]}
+        action={
+          <Button
+            component={RouterLink}
+            href={paths.dashboard.rh.rhSettings.newSalaryGrid}
+            variant="contained"
+            startIcon={<Iconify icon="mingcute:add-line" />}
+          >
+            Ajouter
+          </Button>
+        }
+        sx={{ mb: { xs: 3, md: 5 } }}
+      />
+
+      <Card
+        sx={{
+          flexGrow: { md: 1 },
+          display: { md: 'flex' },
+          flexDirection: { md: 'column' },
+        }}
+      >
+        <TableToolbarCustom
+          filterOptions={FILTERS_OPTIONS}
+          filters={editedFilters}
+          setFilters={setEditedFilters}
+          onReset={handleReset}
+          handleFilter={handleFilter}
+          setPaginationModel={setPaginationModel}
+          paginationModel={paginationModel}
         />
-
-        <Card
-          sx={{
-            flexGrow: { md: 1 },
-            display: { md: 'flex' },
-            flexDirection: { md: 'column' },
+        <Box paddingX={4} paddingY={2} sx={{}}>
+          <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
+            <TextField
+              fullWidth
+              // value={currentFilters.name}
+              // onChange={handleFilterName}
+              placeholder="Search "
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+              size="small"
+            />
+          </FormControl>
+        </Box>
+        <DataGrid
+          disableRowSelectionOnClick
+          disableColumnMenu
+          rows={tableData}
+          rowCount={rowCount}
+          columns={columns}
+          loading={salaryGridsLoading}
+          getRowHeight={() => 'auto'}
+          paginationModel={paginationModel}
+          paginationMode="server"
+          onPaginationModelChange={(model) => handlePaginationModelChange(model)}
+          pageSizeOptions={[PAGE_SIZE, 10, 20, { value: -1, label: 'All' }]}
+          columnVisibilityModel={columnVisibilityModel}
+          onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
+          slots={{
+            noRowsOverlay: () => <EmptyContent />,
+            noResultsOverlay: () => <EmptyContent title="No results found" />,
           }}
-        >
-          {/* <ActifTableToolbar
-            filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={setEditedFilters}
-            onReset={handleReset}
-          /> */}
-          <TableToolbarCustom
-            filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={setEditedFilters}
-            onReset={handleReset}
-          />
-          <Box paddingX={4} paddingY={2} sx={{}}>
-            <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
-              <TextField
-                fullWidth
-                // value={currentFilters.name}
-                // onChange={handleFilterName}
-                placeholder="Search "
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-                size="small"
-              />
-            </FormControl>
-          </Box>
-          <DataGrid
-            checkboxSelection
-            disableColumnMenu
-            disableRowSelectionOnClick
-            rows={dataFiltered}
-            columns={columns}
-            loading={salaryGridsLoading}
-            getRowHeight={() => 'auto'}
-            pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
-            initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-            onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
-            columnVisibilityModel={columnVisibilityModel}
-            onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
-            // disableColumnFilter
-            slots={{
-              // toolbar: CustomToolbarCallback,
-              noRowsOverlay: () => <EmptyContent />,
-              noResultsOverlay: () => <EmptyContent title="No results found" />,
-            }}
-            slotProps={{
-              toolbar: { setFilterButtonEl },
-              panel: { anchorEl: filterButtonEl },
-              columnsManagement: { getTogglableColumns },
-            }}
-            sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
-          />
-        </Card>
-      </DashboardContent>
-
-      {renderConfirmDialog()}
-    </>
+          slotProps={{
+            toolbar: { setFilterButtonEl },
+            panel: { anchorEl: filterButtonEl },
+            columnsManagement: { getTogglableColumns },
+          }}
+          sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
+        />
+      </Card>
+    </DashboardContent>
   );
 }
 

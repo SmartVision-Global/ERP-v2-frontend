@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
-import { TaskRespListView } from 'src/sections/r-h/fonction/task-responsabilities/view';
+import { TaskRespListView } from 'src/sections/r-h/function/task-responsabilities/view';
 
 // ----------------------------------------------------------------------
 

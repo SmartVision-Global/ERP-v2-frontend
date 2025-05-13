@@ -18,16 +18,16 @@ import {
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
+import { CONFIG } from 'src/global-config';
 import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetPersonals, validatePersonal } from 'src/actions/personal';
+import { useGetPersonals, validatePersonal, getFiltredPersonals } from 'src/actions/personal';
 import {
   COMMUN_SEXE_OPTIONS,
   PRODUCT_STATUS_OPTIONS,
   PRODUCT_PAYMANT_OPTIONS,
   PRODUCT_CONTRACT_OPTIONS,
   PRODUCT_TEAM_TYPE_OPTIONS,
-  PRODUCT_WORK_DEPARTEMENT_OPTIONS,
 } from 'src/_mock';
 
 import { Iconify } from 'src/components/iconify';
@@ -74,7 +74,7 @@ import {
   RenderCellContractEndAt,
   RenderCellFamilySituation,
   RenderCellContractStartAt,
-} from '../product-table-row';
+} from '../actif-table-row';
 
 // ----------------------------------------------------------------------
 
@@ -88,13 +88,19 @@ const HIDE_COLUMNS = { category: false };
 const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 // ----------------------------------------------------------------------
+const PAGE_SIZE = CONFIG.pagination.pageSize;
 
 export function ActifListView() {
   const confirmDialog = useBoolean();
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: PAGE_SIZE,
+  });
   const [selectedRow, setSelectedRow] = useState('');
-  const { personals, personalsLoading } = useGetPersonals();
+  const { personals, personalsLoading, personalsCount } = useGetPersonals({ limit: 2, offset: 0 });
+  const [rowCount, setRowCount] = useState(personalsCount);
 
-  const { dataLookups, dataLoading, dataError } = useMultiLookups([
+  const { dataLookups } = useMultiLookups([
     { entity: 'personalsLookup', url: 'hr/lookups/personals' },
     { entity: 'banks', url: 'hr/lookups/identification/bank' },
     { entity: 'departments', url: 'hr/lookups/identification/department' },
@@ -104,43 +110,43 @@ export function ActifListView() {
     confirmDialog.onTrue();
     setSelectedRow(id);
   };
-  const personalsLookup = dataLookups.personalsLookup;
+  // const personalsLookup = dataLookups.personalsLookup;
   const banks = dataLookups.banks;
   const departments = dataLookups.departments;
   const sites = dataLookups.sites;
 
   const FILTERS_OPTIONS = [
-    { id: 'id', type: 'input', label: 'ID', inputType: 'number' },
-    {
-      id: 'full_name',
-      type: 'select',
-      options: personalsLookup,
-      label: 'Nom-Prénom',
-      serverData: true,
-    },
-    { id: 'sex', type: 'select', options: COMMUN_SEXE_OPTIONS, label: 'Sexe' },
+    // { id: 'id', type: 'input', label: 'ID', inputType: 'number' },
+    // {
+    //   id: 'full_name',
+    //   type: 'select',
+    //   options: personalsLookup,
+    //   label: 'Nom-Prénom',
+    //   serverData: true,
+    // },
+    { id: 'gender', type: 'select', options: COMMUN_SEXE_OPTIONS, label: 'Sexe' },
     { id: 'status', type: 'select', options: PRODUCT_STATUS_OPTIONS, label: 'Etat' },
     {
-      id: 'paymant_type',
+      id: 'payment_type',
       type: 'select',
       options: PRODUCT_PAYMANT_OPTIONS,
       label: 'Type de paiement',
     },
-    { id: 'teamType', type: 'select', options: PRODUCT_TEAM_TYPE_OPTIONS, label: 'Type équipe' },
+    { id: 'job_regime', type: 'select', options: PRODUCT_TEAM_TYPE_OPTIONS, label: 'Type équipe' },
 
-    { id: 'banc', type: 'select', options: banks, label: 'Banque', serverData: true },
+    { id: 'bank_id', type: 'select', options: banks, label: 'Banque', serverData: true },
     {
-      id: 'contractType',
+      id: 'contract_type',
       type: 'select',
       options: PRODUCT_CONTRACT_OPTIONS,
       label: 'Type de contrat',
     },
-    {
-      id: 'workDepartment',
-      type: 'select',
-      options: PRODUCT_WORK_DEPARTEMENT_OPTIONS,
-      label: 'Lieu de travail',
-    },
+    // {
+    //   id: 'workDepartment',
+    //   type: 'select',
+    //   options: PRODUCT_WORK_DEPARTEMENT_OPTIONS,
+    //   label: 'Lieu de travail',
+    // },
     {
       id: 'departement',
       type: 'select',
@@ -159,14 +165,56 @@ export function ActifListView() {
   useEffect(() => {
     if (personals.length) {
       setTableData(personals);
+      setRowCount(personalsCount);
     }
-  }, [personals]);
+  }, [personals, personalsCount]);
 
-  const handleReset = () => {
+  const handleReset = useCallback(async () => {
     setEditedFilters([]);
-  };
+    setPaginationModel({
+      page: 0,
+      pageSize: PAGE_SIZE,
+    });
+    const response = await getFiltredPersonals({
+      limit: PAGE_SIZE,
+      offset: 0,
+    });
+    setTableData(response.data?.data?.records);
+    setRowCount(response.data?.data?.total);
+  }, []);
 
-  const dataFiltered = tableData;
+  const handleFilter = useCallback(
+    async (data) => {
+      try {
+        const response = await getFiltredPersonals(data);
+        setTableData(response.data?.data?.records);
+        setRowCount(response.data?.data?.total);
+      } catch (error) {
+        console.log('Error in search filters tasks', error);
+      }
+    },
+
+    []
+  );
+  const handlePaginationModelChange = async (newModel) => {
+    try {
+      const newEditedInput = editedFilters.filter((item) => item.value !== '');
+      const result = newEditedInput.reduce((acc, item) => {
+        acc[item.field] = item.value;
+        return acc;
+      }, {});
+      const newData = {
+        ...result,
+        limit: newModel.pageSize,
+        offset: newModel.page,
+      };
+      const response = await getFiltredPersonals(newData);
+      setTableData(response.data?.data?.records);
+      setPaginationModel(newModel);
+    } catch (error) {
+      console.log('error in pagination search request', error);
+    }
+  };
 
   const renderConfirmValidationDialog = () => (
     <ConfirmDialog
@@ -202,11 +250,6 @@ export function ActifListView() {
         </Button>
       }
     />
-  );
-
-  const CustomToolbarCallback = useCallback(
-    () => <CustomToolbar setFilterButtonEl={setFilterButtonEl} />,
-    []
   );
 
   const columns = [
@@ -542,6 +585,9 @@ export function ActifListView() {
             filters={editedFilters}
             setFilters={setEditedFilters}
             onReset={handleReset}
+            handleFilter={handleFilter}
+            setPaginationModel={setPaginationModel}
+            paginationModel={paginationModel}
           />
           <Box paddingX={4} paddingY={2} sx={{}}>
             <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
@@ -564,20 +610,20 @@ export function ActifListView() {
             </FormControl>
           </Box>
           <DataGrid
-            // checkboxSelection
-            disableColumnMenu
             disableRowSelectionOnClick
-            rows={dataFiltered}
+            disableColumnMenu
+            rows={tableData}
+            rowCount={rowCount}
             columns={columns}
             loading={personalsLoading}
             getRowHeight={() => 'auto'}
-            pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
-            initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
+            paginationModel={paginationModel}
+            paginationMode="server"
+            onPaginationModelChange={(model) => handlePaginationModelChange(model)}
+            pageSizeOptions={[2, 10, 20, { value: -1, label: 'All' }]}
             columnVisibilityModel={columnVisibilityModel}
             onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
-            // disableColumnFilter
             slots={{
-              toolbar: CustomToolbarCallback,
               noRowsOverlay: () => <EmptyContent />,
               noResultsOverlay: () => <EmptyContent title="No results found" />,
             }}
@@ -587,7 +633,6 @@ export function ActifListView() {
               columnsManagement: { getTogglableColumns },
             }}
             sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
-            density="compact"
           />
         </Card>
       </DashboardContent>
