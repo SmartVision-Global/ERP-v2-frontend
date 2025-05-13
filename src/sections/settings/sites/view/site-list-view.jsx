@@ -89,6 +89,7 @@ export function SiteListView() {
   const confirmDialog = useBoolean();
 
   const { sites, sitesLoading } = useGetSites();
+  console.log('SiteListView')
   console.log('sites', sites);
 
   const [tableData, setTableData] = useState(sites);

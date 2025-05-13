@@ -74,7 +74,6 @@ export function ParamItem({
     setOpenDialog('');
     setSelectedRow(null);
   };
-  console.log('openDialog', openDialog);
 
   // const renderMenuActions = () => (
   //   <CustomPopover

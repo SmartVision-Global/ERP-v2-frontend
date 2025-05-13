@@ -24,7 +24,7 @@ export function TableToolbarCustom({
   setPaginationModel,
   paginationModel,
 }) {
-  console.log('filters', filters);
+  
 
   const [selectedOptions, setSelectedOptions] = useState(null);
   console.log('selectedOptions', selectedOptions);
