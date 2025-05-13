@@ -16,26 +16,36 @@ const ENDPOINT = endpoints.relocation;
 
 // ----------------------------------------------------------------------
 
-export function useGetRelocations() {
-  const url = endpoints.relocation;
+export function useGetRelocations(params) {
+  // const url = endpoints.relocation;
+  const url = params ? [endpoints.relocation, { params }] : endpoints.relocation;
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({
       relocations: data?.data?.records || [],
+      relocationsCount: data?.data?.total || 0,
+
       relocationsLoading: isLoading,
       relocationsError: error,
       relocationsValidating: isValidating,
       relocationsEmpty: !isLoading && !isValidating && !data?.data?.records.length,
     }),
-    [data?.data?.records, error, isLoading, isValidating]
+    [data?.data?.records, data?.data?.total, error, isLoading, isValidating]
   );
 
   return memoizedValue;
 }
 
 // ----------------------------------------------------------------------
+
+export async function getFiltredRelocations(params) {
+  const response = await axios.get(`${ENDPOINT}`, {
+    params,
+  });
+  return response;
+}
 
 export function useGetRelocation(productId) {
   const url = productId ? [`${endpoints.relocation}/${productId}`] : '';

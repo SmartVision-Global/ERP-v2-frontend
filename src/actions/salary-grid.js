@@ -25,7 +25,7 @@ export function useGetSalaryGrids(params) {
   const memoizedValue = useMemo(
     () => ({
       salaryGrids: data?.data?.records || [],
-      salaryGridsCount: data?.data?.total || [],
+      salaryGridsCount: data?.data?.total || 0,
 
       salaryGridsLoading: isLoading,
       salaryGridsError: error,

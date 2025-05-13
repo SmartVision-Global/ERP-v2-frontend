@@ -13,15 +13,14 @@ import { TextField, FormControl, InputAdornment } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
+import { CONFIG } from 'src/global-config';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetEndContracts } from 'src/actions/end-contract';
 import { ACTIF_NAMES, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
+import { useGetEndContracts, getFiltredEndContracts } from 'src/actions/end-contract';
 
-import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { GridActionsClickItem } from 'src/sections/r-h/entries/recovery/view';
@@ -68,7 +67,7 @@ const FILTERS_OPTIONS = [
     width: 1,
   },
   {
-    id: 'valideur',
+    id: 'validated_by',
     type: 'select',
     options: ACTIF_NAMES,
     label: 'Valideur',
@@ -76,31 +75,33 @@ const FILTERS_OPTIONS = [
     width: 1,
   },
   {
-    id: 'start_date',
-    type: 'date',
-    label: 'Date début de création',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'end_date',
-    type: 'date',
-    label: 'Date fin de création',
+    id: 'created_at',
+    type: 'date-range',
+    label: 'Date de création',
     cols: 3,
     width: 1,
   },
 ];
 
+const PAGE_SIZE = CONFIG.pagination.pageSize;
+
 export function EndRelationshipListView() {
-  const confirmDialog = useBoolean();
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: PAGE_SIZE,
+  });
+
   const confirmDialogValidation = useBoolean();
 
-  const { endContracts, endContractsLoading } = useGetEndContracts();
+  const { endContracts, endContractsLoading, endContractsCount } = useGetEndContracts({
+    limit: PAGE_SIZE,
+    offset: 0,
+  });
+  const [rowCount, setRowCount] = useState(endContractsCount);
 
   const [tableData, setTableData] = useState(endContracts);
   const [selectedRow, setSelectedRow] = useState('');
 
-  const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
 
@@ -109,25 +110,60 @@ export function EndRelationshipListView() {
   useEffect(() => {
     if (endContracts.length) {
       setTableData(endContracts);
+      setRowCount(endContractsCount);
     }
-  }, [endContracts]);
-  const handleReset = () => {
+  }, [endContracts, endContractsCount]);
+  const handleReset = useCallback(async () => {
     setEditedFilters([]);
+    setPaginationModel({
+      page: 0,
+      pageSize: PAGE_SIZE,
+    });
+    const response = await getFiltredEndContracts({
+      limit: PAGE_SIZE,
+      offset: 0,
+    });
+    setTableData(response.data?.data?.records);
+    setRowCount(response.data?.data?.total);
+  }, []);
+
+  const handleFilter = useCallback(
+    async (data) => {
+      try {
+        const response = await getFiltredEndContracts(data);
+        setTableData(response.data?.data?.records);
+        setRowCount(response.data?.data?.total);
+      } catch (error) {
+        console.log('Error in search filters tasks', error);
+      }
+    },
+
+    []
+  );
+  const handlePaginationModelChange = async (newModel) => {
+    try {
+      const newEditedInput = editedFilters.filter((item) => item.value !== '');
+      const result = newEditedInput.reduce((acc, item) => {
+        acc[item.field] = item.value;
+        return acc;
+      }, {});
+      const newData = {
+        ...result,
+        limit: newModel.pageSize,
+        offset: newModel.page,
+      };
+      const response = await getFiltredEndContracts(newData);
+      setTableData(response.data?.data?.records);
+      setPaginationModel(newModel);
+    } catch (error) {
+      console.log('error in pagination search request', error);
+    }
   };
 
-  const dataFiltered = tableData;
   const handleOpenValidateConfirmDialog = (id) => {
     confirmDialogValidation.onTrue();
     setSelectedRow(id);
   };
-
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
-
-    toast.success('Delete success!');
-
-    setTableData(deleteRows);
-  }, [selectedRowIds, tableData]);
 
   const columns = [
     { field: 'category', headerName: 'Category', filterable: false },
@@ -269,31 +305,6 @@ export function EndRelationshipListView() {
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
 
-  const renderConfirmDialog = () => (
-    <ConfirmDialog
-      open={confirmDialog.value}
-      onClose={confirmDialog.onFalse}
-      title="Delete"
-      content={
-        <>
-          Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
-        </>
-      }
-      action={
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => {
-            handleDeleteRows();
-            confirmDialog.onFalse();
-          }}
-        >
-          Delete
-        </Button>
-      }
-    />
-  );
-
   return (
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
@@ -329,7 +340,11 @@ export function EndRelationshipListView() {
             filters={editedFilters}
             setFilters={setEditedFilters}
             onReset={handleReset}
+            handleFilter={handleFilter}
+            setPaginationModel={setPaginationModel}
+            paginationModel={paginationModel}
           />
+
           <Box paddingX={4} paddingY={2} sx={{}}>
             <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
               <TextField
@@ -351,21 +366,20 @@ export function EndRelationshipListView() {
             </FormControl>
           </Box>
           <DataGrid
-            checkboxSelection
-            disableColumnMenu
             disableRowSelectionOnClick
-            rows={dataFiltered}
+            disableColumnMenu
+            rows={tableData}
+            rowCount={rowCount}
             columns={columns}
             loading={endContractsLoading}
             getRowHeight={() => 'auto'}
-            pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
-            initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-            onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
+            paginationModel={paginationModel}
+            paginationMode="server"
+            onPaginationModelChange={(model) => handlePaginationModelChange(model)}
+            pageSizeOptions={[PAGE_SIZE, 10, 20, { value: -1, label: 'All' }]}
             columnVisibilityModel={columnVisibilityModel}
             onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
-            // disableColumnFilter
             slots={{
-              // toolbar: CustomToolbarCallback,
               noRowsOverlay: () => <EmptyContent />,
               noResultsOverlay: () => <EmptyContent title="No results found" />,
             }}
@@ -385,7 +399,6 @@ export function EndRelationshipListView() {
           id={selectedRow}
         />
       )}
-      {renderConfirmDialog()}
     </>
   );
 }

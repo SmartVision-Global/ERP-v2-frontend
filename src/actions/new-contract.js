@@ -16,26 +16,36 @@ const ENDPOINT = endpoints.newContract;
 
 // ----------------------------------------------------------------------
 
-export function useGetContracts() {
-  const url = endpoints.newContract;
+export function useGetContracts(params) {
+  // const url = endpoints.newContract;
+  const url = params ? [endpoints.newContract, { params }] : endpoints.newContract;
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({
       contracts: data?.data?.records || [],
+      contractsCount: data?.data?.total || 0,
+
       contractsLoading: isLoading,
       contractsError: error,
       contractsValidating: isValidating,
       contractsEmpty: !isLoading && !isValidating && !data?.data?.records.length,
     }),
-    [data?.data?.records, error, isLoading, isValidating]
+    [data?.data?.records, data?.data?.total, error, isLoading, isValidating]
   );
 
   return memoizedValue;
 }
 
 // ----------------------------------------------------------------------
+
+export async function getFiltredContracts(params) {
+  const response = await axios.get(`${ENDPOINT}`, {
+    params,
+  });
+  return response;
+}
 
 export function useGetContract(productId) {
   const url = productId ? [`${endpoints.newContract}/${productId}`] : '';
