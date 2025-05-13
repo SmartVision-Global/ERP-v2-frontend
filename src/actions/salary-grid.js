@@ -16,23 +16,33 @@ const ENDPOINT = endpoints.salaryGrid;
 
 // ----------------------------------------------------------------------
 
-export function useGetSalaryGrids() {
-  const url = endpoints.salaryGrid;
+export function useGetSalaryGrids(params) {
+  const url = params ? [endpoints.salaryGrid, { params }] : endpoints.salaryGrid;
+  // const url = endpoints.salaryGrid;
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({
       salaryGrids: data?.data?.records || [],
+      salaryGridsCount: data?.data?.total || [],
+
       salaryGridsLoading: isLoading,
       salaryGridsError: error,
       salaryGridsValidating: isValidating,
       salaryGridsEmpty: !isLoading && !isValidating && !data?.data?.records.length,
     }),
-    [data?.data?.records, error, isLoading, isValidating]
+    [data?.data?.records, data?.data?.total, error, isLoading, isValidating]
   );
 
   return memoizedValue;
+}
+
+export async function getFiltredSalaryGrids(params) {
+  const response = await axios.get(`${ENDPOINT}`, {
+    params,
+  });
+  return response;
 }
 
 // ----------------------------------------------------------------------

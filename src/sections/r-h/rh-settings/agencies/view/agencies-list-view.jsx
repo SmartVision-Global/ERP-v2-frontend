@@ -328,7 +328,7 @@ export function AgenciesListView() {
             onReset={handleReset}
           /> */}
           <TableToolbarCustom
-            filterOptions={FILTERS_OPTIONS}
+            // filterOptions={FILTERS_OPTIONS}
             filters={editedFilters}
             setFilters={setEditedFilters}
             onReset={handleReset}

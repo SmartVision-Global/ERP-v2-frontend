@@ -57,13 +57,13 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 // ----------------------------------------------------------------------
 
 const FILTERS_OPTIONS = [
-  {
-    id: 'designation',
-    type: 'input',
-    label: 'Designation',
-    cols: 3,
-    width: 1,
-  },
+  // {
+  //   id: 'designation',
+  //   type: 'input',
+  //   label: 'Designation',
+  //   cols: 3,
+  //   width: 1,
+  // },
   {
     id: 'status',
     type: 'select',

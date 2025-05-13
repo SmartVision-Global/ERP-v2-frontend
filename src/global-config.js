@@ -10,7 +10,7 @@ export const CONFIG = {
   serverUrl: import.meta.env.VITE_SERVER_URL ?? '',
   assetsDir: import.meta.env.VITE_ASSETS_DIR ?? '',
   pagination: {
-    pageSize: 2,
+    pageSize: 10,
   },
   /**
    * Auth

@@ -10,25 +10,25 @@ export const DEDUCTIONS_TYPE_OPTIONS = [
 ];
 export const DEDUCTIONS_ABS_OPTIONS = [
   {
-    value: 'oui',
+    value: '1',
     label: 'Oui',
   },
   {
-    value: 'non',
+    value: '0',
     label: 'Non',
   },
 ];
 export const DEDUCTIONS_NATURE_OPTIONS = [
   {
-    value: 'cotisable-imposable',
+    value: '1',
     label: 'COTISABLE - IMPOSABLE',
   },
   {
-    value: 'non-cotisable-imposable',
+    value: '2',
     label: 'NON COTISABLE - IMPOSABLE',
   },
   {
-    value: 'non-cotisable-non-imposable',
+    value: '3',
     label: 'NON COTISABLE - NON IMPOSABLE',
   },
 ];

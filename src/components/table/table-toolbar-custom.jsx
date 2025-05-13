@@ -20,7 +20,7 @@ import { fDate } from 'src/utils/format-time';
 import { useDateRangePicker, CustomDateRangePicker } from '../custom-date-range-picker';
 
 export function TableToolbarCustom({
-  filterOptions,
+  filterOptions = [],
   filters,
   setFilters,
   onReset,
@@ -109,7 +109,7 @@ export function TableToolbarCustom({
     });
     const newData = {
       ...result,
-      limit: 2,
+      limit: paginationModel.pageSize,
       offset: 0,
     };
     handleFilter(newData);
@@ -228,22 +228,24 @@ export function TableToolbarCustom({
           </Grid>
         ))}
       </Grid>
-      <Stack direction="row" spacing={1}>
-        <Button variant="contained" sx={{ px: 2, py: 1 }} onClick={onSubmitFilters}>
-          Chercher
-        </Button>
-        {filters.length > 0 && (
-          <Button
-            variant="outlined"
-            onClick={() => {
-              setSelectedOptions(null);
-              onReset();
-            }}
-          >
-            Réinitialiser
+      {filterOptions.length > 0 && (
+        <Stack direction="row" spacing={1}>
+          <Button variant="contained" sx={{ px: 2, py: 1 }} onClick={onSubmitFilters}>
+            Chercher
           </Button>
-        )}
-      </Stack>
+          {filters.length > 0 && (
+            <Button
+              variant="outlined"
+              onClick={() => {
+                setSelectedOptions(null);
+                onReset();
+              }}
+            >
+              Réinitialiser
+            </Button>
+          )}
+        </Stack>
+      )}
     </Stack>
   );
 }

@@ -36,7 +36,6 @@ import {
 } from 'src/components/table';
 
 import { DocumentTableRow } from '../document-table-row';
-import { DocumentTableFiltersResult } from '../document-table-filters-result';
 
 // ----------------------------------------------------------------------
 
@@ -322,15 +321,6 @@ export function DocumentsListView() {
             setFilters={setEditedFilters}
             onReset={handleReset}
           />
-
-          {canReset && (
-            <DocumentTableFiltersResult
-              filters={filters}
-              onResetPage={table.onResetPage}
-              totalResults={dataFiltered.length}
-              sx={{ p: 2.5, pt: 0 }}
-            />
-          )}
 
           <Box sx={{ position: 'relative' }}>
             <TableSelectedAction

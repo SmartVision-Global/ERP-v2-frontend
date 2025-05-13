@@ -100,7 +100,7 @@ export function ActifListView() {
   const { personals, personalsLoading, personalsCount } = useGetPersonals({ limit: 2, offset: 0 });
   const [rowCount, setRowCount] = useState(personalsCount);
 
-  const { dataLookups, dataLoading, dataError } = useMultiLookups([
+  const { dataLookups } = useMultiLookups([
     { entity: 'personalsLookup', url: 'hr/lookups/personals' },
     { entity: 'banks', url: 'hr/lookups/identification/bank' },
     { entity: 'departments', url: 'hr/lookups/identification/department' },
@@ -110,7 +110,7 @@ export function ActifListView() {
     confirmDialog.onTrue();
     setSelectedRow(id);
   };
-  const personalsLookup = dataLookups.personalsLookup;
+  // const personalsLookup = dataLookups.personalsLookup;
   const banks = dataLookups.banks;
   const departments = dataLookups.departments;
   const sites = dataLookups.sites;
@@ -250,11 +250,6 @@ export function ActifListView() {
         </Button>
       }
     />
-  );
-
-  const CustomToolbarCallback = useCallback(
-    () => <CustomToolbar setFilterButtonEl={setFilterButtonEl} />,
-    []
   );
 
   const columns = [

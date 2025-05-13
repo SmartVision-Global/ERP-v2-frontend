@@ -45,6 +45,12 @@ const JOB_REGIME = {
   2: 'surface',
 };
 
+const STATUS = {
+  1: 'En cours',
+  2: 'Actif',
+  3: 'Bloquer',
+};
+
 // ----------------------------------------------------------------------
 
 const GENDER = {
@@ -71,8 +77,11 @@ export function RenderCellPublish({ params }) {
 }
 export function RenderCellStatus({ params }) {
   return (
-    <Label variant="soft" color={params.row.status === '1' ? 'warning' : 'error'}>
-      {params.row.status === '1' ? 'Actif' : 'Bloquer'}
+    <Label
+      variant="soft"
+      color={params.row.status === '1' ? 'info' : params.row.status === '2' ? 'warning' : 'error'}
+    >
+      {STATUS[params.row.status]}
     </Label>
   );
 }
