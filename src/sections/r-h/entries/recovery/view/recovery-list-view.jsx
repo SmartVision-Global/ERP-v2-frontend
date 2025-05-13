@@ -1,5 +1,5 @@
 import { useBoolean } from 'minimal-shared/hooks';
-import { useState, useEffect, forwardRef } from 'react';
+import { useState, useEffect, forwardRef, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -13,20 +13,17 @@ import { TextField, IconButton, FormControl, InputAdornment } from '@mui/materia
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
+import { CONFIG } from 'src/global-config';
+import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { ACTIF_NAMES, RECOVERY_NATURE_OPTIONS, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
 import {
   cancelRecovery,
   archiveRecovery,
   useGetRecoveries,
   validateRecovery,
+  getFiltredRecoveries,
 } from 'src/actions/recovery';
-import {
-  ACTIF_NAMES,
-  PRODUCT_SITE_OPTIONS,
-  PRODUCT_STOCK_OPTIONS,
-  PRODUCT_STATUS_OPTIONS,
-  RECOVERY_NATURE_OPTIONS,
-} from 'src/_mock';
 
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
@@ -54,129 +51,136 @@ import {
 
 // ----------------------------------------------------------------------
 
-const SEX_OPTIONS = [
-  { value: 'man', label: 'Homme' },
-  { value: 'woman', label: 'Femme' },
-];
-
 const HIDE_COLUMNS = { category: false };
 
 const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 // ----------------------------------------------------------------------
-
-const FILTERS_OPTIONS = [
-  {
-    id: 'fullname',
-    type: 'select',
-    options: ACTIF_NAMES,
-    label: 'Nom - Prénom',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'site',
-    type: 'select',
-    options: PRODUCT_SITE_OPTIONS,
-    label: 'Site',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'function',
-    type: 'select',
-    options: PRODUCT_STOCK_OPTIONS,
-    label: 'Fonction',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'atelier',
-    type: 'select',
-    options: PRODUCT_STOCK_OPTIONS,
-    label: 'Atelier',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'permanence',
-    type: 'input',
-    label: 'Permanence',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'start_date',
-    type: 'date',
-    label: 'Date début',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'end_date',
-    type: 'date',
-    label: 'Date fin',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'nature',
-    type: 'select',
-    options: RECOVERY_NATURE_OPTIONS,
-    label: 'Nature',
-    cols: 3,
-    width: 1,
-  },
-
-  {
-    id: 'status',
-    type: 'select',
-    options: PRODUCT_STATUS_OPTIONS,
-    label: 'Etat',
-    cols: 3,
-    width: 1,
-  },
-
-  {
-    id: 'valideur',
-    type: 'select',
-    options: ACTIF_NAMES,
-    label: 'Valideur',
-    cols: 3,
-    width: 1,
-  },
-
-  {
-    id: 'created_start_date',
-    type: 'date',
-    label: 'Date début de création',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'created_end_date',
-    type: 'date',
-    label: 'Date fin de création',
-    cols: 3,
-    width: 1,
-  },
-];
+const PAGE_SIZE = CONFIG.pagination.pageSize;
 
 export function RecoveryListView() {
+  const { dataLookups } = useMultiLookups([
+    { entity: 'personals', url: 'hr/lookups/personals' },
+    { entity: 'sites', url: 'settings/lookups/sites' },
+    { entity: 'workshops', url: 'settings/lookups/workshops' },
+    { entity: 'jobs', url: 'hr/lookups/jobs' },
+  ]);
+  const personals = dataLookups.personals;
+  const sites = dataLookups.sites;
+  const jobs = dataLookups.jobs;
+  const workshops = dataLookups.workshops;
+
+  const FILTERS_OPTIONS = [
+    {
+      id: 'personal_id',
+      type: 'select',
+      options: personals,
+      label: 'Nom-Prénom',
+      serverData: true,
+      cols: 3,
+      width: 1,
+    },
+
+    {
+      id: 'site_id',
+      type: 'select',
+      options: sites,
+      serverData: true,
+
+      label: 'Site',
+      cols: 3,
+      width: 1,
+    },
+    {
+      id: 'job_id',
+      type: 'select',
+      options: jobs,
+      label: 'Fonction',
+      serverData: true,
+
+      cols: 3,
+      width: 1,
+    },
+    {
+      id: 'workshop_id',
+      type: 'select',
+      options: workshops,
+      label: 'Atelier',
+      serverData: true,
+
+      cols: 3,
+      width: 1,
+    },
+    {
+      id: 'from_date',
+      type: 'date',
+      label: 'Date début',
+      cols: 3,
+      width: 1,
+    },
+    {
+      id: 'to_date',
+      type: 'date',
+      label: 'Date fin',
+      cols: 3,
+      width: 1,
+    },
+    {
+      id: 'nature',
+      type: 'select',
+      options: RECOVERY_NATURE_OPTIONS,
+      label: 'Nature',
+      cols: 3,
+      width: 1,
+    },
+    {
+      id: 'status',
+      type: 'select',
+      options: DOCUMENT_STATUS_OPTIONS,
+      label: 'Etat',
+      cols: 3,
+      width: 1,
+    },
+
+    {
+      id: 'validated_by',
+      type: 'select',
+      options: ACTIF_NAMES,
+      label: 'Valideur',
+      cols: 3,
+      width: 1,
+    },
+
+    {
+      id: 'created_at',
+      type: 'date-range',
+      label: 'Date de création',
+      cols: 3,
+      width: 1,
+    },
+  ];
+
   const confirmDialog = useBoolean();
   const confirmDialogArchive = useBoolean();
   const confirmDialogCancel = useBoolean();
   const dialogHistory = useBoolean();
-
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: PAGE_SIZE,
+  });
   const [selectedRow, setSelectedRow] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState(false);
 
   const [cancellationReason, setCancellationReason] = useState('');
 
-  const { recoveries, recoveriesLoading } = useGetRecoveries();
+  const { recoveries, recoveriesLoading, recoveriesCount } = useGetRecoveries({
+    limit: PAGE_SIZE,
+    offset: 0,
+  });
+  const [rowCount, setRowCount] = useState(recoveriesCount);
+
   const [tableData, setTableData] = useState(recoveries);
-  const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
 
@@ -185,13 +189,61 @@ export function RecoveryListView() {
   useEffect(() => {
     if (recoveries.length) {
       setTableData(recoveries);
+      setRowCount(recoveriesCount);
     }
-  }, [recoveries]);
-  const handleReset = () => {
-    setEditedFilters([]);
-  };
+  }, [recoveries, recoveriesCount]);
 
-  const dataFiltered = tableData;
+  const handleReset = useCallback(async () => {
+    try {
+      const response = await getFiltredRecoveries({
+        limit: PAGE_SIZE,
+        offset: 0,
+      });
+      setEditedFilters([]);
+      setPaginationModel({
+        page: 0,
+        pageSize: PAGE_SIZE,
+      });
+      setTableData(response.data?.data?.records);
+      setRowCount(response.data?.data?.total);
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
+
+  const handleFilter = useCallback(
+    async (data) => {
+      try {
+        const response = await getFiltredRecoveries(data);
+        setTableData(response.data?.data?.records);
+        setRowCount(response.data?.data?.total);
+      } catch (err) {
+        console.log('Error in search filters tasks', err);
+      }
+    },
+
+    []
+  );
+
+  const handlePaginationModelChange = async (newModel) => {
+    try {
+      const newEditedInput = editedFilters.filter((item) => item.value !== '');
+      const result = newEditedInput.reduce((acc, item) => {
+        acc[item.field] = item.value;
+        return acc;
+      }, {});
+      const newData = {
+        ...result,
+        limit: newModel.pageSize,
+        offset: newModel.page,
+      };
+      const response = await getFiltredRecoveries(newData);
+      setTableData(response.data?.data?.records);
+      setPaginationModel(newModel);
+    } catch (err) {
+      console.log('error in pagination search request', err);
+    }
+  };
 
   const handleOpenValidateConfirmDialog = (id) => {
     confirmDialog.onTrue();
@@ -244,9 +296,7 @@ export function RecoveryListView() {
       headerName: 'Site',
       flex: 1,
       minWidth: 160,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellSite params={params} />,
     },
     {
@@ -254,9 +304,7 @@ export function RecoveryListView() {
       headerName: 'Fonction',
       flex: 1,
       minWidth: 200,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellFunction params={params} />,
     },
     {
@@ -388,9 +436,7 @@ export function RecoveryListView() {
       headerName: 'Date de création',
       flex: 1,
       minWidth: 150,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
     },
 
@@ -667,17 +713,14 @@ export function RecoveryListView() {
             flexDirection: { md: 'column' },
           }}
         >
-          {/* <ActifTableToolbar
-            filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={setEditedFilters}
-            onReset={handleReset}
-          /> */}
           <TableToolbarCustom
             filterOptions={FILTERS_OPTIONS}
             filters={editedFilters}
             setFilters={setEditedFilters}
             onReset={handleReset}
+            handleFilter={handleFilter}
+            setPaginationModel={setPaginationModel}
+            paginationModel={paginationModel}
           />
           <Box paddingX={4} paddingY={2} sx={{}}>
             <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
@@ -700,21 +743,20 @@ export function RecoveryListView() {
             </FormControl>
           </Box>
           <DataGrid
-            checkboxSelection
-            disableColumnMenu
             disableRowSelectionOnClick
-            rows={dataFiltered}
+            disableColumnMenu
+            rows={tableData}
+            rowCount={rowCount}
             columns={columns}
             loading={recoveriesLoading}
             getRowHeight={() => 'auto'}
-            pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
-            initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-            onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
+            paginationModel={paginationModel}
+            paginationMode="server"
+            onPaginationModelChange={(model) => handlePaginationModelChange(model)}
+            pageSizeOptions={[PAGE_SIZE, 10, 20, { value: -1, label: 'All' }]}
             columnVisibilityModel={columnVisibilityModel}
             onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
-            // disableColumnFilter
             slots={{
-              // toolbar: CustomToolbarCallback,
               noRowsOverlay: () => <EmptyContent />,
               noResultsOverlay: () => <EmptyContent title="No results found" />,
             }}

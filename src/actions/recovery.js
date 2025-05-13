@@ -16,26 +16,35 @@ const ENDPOINT = endpoints.recovery;
 
 // ----------------------------------------------------------------------
 
-export function useGetRecoveries() {
-  const url = endpoints.recovery;
+export function useGetRecoveries(params) {
+  const url = params ? [endpoints.recovery, { params }] : endpoints.recovery;
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({
       recoveries: data?.data?.records || [],
+      recoveriesCount: data?.data?.total || 0,
+
       recoveriesLoading: isLoading,
       recoveriesError: error,
       recoveriesValidating: isValidating,
       recoveriesEmpty: !isLoading && !isValidating && !data?.data?.records.length,
     }),
-    [data?.data?.records, error, isLoading, isValidating]
+    [data?.data?.records, data?.data?.total, error, isLoading, isValidating]
   );
 
   return memoizedValue;
 }
 
 // ----------------------------------------------------------------------
+
+export async function getFiltredRecoveries(params) {
+  const response = await axios.get(`${ENDPOINT}`, {
+    params,
+  });
+  return response;
+}
 
 export function useGetRecovery(rateId) {
   // const url = productId ? [endpoints.product.details, { params: { productId } }] : '';
