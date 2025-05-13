@@ -23,9 +23,9 @@ export const NewTauxCnasSchema = zod.object({
   from_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
   to_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
 
-  days: zod.string().nullable(),
-  hours: zod.string().nullable(),
-  minutes: zod.string().nullable(),
+  days: zod.string().optional().nullable(),
+  hours: zod.string().optional().nullable(),
+  minutes: zod.string().optional().nullable(),
   observation: zod.string().optional(),
 });
 
