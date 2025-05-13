@@ -26,7 +26,7 @@ export const NewTauxCnasSchema = zod.object({
   days: zod.string().nullable(),
   hours: zod.string().nullable(),
   minutes: zod.string().nullable(),
-  observation: zod.string(),
+  observation: zod.string().optional(),
 });
 
 export function LeaveAbsenceNewEditForm({ currentTaux }) {

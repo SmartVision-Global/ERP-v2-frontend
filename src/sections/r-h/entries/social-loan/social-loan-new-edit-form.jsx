@@ -35,7 +35,7 @@ export const NewTauxCnasSchema = zod.object({
     // message for null value
     { message: 'Quantity is required!' }
   ),
-  observation: zod.string().min(1, { message: 'Category is required!' }),
+  observation: zod.string().optional(),
 });
 
 export function SocialLoanNewEditForm({ currentTaux }) {
