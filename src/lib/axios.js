@@ -88,6 +88,7 @@ export const endpoints = {
   site: '/v1/settings/sites',
   workshop: '/v1/settings/workshops',
   service: '/v1/settings/services',
+  store: '/v1/settings/stores',
 
   machine: '/v1/settings/machines',
   society: '/v1/settings/enterprises',
