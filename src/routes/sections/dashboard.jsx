@@ -265,6 +265,9 @@ const SettingsEntrepriseNew = lazy(() => import('src/pages/dashboard/settings/en
 const SettingsServiceList = lazy(() => import('src/pages/dashboard/settings/services/list'));
 const SettingsServiceNew = lazy(() => import('src/pages/dashboard/settings/services/new'));
 
+const SettingsStoreList = lazy(() => import('src/pages/dashboard/settings/stores/list'));
+const SettingsStoreNew = lazy(() => import('src/pages/dashboard/settings/stores/new'));
+
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
 function SuspenseOutlet() {
@@ -517,6 +520,13 @@ export const dashboardRoutes = [
             children: [
               { index: true, element: <SettingsSiteList /> },
               { path: 'new', element: <SettingsSiteNew /> },
+            ],
+          },
+          {
+            path: 'store',
+            children: [
+              { index: true, element: <SettingsStoreList /> },
+              { path: 'new', element: <SettingsStoreNew /> },
             ],
           },
           {

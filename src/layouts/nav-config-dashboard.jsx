@@ -239,6 +239,10 @@ export const navData = [
             title: 'Services',
             path: paths.dashboard.settings.service.root,
           },
+          {
+            title: 'Magasins',
+            path: paths.dashboard.settings.store.root,
+          },
         ],
       },
     ],

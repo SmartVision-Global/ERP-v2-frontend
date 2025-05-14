@@ -222,6 +222,10 @@ export const paths = {
         root: `${ROOTS.DASHBOARD}/settings/society`,
         newSociety: `${ROOTS.DASHBOARD}/settings/society/new`,
       },
+      store: {
+        root: `${ROOTS.DASHBOARD}/settings/store`,
+        newStore: `${ROOTS.DASHBOARD}/settings/store/new`,
+      },
     },
     group: {
       root: `${ROOTS.DASHBOARD}/group`,
