@@ -12,31 +12,6 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { ProductListDialog } from './product-list-dialog';
 import { NoCotisImposTableRow } from './no-cotis-impos-table-row';
 
-const getFieldNames = (index) => ({
-  code: `cotis_impos_items[${index}].code`,
-  name: `cotis_impos_items[${index}].name`,
-  percent: `cotis_impos_items[${index}].percent`,
-  amount: `cotis_impos_items[${index}].amount`,
-});
-
-const PRODUCT_LIST = [
-  {
-    id: '30',
-    code: 'PN',
-    ref: 'Panier',
-    type: 'Indemnités',
-    abs: 'Oui',
-    nature: 'Non Cotisable-Imposable',
-  },
-  {
-    id: '31',
-    code: 'TR',
-    ref: 'Transport',
-    type: 'Indemnités',
-    abs: 'Oui',
-    nature: 'Non Cotisable-Imposable',
-  },
-];
 const TABLE_HEAD = [
   { id: 'code', label: 'Code' },
   { id: 'name', label: 'Nature' },
