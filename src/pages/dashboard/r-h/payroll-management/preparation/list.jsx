@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
-import { PreparationListView } from 'src/sections/r-h/payroll-management/preparation/view';
+import { MonthListView } from 'src/sections/r-h/payroll-management/preparation/view';
 
 // ----------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ export default function Page() {
         <title> {metadata.title}</title>
       </Helmet>
 
-      <PreparationListView />
+      <MonthListView />
     </>
   );
 }

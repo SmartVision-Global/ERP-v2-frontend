@@ -45,7 +45,7 @@ export const NewTauxCnasSchema = zod.object({
   ),
 });
 
-export function CalculationNewEditForm({ currentTaux }) {
+export function MonthNewEditForm({ currentTaux }) {
   const router = useRouter();
   const { data: enterprises } = useGetLookups('settings/lookups/enterprises');
 

@@ -108,10 +108,10 @@ export function CustomDateRangePicker({
 
       <DialogActions>
         <Button variant="outlined" color="inherit" onClick={onClose}>
-          Cancel
+          Annuler
         </Button>
         <Button disabled={error} variant="contained" onClick={handleSubmit}>
-          Apply
+          Confirmer
         </Button>
       </DialogActions>
     </Dialog>

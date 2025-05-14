@@ -240,9 +240,9 @@ const PageRhPayrollManagementCalculationNew = lazy(
 const PageRhPayrollManagementPreparation = lazy(
   () => import('src/pages/dashboard/r-h/payroll-management/preparation/list')
 );
-// const PageRhPayrollManagementPreparationNew = lazy(
-//   () => import('src/pages/dashboard/r-h/payroll-management/preparation/new')
-// );
+const PageRhPayrollManagementPreparationNew = lazy(
+  () => import('src/pages/dashboard/r-h/payroll-management/preparation/new')
+);
 
 // Account
 const AccountGeneralPage = lazy(() => import('src/pages/dashboard/user/account/general'));
@@ -477,7 +477,7 @@ export const dashboardRoutes = [
 
               { path: 'preparation', element: <PageRhPayrollManagementPreparation /> },
               // { path: 'preparation/new', element: <ComingSoonPage /> },
-              { path: 'preparation/new', element: <PageRhPayrollManagementCalculationNew /> },
+              { path: 'preparation/new', element: <PageRhPayrollManagementPreparationNew /> },
             ],
           },
         ],

@@ -108,24 +108,24 @@ export const COMMUN_OVERIME_OPTIONS = [
 ];
 
 export const MONTHS = [
-  { label: 'janvier', value: 'janvier' },
-  { label: 'février', value: 'février' },
-  { label: 'mars', value: 'mars' },
-  { label: 'avril', value: 'avril' },
-  { label: 'mai', value: 'mai' },
-  { label: 'juin', value: 'juin' },
-  { label: 'juillet', value: 'juillet' },
-  { label: 'aout', value: 'aout' },
-  { label: 'septembre', value: 'septembre' },
-  { label: 'octobre', value: 'octobre' },
-  { label: 'novembre', value: 'novembre' },
-  { label: 'décembre', value: 'décembre' },
+  { label: 'janvier', value: '1' },
+  { label: 'février', value: '2' },
+  { label: 'mars', value: '3' },
+  { label: 'avril', value: '4' },
+  { label: 'mai', value: '5' },
+  { label: 'juin', value: '6' },
+  { label: 'juillet', value: '7' },
+  { label: 'aout', value: '8' },
+  { label: 'septembre', value: '9' },
+  { label: 'octobre', value: '10' },
+  { label: 'novembre', value: '11' },
+  { label: 'décembre', value: '12' },
 ];
 
 export const YEARS = [
-  { label: '2020', value: '2020' },
   { label: '2021', value: '2021' },
   { label: '2022', value: '2022' },
   { label: '2023', value: '2023' },
   { label: '2024', value: '2024' },
+  { label: '2025', value: '2025' },
 ];

@@ -14,7 +14,7 @@ import { RouterLink } from 'src/routes/components';
 
 import { CONFIG } from 'src/global-config';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetJobs, getFiltredJobs } from 'src/actions/function';
+import { useGetPayrollMonths, getFiltredPayrollMonths } from 'src/actions/payroll-month';
 
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
@@ -23,14 +23,17 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import {
   RenderCellId,
-  RenderCellName,
-  RenderCellSite,
+  RenderCellPP,
+  RenderCellPRC,
+  RenderCellPRI,
+  RenderCellYear,
+  RenderCellMonth,
   RenderCellStatus,
-  RenderCellAmount,
-  RenderCellKeyPost,
+  RenderCellCompany,
+  RenderCellMaxPoint,
+  RenderCellMinPoint,
   RenderCellCreatedAt,
-  RenderCellPresentPrime,
-} from '../job-table-row';
+} from '../month-table-row';
 
 // ----------------------------------------------------------------------
 
@@ -41,98 +44,86 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 // ----------------------------------------------------------------------
 
 const FILTERS_OPTIONS = [
-  {
-    id: 'job_code',
-    type: 'input',
-    label: 'Code',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'name',
-    type: 'input',
-    label: 'Nom',
-    cols: 3,
-    width: 1,
-  },
   // {
-  //   id: 'type',
-  //   type: 'select',
-  //   options: DEDUCTIONS_TYPE_OPTIONS,
-  //   label: 'Type',
-  //   cols: 3,
-  //   width: 1,
+  //   id: 'designation',
+  //   type: 'input',
+  //   label: 'Designation',
+  //   cols: 12,
+  //   width: 0.24,
   // },
-  {
-    id: 'designation',
-    type: 'input',
-    label: 'Designation',
-    cols: 3,
-    width: 1,
-  },
   // {
-  //   id: 'absence',
+  //   id: 'status',
   //   type: 'select',
-  //   options: COMMUN_OUI_NON_OPTIONS,
-  //   label: 'Soumis aux absence',
+  //   options: DOCUMENT_STATUS_OPTIONS,
+  //   label: 'Etat',
   //   cols: 3,
   //   width: 1,
   // },
   // {
-  //   id: 'nature',
+  //   id: 'valideur',
   //   type: 'select',
-  //   options: DEDUCTIONS_NATURE_OPTIONS,
-  //   label: 'Nature',
+  //   options: PRODUCT_STOCK_OPTIONS,
+  //   label: 'Valideur',
   //   cols: 3,
   //   width: 1,
   // },
-  { id: 'created_at', type: 'date-range', label: 'Date de création', cols: 3 },
 
-  // { id: 'endDate', type: 'date', label: 'Date de début' },
+  {
+    id: 'created_at',
+    type: 'date-range',
+    label: 'Date de création',
+    cols: 3,
+    width: 1,
+  },
 ];
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 
-export function JobListView() {
+export function MonthListView() {
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: PAGE_SIZE,
   });
+  const { payrollMonths, payrollMonthsLoading, payrollMonthsCount } = useGetPayrollMonths({
+    limit: PAGE_SIZE,
+    offset: 0,
+  });
+  const [rowCount, setRowCount] = useState(payrollMonthsCount);
 
-  const { jobs, jobsLoading, jobsCount } = useGetJobs({ limit: 2, offset: 0 });
-  const [rowCount, setRowCount] = useState(jobsCount);
-
-  const [tableData, setTableData] = useState(jobs);
-
+  const [tableData, setTableData] = useState(payrollMonths);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (jobs.length) {
-      setTableData(jobs);
-      setRowCount(jobsCount);
+    if (payrollMonths.length) {
+      setTableData(payrollMonths);
+      setRowCount(payrollMonthsCount);
     }
-  }, [jobs, jobsCount]);
-
+  }, [payrollMonths, payrollMonthsCount]);
   const handleReset = useCallback(async () => {
-    setEditedFilters([]);
-    setPaginationModel({
-      page: 0,
-      pageSize: PAGE_SIZE,
-    });
-    const response = await getFiltredJobs({
-      limit: PAGE_SIZE,
-      offset: 0,
-    });
-    setTableData(response.data?.data?.records);
-    setRowCount(response.data?.data?.total);
+    try {
+      const response = await getFiltredPayrollMonths({
+        limit: PAGE_SIZE,
+        offset: 0,
+      });
+      setEditedFilters([]);
+      setPaginationModel({
+        page: 0,
+        pageSize: PAGE_SIZE,
+      });
+
+      setTableData(response.data?.data?.records);
+      setRowCount(response.data?.data?.total);
+    } catch (error) {
+      console.log('error in reset', error);
+    }
   }, []);
 
   const handleFilter = useCallback(
     async (data) => {
       try {
-        const response = await getFiltredJobs(data);
+        const response = await getFiltredPayrollMonths(data);
         setTableData(response.data?.data?.records);
         setRowCount(response.data?.data?.total);
       } catch (error) {
@@ -154,7 +145,7 @@ export function JobListView() {
         limit: newModel.pageSize,
         offset: newModel.page,
       };
-      const response = await getFiltredJobs(newData);
+      const response = await getFiltredPayrollMonths(newData);
       setTableData(response.data?.data?.records);
       setPaginationModel(newModel);
     } catch (error) {
@@ -168,70 +159,90 @@ export function JobListView() {
       field: 'id',
       headerName: 'ID',
       flex: 1,
-      width: 100,
+      minWidth: 70,
       hideable: false,
       renderCell: (params) => <RenderCellId params={params} href={paths.dashboard.root} />,
     },
     {
-      field: 'fonction_name',
-      headerName: 'Nom de la fonction',
+      field: 'company',
+      headerName: 'Societé',
       flex: 1,
-      minWidth: 320,
-      type: 'singleSelect',
-      renderCell: (params) => <RenderCellName params={params} />,
+      minWidth: 260,
+      hideable: false,
+      renderCell: (params) => <RenderCellCompany params={params} href={paths.dashboard.root} />,
     },
     {
-      field: 'site',
-      headerName: 'Site',
+      field: 'month',
+      headerName: 'Mois',
       flex: 1,
-      minWidth: 200,
-      type: 'singleSelect',
-      renderCell: (params) => <RenderCellSite params={params} />,
+      minWidth: 160,
+      hideable: false,
+      renderCell: (params) => <RenderCellMonth params={params} href={paths.dashboard.root} />,
+    },
+    {
+      field: 'year',
+      headerName: 'Année',
+      flex: 1,
+      minWidth: 160,
+
+      renderCell: (params) => <RenderCellYear params={params} />,
     },
 
     {
-      field: 'have_premium',
+      field: 'pp',
       headerName: 'Prime de présence',
       flex: 1,
       minWidth: 100,
-
-      type: 'singleSelect',
-
-      renderCell: (params) => <RenderCellPresentPrime params={params} />,
+      hideable: false,
+      renderCell: (params) => <RenderCellPP params={params} href={paths.dashboard.root} />,
     },
     {
-      field: 'premium_amount',
-      headerName: 'Montant',
+      field: 'prc',
+      headerName: 'PRC',
       flex: 1,
-
       minWidth: 100,
-
-      renderCell: (params) => <RenderCellAmount params={params} />,
+      hideable: false,
+      renderCell: (params) => <RenderCellPRC params={params} href={paths.dashboard.root} />,
     },
     {
-      field: 'key_post',
-      headerName: 'Poste clé',
+      field: 'pri',
+      headerName: 'PRI',
       flex: 1,
       minWidth: 100,
-
-      renderCell: (params) => <RenderCellKeyPost params={params} />,
+      hideable: false,
+      renderCell: (params) => <RenderCellPRI params={params} href={paths.dashboard.root} />,
+    },
+    {
+      field: 'max_point',
+      headerName: 'Point Maximum',
+      flex: 1,
+      minWidth: 100,
+      hideable: false,
+      renderCell: (params) => <RenderCellMaxPoint params={params} href={paths.dashboard.root} />,
+    },
+    {
+      field: 'min_point',
+      headerName: 'Point Plus Bas',
+      flex: 1,
+      minWidth: 100,
+      hideable: false,
+      renderCell: (params) => <RenderCellMinPoint params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'status',
       headerName: 'Etat',
       flex: 1,
       minWidth: 100,
-
-      renderCell: (params) => <RenderCellStatus params={params} />,
+      hideable: false,
+      renderCell: (params) => <RenderCellStatus params={params} href={paths.dashboard.root} />,
     },
-
     {
-      field: 'createdAt',
-      headerName: 'Date de création',
+      field: 'created_at',
+      headerName: 'Date de Création',
       flex: 1,
-      minWidth: 200,
-
-      renderCell: (params) => <RenderCellCreatedAt params={params} />,
+      minWidth: 160,
+      hideable: false,
+      renderCell: (params) => <RenderCellCreatedAt params={params} href={paths.dashboard.root} />,
     },
 
     {
@@ -245,30 +256,13 @@ export function JobListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => [
-        // TODO valider job
-        // <GridActionsLinkItem
-        //   showInMenu
-        //   icon={<Iconify icon="solar:eye-bold" />}
-        //   label="Valider"
-        //   // href={paths.dashboard.product.details(params.row.id)}
-        //   href={paths.dashboard.root}
-        // />,
         <GridActionsLinkItem
           showInMenu
-          icon={<Iconify icon="solar:pen-bold" />}
-          label="Modifier"
-          // href={paths.dashboard.product.edit(params.row.id)}
-          href={paths.dashboard.rh.fonction.editFonction(params.row.id)}
+          icon={<Iconify icon="solar:eye-bold" />}
+          label="View"
+          // href={paths.dashboard.product.details(params.row.id)}
+          href={paths.dashboard.root}
         />,
-
-        // <GridActionsCellItem
-        //   showInMenu
-        //   icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-        //   label="Archiver"
-        //   // onClick={() => handleDeleteRow(params.row.id)}
-        //   onClick={() => handleOpenConfirmArchiveRow(params.row.id)}
-        //   sx={{ color: 'error.main' }}
-        // />,
       ],
     },
   ];
@@ -281,20 +275,20 @@ export function JobListView() {
   return (
     <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
       <CustomBreadcrumbs
-        heading="List"
+        heading="Préparation paie"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           { name: 'Ressources humaine', href: paths.dashboard.root },
-          { name: 'Fonctions' },
+          { name: 'Préparation paie' },
         ]}
         action={
           <Button
             component={RouterLink}
-            href={paths.dashboard.rh.fonction.newFonctions}
+            href={paths.dashboard.rh.payrollManagement.newPreparation}
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
           >
-            Ajouter
+            Ajouter Mois
           </Button>
         }
         sx={{ mb: { xs: 3, md: 5 } }}
@@ -342,7 +336,7 @@ export function JobListView() {
           rows={tableData}
           rowCount={rowCount}
           columns={columns}
-          loading={jobsLoading}
+          loading={payrollMonthsLoading}
           getRowHeight={() => 'auto'}
           paginationModel={paginationModel}
           paginationMode="server"
