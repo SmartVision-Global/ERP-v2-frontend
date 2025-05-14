@@ -155,6 +155,14 @@ export function StoreListView() {
       renderCell: (params) => <RenderCellCode params={params} />,
     },
     {
+      field: 'type',
+      headerName: 'Type',
+      flex: 1,
+      minWidth: 160,
+      hideable: false,
+      renderCell: (params) => <RenderCellType params={params} />,
+    },
+    {
       field: 'name',
       headerName: 'Site',
       flex: 1,
