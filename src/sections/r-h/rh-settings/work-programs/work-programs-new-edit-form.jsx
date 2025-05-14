@@ -102,17 +102,15 @@ export function WorkProgramsNewEditForm({ currentProduct }) {
     watch,
     reset,
     handleSubmit,
-    formState: { isSubmitting, errors },
+    formState: { isSubmitting },
   } = methods;
-  console.log('errors', errors);
 
-  const { fields, append, remove, update } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: 'days',
     keyName: 'reactHookFormId',
   });
   const values = watch();
-  console.log('values', values);
 
   const onSubmit = handleSubmit(async (data) => {
     const updatedData = {
@@ -145,7 +143,6 @@ export function WorkProgramsNewEditForm({ currentProduct }) {
         starting_date: dayjs(data.starting_date).format('YYYY-MM-DD'),
         days: newDays,
       };
-      console.log('new data', newData);
 
       // await new Promise((resolve) => setTimeout(resolve, 500));
       if (currentProduct) {
@@ -169,7 +166,6 @@ export function WorkProgramsNewEditForm({ currentProduct }) {
       });
     }
   }, [currentProduct, methods]);
-  console.log('fields', fields);
 
   const handleRemove = useCallback(
     (ind) => {

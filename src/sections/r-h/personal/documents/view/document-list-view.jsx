@@ -44,11 +44,6 @@ import {
 
 // ----------------------------------------------------------------------
 
-const SEX_OPTIONS = [
-  { value: 'man', label: 'Homme' },
-  { value: 'woman', label: 'Femme' },
-];
-
 const HIDE_COLUMNS = { category: false };
 
 const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
@@ -154,45 +149,34 @@ export function DocumentListView() {
       field: 'type',
       headerName: 'Type',
       width: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellType params={params} />,
     },
     {
       field: 'lang',
       headerName: 'Langue',
       width: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
       renderCell: (params) => <RenderCellLang params={params} />,
     },
     {
       field: 'priority',
       headerName: 'Priorité',
       width: 210,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellPriority params={params} />,
     },
     {
       field: 'description',
       headerName: 'Description',
       width: 210,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellDescription params={params} />,
     },
     {
       field: 'comment',
       headerName: 'Commentaires',
       width: 210,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellComment params={params} />,
     },
 

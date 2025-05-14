@@ -16,7 +16,7 @@ import { RouterLink } from 'src/routes/components';
 import { CONFIG } from 'src/global-config';
 import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { ACTIF_NAMES, ABS_TYPE_OPTIONS, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
+import { ABS_TYPE_OPTIONS, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
 import {
   cancelLeaveAbesence,
   archiveLeaveAbesence,
@@ -60,13 +60,12 @@ export function LeaveAbsenceListView() {
   const { dataLookups } = useMultiLookups([
     { entity: 'personals', url: 'hr/lookups/personals' },
     { entity: 'sites', url: 'settings/lookups/sites' },
-    { entity: 'workshops', url: 'settings/lookups/workshops' },
-    { entity: 'jobs', url: 'hr/lookups/jobs' },
+    { entity: 'users', url: 'settings/lookups/users' },
   ]);
+
   const personals = dataLookups.personals;
   const sites = dataLookups.sites;
-  // const jobs = dataLookups.jobs;
-  // const workshops = dataLookups.workshops;
+  const users = dataLookups.users;
 
   const FILTERS_OPTIONS = [
     {
@@ -142,7 +141,8 @@ export function LeaveAbsenceListView() {
     {
       id: 'validated_by',
       type: 'select',
-      options: ACTIF_NAMES,
+      options: users,
+      serverData: true,
       label: 'Valideur',
       cols: 3,
       width: 1,
@@ -402,7 +402,7 @@ export function LeaveAbsenceListView() {
       getActions: (params) => {
         let actions = [];
         switch (params.row.status) {
-          case '1':
+          case 1:
             actions = [
               <GridActionsClickItem
                 showInMenu
@@ -431,7 +431,7 @@ export function LeaveAbsenceListView() {
               />,
             ];
             break;
-          case '2':
+          case 2:
             actions = [
               <GridActionsClickItem
                 showInMenu
@@ -447,7 +447,7 @@ export function LeaveAbsenceListView() {
               />,
             ];
             break;
-          case '3':
+          case 3:
             actions = [
               <GridActionsClickItem
                 showInMenu
@@ -457,7 +457,7 @@ export function LeaveAbsenceListView() {
               />,
             ];
             break;
-          case '4':
+          case 4:
             actions = [
               <GridActionsClickItem
                 showInMenu

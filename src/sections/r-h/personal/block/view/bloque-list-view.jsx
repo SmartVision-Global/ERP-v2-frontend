@@ -183,63 +183,49 @@ export function BloqueListView() {
       field: 'sex',
       headerName: 'Sex',
       width: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellPublish params={params} />,
     },
     {
       field: 'etat',
       headerName: 'Etat',
       width: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellPublish params={params} />,
     },
     {
       field: 'company',
       headerName: 'Entreprise',
       width: 210,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellCompany params={params} />,
     },
     {
       field: 'site',
       headerName: 'Site',
       width: 210,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellCompany params={params} />,
     },
     {
       field: 'fonction',
       headerName: 'Fonction',
       width: 210,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellCompany params={params} />,
     },
     {
       field: 'net',
       headerName: 'Salaire net á payer',
       width: 210,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellPrice params={params} />,
     },
     {
       field: 'contrat',
       headerName: 'Contrat',
       width: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellContract params={params} />,
     },
     {

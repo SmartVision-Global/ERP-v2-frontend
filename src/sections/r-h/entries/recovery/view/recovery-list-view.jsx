@@ -16,7 +16,7 @@ import { RouterLink } from 'src/routes/components';
 import { CONFIG } from 'src/global-config';
 import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { ACTIF_NAMES, RECOVERY_NATURE_OPTIONS, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
+import { RECOVERY_NATURE_OPTIONS, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
 import {
   cancelRecovery,
   archiveRecovery,
@@ -61,12 +61,11 @@ export function RecoveryListView() {
   const { dataLookups } = useMultiLookups([
     { entity: 'personals', url: 'hr/lookups/personals' },
     { entity: 'sites', url: 'settings/lookups/sites' },
-    { entity: 'workshops', url: 'settings/lookups/workshops' },
-    { entity: 'jobs', url: 'hr/lookups/jobs' },
+    { entity: 'users', url: 'settings/lookups/users' },
   ]);
   const personals = dataLookups.personals;
   const sites = dataLookups.sites;
-  // const jobs = dataLookups.jobs;
+  const users = dataLookups.users;
   // const workshops = dataLookups.workshops;
 
   const FILTERS_OPTIONS = [
@@ -144,7 +143,8 @@ export function RecoveryListView() {
     {
       id: 'validated_by',
       type: 'select',
-      options: ACTIF_NAMES,
+      options: users,
+      serverData: true,
       label: 'Valideur',
       cols: 3,
       width: 1,

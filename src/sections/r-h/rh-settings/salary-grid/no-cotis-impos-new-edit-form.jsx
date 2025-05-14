@@ -64,8 +64,6 @@ export function NoCotisImposNewEditForm() {
   };
 
   const handleSelectProduct = (product) => {
-    console.log('product', product);
-
     const itemExists = fields.some((field) => field.id === product.id);
 
     if (!itemExists) {
@@ -80,7 +78,6 @@ export function NoCotisImposNewEditForm() {
       confirmDialog.onTrue();
     }
   };
-  console.log('FIELDS', fields);
   // const handleRowUpdate = useCallback(
   //   (newRow) => {
   //     const index = fields.findIndex((field) => field.id === newRow.id);

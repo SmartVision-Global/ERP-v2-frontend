@@ -15,7 +15,6 @@ export default function Page() {
   const { id = '' } = useParams();
 
   const { personal } = useGetPersonal(id);
-  console.log('ppppppp', personal);
 
   return (
     <>

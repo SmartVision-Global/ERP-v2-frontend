@@ -28,11 +28,9 @@ export function TableToolbarCustom({
   setPaginationModel,
   paginationModel,
 }) {
-  console.log('filters', filters);
   const rangeCalendarPicker = useDateRangePicker(dayjs(new Date('2024/08/08')), null);
 
   const [selectedOptions, setSelectedOptions] = useState(null);
-  console.log('selectedOptions', selectedOptions);
 
   const getInput = useCallback(
     (event, type) => {
@@ -42,8 +40,6 @@ export function TableToolbarCustom({
         const updatedFilters = prevFilters.filter((item) => item.field !== name);
 
         if (value !== '') {
-          console.log('vaaa', value);
-
           updatedFilters.push({ field: name, value });
         }
 

@@ -1,5 +1,5 @@
-import useSWR from 'swr';
 import { useMemo } from 'react';
+import useSWR, { mutate } from 'swr';
 
 // import { fetcher, endpoints } from 'src/lib/axios';
 import axios, { fetcher, endpoints } from 'src/lib/axios';
@@ -7,9 +7,9 @@ import axios, { fetcher, endpoints } from 'src/lib/axios';
 // ----------------------------------------------------------------------
 
 const swrOptions = {
-  revalidateIfStale: false,
-  revalidateOnFocus: false,
-  revalidateOnReconnect: false,
+  revalidateIfStale: true,
+  revalidateOnFocus: true,
+  revalidateOnReconnect: true,
 };
 
 const WORKSHOP_ENDPOINT = endpoints.workshop;
@@ -61,5 +61,5 @@ export async function createWorkshop(data) {
    */
   // const data = { directionData };
   await axios.post(WORKSHOP_ENDPOINT, data);
-  //   mutate(endpoints.site);
+  mutate(WORKSHOP_ENDPOINT);
 }

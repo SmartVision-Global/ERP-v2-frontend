@@ -28,7 +28,6 @@ import {
   RenderCellAbs,
   RenderCellIrg,
   RenderCellNet,
-  RenderCellYear,
   RenderCellMonth,
   RenderCellCompany,
   RenderCellOverdays,
@@ -43,11 +42,6 @@ import {
 } from '../calculation-table-row';
 
 // ----------------------------------------------------------------------
-
-const SEX_OPTIONS = [
-  { value: 'man', label: 'Homme' },
-  { value: 'woman', label: 'Femme' },
-];
 
 const HIDE_COLUMNS = { category: false };
 
@@ -147,9 +141,6 @@ export function CalculationListView() {
       flex: 1,
       minWidth: 160,
       type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellYear params={params} />,
     },
 
     {

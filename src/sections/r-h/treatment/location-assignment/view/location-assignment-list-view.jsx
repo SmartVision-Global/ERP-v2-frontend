@@ -42,11 +42,6 @@ import {
 
 // ----------------------------------------------------------------------
 
-const SEX_OPTIONS = [
-  { value: 'man', label: 'Homme' },
-  { value: 'woman', label: 'Femme' },
-];
-
 const HIDE_COLUMNS = { category: false };
 
 const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
@@ -222,9 +217,7 @@ export function LocationAssignmentListView() {
       headerName: 'Site',
       flex: 1,
       minWidth: 150,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellSite params={params} />,
     },
     {
@@ -265,9 +258,7 @@ export function LocationAssignmentListView() {
       headerName: 'Observations',
       flex: 1,
       minWidth: 260,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellObservation params={params} />,
     },
 
@@ -289,9 +280,7 @@ export function LocationAssignmentListView() {
       headerName: 'Date de création',
       flex: 1,
       minWidth: 150,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
     },
 

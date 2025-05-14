@@ -43,11 +43,6 @@ import {
 
 // ----------------------------------------------------------------------
 
-const SEX_OPTIONS = [
-  { value: 'man', label: 'Homme' },
-  { value: 'woman', label: 'Femme' },
-];
-
 const HIDE_COLUMNS = { category: false };
 
 const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
@@ -163,63 +158,49 @@ export function DasListView() {
       field: 'year_ref',
       headerName: 'Année Réf',
       width: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellYearRef params={params} />,
     },
     {
       field: 'etat',
       headerName: 'Centre Payeur',
       width: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellBillCenter params={params} />,
     },
     {
       field: 'company',
       headerName: 'Dénomination',
       width: 210,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellCompany params={params} />,
     },
     {
       field: 'site',
       headerName: 'Nom ou Raison Sociale',
       width: 210,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellCompany params={params} />,
     },
     {
       field: 'adress',
       headerName: 'Adresse',
       width: 210,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellCompany params={params} />,
     },
     {
       field: 'net',
       headerName: 'Montant Total Trimstre 1',
       width: 210,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellPrice params={params} />,
     },
     {
       field: 'contrat',
       headerName: 'Montant Total Trimstre 2',
       width: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellPrice params={params} />,
     },
     {

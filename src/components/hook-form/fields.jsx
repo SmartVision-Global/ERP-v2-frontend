@@ -10,7 +10,7 @@ import { RHFLookup, RHFLookupMultiSelect } from './rhf-lookup';
 import { RHFCheckbox, RHFMultiCheckbox } from './rhf-checkbox';
 import { RHFMultiCheckboxLookup } from './rhf-multicheckbox-lookup';
 import { RHFUpload, RHFUploadBox, RHFUploadAvatar } from './rhf-upload';
-import { RHFDatePicker, RHFMobileDateTimePicker } from './rhf-date-picker';
+import { RHFDatePicker, RHFDateTimePicker, RHFMobileDateTimePicker } from './rhf-date-picker';
 
 // ----------------------------------------------------------------------
 
@@ -18,6 +18,8 @@ export const Field = {
   Text: RHFTextField,
   Number: RHFNumberField,
   DatePicker: RHFDatePicker,
+  DateTimePicker: RHFDateTimePicker,
+
   TimePicker: RHFTimePicker,
 
   Upload: RHFUpload,

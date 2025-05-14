@@ -37,8 +37,6 @@ export function ImposCotisNewEditForm() {
     setOpenProductDialog(false);
   };
   const handleSelectProduct = (product) => {
-    console.log('product', product);
-
     const itemExists = fields.some((field) => field.id === product.id);
 
     if (!itemExists) {

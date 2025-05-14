@@ -150,7 +150,6 @@ export function SalaryGridNewEditForm({ currentProduct }) {
   } = methods;
 
   const values = watch();
-  console.log('val', values);
 
   const onSubmit = handleSubmit(async (data) => {
     const deductionsCompensationsItems = [

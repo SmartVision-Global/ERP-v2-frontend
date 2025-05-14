@@ -476,7 +476,8 @@ export const dashboardRoutes = [
               },
 
               { path: 'preparation', element: <PageRhPayrollManagementPreparation /> },
-              { path: 'preparation/new', element: <ComingSoonPage /> },
+              // { path: 'preparation/new', element: <ComingSoonPage /> },
+              { path: 'preparation/new', element: <PageRhPayrollManagementCalculationNew /> },
             ],
           },
         ],

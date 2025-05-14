@@ -12,7 +12,7 @@ import { TextField, FormControl, InputAdornment } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetSites } from 'src/actions/site';
+import { useGetWorkshops } from 'src/actions/workshop';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { PRODUCT_STOCK_OPTIONS, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
 
@@ -27,7 +27,7 @@ import {
   RenderCellAddress,
   RenderCellCreatedAt,
   RenderCellDesignation,
-} from '../site-table-row';
+} from '../workshop-table-row';
 
 // ----------------------------------------------------------------------
 
@@ -77,20 +77,20 @@ const FILTERS_OPTIONS = [
   },
 ];
 
-export function SiteListView() {
-  const { sites, sitesLoading } = useGetSites();
+export function WorkshopListView() {
+  const { ateliers, ateliersLoading } = useGetWorkshops();
 
-  const [tableData, setTableData] = useState(sites);
+  const [tableData, setTableData] = useState(ateliers);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState([]);
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (sites.length) {
-      setTableData(sites);
+    if (ateliers.length) {
+      setTableData(ateliers);
     }
-  }, [sites]);
+  }, [ateliers]);
   const handleReset = () => {
     setEditedFilters([]);
   };
@@ -113,7 +113,7 @@ export function SiteListView() {
       ),
     },
     {
-      field: 'name',
+      field: 'site',
       headerName: 'Site',
       flex: 1,
       minWidth: 160,
@@ -135,7 +135,7 @@ export function SiteListView() {
       field: 'address',
       headerName: 'Addresse',
       flex: 1,
-      minWidth: 280,
+      width: 110,
 
       renderCell: (params) => <RenderCellAddress params={params} />,
     },
@@ -160,13 +160,13 @@ export function SiteListView() {
         heading="List"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Ressources humaine', href: paths.dashboard.root },
-          { name: 'Zones' },
+          // { name: 'Ressources humaine', href: paths.dashboard.root },
+          { name: 'Ateliers' },
         ]}
         action={
           <Button
             component={RouterLink}
-            href={paths.dashboard.settings.site.newSite}
+            href={paths.dashboard.settings.workshop.newWorkshop}
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
           >
@@ -221,7 +221,7 @@ export function SiteListView() {
           disableRowSelectionOnClick
           rows={dataFiltered}
           columns={columns}
-          loading={sitesLoading}
+          loading={ateliersLoading}
           getRowHeight={() => 'auto'}
           pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
           initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}

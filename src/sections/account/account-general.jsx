@@ -46,9 +46,7 @@ export const UpdateUserSchema = zod.object({
 // ----------------------------------------------------------------------
 
 export function AccountGeneral() {
-  // const { user } = useMockedUser();
   const { user } = useAuthContext();
-  // console.log('user', user2);
 
   const currentUser = {
     full_name: user?.full_name,

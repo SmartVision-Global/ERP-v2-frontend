@@ -213,17 +213,7 @@ export function JobListView() {
       type: 'singleSelect',
       renderCell: (params) => <RenderCellSite params={params} />,
     },
-    // {
-    //   field: 'salary_grids',
-    //   headerName: 'Grille de salaire',
-    //   flex: 1,
-    //   minWidth: 80,
 
-    //   type: 'singleSelect',
-    //   editable: true,
-    //   valueOptions: SEX_OPTIONS,
-    //   renderCell: (params) => <RenderCellSalaryGrid params={params} />,
-    // },
     {
       field: 'have_premium',
       headerName: 'Prime de présence',

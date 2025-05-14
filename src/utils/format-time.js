@@ -291,3 +291,19 @@ export function fSub({
 
   return result;
 }
+
+export function calculateDifference(startDate, endDate) {
+  const start = dayjs(startDate);
+  const end = dayjs(endDate);
+  const diff = dayjs.duration(end.diff(start));
+
+  const days = Math.floor(diff.asDays());
+  const hours = diff.hours();
+  const minutes = diff.minutes();
+
+  return {
+    days,
+    hours,
+    minutes,
+  };
+}

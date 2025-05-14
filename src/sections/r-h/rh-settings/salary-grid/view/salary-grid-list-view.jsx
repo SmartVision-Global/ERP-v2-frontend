@@ -41,11 +41,6 @@ import {
 
 // ----------------------------------------------------------------------
 
-const SEX_OPTIONS = [
-  { value: 'man', label: 'Homme' },
-  { value: 'woman', label: 'Femme' },
-];
-
 const HIDE_COLUMNS = { category: false };
 
 const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
@@ -204,9 +199,7 @@ export function SalaryGridListView() {
       headerName: 'Salaire de base',
       flex: 1,
       minWidth: 160,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellBaseSalary params={params} />,
     },
     {
@@ -262,9 +255,7 @@ export function SalaryGridListView() {
       headerName: 'Salaire cotisable',
       flex: 1,
       minWidth: 160,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellSumContributor params={params} />,
     },
     {
@@ -272,9 +263,7 @@ export function SalaryGridListView() {
       headerName: 'Salaire de poste',
       flex: 1,
       minWidth: 160,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellPostSalary params={params} />,
     },
     {
@@ -282,9 +271,7 @@ export function SalaryGridListView() {
       headerName: 'Salaire imposable',
       flex: 1,
       minWidth: 160,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellSumTaxable params={params} />,
     },
     {
@@ -292,9 +279,7 @@ export function SalaryGridListView() {
       headerName: 'Retenue IRG',
       flex: 1,
       minWidth: 160,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellIrg params={params} />,
     },
     {
@@ -302,9 +287,7 @@ export function SalaryGridListView() {
       headerName: 'Salaire Net',
       flex: 1,
       minWidth: 160,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellNetSalary params={params} />,
     },
 
@@ -313,9 +296,7 @@ export function SalaryGridListView() {
       headerName: 'Salaire Net a payer',
       flex: 1,
       minWidth: 160,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellNetSalaryPayable params={params} />,
     },
 
@@ -324,9 +305,7 @@ export function SalaryGridListView() {
       headerName: 'Date de création',
       flex: 1,
       minWidth: 150,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
     },
 
