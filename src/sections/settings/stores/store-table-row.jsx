@@ -10,11 +10,11 @@ import { fDate, fTime } from 'src/utils/format-time';
 // ----------------------------------------------------------------------
 
 export function RenderCellSite({ params }) {
-  return <Typography variant="body2">{params.row?.name}</Typography>;
+  return <Typography variant="body2">{params.row.site?.name}</Typography>;
 }
 
 export function RenderCellCode({ params }) {
-  return <Typography variant="body2">{params.row?.code}</Typography>;
+  return <Typography variant="body2">{params.row?.store_code}</Typography>;
 }
 
 export function RenderCellDesignation({ params }) {

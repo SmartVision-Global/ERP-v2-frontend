@@ -27,9 +27,7 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import {
   RenderCellId,
   RenderCellSite,
-  RenderCellAddress,
   RenderCellCreatedAt,
-  RenderCellDesignation,
   RenderCellType,
   RenderCellCode,
 } from '../store-table-row';
@@ -173,26 +171,7 @@ export function StoreListView() {
         <RenderCellSite params={params} href={paths.dashboard.root} />
       ),
     },
-    {
-      field: 'designation',
-      headerName: 'Designation',
-      flex: 1,
-      width: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellDesignation params={params} />,
-    },
-    {
-      field: 'address',
-      headerName: 'Addresse',
-      flex: 1,
-      minWidth: 280,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellAddress params={params} />,
-    },
+    
     {
       field: 'createdAt',
       headerName: 'Date de création',
