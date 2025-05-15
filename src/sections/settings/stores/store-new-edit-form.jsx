@@ -25,7 +25,9 @@ export const NewProductSchema = zod.object({
   address: zod.string().min(1, { message: 'Address is required!' }),
   site_id: zod.string().min(1, { message: 'Site is required!' }),
   type_store: zod.string().min(1, { message: 'Type is required!' }),
-  phone: zod.string().min(1, { message: 'Telephone is Required!' }),
+  phone: zod
+    .string()
+    .regex(/^0[765]\d{8}$/, 'Phone number must start with 07, 06, or 05 and be 10 digits'),
   type: zod.string().min(1, { message: 'Type is required!' }),
 });
 
