@@ -61,7 +61,7 @@ export function SalaryGridListView() {
   const [rowCount, setRowCount] = useState(salaryGridsCount);
   const [tableData, setTableData] = useState(salaryGrids);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
-  const [editedFilters, setEditedFilters] = useState([]);
+  const [editedFilters, setEditedFilters] = useState({});
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
   const { dataLookups } = useMultiLookups([
     { entity: 'rungs', url: 'hr/lookups/identification/rung' },
@@ -127,7 +127,7 @@ export function SalaryGridListView() {
         limit: PAGE_SIZE,
         offset: 0,
       });
-      setEditedFilters([]);
+      setEditedFilters({});
       setPaginationModel({
         page: 0,
         pageSize: PAGE_SIZE,
@@ -154,13 +154,13 @@ export function SalaryGridListView() {
   );
   const handlePaginationModelChange = async (newModel) => {
     try {
-      const newEditedInput = editedFilters.filter((item) => item.value !== '');
-      const result = newEditedInput.reduce((acc, item) => {
-        acc[item.field] = item.value;
-        return acc;
-      }, {});
+      // const newEditedInput = editedFilters.filter((item) => item.value !== '');
+      // const result = newEditedInput.reduce((acc, item) => {
+      //   acc[item.field] = item.value;
+      //   return acc;
+      // }, {});
       const newData = {
-        ...result,
+        ...editedFilters,
         limit: newModel.pageSize,
         offset: newModel.page,
       };

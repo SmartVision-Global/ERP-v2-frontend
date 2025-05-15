@@ -148,7 +148,7 @@ export function ActifListView() {
   ];
   const [tableData, setTableData] = useState(personals);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
-  const [editedFilters, setEditedFilters] = useState([]);
+  const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
@@ -165,7 +165,7 @@ export function ActifListView() {
         limit: PAGE_SIZE,
         offset: 0,
       });
-      setEditedFilters([]);
+      setEditedFilters({});
       setPaginationModel({
         page: 0,
         pageSize: PAGE_SIZE,
@@ -192,13 +192,13 @@ export function ActifListView() {
   );
   const handlePaginationModelChange = async (newModel) => {
     try {
-      const newEditedInput = editedFilters.filter((item) => item.value !== '');
-      const result = newEditedInput.reduce((acc, item) => {
-        acc[item.field] = item.value;
-        return acc;
-      }, {});
+      // const newEditedInput = editedFilters.filter((item) => item.value !== '');
+      // const result = newEditedInput.reduce((acc, item) => {
+      //   acc[item.field] = item.value;
+      //   return acc;
+      // }, {});
       const newData = {
-        ...result,
+        ...editedFilters,
         limit: newModel.pageSize,
         offset: newModel.page,
       };

@@ -81,7 +81,7 @@ export function ServiceListView() {
 
   const [tableData, setTableData] = useState(services);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
-  const [editedFilters, setEditedFilters] = useState([]);
+  const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
@@ -91,7 +91,7 @@ export function ServiceListView() {
     }
   }, [services]);
   const handleReset = () => {
-    setEditedFilters([]);
+    setEditedFilters({});
   };
 
   const dataFiltered = tableData;
@@ -173,12 +173,6 @@ export function ServiceListView() {
           flexDirection: { md: 'column' },
         }}
       >
-        {/* <ActifTableToolbar
-            filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={setEditedFilters}
-            onReset={handleReset}
-          /> */}
         <TableToolbarCustom
           filterOptions={FILTERS_OPTIONS}
           filters={editedFilters}

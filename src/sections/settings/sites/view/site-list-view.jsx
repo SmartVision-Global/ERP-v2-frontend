@@ -85,7 +85,7 @@ export function SiteListView() {
 
   const [tableData, setTableData] = useState(sites);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
-  const [editedFilters, setEditedFilters] = useState([]);
+  const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
@@ -95,7 +95,7 @@ export function SiteListView() {
     }
   }, [sites]);
   const handleReset = () => {
-    setEditedFilters([]);
+    setEditedFilters({});
   };
 
   const dataFiltered = tableData;
@@ -186,12 +186,6 @@ export function SiteListView() {
           flexDirection: { md: 'column' },
         }}
       >
-        {/* <ActifTableToolbar
-            filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={setEditedFilters}
-            onReset={handleReset}
-          /> */}
         <TableToolbarCustom
           filterOptions={FILTERS_OPTIONS}
           filters={editedFilters}

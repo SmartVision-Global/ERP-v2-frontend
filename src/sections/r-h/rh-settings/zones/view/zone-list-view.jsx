@@ -92,7 +92,7 @@ export function ZoneListView() {
   const [tableData, setTableData] = useState(zones);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
-  const [editedFilters, setEditedFilters] = useState([]);
+  const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
@@ -102,7 +102,7 @@ export function ZoneListView() {
     }
   }, [zones]);
   const handleReset = () => {
-    setEditedFilters([]);
+    setEditedFilters({});
   };
 
   const dataFiltered = tableData;
@@ -305,12 +305,6 @@ export function ZoneListView() {
             flexDirection: { md: 'column' },
           }}
         >
-          {/* <ActifTableToolbar
-            filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={setEditedFilters}
-            onReset={handleReset}
-          /> */}
           <TableToolbarCustom
             // filterOptions={FILTERS_OPTIONS}
             filters={editedFilters}

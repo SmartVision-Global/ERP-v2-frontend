@@ -82,7 +82,7 @@ export function WorkshopListView() {
 
   const [tableData, setTableData] = useState(ateliers);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
-  const [editedFilters, setEditedFilters] = useState([]);
+  const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
@@ -92,7 +92,7 @@ export function WorkshopListView() {
     }
   }, [ateliers]);
   const handleReset = () => {
-    setEditedFilters([]);
+    setEditedFilters({});
   };
 
   const dataFiltered = tableData;
@@ -183,12 +183,6 @@ export function WorkshopListView() {
           flexDirection: { md: 'column' },
         }}
       >
-        {/* <ActifTableToolbar
-            filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={setEditedFilters}
-            onReset={handleReset}
-          /> */}
         <TableToolbarCustom
           filterOptions={FILTERS_OPTIONS}
           filters={editedFilters}

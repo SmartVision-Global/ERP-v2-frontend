@@ -94,7 +94,7 @@ export function RenewalContractListView() {
 
   const [tableData, setTableData] = useState(contracts);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
-  const [editedFilters, setEditedFilters] = useState([]);
+  const [editedFilters, setEditedFilters] = useState({});
   const [selectedRow, setSelectedRow] = useState('');
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
@@ -111,7 +111,7 @@ export function RenewalContractListView() {
         limit: PAGE_SIZE,
         offset: 0,
       });
-      setEditedFilters([]);
+      setEditedFilters({});
       setPaginationModel({
         page: 0,
         pageSize: PAGE_SIZE,
@@ -138,13 +138,13 @@ export function RenewalContractListView() {
   );
   const handlePaginationModelChange = async (newModel) => {
     try {
-      const newEditedInput = editedFilters.filter((item) => item.value !== '');
-      const result = newEditedInput.reduce((acc, item) => {
-        acc[item.field] = item.value;
-        return acc;
-      }, {});
+      // const newEditedInput = editedFilters.filter((item) => item.value !== '');
+      // const result = newEditedInput.reduce((acc, item) => {
+      //   acc[item.field] = item.value;
+      //   return acc;
+      // }, {});
       const newData = {
-        ...result,
+        ...editedFilters,
         limit: newModel.pageSize,
         offset: newModel.page,
       };

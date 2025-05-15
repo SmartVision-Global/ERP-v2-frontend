@@ -82,7 +82,7 @@ export function MachineListView() {
 
   const [tableData, setTableData] = useState(machines);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
-  const [editedFilters, setEditedFilters] = useState([]);
+  const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
@@ -92,7 +92,7 @@ export function MachineListView() {
     }
   }, [machines]);
   const handleReset = () => {
-    setEditedFilters([]);
+    setEditedFilters({});
   };
 
   const dataFiltered = tableData;

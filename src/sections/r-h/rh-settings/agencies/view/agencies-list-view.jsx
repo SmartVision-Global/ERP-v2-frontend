@@ -15,7 +15,6 @@ import { RouterLink } from 'src/routes/components';
 
 import { useGetAgencies } from 'src/actions/agency';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { PRODUCT_STOCK_OPTIONS, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -41,47 +40,6 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 // ----------------------------------------------------------------------
 
-const FILTERS_OPTIONS = [
-  {
-    id: 'designation',
-    type: 'input',
-    label: 'Designation',
-    cols: 12,
-    width: 0.24,
-  },
-  {
-    id: 'status',
-    type: 'select',
-    options: DOCUMENT_STATUS_OPTIONS,
-    label: 'Etat',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'valideur',
-    type: 'select',
-    options: PRODUCT_STOCK_OPTIONS,
-    label: 'Valideur',
-    cols: 3,
-    width: 1,
-  },
-
-  {
-    id: 'start_date',
-    type: 'date',
-    label: 'Date début de création',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'end_date',
-    type: 'date',
-    label: 'Date fin de création',
-    cols: 3,
-    width: 1,
-  },
-];
-
 export function AgenciesListView() {
   const confirmDialog = useBoolean();
 
@@ -90,7 +48,7 @@ export function AgenciesListView() {
   const [tableData, setTableData] = useState(agencies);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
-  const [editedFilters, setEditedFilters] = useState([]);
+  const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
@@ -100,21 +58,10 @@ export function AgenciesListView() {
     }
   }, [agencies]);
   const handleReset = () => {
-    setEditedFilters([]);
+    setEditedFilters({});
   };
 
   const dataFiltered = tableData;
-
-  const handleDeleteRow = useCallback(
-    (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-
-      toast.success('Delete success!');
-
-      setTableData(deleteRow);
-    },
-    [tableData]
-  );
 
   const handleDeleteRows = useCallback(() => {
     const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
@@ -182,30 +129,6 @@ export function AgenciesListView() {
         <RenderCellUsername params={params} href={paths.dashboard.root} />
       ),
     },
-    // {
-    //   field: 'salary_rate',
-    //   headerName: 'Taux Salarié',
-    //   //   flex: 0.5,
-    //   flex: 1,
-    //   minWidth: 100,
-    //   hideable: false,
-    //   renderCell: (params) => (
-    //     // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-    //     <RenderCellDesignation params={params} href={paths.dashboard.root} />
-    //   ),
-    // },
-    // {
-    //   field: 'enpos',
-    //   headerName: 'ENPOS',
-    //   //   flex: 0.5,
-    //   flex: 1,
-    //   minWidth: 100,
-    //   hideable: false,
-    //   renderCell: (params) => (
-    //     // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-    //     <RenderCellDesignation params={params} href={paths.dashboard.root} />
-    //   ),
-    // },
 
     {
       field: 'createdAt',
@@ -312,12 +235,6 @@ export function AgenciesListView() {
             flexDirection: { md: 'column' },
           }}
         >
-          {/* <ActifTableToolbar
-            filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={setEditedFilters}
-            onReset={handleReset}
-          /> */}
           <TableToolbarCustom
             // filterOptions={FILTERS_OPTIONS}
             filters={editedFilters}

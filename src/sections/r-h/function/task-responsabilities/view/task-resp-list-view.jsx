@@ -52,7 +52,7 @@ export function TaskRespListView() {
     page: 0,
     pageSize: 2,
   });
-  const [editedFilters, setEditedFilters] = useState([]);
+  const [editedFilters, setEditedFilters] = useState({});
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
@@ -75,7 +75,7 @@ export function TaskRespListView() {
         limit: 2,
         offset: 0,
       });
-      setEditedFilters([]);
+      setEditedFilters({});
       setPaginationModel({
         page: 0,
         pageSize: 2,
@@ -160,13 +160,13 @@ export function TaskRespListView() {
 
   const handlePaginationModelChange = async (newModel) => {
     try {
-      const newEditedInput = editedFilters.filter((item) => item.value !== '');
-      const result = newEditedInput.reduce((acc, item) => {
-        acc[item.field] = item.value;
-        return acc;
-      }, {});
+      // const newEditedInput = editedFilters.filter((item) => item.value !== '');
+      // const result = newEditedInput.reduce((acc, item) => {
+      //   acc[item.field] = item.value;
+      //   return acc;
+      // }, {});
       const newData = {
-        ...result,
+        ...editedFilters,
         limit: newModel.pageSize,
         offset: newModel.page,
       };

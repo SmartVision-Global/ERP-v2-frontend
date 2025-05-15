@@ -82,7 +82,7 @@ export function EntrepriseListView() {
 
   const [tableData, setTableData] = useState(societies);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
-  const [editedFilters, setEditedFilters] = useState([]);
+  const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
@@ -92,7 +92,7 @@ export function EntrepriseListView() {
     }
   }, [societies]);
   const handleReset = () => {
-    setEditedFilters([]);
+    setEditedFilters({});
   };
 
   const dataFiltered = tableData;
@@ -218,12 +218,6 @@ export function EntrepriseListView() {
           flexDirection: { md: 'column' },
         }}
       >
-        {/* <ActifTableToolbar
-            filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={setEditedFilters}
-            onReset={handleReset}
-          /> */}
         <TableToolbarCustom
           filterOptions={FILTERS_OPTIONS}
           filters={editedFilters}

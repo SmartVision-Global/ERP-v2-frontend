@@ -68,7 +68,7 @@ export function DocumentsListView() {
   const confirmDialog = useBoolean();
 
   const [tableData, setTableData] = useState(_invoices);
-  const [editedFilters, setEditedFilters] = useState([]);
+  const [editedFilters, setEditedFilters] = useState({});
 
   const filters = useSetState({
     name: '',
@@ -101,50 +101,9 @@ export function DocumentsListView() {
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
-  // const getInvoiceLength = (status) => tableData.filter((item) => item.status === status).length;
   const handleReset = () => {
-    setEditedFilters([]);
+    setEditedFilters({});
   };
-  //   const getTotalAmount = (status) =>
-  //     sumBy(
-  //       tableData.filter((item) => item.status === status),
-  //       (invoice) => invoice.totalAmount
-  //     );
-
-  //   const getPercentByStatus = (status) => (getInvoiceLength(status) / tableData.length) * 100;
-
-  // const TABS = [
-  //   {
-  //     value: 'all',
-  //     label: 'All',
-  //     color: 'default',
-  //     count: tableData.length,
-  //   },
-  //   {
-  //     value: 'paid',
-  //     label: 'Paid',
-  //     color: 'success',
-  //     count: getInvoiceLength('paid'),
-  //   },
-  //   {
-  //     value: 'pending',
-  //     label: 'Pending',
-  //     color: 'warning',
-  //     count: getInvoiceLength('pending'),
-  //   },
-  //   {
-  //     value: 'overdue',
-  //     label: 'Overdue',
-  //     color: 'error',
-  //     count: getInvoiceLength('overdue'),
-  //   },
-  //   {
-  //     value: 'draft',
-  //     label: 'Draft',
-  //     color: 'default',
-  //     count: getInvoiceLength('draft'),
-  //   },
-  // ];
 
   const handleDeleteRow = useCallback(
     (id) => {
@@ -168,14 +127,6 @@ export function DocumentsListView() {
 
     table.onUpdatePageDeleteRows(dataInPage.length, dataFiltered.length);
   }, [dataFiltered.length, dataInPage.length, table, tableData]);
-
-  // const handleFilterStatus = useCallback(
-  //   (event, newValue) => {
-  //     table.onResetPage();
-  //     updateFilters({ status: newValue });
-  //   },
-  //   [updateFilters, table]
-  // );
 
   const renderConfirmDialog = () => (
     <ConfirmDialog
@@ -225,96 +176,7 @@ export function DocumentsListView() {
           sx={{ mb: { xs: 3, md: 5 } }}
         />
 
-        {/* <Card sx={{ mb: { xs: 3, md: 5 } }}>
-          <Scrollbar sx={{ minHeight: 108 }}>
-            <Stack
-              divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
-              sx={{ py: 2, flexDirection: 'row' }}
-            >
-              <InvoiceAnalytic
-                title="Total"
-                total={tableData.length}
-                percent={100}
-                price={sumBy(tableData, (invoice) => invoice.totalAmount)}
-                icon="solar:bill-list-bold-duotone"
-                color={theme.vars.palette.info.main}
-              />
-
-              <InvoiceAnalytic
-                title="Paid"
-                total={getInvoiceLength('paid')}
-                percent={getPercentByStatus('paid')}
-                price={getTotalAmount('paid')}
-                icon="solar:file-check-bold-duotone"
-                color={theme.vars.palette.success.main}
-              />
-
-              <InvoiceAnalytic
-                title="Pending"
-                total={getInvoiceLength('pending')}
-                percent={getPercentByStatus('pending')}
-                price={getTotalAmount('pending')}
-                icon="solar:sort-by-time-bold-duotone"
-                color={theme.vars.palette.warning.main}
-              />
-
-              <InvoiceAnalytic
-                title="Overdue"
-                total={getInvoiceLength('overdue')}
-                percent={getPercentByStatus('overdue')}
-                price={getTotalAmount('overdue')}
-                icon="solar:bell-bing-bold-duotone"
-                color={theme.vars.palette.error.main}
-              />
-
-              <InvoiceAnalytic
-                title="Draft"
-                total={getInvoiceLength('draft')}
-                percent={getPercentByStatus('draft')}
-                price={getTotalAmount('draft')}
-                icon="solar:file-corrupted-bold-duotone"
-                color={theme.vars.palette.text.secondary}
-              />
-            </Stack>
-          </Scrollbar>
-        </Card> */}
-
         <Card>
-          {/* <Tabs
-            value={currentFilters.status}
-            onChange={handleFilterStatus}
-            sx={{
-              px: 2.5,
-              boxShadow: `inset 0 -2px 0 0 ${varAlpha(theme.vars.palette.grey['500Channel'], 0.08)}`,
-            }}
-          >
-            {TABS.map((tab) => (
-              <Tab
-                key={tab.value}
-                value={tab.value}
-                label={tab.label}
-                iconPosition="end"
-                icon={
-                  <Label
-                    variant={
-                      ((tab.value === 'all' || tab.value === currentFilters.status) && 'filled') ||
-                      'soft'
-                    }
-                    color={tab.color}
-                  >
-                    {tab.count}
-                  </Label>
-                }
-              />
-            ))}
-          </Tabs> */}
-
-          {/* <DocumentTableToolbar
-            filters={filters}
-            dateError={dateError}
-            onResetPage={table.onResetPage}
-            options={{ services: INVOICE_SERVICE_OPTIONS.map((option) => option.name) }}
-          /> */}
           <TableToolbarCustom
             filterOptions={FILTERS_OPTIONS}
             filters={editedFilters}
