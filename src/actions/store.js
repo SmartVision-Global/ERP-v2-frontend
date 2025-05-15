@@ -16,8 +16,8 @@ const STORE_ENDPOINT = endpoints.store;
 
 // ----------------------------------------------------------------------
 
-export function useGetStores() {
-  const url = endpoints.store;
+export function useGetStores(params) {
+  const url = params ? [endpoints.store, { params }] : endpoints.store;
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 

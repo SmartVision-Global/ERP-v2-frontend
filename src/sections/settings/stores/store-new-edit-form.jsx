@@ -19,73 +19,71 @@ import { useMultiLookups } from 'src/actions/lookups';
 import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 
-export const NewProductSchema = zod.object({
+export const StoreSchema = zod.object({
   store_code: zod.string().min(1, { message: 'Code is required!' }),
   designation: zod.string().optional(),
   address: zod.string().min(1, { message: 'Address is required!' }),
   site_id: zod.string().min(1, { message: 'Site is required!' }),
-  type_store: zod.string().min(1, { message: 'Type is required!' }),
-  phone: zod.string().min(1, { message: 'Telephone is Required!' }),
+  type_store: zod.string().min(1, { message: 'Store type is required!' }),
+  phone: zod.string().min(1, { message: 'Telephone is required!' }),
   type: zod.string().min(1, { message: 'Type is required!' }),
 });
 
 export function StoreNewEditForm({ currentProduct }) {
-  const [type, setType] = useState(BIG_TYPES[0].value);
-  const handleBigTypeChange = (event) => {
-    setType(event.target.value);
-    methods.setValue('type', event.target.value);
-    methods.setValue('type_store', '');
-  };
+  const router = useRouter();
   const { dataLookups } = useMultiLookups([{ entity: 'sites', url: 'settings/lookups/sites' }]);
   const sites = dataLookups.sites || [];
-  const router = useRouter();
+  
   const defaultValues = {
-    name: '',
+    store_code: '',
     designation: '',
     address: '',
-    code: '',
-    telephone: '',
-    type: '1',
+    phone: '',
+    type: BIG_TYPES?.[0]?.value || '1',
     type_store: '',
-    site: null,
+    site_id: '',
   };
 
   const methods = useForm({
-    resolver: zodResolver(NewProductSchema),
+    resolver: zodResolver(StoreSchema),
     defaultValues,
     values: currentProduct,
-    site_id: currentProduct?.site_id ? currentProduct?.site_id.toString() : '',
   });
 
   const {
-    control,
     reset,
     handleSubmit,
+    setValue,
+    watch,
     formState: { isSubmitting },
   } = methods;
 
+  const [type, setType] = useState(watch('type') || defaultValues.type);
+  
+  const handleBigTypeChange = (event) => {
+    const newType = event.target.value;
+    setType(newType);
+    setValue('type', newType);
+    setValue('type_store', '');
+  };
+
   const onSubmit = handleSubmit(async (data) => {
-    const updatedData = {
-      ...data,
-      // taxes: includeTaxes ? defaultValues.taxes : data.taxes,
-    };
     try {
+      console.info('DATA before createStore', data);
       await createStore(data);
       reset();
       toast.success(currentProduct ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.settings.store.root);
-      console.info('DATA', updatedData);
     } catch (error) {
       console.error(error);
-      toast.error('Failed to create store');
+      toast.error(error?.message || 'Failed to create store');
     }
   });
 
   const renderDetails = () => (
     <Card>
       <CardHeader
-        title="Ajouter zone"
-        // subheader="Utilisez cet espace pour gérer les tâches et responsabilités des employés"
+        title="Add Store"
         sx={{ mb: 3 }}
       />
 
@@ -101,40 +99,30 @@ export function StoreNewEditForm({ currentProduct }) {
               value={type}
               onChange={handleBigTypeChange}
             >
-              {BIG_TYPES.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
+              {(BIG_TYPES || []).map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
                 </MenuItem>
               ))}
             </Field.Select>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="store_code" label="Code" multiline />
+            <Field.Text name="store_code" label="Code" />
           </Grid>
           <Grid size={{ xs: 6, md: 6 }}>
             <Field.Select name="type_store" label="Store Type" size="small">
-              {(type === BIG_TYPES[0].value ? TYPES : TYPES2).map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
+              {((type === (BIG_TYPES?.[0]?.value || '1') ? TYPES : TYPES2) || []).map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
                 </MenuItem>
               ))}
             </Field.Select>
           </Grid>
-
-          {/* <Grid size={{ xs: 6, md: 6 }}>
-            <Field.Select name="type_store" label="Store Type" size="small">
-              {TYPES2.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select>
-          </Grid> */}
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="phone" label="Telephone" multiline />
+            <Field.Text name="phone" label="Telephone" />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup options={[]} name="site_id" label="Site" size="small" data={sites} />
+            <Field.Lookup name="site_id" label="Site" size="small" data={sites} />
           </Grid>
           <Grid size={{ xs: 12, md: 12 }}>
             <Field.Text name="address" label="Address" multiline rows={3} />
@@ -157,7 +145,7 @@ export function StoreNewEditForm({ currentProduct }) {
       }}
     >
       <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
-        {!currentProduct ? 'Ajouter' : 'Enregistrer'}
+        {!currentProduct ? 'Add' : 'Save'}
       </LoadingButton>
     </Box>
   );

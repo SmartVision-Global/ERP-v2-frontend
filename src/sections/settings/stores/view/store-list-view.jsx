@@ -88,7 +88,7 @@ const FILTERS_OPTIONS = [
 export function StoreListView() {
   const confirmDialog = useBoolean();
 
-  const { stores, storesLoading } = useGetStores();
+  const { stores, storesLoading } = useGetStores({ limit: 10, offset: 0 });
   console.log('StoreListView')
   console.log('stores', stores);
 
