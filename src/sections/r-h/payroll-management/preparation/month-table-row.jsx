@@ -68,7 +68,7 @@ export function RenderCellPRI({ params }) {
 }
 
 export function RenderCellCompany({ params }) {
-  return <Typography variant="body2">{params.row?.enterprise_id}</Typography>;
+  return <Typography variant="body2">{params.row?.enterprise?.name}</Typography>;
 }
 
 export function RenderCellMaxPoint({ params }) {

@@ -69,27 +69,16 @@ export function SocialLoanListView() {
       cols: 3,
       width: 1,
     },
-    // {
-    //   id: 'observation',
-    //   type: 'input',
-    //   label: 'Designation',
-    //   cols: 3,
-    //   width: 1,
-    // },
+
     {
       id: 'start_date',
       type: 'date',
       label: 'Date début',
+      operator: 'gte',
       cols: 3,
       width: 1,
     },
-    // {
-    //   id: 'end_date',
-    //   type: 'date',
-    //   label: 'Date fin',
-    //   cols: 3,
-    //   width: 1,
-    // },
+
     {
       id: 'status',
       type: 'select',
@@ -112,6 +101,8 @@ export function SocialLoanListView() {
       id: 'created_at',
       type: 'date-range',
       label: 'Date de création',
+      operatorMin: 'gte',
+      operatorMax: 'lte',
       cols: 3,
       width: 1,
     },
@@ -140,7 +131,7 @@ export function SocialLoanListView() {
 
   const [tableData, setTableData] = useState(socialLoans);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
-  const [editedFilters, setEditedFilters] = useState([]);
+  const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
@@ -156,7 +147,7 @@ export function SocialLoanListView() {
         limit: PAGE_SIZE,
         offset: 0,
       });
-      setEditedFilters([]);
+      setEditedFilters({});
       setPaginationModel({
         page: 0,
         pageSize: PAGE_SIZE,
@@ -183,13 +174,8 @@ export function SocialLoanListView() {
   );
   const handlePaginationModelChange = async (newModel) => {
     try {
-      const newEditedInput = editedFilters.filter((item) => item.value !== '');
-      const result = newEditedInput.reduce((acc, item) => {
-        acc[item.field] = item.value;
-        return acc;
-      }, {});
       const newData = {
-        ...result,
+        ...editedFilters,
         limit: newModel.pageSize,
         offset: newModel.page,
       };

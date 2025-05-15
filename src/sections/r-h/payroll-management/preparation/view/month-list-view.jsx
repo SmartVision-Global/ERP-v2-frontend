@@ -167,7 +167,7 @@ export function MonthListView() {
       field: 'company',
       headerName: 'Societé',
       flex: 1,
-      minWidth: 260,
+      minWidth: 300,
       hideable: false,
       renderCell: (params) => <RenderCellCompany params={params} href={paths.dashboard.root} />,
     },

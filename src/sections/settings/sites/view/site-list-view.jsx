@@ -12,6 +12,7 @@ import { TextField, FormControl, InputAdornment } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
+import { CONFIG } from 'src/global-config';
 import { useGetSites } from 'src/actions/site';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { PRODUCT_STOCK_OPTIONS, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
@@ -76,6 +77,8 @@ const FILTERS_OPTIONS = [
     width: 1,
   },
 ];
+
+const PAGE_SIZE = CONFIG.pagination.pageSize;
 
 export function SiteListView() {
   const { sites, sitesLoading } = useGetSites();

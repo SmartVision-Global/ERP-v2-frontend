@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 
 import Grid from '@mui/material/Grid2';
 import { DatePicker } from '@mui/x-date-pickers';
@@ -30,54 +30,59 @@ export function TableToolbarCustom({
 }) {
   const rangeCalendarPicker = useDateRangePicker(dayjs(new Date('2024/08/08')), null);
 
-  const [selectedOptions, setSelectedOptions] = useState(null);
-
   const getInput = useCallback(
     (event, type) => {
       const { name, value } = event.target;
-
       setFilters((prevFilters) => {
-        const updatedFilters = prevFilters.filter((item) => item.field !== name);
-
-        if (value !== '') {
-          updatedFilters.push({ field: name, value });
+        const updatedFilters = { ...prevFilters };
+        if (type === 'multi-select') {
+          if (value.length > 0) {
+            updatedFilters[name] = value; // Add or update the value
+          } else {
+            delete updatedFilters[name]; // Remove the filter if value is empty
+          }
+        } else {
+          if (value !== '') {
+            updatedFilters[name] = value; // Add or update the value
+          } else {
+            delete updatedFilters[name]; // Remove the filter if value is empty
+          }
         }
-
         return updatedFilters;
       });
-
-      if (type === 'select') {
-        setSelectedOptions((prev) => ({ ...prev, [name]: value }));
-      }
     },
     [setFilters]
   );
-  const handleDateChange = (newValue, filterId) => {
+  const handleDateChange = (newValue, filterId, operator = 'gte') => {
     setFilters((prevFilters) => {
-      const updatedFilters = prevFilters.filter((item) => item.field !== filterId);
-
+      const updatedFilters = { ...prevFilters };
       if (newValue) {
-        updatedFilters.push({ field: filterId, value: newValue.format('YYYY-MM-DD') }); // Convert to string
+        updatedFilters[filterId] = { [operator]: newValue.format('YYYY-MM-DD') };
+      } else {
+        delete updatedFilters[filterId]; // Remove the filter if value is empty
       }
 
       return updatedFilters;
     });
   };
 
-  const handleChangeDatePicker = (filterId, startDate, endDate) => {
+  const handleChangeDatePicker = (
+    filterId,
+    startDate,
+    endDate,
+    operatorMin = 'gte',
+    operatorMax = 'lte'
+  ) => {
     setFilters((prevFilters) => {
-      const updatedFilters = prevFilters.filter((item) => item.field !== filterId);
-
+      const updatedFilters = { ...prevFilters };
       if (startDate && endDate) {
         rangeCalendarPicker.onChangeStartDate(startDate);
         rangeCalendarPicker.onChangeEndDate(endDate);
-
-        updatedFilters.push({
-          field: filterId,
-          value: [startDate.format('YYYY-MM-DD'), endDate.format('YYYY-MM-DD')],
-        }); // Convert to string
+        updatedFilters[filterId] = {
+          [operatorMin]: startDate.format('YYYY-MM-DD'),
+          [operatorMax]: endDate.format('YYYY-MM-DD'),
+        };
       }
-
       return updatedFilters;
     });
   };
@@ -91,18 +96,12 @@ export function TableToolbarCustom({
   );
 
   const onSubmitFilters = () => {
-    const newEditedInput = filters.filter((item) => item.value !== '');
-    const result = newEditedInput.reduce((acc, item) => {
-      acc[item.field] = item.value;
-      return acc;
-    }, {});
-
     setPaginationModel({
       ...paginationModel,
       page: 0,
     });
     const newData = {
-      ...result,
+      ...filters,
       limit: paginationModel.pageSize,
       offset: 0,
     };
@@ -120,36 +119,28 @@ export function TableToolbarCustom({
                   fullWidth
                   type={item.inputType}
                   name={item.id}
-                  value={filters.find((inputItem) => inputItem.field === item.id)?.value || ''}
+                  value={filters[item.id] || ''}
                   onChange={(e) => getInput(e, item.type)}
                   label={item.label}
                   size="small"
                 />
               )}
               {item.type === 'select' && (
-                <>
-                  {/* <InputLabel htmlFor={item.id}>{item.label}</InputLabel> */}
-
-                  <TextField
-                    size="small"
-                    name={`${item.id}`}
-                    value={filters.find((inputItem) => inputItem.field === item.id)?.value || ''}
-                    onChange={(e) => getInput(e, item.type)}
-                    select
-                    fullWidth
-                    label={item.label}
-                    // error={!!error}
-                    // helperText={error?.message ?? helperText}
-                    // slotProps={merge(baseSlotProps, slotProps)}
-                    // {...other}
-                  >
-                    {item.options.map((option) => (
-                      <MenuItem key={`${option.value}`} value={`${option.value}`}>
-                        {item?.serverData ? option.text : option.label}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </>
+                <TextField
+                  size="small"
+                  name={`${item.id}`}
+                  value={filters[`${item.id}`] || ''}
+                  onChange={(e) => getInput(e, item.type)}
+                  select
+                  fullWidth
+                  label={item.label}
+                >
+                  {item.options.map((option) => (
+                    <MenuItem key={`${option.value}`} value={`${option.value}`}>
+                      {item?.serverData ? option.text : option.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
               )}
               {item.type === 'multi-select' && (
                 <>
@@ -158,7 +149,7 @@ export function TableToolbarCustom({
                   <Select
                     multiple
                     name={`${item.id}`}
-                    value={selectedOptions?.[item.id] || []}
+                    value={filters[`${item.id}`] || []}
                     onChange={(e) => getInput(e, item.type)}
                     input={<OutlinedInput label={item.label} />}
                     renderValue={(ids) => renderValues(ids, item?.options, item?.serverData)}
@@ -170,7 +161,7 @@ export function TableToolbarCustom({
                         <Checkbox
                           disableRipple
                           size="small"
-                          checked={(selectedOptions?.[item.id] || []).includes(`${option.value}`)}
+                          checked={(filters[`${item.id}`] || []).includes(`${option.value}`)}
                         />
                         {item?.serverData ? option.text : option.label}
                       </MenuItem>
@@ -181,14 +172,9 @@ export function TableToolbarCustom({
               {item.type === 'date' && (
                 <DatePicker
                   label={item.label}
-                  value={
-                    filters.find((f) => f.field === item.id)?.value
-                      ? dayjs(filters.find((f) => f.field === item.id).value) // Convert to Day.js
-                      : null
-                  }
-                  onChange={(newValue) => handleDateChange(newValue, item.id)}
+                  value={filters[item.id] ? dayjs(filters[item.id][item?.operator || 'gte']) : null}
+                  onChange={(newValue) => handleDateChange(newValue, item.id, item?.operator)}
                   slotProps={{ textField: { fullWidth: true, size: 'small' } }}
-                  // sx={{ maxWidth: { md: 180 } }}
                 />
               )}
               {item.type === 'date-range' && (
@@ -206,15 +192,25 @@ export function TableToolbarCustom({
                     startDate={rangeCalendarPicker.startDate}
                     endDate={rangeCalendarPicker.endDate}
                     onChangeStartDate={(newValue) =>
-                      handleChangeDatePicker(item.id, newValue, rangeCalendarPicker.endDate)
+                      handleChangeDatePicker(
+                        item.id,
+                        newValue,
+                        rangeCalendarPicker.endDate,
+                        item?.operatorMin,
+                        item?.operatorMax
+                      )
                     }
                     onChangeEndDate={(newValue) =>
-                      handleChangeDatePicker(item.id, rangeCalendarPicker.startDate, newValue)
+                      handleChangeDatePicker(
+                        item.id,
+                        rangeCalendarPicker.startDate,
+                        newValue,
+                        item?.operatorMin,
+                        item?.operatorMax
+                      )
                     }
-                    // onChangeEndDate={rangeCalendarPicker.onChangeEndDate}
                     onClose={rangeCalendarPicker.onClose}
                     error={rangeCalendarPicker.error}
-                    // onSubmit={handleChangeDatePicker}
                   />
                 </>
               )}
@@ -227,14 +223,8 @@ export function TableToolbarCustom({
           <Button variant="contained" sx={{ px: 2, py: 1 }} onClick={onSubmitFilters}>
             Chercher
           </Button>
-          {filters.length > 0 && (
-            <Button
-              variant="outlined"
-              onClick={() => {
-                setSelectedOptions(null);
-                onReset();
-              }}
-            >
+          {Object.keys(filters).length > 0 && (
+            <Button variant="outlined" onClick={onReset}>
               Réinitialiser
             </Button>
           )}
