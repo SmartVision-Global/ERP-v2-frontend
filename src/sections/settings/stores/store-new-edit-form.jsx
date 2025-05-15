@@ -24,8 +24,10 @@ export const StoreSchema = zod.object({
   designation: zod.string().optional(),
   address: zod.string().min(1, { message: 'Address is required!' }),
   site_id: zod.string().min(1, { message: 'Site is required!' }),
-  type_store: zod.string().min(1, { message: 'Store type is required!' }),
-  phone: zod.string().min(1, { message: 'Telephone is required!' }),
+  type_store: zod.string().min(1, { message: 'Type is required!' }),
+  phone: zod
+    .string()
+    .regex(/^0[765]\d{8}$/, 'Phone number must start with 07, 06, or 05 and be 10 digits'),
   type: zod.string().min(1, { message: 'Type is required!' }),
 });
 
@@ -33,7 +35,7 @@ export function StoreNewEditForm({ currentProduct }) {
   const router = useRouter();
   const { dataLookups } = useMultiLookups([{ entity: 'sites', url: 'settings/lookups/sites' }]);
   const sites = dataLookups.sites || [];
-  
+
   const defaultValues = {
     store_code: '',
     designation: '',
@@ -59,7 +61,7 @@ export function StoreNewEditForm({ currentProduct }) {
   } = methods;
 
   const [type, setType] = useState(watch('type') || defaultValues.type);
-  
+
   const handleBigTypeChange = (event) => {
     const newType = event.target.value;
     setType(newType);
@@ -82,10 +84,7 @@ export function StoreNewEditForm({ currentProduct }) {
 
   const renderDetails = () => (
     <Card>
-      <CardHeader
-        title="Add Store"
-        sx={{ mb: 3 }}
-      />
+      <CardHeader title="Add Store" sx={{ mb: 3 }} />
 
       <Divider />
 

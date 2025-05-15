@@ -198,6 +198,9 @@ export const paths = {
       },
     },
     settings: {
+      generalSettings: {
+        root: `${ROOTS.DASHBOARD}/settings/general-settings`,
+      },
       site: {
         root: `${ROOTS.DASHBOARD}/settings/site`,
         newSite: `${ROOTS.DASHBOARD}/settings/site/new`,

@@ -264,6 +264,9 @@ const SettingsEntrepriseNew = lazy(() => import('src/pages/dashboard/settings/en
 
 const SettingsServiceList = lazy(() => import('src/pages/dashboard/settings/services/list'));
 const SettingsServiceNew = lazy(() => import('src/pages/dashboard/settings/services/new'));
+const SettingsGeneralSettings = lazy(
+  () => import('src/pages/dashboard/settings/generalSettings/update')
+);
 
 const SettingsStoreList = lazy(() => import('src/pages/dashboard/settings/stores/list'));
 const SettingsStoreNew = lazy(() => import('src/pages/dashboard/settings/stores/new'));
@@ -520,6 +523,10 @@ export const dashboardRoutes = [
           // { path: 'list', element: <UserListPage /> },
           // { path: 'new', element: <UserCreatePage /> },
           // { path: ':id/edit', element: <UserEditPage /> },
+          {
+            path: 'general-settings',
+            element: <SettingsGeneralSettings />,
+          },
           {
             path: 'site',
             children: [
