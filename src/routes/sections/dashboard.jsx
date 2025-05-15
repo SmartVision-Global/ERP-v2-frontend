@@ -268,6 +268,10 @@ const SettingsServiceNew = lazy(() => import('src/pages/dashboard/settings/servi
 const SettingsStoreList = lazy(() => import('src/pages/dashboard/settings/stores/list'));
 const SettingsStoreNew = lazy(() => import('src/pages/dashboard/settings/stores/new'));
 
+const SettingsIdentificationGlobalSettings = lazy(
+  () => import('src/pages/dashboard/settings/identification-parameters/global-settings/list')
+);
+
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
 function SuspenseOutlet() {
@@ -527,6 +531,13 @@ export const dashboardRoutes = [
             children: [
               { index: true, element: <SettingsStoreList /> },
               { path: 'new', element: <SettingsStoreNew /> },
+            ],
+          },
+          {
+            path: 'identification',
+            children: [
+              { index: true, element: <SettingsIdentificationGlobalSettings /> },
+              { path: 'global-settings', element: <SettingsIdentificationGlobalSettings /> },
             ],
           },
           {

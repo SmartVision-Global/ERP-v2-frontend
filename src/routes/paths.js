@@ -226,6 +226,10 @@ export const paths = {
         root: `${ROOTS.DASHBOARD}/settings/store`,
         newStore: `${ROOTS.DASHBOARD}/settings/store/new`,
       },
+      identification: {
+        root: `${ROOTS.DASHBOARD}/settings/identification`,
+        globalSettings: `${ROOTS.DASHBOARD}/settings/identification/global-settings`,
+      },
     },
     group: {
       root: `${ROOTS.DASHBOARD}/group`,

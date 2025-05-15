@@ -243,6 +243,14 @@ export const navData = [
             title: 'Magasins',
             path: paths.dashboard.settings.store.root,
           },
+          {
+            title: 'Paramètrage d\'identification',
+            path: paths.dashboard.settings.identification.root,
+            children: [
+              { title: 'Unités mesure, Dimensions, Ateliers ...', path: paths.dashboard.settings.identification.globalSettings },
+            ],
+          },
+
         ],
       },
     ],
