@@ -2,11 +2,11 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
-import { EndRelationshipCreateView } from 'src/sections/r-h/treatment/end-relationship/view';
+import { MonthCreateView } from 'src/sections/r-h/payroll-management/preparation/view';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Ajouter Fin de relation | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `Ajouter Mois de paie | Dashboard - ${CONFIG.appName}` };
 
 export default function Page() {
   return (
@@ -15,7 +15,7 @@ export default function Page() {
         <title> {metadata.title}</title>
       </Helmet>
 
-      <EndRelationshipCreateView />
+      <MonthCreateView />
     </>
   );
 }

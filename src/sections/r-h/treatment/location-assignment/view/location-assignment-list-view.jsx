@@ -42,11 +42,6 @@ import {
 
 // ----------------------------------------------------------------------
 
-const SEX_OPTIONS = [
-  { value: 'man', label: 'Homme' },
-  { value: 'woman', label: 'Femme' },
-];
-
 const HIDE_COLUMNS = { category: false };
 
 const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
@@ -107,7 +102,7 @@ export function LocationAssignmentListView() {
   const [selectedRow, setSelectedRow] = useState('');
 
   const [filterButtonEl, setFilterButtonEl] = useState(null);
-  const [editedFilters, setEditedFilters] = useState([]);
+  const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
   const handleOpenValidateConfirmDialog = (id) => {
@@ -121,17 +116,21 @@ export function LocationAssignmentListView() {
     }
   }, [relocations, relocationsCount]);
   const handleReset = useCallback(async () => {
-    setEditedFilters([]);
-    setPaginationModel({
-      page: 0,
-      pageSize: PAGE_SIZE,
-    });
-    const response = await getFiltredRelocations({
-      limit: PAGE_SIZE,
-      offset: 0,
-    });
-    setTableData(response.data?.data?.records);
-    setRowCount(response.data?.data?.total);
+    try {
+      const response = await getFiltredRelocations({
+        limit: PAGE_SIZE,
+        offset: 0,
+      });
+      setEditedFilters({});
+      setPaginationModel({
+        page: 0,
+        pageSize: PAGE_SIZE,
+      });
+      setTableData(response.data?.data?.records);
+      setRowCount(response.data?.data?.total);
+    } catch (err) {
+      console.log(err);
+    }
   }, []);
 
   const handleFilter = useCallback(
@@ -149,13 +148,13 @@ export function LocationAssignmentListView() {
   );
   const handlePaginationModelChange = async (newModel) => {
     try {
-      const newEditedInput = editedFilters.filter((item) => item.value !== '');
-      const result = newEditedInput.reduce((acc, item) => {
-        acc[item.field] = item.value;
-        return acc;
-      }, {});
+      // const newEditedInput = editedFilters.filter((item) => item.value !== '');
+      // const result = newEditedInput.reduce((acc, item) => {
+      //   acc[item.field] = item.value;
+      //   return acc;
+      // }, {});
       const newData = {
-        ...result,
+        ...editedFilters,
         limit: newModel.pageSize,
         offset: newModel.page,
       };
@@ -222,9 +221,7 @@ export function LocationAssignmentListView() {
       headerName: 'Site',
       flex: 1,
       minWidth: 150,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellSite params={params} />,
     },
     {
@@ -265,9 +262,7 @@ export function LocationAssignmentListView() {
       headerName: 'Observations',
       flex: 1,
       minWidth: 260,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellObservation params={params} />,
     },
 
@@ -289,9 +284,7 @@ export function LocationAssignmentListView() {
       headerName: 'Date de création',
       flex: 1,
       minWidth: 150,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
     },
 

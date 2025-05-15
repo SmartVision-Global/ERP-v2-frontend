@@ -14,15 +14,7 @@ import { RouterLink } from 'src/routes/components';
 
 import { CONFIG } from 'src/global-config';
 import { DashboardContent } from 'src/layouts/dashboard';
-import {
-  DEDUCTIONS_ABS_OPTIONS,
-  DEDUCTIONS_TYPE_OPTIONS,
-  DEDUCTIONS_NATURE_OPTIONS,
-} from 'src/_mock';
-import {
-  useGetDeductionsCompensations,
-  getFiltredDeductionsCompensations,
-} from 'src/actions/deduction-conpensation';
+import { useGetPayrollMonths, getFiltredPayrollMonths } from 'src/actions/payroll-month';
 
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
@@ -31,18 +23,17 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import {
   RenderCellId,
-  RenderCellAbs,
-  RenderCellType,
-  RenderCellCode,
-  RenderCellName,
-  RenderCellDelete,
-  RenderCellPeriode,
-  RenderCellCategory,
+  RenderCellPP,
+  RenderCellPRC,
+  RenderCellPRI,
+  RenderCellYear,
+  RenderCellMonth,
+  RenderCellStatus,
+  RenderCellCompany,
+  RenderCellMaxPoint,
+  RenderCellMinPoint,
   RenderCellCreatedAt,
-  RenderCellCountBase,
-  RenderCellDesignation,
-  RenderCellDisplayBase,
-} from '../deductions-compensation-table-row';
+} from '../month-table-row';
 
 // ----------------------------------------------------------------------
 
@@ -53,85 +44,66 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 // ----------------------------------------------------------------------
 
 const FILTERS_OPTIONS = [
-  {
-    id: 'code',
-    type: 'input',
-    label: 'Code',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'name',
-    type: 'input',
-    label: 'Nom',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'type',
-    type: 'select',
-    options: DEDUCTIONS_TYPE_OPTIONS,
-    label: 'Type',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'designation',
-    type: 'input',
-    label: 'Designation',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'subject_absence',
-    type: 'select',
-    options: DEDUCTIONS_ABS_OPTIONS,
-    label: 'Soumis aux absence',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'contributory_imposable',
-    type: 'select',
-    options: DEDUCTIONS_NATURE_OPTIONS,
-    label: 'Nature',
-    cols: 3,
-    width: 1,
-  },
+  // {
+  //   id: 'designation',
+  //   type: 'input',
+  //   label: 'Designation',
+  //   cols: 12,
+  //   width: 0.24,
+  // },
+  // {
+  //   id: 'status',
+  //   type: 'select',
+  //   options: DOCUMENT_STATUS_OPTIONS,
+  //   label: 'Etat',
+  //   cols: 3,
+  //   width: 1,
+  // },
+  // {
+  //   id: 'valideur',
+  //   type: 'select',
+  //   options: PRODUCT_STOCK_OPTIONS,
+  //   label: 'Valideur',
+  //   cols: 3,
+  //   width: 1,
+  // },
+
   {
     id: 'created_at',
     type: 'date-range',
-    label: 'Date début de création',
+    label: 'Date de création',
     cols: 3,
     width: 1,
   },
 ];
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 
-export function DeductionsCompensationListView() {
+export function MonthListView() {
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: PAGE_SIZE,
   });
-  const { deductionsCompensations, deductionsCompensationsCount, deductionsCompensationsLoading } =
-    useGetDeductionsCompensations({ limit: PAGE_SIZE, offset: 0 });
-  const [rowCount, setRowCount] = useState(deductionsCompensationsCount);
+  const { payrollMonths, payrollMonthsLoading, payrollMonthsCount } = useGetPayrollMonths({
+    limit: PAGE_SIZE,
+    offset: 0,
+  });
+  const [rowCount, setRowCount] = useState(payrollMonthsCount);
 
-  const [tableData, setTableData] = useState(deductionsCompensations);
+  const [tableData, setTableData] = useState(payrollMonths);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (deductionsCompensations.length) {
-      setTableData(deductionsCompensations);
-      setRowCount(deductionsCompensationsCount);
+    if (payrollMonths.length) {
+      setTableData(payrollMonths);
+      setRowCount(payrollMonthsCount);
     }
-  }, [deductionsCompensations, deductionsCompensationsCount]);
+  }, [payrollMonths, payrollMonthsCount]);
   const handleReset = useCallback(async () => {
     try {
-      const response = await getFiltredDeductionsCompensations({
+      const response = await getFiltredPayrollMonths({
         limit: PAGE_SIZE,
         offset: 0,
       });
@@ -140,17 +112,18 @@ export function DeductionsCompensationListView() {
         page: 0,
         pageSize: PAGE_SIZE,
       });
+
       setTableData(response.data?.data?.records);
       setRowCount(response.data?.data?.total);
     } catch (error) {
-      console.log(error);
+      console.log('error in reset', error);
     }
   }, []);
 
   const handleFilter = useCallback(
     async (data) => {
       try {
-        const response = await getFiltredDeductionsCompensations(data);
+        const response = await getFiltredPayrollMonths(data);
         setTableData(response.data?.data?.records);
         setRowCount(response.data?.data?.total);
       } catch (error) {
@@ -172,7 +145,7 @@ export function DeductionsCompensationListView() {
         limit: newModel.pageSize,
         offset: newModel.page,
       };
-      const response = await getFiltredDeductionsCompensations(newData);
+      const response = await getFiltredPayrollMonths(newData);
       setTableData(response.data?.data?.records);
       setPaginationModel(newModel);
     } catch (error) {
@@ -185,132 +158,91 @@ export function DeductionsCompensationListView() {
     {
       field: 'id',
       headerName: 'ID',
-      //   flex: 0.5,
       flex: 1,
+      minWidth: 70,
+      hideable: false,
+      renderCell: (params) => <RenderCellId params={params} href={paths.dashboard.root} />,
+    },
+    {
+      field: 'company',
+      headerName: 'Societé',
+      flex: 1,
+      minWidth: 300,
+      hideable: false,
+      renderCell: (params) => <RenderCellCompany params={params} href={paths.dashboard.root} />,
+    },
+    {
+      field: 'month',
+      headerName: 'Mois',
+      flex: 1,
+      minWidth: 160,
+      hideable: false,
+      renderCell: (params) => <RenderCellMonth params={params} href={paths.dashboard.root} />,
+    },
+    {
+      field: 'year',
+      headerName: 'Année',
+      flex: 1,
+      minWidth: 160,
 
+      renderCell: (params) => <RenderCellYear params={params} />,
+    },
+
+    {
+      field: 'pp',
+      headerName: 'Prime de présence',
+      flex: 1,
       minWidth: 100,
       hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellId params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellPP params={params} href={paths.dashboard.root} />,
     },
     {
-      field: 'code',
-      headerName: 'Code',
+      field: 'prc',
+      headerName: 'PRC',
+      flex: 1,
+      minWidth: 100,
+      hideable: false,
+      renderCell: (params) => <RenderCellPRC params={params} href={paths.dashboard.root} />,
+    },
+    {
+      field: 'pri',
+      headerName: 'PRI',
+      flex: 1,
+      minWidth: 100,
+      hideable: false,
+      renderCell: (params) => <RenderCellPRI params={params} href={paths.dashboard.root} />,
+    },
+    {
+      field: 'max_point',
+      headerName: 'Point Maximum',
+      flex: 1,
+      minWidth: 100,
+      hideable: false,
+      renderCell: (params) => <RenderCellMaxPoint params={params} href={paths.dashboard.root} />,
+    },
+    {
+      field: 'min_point',
+      headerName: 'Point Plus Bas',
+      flex: 1,
+      minWidth: 100,
+      hideable: false,
+      renderCell: (params) => <RenderCellMinPoint params={params} href={paths.dashboard.root} />,
+    },
+    {
+      field: 'status',
+      headerName: 'Etat',
+      flex: 1,
+      minWidth: 100,
+      hideable: false,
+      renderCell: (params) => <RenderCellStatus params={params} href={paths.dashboard.root} />,
+    },
+    {
+      field: 'created_at',
+      headerName: 'Date de Création',
       flex: 1,
       minWidth: 160,
       hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellCode params={params} href={paths.dashboard.root} />
-      ),
-    },
-    {
-      field: 'lib',
-      headerName: 'Libelle',
-      flex: 1,
-      minWidth: 160,
-
-      renderCell: (params) => <RenderCellName params={params} />,
-    },
-    {
-      field: 'type',
-      headerName: 'Type',
-      flex: 1,
-      minWidth: 160,
-      hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellType params={params} href={paths.dashboard.root} />
-      ),
-    },
-    {
-      field: 'designation',
-      headerName: 'Designation',
-      //   flex: 0.5,
-      flex: 1,
-      minWidth: 250,
-      hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellDesignation params={params} href={paths.dashboard.root} />
-      ),
-    },
-    {
-      field: 'abs',
-      headerName: 'Soumis aux absence',
-      flex: 1,
-      minWidth: 160,
-      hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellAbs params={params} href={paths.dashboard.root} />
-      ),
-    },
-    {
-      field: 'contributory_imposable',
-      headerName: 'Catégorie',
-      flex: 1,
-      minWidth: 260,
-      hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellCategory params={params} href={paths.dashboard.root} />
-      ),
-    },
-    {
-      field: 'delete',
-      headerName: 'Est supprimable',
-      flex: 1,
-      minWidth: 160,
-      hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellDelete params={params} href={paths.dashboard.root} />
-      ),
-    },
-    {
-      field: 'countable',
-      headerName: 'Base de calcul',
-      flex: 1,
-      minWidth: 160,
-      hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellCountBase params={params} href={paths.dashboard.root} />
-      ),
-    },
-    {
-      field: 'displayed',
-      headerName: "Base d'affichage",
-      flex: 1,
-      minWidth: 160,
-      hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellDisplayBase params={params} href={paths.dashboard.root} />
-      ),
-    },
-    {
-      field: 'periode',
-      headerName: 'Périodicité',
-      flex: 1,
-      minWidth: 160,
-      hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellPeriode params={params} href={paths.dashboard.root} />
-      ),
-    },
-
-    {
-      field: 'createdAt',
-      headerName: 'Date de création',
-      flex: 1,
-      minWidth: 150,
-
-      renderCell: (params) => <RenderCellCreatedAt params={params} />,
+      renderCell: (params) => <RenderCellCreatedAt params={params} href={paths.dashboard.root} />,
     },
 
     {
@@ -324,27 +256,13 @@ export function DeductionsCompensationListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => [
-        // <GridActionsLinkItem
-        //   showInMenu
-        //   icon={<Iconify icon="solar:eye-bold" />}
-        //   label="View"
-        //   // href={paths.dashboard.product.details(params.row.id)}
-        //   href={paths.dashboard.root}
-        // />,
         <GridActionsLinkItem
           showInMenu
-          icon={<Iconify icon="solar:pen-bold" />}
-          label="Modifier"
-          // href={paths.dashboard.product.edit(params.row.id)}
-          href={paths.dashboard.rh.rhSettings.editDeductionsCompensation(params.row.id)}
+          icon={<Iconify icon="solar:eye-bold" />}
+          label="View"
+          // href={paths.dashboard.product.details(params.row.id)}
+          href={paths.dashboard.root}
         />,
-        // <GridActionsCellItem
-        //   showInMenu
-        //   icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-        //   label="Delete"
-        //   onClick={() => handleDeleteRow(params.row.id)}
-        //   sx={{ color: 'error.main' }}
-        // />,
       ],
     },
   ];
@@ -357,20 +275,20 @@ export function DeductionsCompensationListView() {
   return (
     <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
       <CustomBreadcrumbs
-        heading="Indemnités - Retenues"
+        heading="Préparation paie"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           { name: 'Ressources humaine', href: paths.dashboard.root },
-          { name: 'Indemnités - Retenues' },
+          { name: 'Préparation paie' },
         ]}
         action={
           <Button
             component={RouterLink}
-            href={paths.dashboard.rh.rhSettings.newdeductionsCompensation}
+            href={paths.dashboard.rh.payrollManagement.newPreparation}
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
           >
-            Ajouter
+            Ajouter Mois
           </Button>
         }
         sx={{ mb: { xs: 3, md: 5 } }}
@@ -418,12 +336,12 @@ export function DeductionsCompensationListView() {
           rows={tableData}
           rowCount={rowCount}
           columns={columns}
-          loading={deductionsCompensationsLoading}
+          loading={payrollMonthsLoading}
           getRowHeight={() => 'auto'}
           paginationModel={paginationModel}
           paginationMode="server"
           onPaginationModelChange={(model) => handlePaginationModelChange(model)}
-          pageSizeOptions={[PAGE_SIZE, 10, 20, { value: -1, label: 'All' }]}
+          pageSizeOptions={[2, 10, 20, { value: -1, label: 'All' }]}
           columnVisibilityModel={columnVisibilityModel}
           onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
           slots={{

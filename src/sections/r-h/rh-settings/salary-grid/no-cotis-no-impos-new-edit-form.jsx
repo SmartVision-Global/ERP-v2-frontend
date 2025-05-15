@@ -39,8 +39,6 @@ export function NoCotisNoImposNewEditForm() {
   };
 
   const handleSelectProduct = (product) => {
-    console.log('product', product);
-
     const itemExists = fields.some((field) => field.id === product.id);
 
     if (!itemExists) {
@@ -55,8 +53,6 @@ export function NoCotisNoImposNewEditForm() {
       confirmDialog.onTrue();
     }
   };
-
-  console.log('FIELDS', fields);
 
   return (
     <Box sx={{ p: 2 }}>

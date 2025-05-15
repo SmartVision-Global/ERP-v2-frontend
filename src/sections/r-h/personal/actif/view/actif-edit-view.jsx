@@ -9,8 +9,6 @@ import { ActifNewEditForm } from '../actif-new-edit-form';
 // ----------------------------------------------------------------------
 
 export function PersonalEditView({ personal }) {
-  console.log('personnnn', personal);
-
   return (
     <DashboardContent>
       <CustomBreadcrumbs

@@ -28,9 +28,7 @@ import { SignOutButton } from './sign-out-button';
 export function AccountDrawer({ data = [], sx, ...other }) {
   const pathname = usePathname();
 
-  // const { user } = useMockedUser();
   const { user } = useAuthContext();
-  // console.log('userdata', userData);
 
   const { value: open, onFalse: onClose, onTrue: onOpen } = useBoolean();
 

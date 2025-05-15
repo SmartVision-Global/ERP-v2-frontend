@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 
 import { useGetSocieties } from 'src/actions/society';
-import { useGetWorkshops } from 'src/actions/atelier';
+import { useGetWorkshops } from 'src/actions/workshop';
 import {
   createBank,
   createRung,

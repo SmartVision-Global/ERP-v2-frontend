@@ -1,5 +1,5 @@
-import useSWR from 'swr';
 import { useMemo } from 'react';
+import useSWR, { mutate } from 'swr';
 
 // import { fetcher, endpoints } from 'src/lib/axios';
 import axios, { fetcher, endpoints } from 'src/lib/axios';
@@ -70,5 +70,5 @@ export async function updateService(id, data) {
    */
   // const data = { directionData };
   await axios.patch(`${ENDPOINT}/${id}`, data);
-  //   mutate(endpoints.site);
+  mutate(ENDPOINT);
 }

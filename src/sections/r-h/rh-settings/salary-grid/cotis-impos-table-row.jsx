@@ -42,7 +42,6 @@ export function CotisImposTableRow({
     name: `cotis_impos_items[${index}].amount`,
   });
   const values = watch();
-  console.log('values', values);
 
   const renderMenuActions = () => (
     <CustomPopover
@@ -95,53 +94,10 @@ export function CotisImposTableRow({
       }
     />
   );
-  const handleChangePercent = (newValue) => {};
-  const handleChangeAmount = (newValue) => {};
 
-  // const percent = values.cotis_impos_items[index]?.percent || 0;
-  // const amount = values.cotis_impos_items[index]?.amount || 0;
-
-  // useEffect(() => {
-  //   if (values.salary !== 0) {
-  //     // const newPercent = per;
-  //     const newAmount = (percent * values.salary) / 100;
-  //     setValue(`cotis_impos_items[${index}].amount`, newAmount);
-  //     //   update(index, {
-  //     //     ...fields[index],
-  //     //     ...newRow, // Apply all the new values from the row
-  //     //     percent: newPercent || 0,
-  //     //     amount: newAmount || 0,
-  //     //   });
-  //   }
-  // }, [percent, values.salary, index, setValue]);
-  // useEffect(() => {
-  //   if (values.salary !== 0) {
-  //     // const newPercent = per;
-  //     const newPercent = (amount * 100) / values.salary;
-  //     setValue(`cotis_impos_items[${index}].percent`, newPercent);
-  //     //   update(index, {
-  //     //     ...fields[index],
-  //     //     ...newRow, // Apply all the new values from the row
-  //     //     percent: newPercent || 0,
-  //     //     amount: newAmount || 0,
-  //     //   });
-  //   }
-  // }, [amount, values.salary, index, setValue]);
   return (
     <>
       <TableRow hover selected={selected}>
-        {/* <TableCell padding="checkbox">
-          <Checkbox
-            checked={selected}
-            onClick={onSelectRow}
-            inputProps={{
-              id: `${row.id}-checkbox`,
-              'aria-label': `${row.id} checkbox`,
-            }}
-          />
-        </TableCell> */}
-
-        {/* <TableCell>{fCurrency(row.totalAmount)}</TableCell> */}
         <TableCell align="center">{row.code}</TableCell>
 
         <TableCell align="center">{row.name}</TableCell>

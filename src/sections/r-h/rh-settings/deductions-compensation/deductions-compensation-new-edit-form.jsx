@@ -64,13 +64,10 @@ export function DeductionsCompensationNewEditForm({ currentProduct }) {
   });
 
   const {
-    watch,
     reset,
     handleSubmit,
-    formState: { isSubmitting, errors },
+    formState: { isSubmitting },
   } = methods;
-  const values = watch();
-  console.log('err', values);
 
   const onSubmit = handleSubmit(async (data) => {
     const updatedData = {

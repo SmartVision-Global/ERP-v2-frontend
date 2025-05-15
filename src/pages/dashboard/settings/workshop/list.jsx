@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
-import { AtelierListView } from 'src/sections/settings/workshops/view';
+import { WorkshopListView } from 'src/sections/settings/workshops/view';
 
 // ----------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ export default function Page() {
         <title> {metadata.title}</title>
       </Helmet>
 
-      <AtelierListView />
+      <WorkshopListView />
     </>
   );
 }

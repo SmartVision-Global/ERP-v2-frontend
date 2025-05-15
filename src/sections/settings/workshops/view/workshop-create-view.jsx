@@ -4,11 +4,11 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { AtelierNewEditForm } from '../atelier-new-edit-form';
+import { WorkshopNewEditForm } from '../workshop-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-export function AtelierCreateView() {
+export function WorkshopCreateView() {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
@@ -20,7 +20,7 @@ export function AtelierCreateView() {
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
-      <AtelierNewEditForm />
+      <WorkshopNewEditForm />
     </DashboardContent>
   );
 }

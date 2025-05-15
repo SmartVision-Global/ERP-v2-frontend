@@ -9,7 +9,7 @@ import { Box, Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 import { useRouter } from 'src/routes/hooks';
 
 import { useGetSites } from 'src/actions/site';
-import { createWorkshop } from 'src/actions/atelier';
+import { createWorkshop } from 'src/actions/workshop';
 
 import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
@@ -20,7 +20,7 @@ export const NewProductSchema = zod.object({
   site_id: zod.string().min(1, { message: 'Name is required!' }),
 });
 
-export function AtelierNewEditForm({ currentProduct }) {
+export function WorkshopNewEditForm({ currentProduct }) {
   const { sites, sitesLoading } = useGetSites();
   const router = useRouter();
   const defaultValues = {

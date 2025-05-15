@@ -108,4 +108,6 @@ export const endpoints = {
   decision: '/v1/hr/treatment/personal_job_changes',
   newContract: '/v1/hr/treatment/personal_contracts',
   endContract: '/v1/hr/treatment/personal_end_services',
+  // payroll
+  payrollMonth: '/v1/hr/payroll/preparation/payroll_months',
 };

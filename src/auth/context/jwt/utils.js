@@ -76,10 +76,10 @@ export async function setSession(accessToken, exp) {
 
       axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
 
-      if (exp) {
-        // tokenExpired(decodedToken.exp);
-        tokenExpired(exp);
-      }
+      // if (exp) {
+      //   // tokenExpired(decodedToken.exp);
+      //   tokenExpired(exp);
+      // }
       // else {
       //   throw new Error('Invalid access token!');
       // }

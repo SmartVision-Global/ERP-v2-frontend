@@ -403,7 +403,7 @@ export function ActifNewEditForm({ currentProduct }) {
     control,
     handleSubmit,
 
-    formState: { isSubmitting, errors },
+    formState: { isSubmitting },
   } = methods;
   const onDropImage = async (acceptedFiles) => {
     const value = acceptedFiles[0];
@@ -437,8 +437,6 @@ export function ActifNewEditForm({ currentProduct }) {
     }
   };
   const values = watch();
-  console.log('errrrr', errors);
-  console.log('vallllllllllll', values);
 
   const handleRemoveImage = useCallback(() => {
     setValue('image', null);
@@ -448,8 +446,6 @@ export function ActifNewEditForm({ currentProduct }) {
   }, [setValue]);
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log('submitted');
-
     const updatedData = {
       // ...data,
       first_name: { fr: data.firstname_fr, ar: data.firstname_ar },

@@ -1,2 +1,2 @@
-export * from './preparation-list-view';
-export * from './preparation-create-view';
+export * from './month-list-view';
+export * from './month-create-view';

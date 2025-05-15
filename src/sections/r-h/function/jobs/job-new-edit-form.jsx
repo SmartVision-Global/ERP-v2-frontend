@@ -63,7 +63,7 @@ export const NewProductSchema = zod.object({
 export function JobNewEditForm({ currentProduct }) {
   const router = useRouter();
 
-  const { dataLookups, dataLoading, dataError } = useMultiLookups([
+  const { dataLookups } = useMultiLookups([
     { entity: 'sites', url: 'settings/lookups/sites' },
     { entity: 'salaryCategories', url: 'hr/lookups/identification/salary_category' },
     { entity: 'salaryGrids', url: 'hr/lookups/salary_grids' },
@@ -133,14 +133,10 @@ export function JobNewEditForm({ currentProduct }) {
   });
 
   const {
-    watch,
     reset,
     handleSubmit,
-    formState: { isSubmitting, errors },
+    formState: { isSubmitting },
   } = methods;
-  const values = watch();
-  console.log('err', errors);
-  console.log('values', values);
 
   const onSubmit = handleSubmit(async (data) => {
     const updatedData = {

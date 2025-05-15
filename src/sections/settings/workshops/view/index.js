@@ -1,2 +1,2 @@
-export * from './atelier-list-view';
-export * from './atelier-create-view';
+export * from './workshop-list-view';
+export * from './workshop-create-view';

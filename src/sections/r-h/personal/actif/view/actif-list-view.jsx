@@ -7,13 +7,8 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import { TextField, FormControl, InputAdornment } from '@mui/material';
-import {
-  DataGrid,
-  gridClasses,
-  GridToolbarContainer,
-  GridToolbarColumnsButton,
-} from '@mui/x-data-grid';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -77,11 +72,6 @@ import {
 } from '../actif-table-row';
 
 // ----------------------------------------------------------------------
-
-const SEX_OPTIONS = [
-  { value: 'man', label: 'Homme' },
-  { value: 'woman', label: 'Femme' },
-];
 
 const HIDE_COLUMNS = { category: false };
 
@@ -158,7 +148,7 @@ export function ActifListView() {
   ];
   const [tableData, setTableData] = useState(personals);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
-  const [editedFilters, setEditedFilters] = useState([]);
+  const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
@@ -170,17 +160,21 @@ export function ActifListView() {
   }, [personals, personalsCount]);
 
   const handleReset = useCallback(async () => {
-    setEditedFilters([]);
-    setPaginationModel({
-      page: 0,
-      pageSize: PAGE_SIZE,
-    });
-    const response = await getFiltredPersonals({
-      limit: PAGE_SIZE,
-      offset: 0,
-    });
-    setTableData(response.data?.data?.records);
-    setRowCount(response.data?.data?.total);
+    try {
+      const response = await getFiltredPersonals({
+        limit: PAGE_SIZE,
+        offset: 0,
+      });
+      setEditedFilters({});
+      setPaginationModel({
+        page: 0,
+        pageSize: PAGE_SIZE,
+      });
+      setTableData(response.data?.data?.records);
+      setRowCount(response.data?.data?.total);
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
 
   const handleFilter = useCallback(
@@ -198,13 +192,13 @@ export function ActifListView() {
   );
   const handlePaginationModelChange = async (newModel) => {
     try {
-      const newEditedInput = editedFilters.filter((item) => item.value !== '');
-      const result = newEditedInput.reduce((acc, item) => {
-        acc[item.field] = item.value;
-        return acc;
-      }, {});
+      // const newEditedInput = editedFilters.filter((item) => item.value !== '');
+      // const result = newEditedInput.reduce((acc, item) => {
+      //   acc[item.field] = item.value;
+      //   return acc;
+      // }, {});
       const newData = {
-        ...result,
+        ...editedFilters,
         limit: newModel.pageSize,
         offset: newModel.page,
       };
@@ -640,61 +634,6 @@ export function ActifListView() {
     </>
   );
 }
-
-// ----------------------------------------------------------------------
-
-function CustomToolbar({ setFilterButtonEl }) {
-  return (
-    <>
-      {/* <ProductTableToolbar
-        filters={filters}
-        options={{ stocks: PRODUCT_STOCK_OPTIONS, publishs: PUBLISH_OPTIONS }}
-      /> */}
-      {/* <ActifTableToolbar
-        filterOptions={FILTERS_OPTIONS}
-        filters={editedFilters}
-        setFilters={setEditedFilters}
-      /> */}
-      <GridToolbarContainer>
-        {/* <GridToolbarQuickFilter size="small" /> */}
-
-        <Box
-          sx={{
-            gap: 1,
-            flexGrow: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-          }}
-        >
-          {/* {!!selectedRowIds.length && (
-            <Button
-              size="small"
-              color="error"
-              startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
-              onClick={onOpenConfirmDeleteRows}
-            >
-              Delete ({selectedRowIds.length})
-            </Button>
-          )} */}
-
-          <GridToolbarColumnsButton ref={setFilterButtonEl} />
-          {/* <GridToolbarFilterButton ref={setFilterButtonEl} /> */}
-          {/* <GridToolbarExport /> */}
-        </Box>
-      </GridToolbarContainer>
-
-      {/* {canReset && (
-        <ProductTableFiltersResult
-          filters={filters}
-          totalResults={filteredResults}
-          sx={{ p: 2.5, pt: 0 }}
-        />
-      )} */}
-    </>
-  );
-}
-
 // ----------------------------------------------------------------------
 
 export const GridActionsLinkItem = forwardRef((props, ref) => {

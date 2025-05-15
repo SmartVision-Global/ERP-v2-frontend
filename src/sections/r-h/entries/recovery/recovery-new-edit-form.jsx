@@ -158,12 +158,10 @@ export function RecoveryNewEditForm({ currentTaux }) {
     watch,
     reset,
     handleSubmit,
-    formState: { isSubmitting, errors },
+    formState: { isSubmitting },
   } = methods;
 
   const values = watch();
-  console.log('error', errors);
-  console.log('val', values);
 
   const onSubmit = handleSubmit(async (data) => {
     let updatedData = {};

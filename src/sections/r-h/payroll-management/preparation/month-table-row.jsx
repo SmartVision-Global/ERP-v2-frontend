@@ -11,21 +11,42 @@ import { Label } from 'src/components/label';
 
 // ----------------------------------------------------------------------
 
+const MONTHS = {
+  1: 'Janvier',
+  2: 'Février',
+  3: 'Mars',
+  4: 'Avril',
+  5: 'Mai',
+  6: 'Juin',
+  7: 'Juillet',
+  8: 'Aout',
+  9: 'Septembre',
+  10: 'Octobre',
+  11: 'Novembre',
+  12: 'Décembre',
+};
+
+const STATUS = {
+  1: 'OUVERTE',
+  2: 'PREPARATION',
+  3: 'FERME',
+};
+
 export function RenderCellMonth({ params }) {
   return (
     <Label variant="soft" color="info">
-      Décembre
+      {MONTHS[params.row.month]}
     </Label>
   );
 }
 export function RenderCellYear({ params }) {
-  return <Typography variant="body2">2024</Typography>;
+  return <Typography variant="body2">{params.row.year}</Typography>;
 }
 
 export function RenderCellPP({ params }) {
   return (
     <Label variant="soft" color="info">
-      Non
+      {params.row.presence_bonus_exists ? 'Oui' : 'Non'}
     </Label>
   );
 }
@@ -33,7 +54,7 @@ export function RenderCellPP({ params }) {
 export function RenderCellPRC({ params }) {
   return (
     <Label variant="soft" color="info">
-      Non
+      {params.row.collective_return_bonus_exists ? 'Oui' : 'Non'}
     </Label>
   );
 }
@@ -41,29 +62,29 @@ export function RenderCellPRC({ params }) {
 export function RenderCellPRI({ params }) {
   return (
     <Label variant="soft" color="info">
-      Non
+      {params.row.individual_performance_bonus_exists ? 'Oui' : 'Non'}
     </Label>
   );
 }
 
 export function RenderCellCompany({ params }) {
-  return <Typography variant="body2">SARL EL DIOUANE IMPORT EXPORT ( Alger )</Typography>;
+  return <Typography variant="body2">{params.row?.enterprise?.name}</Typography>;
 }
 
 export function RenderCellMaxPoint({ params }) {
-  return <Typography variant="body2">0</Typography>;
+  return <Typography variant="body2">{params.row.maximum_point}</Typography>;
 }
 
 export function RenderCellMinPoint({ params }) {
-  return <Typography variant="body2">1</Typography>;
+  return <Typography variant="body2">{params.row.lowest_point}</Typography>;
 }
 
 export function RenderCellCreatedAt({ params }) {
   return (
     <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
-      <span>{fDate(params.row.createdAt)}</span>
+      <span>{fDate(params.row.created_at)}</span>
       <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
-        {fTime(params.row.createdAt)}
+        {fTime(params.row.created_at)}
       </Box>
     </Box>
   );
@@ -71,7 +92,7 @@ export function RenderCellCreatedAt({ params }) {
 export function RenderCellStatus({ params }) {
   return (
     <Label variant="soft" color="primary">
-      OUVERTE
+      {STATUS[params.row.status]}
     </Label>
   );
 }
@@ -89,7 +110,7 @@ export function RenderCellId({ params, href }) {
       <ListItemText
         primary={
           <Link component={RouterLink} href={href} color="inherit">
-            {Math.floor(Math.random() * 1000) + 1}
+            {params.row.id}
           </Link>
         }
         // secondary={params.row.category}

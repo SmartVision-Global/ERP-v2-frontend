@@ -1,4 +1,4 @@
-import { useBoolean, useSetState } from 'minimal-shared/hooks';
+import { useBoolean } from 'minimal-shared/hooks';
 import { useState, useEffect, forwardRef, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
@@ -8,14 +8,7 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { TextField, FormControl, InputAdornment } from '@mui/material';
-import {
-  DataGrid,
-  gridClasses,
-  GridToolbarExport,
-  GridActionsCellItem,
-  GridToolbarContainer,
-  GridToolbarColumnsButton,
-} from '@mui/x-data-grid';
+import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -101,10 +94,7 @@ export function BloqueListView() {
   const [tableData, setTableData] = useState(products);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
-  const [editedFilters, setEditedFilters] = useState([]);
-
-  const filters = useSetState({ id: '', publish: [], stock: [], full_name: '' });
-  const { state: currentFilters } = filters;
+  const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
@@ -114,11 +104,8 @@ export function BloqueListView() {
     }
   }, [products]);
   const handleReset = () => {
-    setEditedFilters([]);
+    setEditedFilters({});
   };
-  // const canReset =
-  //   currentFilters.publish.length > 0 || currentFilters.stock.length > 0 || !!currentFilters.id;
-  const canReset = editedFilters.length > 0;
   const dataFiltered = tableData;
 
   const handleDeleteRow = useCallback(
@@ -139,21 +126,6 @@ export function BloqueListView() {
 
     setTableData(deleteRows);
   }, [selectedRowIds, tableData]);
-
-  const CustomToolbarCallback = useCallback(
-    () => (
-      <CustomToolbar
-        filters={filters}
-        canReset={canReset}
-        selectedRowIds={selectedRowIds}
-        setFilterButtonEl={setFilterButtonEl}
-        filteredResults={dataFiltered.length}
-        onOpenConfirmDeleteRows={confirmDialog.onTrue}
-      />
-    ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [currentFilters, selectedRowIds, editedFilters]
-  );
 
   const columns = [
     { field: 'category', headerName: 'Category', filterable: false },
@@ -183,63 +155,49 @@ export function BloqueListView() {
       field: 'sex',
       headerName: 'Sex',
       width: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellPublish params={params} />,
     },
     {
       field: 'etat',
       headerName: 'Etat',
       width: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellPublish params={params} />,
     },
     {
       field: 'company',
       headerName: 'Entreprise',
       width: 210,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellCompany params={params} />,
     },
     {
       field: 'site',
       headerName: 'Site',
       width: 210,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellCompany params={params} />,
     },
     {
       field: 'fonction',
       headerName: 'Fonction',
       width: 210,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellCompany params={params} />,
     },
     {
       field: 'net',
       headerName: 'Salaire net á payer',
       width: 210,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellPrice params={params} />,
     },
     {
       field: 'contrat',
       headerName: 'Contrat',
       width: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellContract params={params} />,
     },
     {
@@ -350,12 +308,6 @@ export function BloqueListView() {
             flexDirection: { md: 'column' },
           }}
         >
-          {/* <ActifTableToolbar
-            filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={setEditedFilters}
-            onReset={handleReset}
-          /> */}
           <TableToolbarCustom
             filterOptions={FILTERS_OPTIONS}
             filters={editedFilters}
@@ -418,60 +370,6 @@ export function BloqueListView() {
 
 // ----------------------------------------------------------------------
 
-function CustomToolbar({ selectedRowIds, setFilterButtonEl, onOpenConfirmDeleteRows }) {
-  return (
-    <>
-      {/* <ProductTableToolbar
-        filters={filters}
-        options={{ stocks: PRODUCT_STOCK_OPTIONS, publishs: PUBLISH_OPTIONS }}
-      /> */}
-      {/* <ActifTableToolbar
-        filterOptions={FILTERS_OPTIONS}
-        filters={editedFilters}
-        setFilters={setEditedFilters}
-      /> */}
-      <GridToolbarContainer>
-        {/* <GridToolbarQuickFilter size="small" /> */}
-
-        <Box
-          sx={{
-            gap: 1,
-            flexGrow: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-          }}
-        >
-          {!!selectedRowIds.length && (
-            <Button
-              size="small"
-              color="error"
-              startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
-              onClick={onOpenConfirmDeleteRows}
-            >
-              Delete ({selectedRowIds.length})
-            </Button>
-          )}
-
-          <GridToolbarColumnsButton ref={setFilterButtonEl} />
-          {/* <GridToolbarFilterButton ref={setFilterButtonEl} /> */}
-          <GridToolbarExport />
-        </Box>
-      </GridToolbarContainer>
-
-      {/* {canReset && (
-        <ProductTableFiltersResult
-          filters={filters}
-          totalResults={filteredResults}
-          sx={{ p: 2.5, pt: 0 }}
-        />
-      )} */}
-    </>
-  );
-}
-
-// ----------------------------------------------------------------------
-
 export const GridActionsLinkItem = forwardRef((props, ref) => {
   const { href, label, icon, sx } = props;
 
@@ -492,17 +390,3 @@ export const GridActionsLinkItem = forwardRef((props, ref) => {
 });
 
 // ----------------------------------------------------------------------
-
-function applyFilter({ inputData, filters }) {
-  const { stock, publish } = filters;
-
-  if (stock.length) {
-    inputData = inputData.filter((product) => stock.includes(product.inventoryType));
-  }
-
-  if (publish.length) {
-    inputData = inputData.filter((product) => publish.includes(product.publish));
-  }
-
-  return inputData;
-}

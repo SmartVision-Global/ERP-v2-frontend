@@ -14,9 +14,9 @@ import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { CONFIG } from 'src/global-config';
-import { useGetLookups } from 'src/actions/lookups';
+import { DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
+import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { ACTIF_NAMES, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
 import {
   cancelOvertime,
   archiveOvertime,
@@ -49,11 +49,6 @@ import {
 
 // ----------------------------------------------------------------------
 
-const SEX_OPTIONS = [
-  { value: 'man', label: 'Homme' },
-  { value: 'woman', label: 'Femme' },
-];
-
 const HIDE_COLUMNS = { category: false };
 
 const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
@@ -62,7 +57,12 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 
 export function OvertimeListView() {
-  const { data: personals } = useGetLookups('hr/lookups/personals');
+  const { dataLookups } = useMultiLookups([
+    { entity: 'personals', url: 'hr/lookups/personals' },
+    { entity: 'users', url: 'settings/lookups/users' },
+  ]);
+  const personals = dataLookups.personals;
+  const users = dataLookups.users;
   const FILTERS_OPTIONS = [
     {
       id: 'personal',
@@ -84,7 +84,6 @@ export function OvertimeListView() {
     {
       id: 'designation',
       type: 'input',
-      // options: PRODUCT_STOCK_OPTIONS,
       label: 'Designation',
       cols: 3,
       width: 1,
@@ -102,7 +101,8 @@ export function OvertimeListView() {
     {
       id: 'validated_by',
       type: 'select',
-      options: ACTIF_NAMES,
+      options: users,
+      serverData: true,
       label: 'Valideur',
       cols: 3,
       width: 1,
@@ -138,7 +138,7 @@ export function OvertimeListView() {
 
   const [tableData, setTableData] = useState(overtimeWorks);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
-  const [editedFilters, setEditedFilters] = useState([]);
+  const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
@@ -155,7 +155,7 @@ export function OvertimeListView() {
         limit: PAGE_SIZE,
         offset: 0,
       });
-      setEditedFilters([]);
+      setEditedFilters({});
       setPaginationModel({
         page: 0,
         pageSize: PAGE_SIZE,
@@ -182,13 +182,13 @@ export function OvertimeListView() {
   );
   const handlePaginationModelChange = async (newModel) => {
     try {
-      const newEditedInput = editedFilters.filter((item) => item.value !== '');
-      const result = newEditedInput.reduce((acc, item) => {
-        acc[item.field] = item.value;
-        return acc;
-      }, {});
+      // const newEditedInput = editedFilters.filter((item) => item.value !== '');
+      // const result = newEditedInput.reduce((acc, item) => {
+      //   acc[item.field] = item.value;
+      //   return acc;
+      // }, {});
       const newData = {
-        ...result,
+        ...editedFilters,
         limit: newModel.pageSize,
         offset: newModel.page,
       };
@@ -250,9 +250,7 @@ export function OvertimeListView() {
       headerName: 'Site',
       flex: 1,
       minWidth: 160,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellSite params={params} />,
     },
     {
@@ -358,9 +356,7 @@ export function OvertimeListView() {
       headerName: 'Date de création',
       flex: 1,
       minWidth: 150,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
     },
 

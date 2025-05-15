@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { z as zod } from 'zod';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -9,6 +10,8 @@ import { Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
+
+import { calculateDifference } from 'src/utils/format-time';
 
 import { useGetLookups } from 'src/actions/lookups';
 import { COMMUN_OVERDAYS_OPTIONS } from 'src/_mock';
@@ -52,15 +55,22 @@ export function PermanenceNewEditForm({ currentTaux }) {
   });
 
   const {
+    setValue,
     watch,
     reset,
     handleSubmit,
-    formState: { isSubmitting, errors },
+    formState: { isSubmitting },
   } = methods;
   const values = watch();
-  console.log('err', errors);
-  console.log('val', values);
 
+  useEffect(() => {
+    if (values.from_date && values.to_date) {
+      const { days, hours, minutes } = calculateDifference(values.from_date, values.to_date);
+      setValue('days', days);
+      setValue('hours', hours);
+      setValue('minutes', minutes);
+    }
+  }, [values.from_date, values.to_date, setValue]);
   const onSubmit = handleSubmit(async (data) => {
     const updatedData = {
       ...data,
@@ -110,10 +120,10 @@ export function PermanenceNewEditForm({ currentTaux }) {
             </Field.Select>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.DatePicker name="from_date" label="Du" />
+            <Field.DateTimePicker name="from_date" label="Du" />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.DatePicker name="to_date" label="Au" />
+            <Field.DateTimePicker name="to_date" label="Au" />
           </Grid>
           <Grid size={{ xs: 12, md: 4 }}>
             <Field.Text name="days" label="Jours" />

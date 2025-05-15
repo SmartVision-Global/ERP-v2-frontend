@@ -58,12 +58,10 @@ export function CareerNewEditForm({ currentProduct }) {
 
   const {
     watch,
-    reset,
     handleSubmit,
-    formState: { isSubmitting, errors },
+    formState: { isSubmitting },
   } = methods;
   const values = watch();
-  console.log('err', errors);
 
   const onSubmit = handleSubmit(async (data) => {
     let updatedData = {

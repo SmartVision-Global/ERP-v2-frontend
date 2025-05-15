@@ -12,7 +12,7 @@ import { TextField, FormControl, InputAdornment } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetSocieties } from 'src/actions/society';
+import { useGetWorkshops } from 'src/actions/workshop';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { PRODUCT_STOCK_OPTIONS, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
 
@@ -27,7 +27,7 @@ import {
   RenderCellAddress,
   RenderCellCreatedAt,
   RenderCellDesignation,
-} from '../entreprise-table-row';
+} from '../workshop-table-row';
 
 // ----------------------------------------------------------------------
 
@@ -77,20 +77,20 @@ const FILTERS_OPTIONS = [
   },
 ];
 
-export function EntrepriseListView() {
-  const { societies, societiesLoading } = useGetSocieties();
+export function WorkshopListView() {
+  const { ateliers, ateliersLoading } = useGetWorkshops();
 
-  const [tableData, setTableData] = useState(societies);
+  const [tableData, setTableData] = useState(ateliers);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (societies.length) {
-      setTableData(societies);
+    if (ateliers.length) {
+      setTableData(ateliers);
     }
-  }, [societies]);
+  }, [ateliers]);
   const handleReset = () => {
     setEditedFilters({});
   };
@@ -113,8 +113,8 @@ export function EntrepriseListView() {
       ),
     },
     {
-      field: 'name',
-      headerName: 'Entreprise',
+      field: 'site',
+      headerName: 'Site',
       flex: 1,
       minWidth: 160,
       hideable: false,
@@ -124,8 +124,8 @@ export function EntrepriseListView() {
       ),
     },
     {
-      field: 'activity',
-      headerName: 'Activity',
+      field: 'designation',
+      headerName: 'Designation',
       flex: 1,
       width: 110,
 
@@ -147,41 +147,6 @@ export function EntrepriseListView() {
 
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
     },
-
-    // {
-    //   type: 'actions',
-    //   field: 'actions',
-    //   headerName: ' ',
-    //   align: 'right',
-    //   headerAlign: 'right',
-    //   width: 80,
-    //   sortable: false,
-    //   filterable: false,
-    //   disableColumnMenu: true,
-    //   getActions: (params) => [
-    //     <GridActionsLinkItem
-    //       showInMenu
-    //       icon={<Iconify icon="solar:eye-bold" />}
-    //       label="View"
-    //       // href={paths.dashboard.product.details(params.row.id)}
-    //       href={paths.dashboard.root}
-    //     />,
-    //     <GridActionsLinkItem
-    //       showInMenu
-    //       icon={<Iconify icon="solar:pen-bold" />}
-    //       label="Edit"
-    //       // href={paths.dashboard.product.edit(params.row.id)}
-    //       href={paths.dashboard.root}
-    //     />,
-    //     <GridActionsCellItem
-    //       showInMenu
-    //       icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-    //       label="Delete"
-    //       onClick={() => handleDeleteRow(params.row.id)}
-    //       sx={{ color: 'error.main' }}
-    //     />,
-    //   ],
-    // },
   ];
 
   const getTogglableColumns = () =>
@@ -196,12 +161,12 @@ export function EntrepriseListView() {
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           // { name: 'Ressources humaine', href: paths.dashboard.root },
-          { name: 'Entreprises' },
+          { name: 'Ateliers' },
         ]}
         action={
           <Button
             component={RouterLink}
-            href={paths.dashboard.settings.society.newSociety}
+            href={paths.dashboard.settings.workshop.newWorkshop}
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
           >
@@ -250,7 +215,7 @@ export function EntrepriseListView() {
           disableRowSelectionOnClick
           rows={dataFiltered}
           columns={columns}
-          loading={societiesLoading}
+          loading={ateliersLoading}
           getRowHeight={() => 'auto'}
           pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
           initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}

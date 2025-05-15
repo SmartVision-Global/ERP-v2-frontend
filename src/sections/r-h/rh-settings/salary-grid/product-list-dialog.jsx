@@ -44,10 +44,8 @@ export function ProductListDialog({
 
   const handleSelectAddress = useCallback(
     (address) => {
-      console.log('address', address);
       onSelect(address);
       setSearchAddress('');
-      //   onClose();
     },
     [onSelect]
   );

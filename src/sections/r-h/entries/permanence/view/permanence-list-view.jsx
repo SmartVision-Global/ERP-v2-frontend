@@ -14,9 +14,9 @@ import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { CONFIG } from 'src/global-config';
+import { DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
 import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { ACTIF_NAMES, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
 import {
   cancelPermanency,
   archivePermanency,
@@ -61,13 +61,11 @@ export function PermanenceListView() {
   const { dataLookups } = useMultiLookups([
     { entity: 'personals', url: 'hr/lookups/personals' },
     { entity: 'sites', url: 'settings/lookups/sites' },
-    { entity: 'workshops', url: 'settings/lookups/workshops' },
-    { entity: 'jobs', url: 'hr/lookups/jobs' },
+    { entity: 'users', url: 'settings/lookups/users' },
   ]);
   const personals = dataLookups.personals;
   const sites = dataLookups.sites;
-  // const jobs = dataLookups.jobs;
-  // const workshops = dataLookups.workshops;
+  const users = dataLookups.users;
 
   const FILTERS_OPTIONS = [
     {
@@ -136,7 +134,8 @@ export function PermanenceListView() {
     {
       id: 'validated_by',
       type: 'select',
-      options: ACTIF_NAMES,
+      options: users,
+      serverData: true,
       label: 'Valideur',
       cols: 3,
       width: 1,
@@ -172,7 +171,7 @@ export function PermanenceListView() {
 
   const [tableData, setTableData] = useState(permanencies);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
-  const [editedFilters, setEditedFilters] = useState([]);
+  const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
@@ -189,7 +188,7 @@ export function PermanenceListView() {
         limit: PAGE_SIZE,
         offset: 0,
       });
-      setEditedFilters([]);
+      setEditedFilters({});
       setPaginationModel({
         page: 0,
         pageSize: PAGE_SIZE,
@@ -216,15 +215,16 @@ export function PermanenceListView() {
   );
   const handlePaginationModelChange = async (newModel) => {
     try {
-      const newEditedInput = editedFilters.filter((item) => item.value !== '');
-      const result = newEditedInput.reduce((acc, item) => {
-        acc[item.field] = item.value;
-        return acc;
-      }, {});
+      // const newEditedInput = editedFilters.filter((item) => item.value !== '');
+      // const result = newEditedInput.reduce((acc, item) => {
+      //   acc[item.field] = item.value;
+      //   return acc;
+      // }, {});
       const newData = {
-        ...result,
+        ...editedFilters,
         limit: newModel.pageSize,
         offset: newModel.page,
+        // page: newModel.page,
       };
       const response = await getFiltredPermanencies(newData);
       setTableData(response.data?.data?.records);

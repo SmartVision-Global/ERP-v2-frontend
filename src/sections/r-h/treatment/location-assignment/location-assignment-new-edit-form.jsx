@@ -75,9 +75,8 @@ export function LocationAssignmentNewEditForm({ currentTaux }) {
     watch,
     reset,
     handleSubmit,
-    formState: { isSubmitting, errors },
+    formState: { isSubmitting },
   } = methods;
-  console.log('err', errors);
 
   const values = watch();
 

@@ -1,5 +1,5 @@
-import useSWR from 'swr';
 import { useMemo } from 'react';
+import useSWR, { mutate } from 'swr';
 
 // import { fetcher, endpoints } from 'src/lib/axios';
 import axios, { fetcher, endpoints } from 'src/lib/axios';
@@ -7,9 +7,9 @@ import axios, { fetcher, endpoints } from 'src/lib/axios';
 // ----------------------------------------------------------------------
 
 const swrOptions = {
-  revalidateIfStale: false,
+  revalidateIfStale: true,
   revalidateOnFocus: false,
-  revalidateOnReconnect: false,
+  revalidateOnReconnect: true,
 };
 
 const MACHINE_ENDPOINT = endpoints.machine;
@@ -61,5 +61,5 @@ export async function createMachine(data) {
    */
   // const data = { directionData };
   await axios.post(MACHINE_ENDPOINT, data);
-  //   mutate(endpoints.site);
+  mutate(MACHINE_ENDPOINT);
 }

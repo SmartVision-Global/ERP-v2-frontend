@@ -28,7 +28,6 @@ import {
   RenderCellAbs,
   RenderCellIrg,
   RenderCellNet,
-  RenderCellYear,
   RenderCellMonth,
   RenderCellCompany,
   RenderCellOverdays,
@@ -43,11 +42,6 @@ import {
 } from '../calculation-table-row';
 
 // ----------------------------------------------------------------------
-
-const SEX_OPTIONS = [
-  { value: 'man', label: 'Homme' },
-  { value: 'woman', label: 'Femme' },
-];
 
 const HIDE_COLUMNS = { category: false };
 
@@ -81,7 +75,7 @@ export function CalculationListView() {
   const [tableData, setTableData] = useState(products);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
-  const [editedFilters, setEditedFilters] = useState([]);
+  const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
@@ -91,21 +85,10 @@ export function CalculationListView() {
     }
   }, [products]);
   const handleReset = () => {
-    setEditedFilters([]);
+    setEditedFilters({});
   };
 
   const dataFiltered = tableData;
-
-  const handleDeleteRow = useCallback(
-    (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-
-      toast.success('Delete success!');
-
-      setTableData(deleteRow);
-    },
-    [tableData]
-  );
 
   const handleDeleteRows = useCallback(() => {
     const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
@@ -147,9 +130,6 @@ export function CalculationListView() {
       flex: 1,
       minWidth: 160,
       type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellYear params={params} />,
     },
 
     {
@@ -321,12 +301,6 @@ export function CalculationListView() {
             flexDirection: { md: 'column' },
           }}
         >
-          {/* <ActifTableToolbar
-            filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={setEditedFilters}
-            onReset={handleReset}
-          /> */}
           <TableToolbarCustom
             filterOptions={FILTERS_OPTIONS}
             filters={editedFilters}

@@ -16,8 +16,6 @@ import {
 
 export function ActifTableToolbar({ filterOptions, filters, setFilters, onReset }) {
   const [selectedOptions, setSelectedOptions] = useState(null);
-  // const jj = filters.find((inputItem) => inputItem.field === 'id');
-  console.log('sssssssssssssss', filters);
 
   const getInput = (event, filterType) => {
     const { name, value } = event.target;

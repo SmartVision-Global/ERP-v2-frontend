@@ -38,11 +38,6 @@ import {
 
 // ----------------------------------------------------------------------
 
-const SEX_OPTIONS = [
-  { value: 'man', label: 'Homme' },
-  { value: 'woman', label: 'Femme' },
-];
-
 const HIDE_COLUMNS = { category: false };
 
 const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
@@ -97,7 +92,7 @@ export function ZoneListView() {
   const [tableData, setTableData] = useState(zones);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
-  const [editedFilters, setEditedFilters] = useState([]);
+  const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
@@ -107,7 +102,7 @@ export function ZoneListView() {
     }
   }, [zones]);
   const handleReset = () => {
-    setEditedFilters([]);
+    setEditedFilters({});
   };
 
   const dataFiltered = tableData;
@@ -162,9 +157,7 @@ export function ZoneListView() {
       headerName: 'Code',
       flex: 1,
       width: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellCode params={params} />,
     },
     {
@@ -172,9 +165,7 @@ export function ZoneListView() {
       headerName: 'Site',
       flex: 1,
       width: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellSite params={params} />,
     },
     {
@@ -182,9 +173,7 @@ export function ZoneListView() {
       headerName: 'Couleur',
       flex: 1,
       width: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellColor params={params} />,
     },
     {
@@ -192,9 +181,7 @@ export function ZoneListView() {
       headerName: 'Superficie',
       flex: 1,
       width: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellSurface params={params} />,
     },
     {
@@ -202,9 +189,7 @@ export function ZoneListView() {
       headerName: 'Activité principale',
       flex: 1,
       width: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellMainActivity params={params} />,
     },
     {
@@ -212,9 +197,7 @@ export function ZoneListView() {
       headerName: 'Regles de sécurité',
       flex: 1,
       width: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellSafetyRules params={params} />,
     },
     {
@@ -222,9 +205,7 @@ export function ZoneListView() {
       headerName: 'Date de création',
       flex: 1,
       width: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
+
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
     },
 
@@ -324,12 +305,6 @@ export function ZoneListView() {
             flexDirection: { md: 'column' },
           }}
         >
-          {/* <ActifTableToolbar
-            filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={setEditedFilters}
-            onReset={handleReset}
-          /> */}
           <TableToolbarCustom
             // filterOptions={FILTERS_OPTIONS}
             filters={editedFilters}

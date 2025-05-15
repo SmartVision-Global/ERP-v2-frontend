@@ -1,4 +1,3 @@
-import { useBoolean } from 'minimal-shared/hooks';
 import { useState, useEffect, forwardRef, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
@@ -15,13 +14,11 @@ import { RouterLink } from 'src/routes/components';
 
 import { CONFIG } from 'src/global-config';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { archiveJob, useGetJobs, getFiltredJobs } from 'src/actions/function';
+import { useGetJobs, getFiltredJobs } from 'src/actions/function';
 
-import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import {
@@ -100,16 +97,14 @@ export function JobListView() {
     page: 0,
     pageSize: PAGE_SIZE,
   });
-  const confirmDialog = useBoolean();
 
   const { jobs, jobsLoading, jobsCount } = useGetJobs({ limit: 2, offset: 0 });
   const [rowCount, setRowCount] = useState(jobsCount);
 
   const [tableData, setTableData] = useState(jobs);
-  const [selectedRowId, setSelectedRowId] = useState('');
 
   const [filterButtonEl, setFilterButtonEl] = useState(null);
-  const [editedFilters, setEditedFilters] = useState([]);
+  const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
@@ -121,17 +116,21 @@ export function JobListView() {
   }, [jobs, jobsCount]);
 
   const handleReset = useCallback(async () => {
-    setEditedFilters([]);
-    setPaginationModel({
-      page: 0,
-      pageSize: PAGE_SIZE,
-    });
-    const response = await getFiltredJobs({
-      limit: PAGE_SIZE,
-      offset: 0,
-    });
-    setTableData(response.data?.data?.records);
-    setRowCount(response.data?.data?.total);
+    try {
+      const response = await getFiltredJobs({
+        limit: PAGE_SIZE,
+        offset: 0,
+      });
+      setEditedFilters({});
+      setPaginationModel({
+        page: 0,
+        pageSize: PAGE_SIZE,
+      });
+      setTableData(response.data?.data?.records);
+      setRowCount(response.data?.data?.total);
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
 
   const handleFilter = useCallback(
@@ -149,13 +148,13 @@ export function JobListView() {
   );
   const handlePaginationModelChange = async (newModel) => {
     try {
-      const newEditedInput = editedFilters.filter((item) => item.value !== '');
-      const result = newEditedInput.reduce((acc, item) => {
-        acc[item.field] = item.value;
-        return acc;
-      }, {});
+      // const newEditedInput = editedFilters.filter((item) => item.value !== '');
+      // const result = newEditedInput.reduce((acc, item) => {
+      //   acc[item.field] = item.value;
+      //   return acc;
+      // }, {});
       const newData = {
-        ...result,
+        ...editedFilters,
         limit: newModel.pageSize,
         offset: newModel.page,
       };
@@ -165,26 +164,6 @@ export function JobListView() {
     } catch (error) {
       console.log('error in pagination search request', error);
     }
-  };
-
-  // const handleOpenConfirmArchiveRow = (id) => {
-  //   setSelectedRowId(id);
-  //   confirmDialog.onTrue();
-  // };
-
-  // const handleDeleteRow = useCallback(
-  //   (id) => {
-  //     const deleteRow = tableData.filter((row) => row.id !== id);
-
-  //     toast.success('Delete success!');
-
-  //     setTableData(deleteRow);
-  //   },
-  //   [tableData]
-  // );
-  const handleDeleteRow = async () => {
-    await archiveJob(selectedRowId);
-    toast.success('Delete success!');
   };
 
   const columns = [
@@ -213,17 +192,7 @@ export function JobListView() {
       type: 'singleSelect',
       renderCell: (params) => <RenderCellSite params={params} />,
     },
-    // {
-    //   field: 'salary_grids',
-    //   headerName: 'Grille de salaire',
-    //   flex: 1,
-    //   minWidth: 80,
 
-    //   type: 'singleSelect',
-    //   editable: true,
-    //   valueOptions: SEX_OPTIONS,
-    //   renderCell: (params) => <RenderCellSalaryGrid params={params} />,
-    // },
     {
       field: 'have_premium',
       headerName: 'Prime de présence',
@@ -314,116 +283,90 @@ export function JobListView() {
       .map((column) => column.field);
 
   return (
-    <>
-      <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-        <CustomBreadcrumbs
-          heading="List"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Ressources humaine', href: paths.dashboard.root },
-            { name: 'Fonctions' },
-          ]}
-          action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.rh.fonction.newFonctions}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              Ajouter
-            </Button>
-          }
-          sx={{ mb: { xs: 3, md: 5 } }}
-        />
+    <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+      <CustomBreadcrumbs
+        heading="List"
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Ressources humaine', href: paths.dashboard.root },
+          { name: 'Fonctions' },
+        ]}
+        action={
+          <Button
+            component={RouterLink}
+            href={paths.dashboard.rh.fonction.newFonctions}
+            variant="contained"
+            startIcon={<Iconify icon="mingcute:add-line" />}
+          >
+            Ajouter
+          </Button>
+        }
+        sx={{ mb: { xs: 3, md: 5 } }}
+      />
 
-        <Card
-          sx={{
-            flexGrow: { md: 1 },
-            display: { md: 'flex' },
-            flexDirection: { md: 'column' },
-          }}
-        >
-          <TableToolbarCustom
-            filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={setEditedFilters}
-            onReset={handleReset}
-            handleFilter={handleFilter}
-            setPaginationModel={setPaginationModel}
-            paginationModel={paginationModel}
-          />
-          <Box paddingX={4} paddingY={2} sx={{}}>
-            <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
-              <TextField
-                fullWidth
-                // value={currentFilters.name}
-                // onChange={handleFilterName}
-                placeholder="Search "
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-                size="small"
-              />
-            </FormControl>
-          </Box>
-          <DataGrid
-            disableRowSelectionOnClick
-            disableColumnMenu
-            rows={tableData}
-            rowCount={rowCount}
-            columns={columns}
-            loading={jobsLoading}
-            getRowHeight={() => 'auto'}
-            paginationModel={paginationModel}
-            paginationMode="server"
-            onPaginationModelChange={(model) => handlePaginationModelChange(model)}
-            pageSizeOptions={[2, 10, 20, { value: -1, label: 'All' }]}
-            columnVisibilityModel={columnVisibilityModel}
-            onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
-            slots={{
-              noRowsOverlay: () => <EmptyContent />,
-              noResultsOverlay: () => <EmptyContent title="No results found" />,
-            }}
-            slotProps={{
-              toolbar: { setFilterButtonEl },
-              panel: { anchorEl: filterButtonEl },
-              columnsManagement: { getTogglableColumns },
-            }}
-            sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
-          />
-        </Card>
-      </DashboardContent>
-      {confirmDialog.value && selectedRowId !== '' && (
-        <ConfirmDialog
-          open={confirmDialog.value}
-          onClose={confirmDialog.onFalse}
-          title="Archiver"
-          content={
-            <>
-              Are you sure want to delete <strong> {selectedRowId} </strong>?
-            </>
-          }
-          action={
-            <Button
-              variant="contained"
-              color="error"
-              onClick={() => {
-                handleDeleteRow();
-                confirmDialog.onFalse();
-              }}
-            >
-              Delete
-            </Button>
-          }
+      <Card
+        sx={{
+          flexGrow: { md: 1 },
+          display: { md: 'flex' },
+          flexDirection: { md: 'column' },
+        }}
+      >
+        <TableToolbarCustom
+          filterOptions={FILTERS_OPTIONS}
+          filters={editedFilters}
+          setFilters={setEditedFilters}
+          onReset={handleReset}
+          handleFilter={handleFilter}
+          setPaginationModel={setPaginationModel}
+          paginationModel={paginationModel}
         />
-      )}
-    </>
+        <Box paddingX={4} paddingY={2} sx={{}}>
+          <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
+            <TextField
+              fullWidth
+              // value={currentFilters.name}
+              // onChange={handleFilterName}
+              placeholder="Search "
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+              size="small"
+            />
+          </FormControl>
+        </Box>
+        <DataGrid
+          disableRowSelectionOnClick
+          disableColumnMenu
+          rows={tableData}
+          rowCount={rowCount}
+          columns={columns}
+          loading={jobsLoading}
+          getRowHeight={() => 'auto'}
+          paginationModel={paginationModel}
+          paginationMode="server"
+          onPaginationModelChange={(model) => handlePaginationModelChange(model)}
+          pageSizeOptions={[2, 10, 20, { value: -1, label: 'All' }]}
+          columnVisibilityModel={columnVisibilityModel}
+          onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
+          slots={{
+            noRowsOverlay: () => <EmptyContent />,
+            noResultsOverlay: () => <EmptyContent title="No results found" />,
+          }}
+          slotProps={{
+            toolbar: { setFilterButtonEl },
+            panel: { anchorEl: filterButtonEl },
+            columnsManagement: { getTogglableColumns },
+          }}
+          sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
+        />
+      </Card>
+    </DashboardContent>
   );
 }
 
