@@ -70,17 +70,21 @@ export function TaskRespListView() {
   }, [dutiesResponsibilities, dutiesResponsibilitiesCount]);
 
   const handleReset = useCallback(async () => {
-    setEditedFilters([]);
-    setPaginationModel({
-      page: 0,
-      pageSize: 2,
-    });
-    const response = await getFiltredTasks({
-      limit: 2,
-      offset: 0,
-    });
-    setTableData(response.data?.data?.records);
-    setRowCount(response.data?.data?.total);
+    try {
+      const response = await getFiltredTasks({
+        limit: 2,
+        offset: 0,
+      });
+      setEditedFilters([]);
+      setPaginationModel({
+        page: 0,
+        pageSize: 2,
+      });
+      setTableData(response.data?.data?.records);
+      setRowCount(response.data?.data?.total);
+    } catch (err) {
+      console.log(err);
+    }
   }, []);
 
   const handleFilter = useCallback(

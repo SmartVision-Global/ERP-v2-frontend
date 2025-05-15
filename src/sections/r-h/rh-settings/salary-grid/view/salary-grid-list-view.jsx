@@ -122,17 +122,21 @@ export function SalaryGridListView() {
   }, [salaryGrids, salaryGridsCount]);
 
   const handleReset = useCallback(async () => {
-    setEditedFilters([]);
-    setPaginationModel({
-      page: 0,
-      pageSize: PAGE_SIZE,
-    });
-    const response = await getFiltredSalaryGrids({
-      limit: PAGE_SIZE,
-      offset: 0,
-    });
-    setTableData(response.data?.data?.records);
-    setRowCount(response.data?.data?.total);
+    try {
+      const response = await getFiltredSalaryGrids({
+        limit: PAGE_SIZE,
+        offset: 0,
+      });
+      setEditedFilters([]);
+      setPaginationModel({
+        page: 0,
+        pageSize: PAGE_SIZE,
+      });
+      setTableData(response.data?.data?.records);
+      setRowCount(response.data?.data?.total);
+    } catch (err) {
+      console.log(err);
+    }
   }, []);
 
   const handleFilter = useCallback(

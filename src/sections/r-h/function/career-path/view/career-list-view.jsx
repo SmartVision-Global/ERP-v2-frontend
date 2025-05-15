@@ -92,17 +92,21 @@ export function CareerListView() {
     }
   }, [careerKnowledges, careerKnowledgesCount]);
   const handleReset = useCallback(async () => {
-    setEditedFilters([]);
-    setPaginationModel({
-      page: 0,
-      pageSize: PAGE_SIZE,
-    });
-    const response = await getFiltredCareerKnowledges({
-      limit: PAGE_SIZE,
-      offset: 0,
-    });
-    setTableData(response.data?.data?.records);
-    setRowCount(response.data?.data?.total);
+    try {
+      const response = await getFiltredCareerKnowledges({
+        limit: PAGE_SIZE,
+        offset: 0,
+      });
+      setEditedFilters([]);
+      setPaginationModel({
+        page: 0,
+        pageSize: PAGE_SIZE,
+      });
+      setTableData(response.data?.data?.records);
+      setRowCount(response.data?.data?.total);
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
 
   const handleFilter = useCallback(
