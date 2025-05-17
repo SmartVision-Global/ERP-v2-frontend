@@ -14,7 +14,7 @@ export function RenderCellSite({ params }) {
 }
 
 export function RenderCellCode({ params }) {
-  return <Typography variant="body2">{params.row?.store_code}</Typography>;
+  return <Typography variant="body2">{params.row?.code}</Typography>;
 }
 
 export function RenderCellDesignation({ params }) {

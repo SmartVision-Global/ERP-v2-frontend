@@ -20,7 +20,7 @@ import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 
 export const StoreSchema = zod.object({
-  store_code: zod.string().min(1, { message: 'Code is required!' }),
+  code: zod.string().min(1, { message: 'Code is required!' }),
   designation: zod.string().optional(),
   address: zod.string().min(1, { message: 'Address is required!' }),
   site_id: zod.string().min(1, { message: 'Site is required!' }),
@@ -35,7 +35,7 @@ export function StoreNewEditForm({ currentProduct }) {
   const sites = dataLookups.sites || [];
   
   const defaultValues = {
-    store_code: '',
+    code: '',
     designation: '',
     address: '',
     phone: '',
@@ -107,7 +107,7 @@ export function StoreNewEditForm({ currentProduct }) {
             </Field.Select>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="store_code" label="Code" />
+            <Field.Text name="code" label="Code" id="code" />
           </Grid>
           <Grid size={{ xs: 6, md: 6 }}>
             <Field.Select name="type_store" label="Store Type" size="small">
