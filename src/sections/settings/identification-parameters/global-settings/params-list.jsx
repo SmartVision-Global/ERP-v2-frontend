@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box';
 
 import { useGetSocieties } from 'src/actions/society';
-import { useGetWorkshops } from 'src/actions/atelier';
 import {
   createBank,
   createRung,
@@ -44,7 +43,7 @@ import { EnterpriseItem } from './enterprise-item';
 
 export function ParamsList({ data }) {
   const { societies } = useGetSocieties();
-  const { ateliers } = useGetWorkshops();
+
   return (
     <Box
       sx={{
@@ -65,7 +64,7 @@ export function ParamsList({ data }) {
         onCreate={createDirection}
         onUpdate={updateDirection}
       />
-      <ParamItem title="Ateliers" data={ateliers} icon="mdi:direct-current" />
+  
       <ParamItem
         title="Filiales"
         data={data?.subsidiary}
