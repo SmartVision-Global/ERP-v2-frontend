@@ -14,7 +14,6 @@ import { RouterLink } from 'src/routes/components';
 
 import { useGetSites } from 'src/actions/site';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { PRODUCT_STOCK_OPTIONS, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
 
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
@@ -36,46 +35,6 @@ const HIDE_COLUMNS = { category: false };
 const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 // ----------------------------------------------------------------------
-
-const FILTERS_OPTIONS = [
-  {
-    id: 'designation',
-    type: 'input',
-    label: 'Designation',
-    cols: 12,
-    width: 0.24,
-  },
-  {
-    id: 'status',
-    type: 'select',
-    options: DOCUMENT_STATUS_OPTIONS,
-    label: 'Etat',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'valideur',
-    type: 'select',
-    options: PRODUCT_STOCK_OPTIONS,
-    label: 'Valideur',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'start_date',
-    type: 'date',
-    label: 'Date début de création',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'end_date',
-    type: 'date',
-    label: 'Date fin de création',
-    cols: 3,
-    width: 1,
-  },
-];
 
 export function SiteListView() {
   const { sites, sitesLoading } = useGetSites();
@@ -203,7 +162,7 @@ export function SiteListView() {
         }}
       >
         <TableToolbarCustom
-          filterOptions={FILTERS_OPTIONS}
+          // filterOptions={FILTERS_OPTIONS}
           filters={editedFilters}
           setFilters={setEditedFilters}
           onReset={handleReset}
