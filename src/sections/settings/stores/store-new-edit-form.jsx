@@ -37,12 +37,12 @@ export function StoreNewEditForm({ currentProduct }) {
   const sites = dataLookups.sites || [];
 
   const defaultValues = {
-    store_code: '',
+    code: '',
     designation: '',
     address: '',
     phone: '',
     type: BIG_TYPES?.[0]?.value || '1',
-    type_store: '',
+    store_type: '',
     site_id: '',
   };
 
@@ -106,10 +106,10 @@ export function StoreNewEditForm({ currentProduct }) {
             </Field.Select>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="store_code" label="Code" />
+            <Field.Text name="code" label="Code" />
           </Grid>
           <Grid size={{ xs: 6, md: 6 }}>
-            <Field.Select name="type_store" label="Store Type" size="small">
+            <Field.Select name="stor_type" label="Store Type" size="small">
               {((type === (BIG_TYPES?.[0]?.value || '1') ? TYPES : TYPES2) || []).map((option) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}

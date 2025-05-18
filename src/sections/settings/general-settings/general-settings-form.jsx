@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
   Box,
@@ -7,7 +7,6 @@ import {
   Step,
   StepLabel,
   Stepper,
-  Switch,
   TextField,
   Select,
   MenuItem,
@@ -15,8 +14,15 @@ import {
   InputLabel,
   Typography,
   Grid,
-  FormControlLabel,
 } from '@mui/material';
+
+import { useGetSites } from 'src/actions/site';
+import { useGetStores } from 'src/actions/store'; // Import the useGetStores hook
+import { useGetGeneralSettings, createGeneralSetting } from 'src/actions/generalSettings';
+import {
+  useGetGeneralSettingsInfo,
+  createGeneralSettingsInfo,
+} from 'src/actions/generalSettingsInfo';
 
 const steps = ['Paramètre général', 'Paramétrage Produit fini', 'Paramétrage Panneau technique'];
 
@@ -25,8 +31,6 @@ const schema = z.object({
     decimalsStorageProd: z.number().min(0),
     decimalsCash: z.number().min(0),
     baseSalary: z.number().min(0),
-    newBaseSalary: z.number().min(0),
-    inventoryDuration: z.number().min(0),
     storageDisplay: z.string(),
     productionDisplay: z.string(),
   }),
@@ -47,38 +51,104 @@ const schema = z.object({
 });
 
 export default function GeneralSettingsForm() {
+  const { generalSettings } = useGetGeneralSettings();
+  const { generalSettingsInfo } = useGetGeneralSettingsInfo();
+  const { sites } = useGetSites();
+  const { stores } = useGetStores(); // Fetch stores
+
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
     general: {
       decimalsStorageProd: 2,
       decimalsCash: 2,
       baseSalary: 30,
-      // newBaseSalary: 30,
-      // inventoryDuration: 10,
       storageDisplay: 'PALETTE',
-      // productionDisplay: 'Carton/Palette',
+      productionDisplay: 'Carton/Palette',
     },
-    productSettings: [
-      { site: 'Batna', consommation: 'PL', production: 'PF-PRODUCTION' },
-      { site: 'BATNA', consommation: '', production: '' },
-      { site: 'SETIF', consommation: 'MP01', production: 'SETIF' },
-      { site: 'SFS', consommation: 'MC01', production: 'MC01' },
-    ],
-    panelSettings: [
-      { site: 'Batna', consommation: 'PL', production: 'PT-PRODUCTION' },
-      { site: 'BATNA', consommation: '', production: '' },
-      { site: 'SETIF', consommation: '', production: '' },
-      { site: 'SFS', consommation: '', production: '' },
-    ],
+    productSettings: [],
+    panelSettings: [],
   });
 
-  const handleNext = () => {
+  // Load data for the first tab (general settings)
+  useEffect(() => {
+    if (generalSettings.length > 0) {
+      const settings = generalSettings[0];
+      setFormData((prev) => ({
+        ...prev,
+        general: {
+          decimalsStorageProd: settings.decimalsStorageProd || 2,
+          decimalsCash: settings.decimalsCash || 2,
+          baseSalary: settings.baseSalary || 30,
+          storageDisplay: settings.storageDisplay || 'PALETTE',
+          productionDisplay: settings.productionDisplay || 'Carton/Palette',
+        },
+      }));
+    }
+  }, [generalSettings]);
+
+  // Load data for the second and third tabs (general settings info)
+  useEffect(() => {
+    if (generalSettingsInfo.length > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        productSettings: generalSettingsInfo
+          .filter((info) => info.type === 1)
+          .map((info) => ({
+            site: info.site.id,
+            consommation: info.store?.code || '',
+            production: info.store?.designation || '',
+          })),
+        panelSettings: generalSettingsInfo
+          .filter((info) => info.type === 2)
+          .map((info) => ({
+            site: info.site.id,
+            consommation: info.store?.code || '',
+            production: info.store?.designation || '',
+          })),
+      }));
+    }
+  }, [generalSettingsInfo]);
+
+  // Map sites and stores to product and panel settings
+  useEffect(() => {
+    if (sites.length > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        productSettings: sites.map((site) => ({
+          site: site.id,
+          consommation: '',
+          production: '',
+        })),
+        panelSettings: sites.map((site) => ({
+          site: site.id,
+          consommation: '',
+          production: '',
+        })),
+      }));
+    }
+  }, [sites]);
+
+  const handleNext = async () => {
     if (activeStep === steps.length - 1) {
       try {
         const parsed = schema.parse(formData);
         console.log('Form submission:', parsed);
+
+        // Save the general settings to the server
+        await createGeneralSetting(parsed.general);
+
+        // Save the product and panel settings to the server
+        await Promise.all([
+          ...formData.productSettings.map((data) =>
+            createGeneralSettingsInfo({ ...data, type: 1 })
+          ),
+          ...formData.panelSettings.map((data) => createGeneralSettingsInfo({ ...data, type: 2 })),
+        ]);
+
+        alert('Settings saved successfully!');
       } catch (err) {
         console.error('Validation error:', err);
+        alert('Validation failed. Please check your inputs.');
       }
     } else {
       setActiveStep((prev) => prev + 1);
@@ -123,9 +193,6 @@ export default function GeneralSettingsForm() {
         { label: 'Nombre de décimales ( Magasinage et production)', key: 'decimalsStorageProd' },
         { label: 'Nombre de décimales ( Caisse)', key: 'decimalsCash' },
         { label: 'Base Salaire', key: 'baseSalary' },
-
-        // { label: 'Base Salaire ( Nouvel employeur)', key: 'newBaseSalary' },
-        // { label: 'La durée entre les inventaires', key: 'inventoryDuration' },
       ].map(({ label, key }) => (
         <Grid item xs={6} key={key}>
           <TextField
@@ -138,42 +205,12 @@ export default function GeneralSettingsForm() {
           />
         </Grid>
       ))}
-      {/* <Box sx={{ width: '300px', margin: '0 auto', mt: 4 }}>
-        <TextField
-          fullWidth
-          label="Your Label"
-          value={value}
-          onChange={handleChange}
-          variant="outlined" // You can use "filled" or "standard" as well
-        />
-      </Box> */}
-      {/* <Grid item xs={6}>
-        <TextField
-          fullWidth
-          label="Affichage par conditionnement (Magasinage)"
-          value={formData.general.storageDisplay}
-          onChange={handleChange('general', null, 'storageDisplay')}
-          sx={inputStyle}
-        />
-      </Grid> */}
-
       <Grid item xs={6}>
         <TextField
           fullWidth
           label="Affichage par conditionnement (Production)"
-          value={formData.general.storageDisplay}
+          value={formData.general.productionDisplay}
           onChange={handleChange('general', null, 'productionDisplay')}
-          sx={inputStyle}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <TextField
-          fullWidth
-          label="Les remarques d'impression don le bon de commande achat local"
-          multiline
-          rows={4}
-          value={formData.general.description || ''} // Add a new key in your state if not already present
-          onChange={handleChange('general', null, 'description')}
           sx={inputStyle}
         />
       </Grid>
@@ -181,30 +218,68 @@ export default function GeneralSettingsForm() {
   );
 
   const renderSettings = (section) => (
-    <>
+    <Box>
+      {/* Magasinage Section */}
+      <Typography
+        variant="subtitle1"
+        mt={2}
+        mb={1}
+        sx={{ backgroundColor: '#ffb822', padding: 1, display: 'inline-block' }}
+      >
+        Magasinage
+      </Typography>
       {formData[section].map((item, idx) => (
-        <Grid container spacing={2} key={idx} mt={2}>
-          <Grid item xs={3}>
-            <TextField fullWidth label="Site" value={item.site} sx={inputStyle} />
+        <Grid container spacing={2} key={`magasinage-${idx}`} mt={2}>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              disabled
+              label="Site"
+              value={sites.find((site) => site.id === item.site)?.name || ''}
+              sx={inputStyle}
+            />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={6}>
             <FormControl fullWidth sx={inputStyle}>
-              <InputLabel>
-                {section === 'productSettings' ? 'Consommation' : 'Consommation'}
-              </InputLabel>
+              <InputLabel>Consommation</InputLabel>
               <Select
                 value={item.consommation}
                 onChange={handleChange(section, idx, 'consommation')}
                 label="Consommation"
               >
                 <MenuItem value="">Sélectionné</MenuItem>
-                <MenuItem value="PL">PL</MenuItem>
-                <MenuItem value="MP01">MP01</MenuItem>
-                <MenuItem value="MC01">MC01</MenuItem>
+                {stores.map((store) => (
+                  <MenuItem key={store.id} value={store.code}>
+                    {store.name}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={5}>
+        </Grid>
+      ))}
+
+      {/* Production Section */}
+      <Typography
+        variant="subtitle1"
+        mt={4}
+        mb={1}
+        sx={{ backgroundColor: '#ffb822', padding: 1, display: 'inline-block' }}
+      >
+        Production
+      </Typography>
+      {formData[section].map((item, idx) => (
+        <Grid container spacing={2} key={`production-${idx}`} mt={2}>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              disabled
+              label="Site"
+              value={sites.find((site) => site.id === item.site)?.name || ''}
+              sx={inputStyle}
+            />
+          </Grid>
+          <Grid item xs={6}>
             <FormControl fullWidth sx={inputStyle}>
               <InputLabel>Production</InputLabel>
               <Select
@@ -213,16 +288,17 @@ export default function GeneralSettingsForm() {
                 label="Production"
               >
                 <MenuItem value="">Sélectionné</MenuItem>
-                <MenuItem value="PF-PRODUCTION">PF-PRODUCTION</MenuItem>
-                <MenuItem value="PT-PRODUCTION">PT-PRODUCTION</MenuItem>
-                <MenuItem value="SETIF">SETIF</MenuItem>
-                <MenuItem value="MC01">MC01</MenuItem>
+                {stores.map((store) => (
+                  <MenuItem key={store.id} value={store.code}>
+                    {store.name}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Grid>
         </Grid>
       ))}
-    </>
+    </Box>
   );
 
   return (
