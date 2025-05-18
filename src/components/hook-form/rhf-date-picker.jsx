@@ -52,8 +52,6 @@ export function RHFDateTimePicker({ name, slotProps, ...other }) {
           {...field}
           value={field.value ? dayjs(field.value) : null}
           onChange={(newValue) => {
-            // eslint-disable-next-line no-debugger
-            debugger;
             if (newValue) {
               return field.onChange(dayjs(newValue).format());
             } else {
