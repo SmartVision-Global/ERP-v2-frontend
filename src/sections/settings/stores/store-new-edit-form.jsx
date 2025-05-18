@@ -24,7 +24,7 @@ export const StoreSchema = zod.object({
   designation: zod.string().optional(),
   address: zod.string().min(1, { message: 'Address is required!' }),
   site_id: zod.string().min(1, { message: 'Site is required!' }),
-  type_store: zod.string().min(1, { message: 'Store type is required!' }),
+  store_type: zod.string().min(1, { message: 'Store type is required!' }),
   phone: zod.string()
     .min(1, { message: 'Telephone is required!' })
     .regex(/^0[567][0-9]{8}$/, { message: 'Invalid phone number format (should be 10 digits starting with 05, 06, or 07)' }),
@@ -69,9 +69,11 @@ export function StoreNewEditForm({ currentProduct }) {
     setValue('type_store', '');
   };
 
+  console.log('store new edit form', currentProduct);
+
   const onSubmit = handleSubmit(async (data) => {
+    console.info('DATA before createStore', data);
     try {
-      console.info('DATA before createStore', data);
       await createStore(data);
       reset();
       toast.success(currentProduct ? 'Update success!' : 'Create success!');
@@ -109,7 +111,7 @@ export function StoreNewEditForm({ currentProduct }) {
             <Field.Text name="code" label="Code" id="code" />
           </Grid>
           <Grid size={{ xs: 6, md: 6 }}>
-            <Field.Select name="stor_type" label="Store Type" size="small">
+            <Field.Select name="store_type" label="Store Type" size="small">
               {((type === (BIG_TYPES?.[0]?.value || '1') ? TYPES : TYPES2) || []).map((option) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
