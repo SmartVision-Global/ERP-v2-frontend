@@ -55,7 +55,7 @@ export default function GeneralSettingsForm() {
   const { generalSettingsInfo } = useGetGeneralSettingsInfo();
   const { sites } = useGetSites();
   const { stores } = useGetStores(); // Fetch stores
-
+  // console.log('stores', stores);
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
     general: {
@@ -64,6 +64,7 @@ export default function GeneralSettingsForm() {
       baseSalary: 30,
       storageDisplay: 'PALETTE',
       productionDisplay: 'Carton/Palette',
+      remarks: '', // Added this field
     },
     productSettings: [],
     panelSettings: [],
@@ -108,50 +109,93 @@ export default function GeneralSettingsForm() {
       }));
     }
   }, [generalSettingsInfo]);
-
   // Map sites and stores to product and panel settings
   useEffect(() => {
     if (sites.length > 0) {
       setFormData((prev) => ({
         ...prev,
         productSettings: sites.map((site) => ({
-          site: site.id,
+          site: site.id.toString(), // Convert `site.id` to a string
           consommation: '',
           production: '',
         })),
         panelSettings: sites.map((site) => ({
-          site: site.id,
+          site: site.id.toString(), // Convert `site.id` to a string
           consommation: '',
           production: '',
         })),
       }));
     }
   }, [sites]);
-
   const handleNext = async () => {
-    if (activeStep === steps.length - 1) {
-      try {
-        const parsed = schema.parse(formData);
-        console.log('Form submission:', parsed);
-
-        // Save the general settings to the server
-        await createGeneralSetting(parsed.general);
-
-        // Save the product and panel settings to the server
-        await Promise.all([
-          ...formData.productSettings.map((data) =>
-            createGeneralSettingsInfo({ ...data, type: 1 })
-          ),
-          ...formData.panelSettings.map((data) => createGeneralSettingsInfo({ ...data, type: 2 })),
-        ]);
-
-        alert('Settings saved successfully!');
-      } catch (err) {
-        console.error('Validation error:', err);
-        alert('Validation failed. Please check your inputs.');
+    try {
+      if (activeStep === 0) {
+        // Validate and submit general settings
+        const parsed = schema.shape.general.parse(formData.general);
+        console.log('Submitting general settings:', parsed);
+        await createGeneralSetting(parsed);
+        alert('Paramètres généraux enregistrés avec succès!');
       }
-    } else {
-      setActiveStep((prev) => prev + 1);
+
+      if (activeStep === 1) {
+        const parsed = schema.shape.productSettings.parse(formData.productSettings);
+        console.log('Submitting product settings:', parsed);
+
+        const formattedData = parsed.map((data) => ({
+          site_id: parseInt(data.site, 10),
+          store_id: stores.find((store) => store.code === data.consommation)?.id || null,
+          nature: 'product',
+          type: 1,
+        }));
+
+        console.log('Formatted Product Data:', formattedData);
+
+        // Ensure all required fields are valid
+        if (formattedData.some((data) => !data.store_id)) {
+          throw new Error('Invalid store_id in product settings.');
+        }
+
+        await Promise.all(formattedData.map((data) => createGeneralSettingsInfo(data)));
+        alert('Paramètres produit fini enregistrés avec succès!');
+      }
+
+      if (activeStep === 2) {
+        const parsed = schema.shape.panelSettings.parse(formData.panelSettings);
+        console.log('Submitting panel settings:', parsed);
+
+        const formattedData = parsed.map((data) => ({
+          site_id: parseInt(data.site, 10),
+          store_id: stores.find((store) => store.code === data.production)?.id || null,
+          nature: 'panel',
+          type: 2,
+        }));
+
+        console.log('Formatted Panel Data:', formattedData);
+
+        // Ensure all required fields are valid
+        if (formattedData.some((data) => !data.store_id)) {
+          throw new Error('Invalid store_id in panel settings.');
+        }
+
+        await Promise.all(formattedData.map((data) => createGeneralSettingsInfo(data)));
+        alert('Paramètres panneau technique enregistrés avec succès!');
+      }
+
+      // Go to next step unless it's the last
+      if (activeStep < steps.length - 1) {
+        setActiveStep((prev) => prev + 1);
+      }
+    } catch (err) {
+      console.error('Validation or submission error:', err);
+
+      // Provide detailed feedback to the user
+      if (err.name === 'ZodError') {
+        alert('Échec de la validation. Veuillez vérifier vos saisies.');
+      } else if (err.message.includes('Invalid store_id')) {
+        alert('Échec de la validation. Veuillez sélectionner un magasin valide.');
+      } else {
+        alert("Une erreur est survenue lors de l'envoi des données. Veuillez réessayer.");
+      }
     }
   };
 
@@ -214,6 +258,17 @@ export default function GeneralSettingsForm() {
           sx={inputStyle}
         />
       </Grid>
+      <Grid item xs={12}>
+        <TextField
+          fullWidth
+          multiline
+          rows={4}
+          label="Les remarques d'impression dans le bon de commande achat local"
+          value={formData.general.remarks || ''}
+          onChange={handleChange('general', null, 'remarks')}
+          sx={inputStyle}
+        />
+      </Grid>
     </Grid>
   );
 
@@ -235,7 +290,7 @@ export default function GeneralSettingsForm() {
               fullWidth
               disabled
               label="Site"
-              value={sites.find((site) => site.id === item.site)?.name || ''}
+              value={sites.find((site) => site.id.toString() === item.site)?.name || ''}
               sx={inputStyle}
             />
           </Grid>
@@ -250,7 +305,7 @@ export default function GeneralSettingsForm() {
                 <MenuItem value="">Sélectionné</MenuItem>
                 {stores.map((store) => (
                   <MenuItem key={store.id} value={store.code}>
-                    {store.name}
+                    {store.designation}
                   </MenuItem>
                 ))}
               </Select>
@@ -275,7 +330,7 @@ export default function GeneralSettingsForm() {
               fullWidth
               disabled
               label="Site"
-              value={sites.find((site) => site.id === item.site)?.name || ''}
+              value={sites.find((site) => site.id.toString() === item.site)?.name || ''}
               sx={inputStyle}
             />
           </Grid>
@@ -290,7 +345,7 @@ export default function GeneralSettingsForm() {
                 <MenuItem value="">Sélectionné</MenuItem>
                 {stores.map((store) => (
                   <MenuItem key={store.id} value={store.code}>
-                    {store.name}
+                    {store.designation}
                   </MenuItem>
                 ))}
               </Select>
@@ -326,7 +381,7 @@ export default function GeneralSettingsForm() {
           </Button>
         )}
         <Button variant="contained" color="primary" onClick={handleNext}>
-          {activeStep === steps.length - 1 ? 'VALIDÉ' : "L'ÉTAPE SUIVANTE"}
+          {activeStep === steps.length - 1 || activeStep === 0 ? 'VALIDÉ' : "L'ÉTAPE SUIVANTE"}
         </Button>
       </Box>
     </Box>
