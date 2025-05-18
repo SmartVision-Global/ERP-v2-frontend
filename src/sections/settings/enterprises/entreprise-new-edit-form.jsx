@@ -9,7 +9,7 @@ import { Box, Card, Chip, Stack, Divider, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { createSociety } from 'src/actions/society';
+import { createSociety, updateSociety } from 'src/actions/society';
 
 import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
@@ -29,12 +29,12 @@ export const NewProductSchema = zod.object({
   phone: zod.string().min(1, { message: 'phone is required!' }),
   fax: zod.string().min(1, { message: 'fax is required!' }),
   color: zod.string().min(1, { message: 'color is required!' }),
-  email_com: zod.string().optional(),
-  phone_com: zod.string().optional(),
-  email_pur: zod.string().optional(),
-  phone_pur: zod.string().optional(),
-  email_bil: zod.string().optional(),
-  phone_bil: zod.string().optional(),
+  email_com: zod.string().optional().nullable(),
+  phone_com: zod.string().optional().nullable(),
+  email_pur: zod.string().optional().nullable(),
+  phone_pur: zod.string().optional().nullable(),
+  email_bil: zod.string().optional().nullable(),
+  phone_bil: zod.string().optional().nullable(),
   trade_registry: zod.string().min(1, { message: 'trade_registry is required!' }),
   article_taxation: zod.string().min(1, { message: 'article_taxation is required!' }),
   tax_registration_number: zod.string().min(1, { message: 'tax_registration_number is required!' }),
@@ -93,13 +93,11 @@ export function EntrepriseNewEditForm({ currentProduct }) {
     };
 
     try {
-      // const newData = {
-      //   ...data,
-      //   workshop_id: parseInt(data?.workshop_id),
-      // };
-      await createSociety(data);
-      // await new Promise((resolve) => setTimeout(resolve, 500));
-      // reset();
+      if (currentProduct) {
+        await updateSociety(currentProduct.id, data);
+      } else {
+        await createSociety(data);
+      }
 
       toast.success(currentProduct ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.settings.society.root);

@@ -252,18 +252,23 @@ const AccountChangePasswordPage = lazy(
 // settings
 const SettingsSiteList = lazy(() => import('src/pages/dashboard/settings/sites/list'));
 const SettingsSiteNew = lazy(() => import('src/pages/dashboard/settings/sites/new'));
+const SettingsSiteEdit = lazy(() => import('src/pages/dashboard/settings/sites/edit'));
 
 const SettingsAtelierList = lazy(() => import('src/pages/dashboard/settings/workshop/list'));
 const SettingsAtelierNew = lazy(() => import('src/pages/dashboard/settings/workshop/new'));
+const SettingsAtelierEdit = lazy(() => import('src/pages/dashboard/settings/workshop/edit'));
 
 const SettingsMachineList = lazy(() => import('src/pages/dashboard/settings/machines/list'));
 const SettingsMachineNew = lazy(() => import('src/pages/dashboard/settings/machines/new'));
+const SettingsMachineEdit = lazy(() => import('src/pages/dashboard/settings/machines/edit'));
 
 const SettingsEntrepriseList = lazy(() => import('src/pages/dashboard/settings/enterprises/list'));
 const SettingsEntrepriseNew = lazy(() => import('src/pages/dashboard/settings/enterprises/new'));
+const SettingsEntrepriseEdit = lazy(() => import('src/pages/dashboard/settings/enterprises/edit'));
 
 const SettingsServiceList = lazy(() => import('src/pages/dashboard/settings/services/list'));
 const SettingsServiceNew = lazy(() => import('src/pages/dashboard/settings/services/new'));
+const SettingsServiceEdit = lazy(() => import('src/pages/dashboard/settings/services/edit'));
 
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
@@ -518,6 +523,7 @@ export const dashboardRoutes = [
             children: [
               { index: true, element: <SettingsSiteList /> },
               { path: 'new', element: <SettingsSiteNew /> },
+              { path: ':id/edit', element: <SettingsSiteEdit /> },
             ],
           },
           {
@@ -525,6 +531,7 @@ export const dashboardRoutes = [
             children: [
               { index: true, element: <SettingsServiceList /> },
               { path: 'new', element: <SettingsServiceNew /> },
+              { path: ':id/edit', element: <SettingsServiceEdit /> },
             ],
           },
           {
@@ -532,6 +539,7 @@ export const dashboardRoutes = [
             children: [
               { index: true, element: <SettingsAtelierList /> },
               { path: 'new', element: <SettingsAtelierNew /> },
+              { path: ':id/edit', element: <SettingsAtelierEdit /> },
             ],
           },
           {
@@ -539,6 +547,7 @@ export const dashboardRoutes = [
             children: [
               { index: true, element: <SettingsMachineList /> },
               { path: 'new', element: <SettingsMachineNew /> },
+              { path: ':id/edit', element: <SettingsMachineEdit /> },
             ],
           },
           {
@@ -546,6 +555,7 @@ export const dashboardRoutes = [
             children: [
               { index: true, element: <SettingsEntrepriseList /> },
               { path: 'new', element: <SettingsEntrepriseNew /> },
+              { path: ':id/edit', element: <SettingsEntrepriseEdit /> },
             ],
           },
           {

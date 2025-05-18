@@ -12,7 +12,7 @@ const swrOptions = {
   revalidateOnReconnect: true,
 };
 
-const WORKSHOP_ENDPOINT = endpoints.workshop;
+const ENDPOINT = endpoints.workshop;
 
 // ----------------------------------------------------------------------
 
@@ -37,19 +37,19 @@ export function useGetWorkshops() {
 
 // ----------------------------------------------------------------------
 
-export function useGetWorkshop(productId) {
-  const url = productId ? [endpoints.product.details, { params: { productId } }] : '';
+export function useGetWorkshop(workshopId) {
+  const url = workshopId ? [`${endpoints.workshop}/${workshopId}`] : '';
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({
-      product: data?.product,
-      productLoading: isLoading,
-      productError: error,
-      productValidating: isValidating,
+      workshop: data?.data,
+      workshopLoading: isLoading,
+      workshopError: error,
+      workshopValidating: isValidating,
     }),
-    [data?.product, error, isLoading, isValidating]
+    [data?.data, error, isLoading, isValidating]
   );
 
   return memoizedValue;
@@ -60,6 +60,15 @@ export async function createWorkshop(data) {
    * Work on server
    */
   // const data = { directionData };
-  await axios.post(WORKSHOP_ENDPOINT, data);
-  mutate(WORKSHOP_ENDPOINT);
+  await axios.post(ENDPOINT, data);
+  mutate(ENDPOINT);
+}
+
+export async function updateWorkshop(id, data) {
+  /**
+   * Work on server
+   */
+  // const data = { directionData };
+  await axios.patch(`${ENDPOINT}/${id}`, data);
+  mutate(ENDPOINT);
 }

@@ -12,7 +12,7 @@ const swrOptions = {
   revalidateOnReconnect: true,
 };
 
-const MACHINE_ENDPOINT = endpoints.machine;
+const ENDPOINT = endpoints.machine;
 
 // ----------------------------------------------------------------------
 
@@ -37,19 +37,19 @@ export function useGetMachines() {
 
 // ----------------------------------------------------------------------
 
-export function useGetMachine(productId) {
-  const url = productId ? [endpoints.product.details, { params: { productId } }] : '';
+export function useGetMachine(machineId) {
+  const url = machineId ? [`${endpoints.machine}/${machineId}`] : '';
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({
-      product: data?.product,
-      productLoading: isLoading,
-      productError: error,
-      productValidating: isValidating,
+      machine: data?.data,
+      machineLoading: isLoading,
+      machineError: error,
+      machineValidating: isValidating,
     }),
-    [data?.product, error, isLoading, isValidating]
+    [data?.data, error, isLoading, isValidating]
   );
 
   return memoizedValue;
@@ -60,6 +60,15 @@ export async function createMachine(data) {
    * Work on server
    */
   // const data = { directionData };
-  await axios.post(MACHINE_ENDPOINT, data);
-  mutate(MACHINE_ENDPOINT);
+  await axios.post(ENDPOINT, data);
+  mutate(ENDPOINT);
+}
+
+export async function updateMachine(id, data) {
+  /**
+   * Work on server
+   */
+  // const data = { directionData };
+  await axios.patch(`${ENDPOINT}/${id}`, data);
+  mutate(ENDPOINT);
 }

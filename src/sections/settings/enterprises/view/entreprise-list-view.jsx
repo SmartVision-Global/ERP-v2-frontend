@@ -148,40 +148,25 @@ export function EntrepriseListView() {
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
     },
 
-    // {
-    //   type: 'actions',
-    //   field: 'actions',
-    //   headerName: ' ',
-    //   align: 'right',
-    //   headerAlign: 'right',
-    //   width: 80,
-    //   sortable: false,
-    //   filterable: false,
-    //   disableColumnMenu: true,
-    //   getActions: (params) => [
-    //     <GridActionsLinkItem
-    //       showInMenu
-    //       icon={<Iconify icon="solar:eye-bold" />}
-    //       label="View"
-    //       // href={paths.dashboard.product.details(params.row.id)}
-    //       href={paths.dashboard.root}
-    //     />,
-    //     <GridActionsLinkItem
-    //       showInMenu
-    //       icon={<Iconify icon="solar:pen-bold" />}
-    //       label="Edit"
-    //       // href={paths.dashboard.product.edit(params.row.id)}
-    //       href={paths.dashboard.root}
-    //     />,
-    //     <GridActionsCellItem
-    //       showInMenu
-    //       icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-    //       label="Delete"
-    //       onClick={() => handleDeleteRow(params.row.id)}
-    //       sx={{ color: 'error.main' }}
-    //     />,
-    //   ],
-    // },
+    {
+      type: 'actions',
+      field: 'actions',
+      headerName: ' ',
+      align: 'right',
+      headerAlign: 'right',
+      width: 80,
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      getActions: (params) => [
+        <GridActionsLinkItem
+          showInMenu
+          icon={<Iconify icon="solar:pen-bold" />}
+          label="Edit"
+          href={paths.dashboard.settings.society.editSociety(params.row.id)}
+        />,
+      ],
+    },
   ];
 
   const getTogglableColumns = () =>
@@ -219,7 +204,7 @@ export function EntrepriseListView() {
         }}
       >
         <TableToolbarCustom
-          filterOptions={FILTERS_OPTIONS}
+          // filterOptions={FILTERS_OPTIONS}
           filters={editedFilters}
           setFilters={setEditedFilters}
           onReset={handleReset}
