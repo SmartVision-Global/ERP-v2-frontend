@@ -1176,17 +1176,17 @@ export function ActifNewEditForm({ currentProduct }) {
 
   return (
     <Form methods={methods} onSubmit={onSubmit}>
-      {!dataLoading && !dataError && (
-        <Stack spacing={{ xs: 3, md: 5 }} sx={{ mx: 'auto', maxWidth: { xs: 720, xl: 1080 } }}>
-          {renderDetails()}
-          {renderFamilyInformation()}
-          {renderEducationInformation()}
-          {renderLocationOrganizationalStructure()}
-          {renderEmploymentInformation()}
-          {renderContractInformation()}
-          {renderActions()}
-        </Stack>
-      )}
+      {/* {!dataLoading && !dataError && ( */}
+      <Stack spacing={{ xs: 3, md: 5 }} sx={{ mx: 'auto', maxWidth: { xs: 720, xl: 1080 } }}>
+        {renderDetails()}
+        {renderFamilyInformation()}
+        {renderEducationInformation()}
+        {renderLocationOrganizationalStructure()}
+        {renderEmploymentInformation()}
+        {renderContractInformation()}
+        {renderActions()}
+      </Stack>
+      {/* )} */}
     </Form>
   );
 }

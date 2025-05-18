@@ -9,7 +9,7 @@ import { Box, Card, Stack, Divider, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { createSite } from 'src/actions/site';
+import { createSite, updateSite } from 'src/actions/site';
 
 import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
@@ -35,26 +35,22 @@ export function SiteNewEditForm({ currentProduct }) {
   });
 
   const {
-    control,
     reset,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
-    const updatedData = {
-      ...data,
-      // taxes: includeTaxes ? defaultValues.taxes : data.taxes,
-    };
-
     try {
-      await createSite(data);
-      // await new Promise((resolve) => setTimeout(resolve, 500));
+      if (currentProduct) {
+        await updateSite(currentProduct.id, data);
+      } else {
+        await createSite(data);
+      }
       reset();
 
       toast.success(currentProduct ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.settings.site.root);
-      console.info('DATA', updatedData);
     } catch (error) {
       console.error(error);
     }
