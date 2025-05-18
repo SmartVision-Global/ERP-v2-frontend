@@ -272,6 +272,10 @@ const SettingsIdentificationGlobalSettings = lazy(
   () => import('src/pages/dashboard/settings/identification-parameters/global-settings/list')
 );
 
+const SettingsIdentificationRawMaterialFamilies = lazy(
+  () => import('src/pages/dashboard/settings/identification-parameters/global-settings/list')
+);
+
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
 function SuspenseOutlet() {
@@ -539,6 +543,7 @@ export const dashboardRoutes = [
             children: [
               { index: true, element: <SettingsIdentificationGlobalSettings /> },
               { path: 'global-settings', element: <SettingsIdentificationGlobalSettings /> },
+              { path: 'raw-material-families', element: <SettingsIdentificationRawMaterialFamilies /> },
             ],
           },
           {

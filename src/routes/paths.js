@@ -229,6 +229,7 @@ export const paths = {
       identification: {
         root: `${ROOTS.DASHBOARD}/settings/identification`,
         globalSettings: `${ROOTS.DASHBOARD}/settings/identification/global-settings`,
+        rawMaterialFamilies: `${ROOTS.DASHBOARD}/settings/identification/raw-material-families`,
       },
     },
     group: {
