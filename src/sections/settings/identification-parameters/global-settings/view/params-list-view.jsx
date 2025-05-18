@@ -1,7 +1,7 @@
 import { paths } from 'src/routes/paths';
 
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetIdentificationEntities } from 'src/actions/identification';
+import { useGetIdentificationEntities } from 'src/actions/settings/identification/global';
 
 import { EmptyContent } from 'src/components/empty-content';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
@@ -12,6 +12,7 @@ import { ParamsList } from '../params-list';
 
 export function ParamsListView() {
   const { entities } = useGetIdentificationEntities();
+  console.log('entities params list view global settings', entities);
 
   const notFound = !entities;
 

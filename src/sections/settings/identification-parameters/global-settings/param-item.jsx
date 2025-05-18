@@ -12,6 +12,7 @@ import { AddItemDialog } from './add-item-dialog';
 // ----------------------------------------------------------------------
 
 const DIALOG_OPEN = [
+  '1',
   '2',
   '4',
   '5',
@@ -30,7 +31,7 @@ const DIALOG_OPEN = [
   '18',
 ];
 const NAME_OPTIONS = {
-  1: { name: 'entreprise', title: 'Entreprises' },
+  1: { name: 'measurement_unit', title: 'Unités de mesure' },
 
   2: { name: 'directions', title: 'Direction' },
   4: { name: 'filiale', title: 'Filiales' },
@@ -65,6 +66,7 @@ export function ParamItem({
   const [openDialog, setOpenDialog] = useState('');
   const [selectedRow, setSelectedRow] = useState(null);
   const handleRowClick = (row) => {
+    
     setSelectedRow(row);
     setOpenDialog(uuid);
   };
@@ -98,6 +100,7 @@ export function ParamItem({
             {canAdd && (
               <IconButton
                 onClick={() => {
+                  
                   setOpenDialog(uuid);
                 }}
               >

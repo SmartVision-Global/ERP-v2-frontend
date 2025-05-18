@@ -155,7 +155,8 @@ export async function updateConditioning(id, data) {
 // ----------------------------------------------------------------------
 
 export function useGetIdentificationEntities() {
-  const url = endpoints.identification.list;
+  console.log('useGetIdentificationEntities');
+  const url = endpoints.settings.identification.globalSettings.list;
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 

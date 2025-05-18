@@ -2,13 +2,14 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
-import { ParamsListView } from 'src/sections/r-h/rh-settings/identification-parameters/view';
+import { ParamsListView } from 'src/sections/settings/identification-parameters/global-settings/view';
 
 // ----------------------------------------------------------------------
 
 const metadata = { title: `Product list | Dashboard - ${CONFIG.appName}` };
 
 export default function Page() {
+  console.log('Page list global settings');
   return (
     <>
       <Helmet>
