@@ -6,10 +6,11 @@ import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Box, Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 
+import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useGetSites } from 'src/actions/site';
-import { createWorkshop } from 'src/actions/workshop';
+import { createWorkshop, updateWorkshop } from 'src/actions/workshop';
 
 import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
@@ -17,11 +18,11 @@ import { Form, Field } from 'src/components/hook-form';
 export const NewProductSchema = zod.object({
   name: zod.string().min(1, { message: 'Name is required!' }),
   designation: zod.string().optional(),
-  site_id: zod.string().min(1, { message: 'Name is required!' }),
+  site_id: zod.string().min(1, { message: 'Name is required!' }).or(zod.number()),
 });
 
 export function WorkshopNewEditForm({ currentProduct }) {
-  const { sites, sitesLoading } = useGetSites();
+  const { sites } = useGetSites();
   const router = useRouter();
   const defaultValues = {
     name: '',
@@ -36,30 +37,22 @@ export function WorkshopNewEditForm({ currentProduct }) {
   });
 
   const {
-    control,
     reset,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
-    const updatedData = {
-      ...data,
-      // taxes: includeTaxes ? defaultValues.taxes : data.taxes,
-    };
-
     try {
-      const newData = {
-        ...data,
-        site_id: parseInt(data?.site_id),
-      };
-      await createWorkshop(newData);
-      // await new Promise((resolve) => setTimeout(resolve, 500));
+      if (currentProduct) {
+        await updateWorkshop(currentProduct.id, data);
+      } else {
+        await createWorkshop(data);
+      }
       reset();
 
       toast.success(currentProduct ? 'Update success!' : 'Create success!');
-      // router.push(paths.dashboard.settings.site.root);
-      console.info('DATA', updatedData);
+      router.push(paths.dashboard.settings.workshop.root);
     } catch (error) {
       console.error(error);
     }
