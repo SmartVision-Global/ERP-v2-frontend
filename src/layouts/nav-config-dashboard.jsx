@@ -220,6 +220,10 @@ export const navData = [
         children: [
           // sites
           {
+            title: 'General Settings',
+            path: paths.dashboard.settings.generalSettings.root,
+          },
+          {
             title: 'Sites',
             path: paths.dashboard.settings.site.root,
           },

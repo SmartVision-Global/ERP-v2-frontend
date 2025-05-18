@@ -84,7 +84,9 @@ export const endpoints = {
   salaryGrid: '/v1/hr/settings/salary_grids',
   rates: '/v1/hr/settings/rates',
   agency: '/v1/hr/settings/agencies',
-  // settings
+
+  generalSettings: '/v1/settings/global-settings',
+  generalSettingsDetails: '/v1/settings/global-setting-details',
   site: '/v1/settings/sites',
   workshop: '/v1/settings/workshops',
   service: '/v1/settings/services',

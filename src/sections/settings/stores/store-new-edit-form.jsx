@@ -35,14 +35,14 @@ export function StoreNewEditForm({ currentProduct }) {
   const router = useRouter();
   const { dataLookups } = useMultiLookups([{ entity: 'sites', url: 'settings/lookups/sites' }]);
   const sites = dataLookups.sites || [];
-  
+
   const defaultValues = {
     code: '',
     designation: '',
     address: '',
     phone: '',
     type: BIG_TYPES?.[0]?.value || '1',
-    type_store: '',
+    store_type: '',
     site_id: '',
   };
 
@@ -61,7 +61,7 @@ export function StoreNewEditForm({ currentProduct }) {
   } = methods;
 
   const [type, setType] = useState(watch('type') || defaultValues.type);
-  
+
   const handleBigTypeChange = (event) => {
     const newType = event.target.value;
     setType(newType);
@@ -84,10 +84,7 @@ export function StoreNewEditForm({ currentProduct }) {
 
   const renderDetails = () => (
     <Card>
-      <CardHeader
-        title="Add Store"
-        sx={{ mb: 3 }}
-      />
+      <CardHeader title="Add Store" sx={{ mb: 3 }} />
 
       <Divider />
 
@@ -112,7 +109,7 @@ export function StoreNewEditForm({ currentProduct }) {
             <Field.Text name="code" label="Code" id="code" />
           </Grid>
           <Grid size={{ xs: 6, md: 6 }}>
-            <Field.Select name="type_store" label="Store Type" size="small">
+            <Field.Select name="stor_type" label="Store Type" size="small">
               {((type === (BIG_TYPES?.[0]?.value || '1') ? TYPES : TYPES2) || []).map((option) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
