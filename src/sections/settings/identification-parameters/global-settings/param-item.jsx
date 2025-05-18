@@ -11,50 +11,11 @@ import { AddItemDialog } from './add-item-dialog';
 
 // ----------------------------------------------------------------------
 
-const DIALOG_OPEN = [
-  '1',
-  '2',
-  '4',
-  '5',
-  '6',
-  '7',
-  '8',
-  '9',
-  '10',
-  '11',
-  '12',
-  '13',
-  '14',
-  '15',
-  '16',
-  '17',
-  '18',
-];
-const NAME_OPTIONS = {
-  1: { name: 'measurement_unit', title: 'Unités de mesure' },
 
-  2: { name: 'directions', title: 'Direction' },
-  4: { name: 'filiale', title: 'Filiales' },
-
-  5: { name: 'divisions', title: 'Divisions' },
-  6: { name: 'departement', title: 'Département' },
-  7: { name: 'section', title: 'Section' },
-
-  8: { name: 'nationality', title: 'Nationalité' },
-  9: { name: 'category', title: 'Catégories EPI' },
-  10: { name: 'epi', title: 'Normes de conformité EPI' },
-  11: { name: 'grade', title: 'Grade' },
-  12: { name: 'bank', title: 'Banque' },
-  13: { name: 'team_type', title: "Type d'équipe" },
-  14: { name: 'socio_category', title: 'Catégorie socioprofessionnelle' },
-  15: { name: 'echelons', title: 'Échelons' },
-  16: { name: 'salary_grid', title: 'Niveau de la grille salariale' },
-  17: { name: 'demande_motif', title: 'Motifs des demandes' },
-  18: { name: 'demande_motif', title: 'Motifs des demandes ' },
-};
 export function ParamItem({
   data = [],
   title,
+  name,
   canAdd = false,
   icon,
   uuid,
@@ -74,6 +35,7 @@ export function ParamItem({
     setOpenDialog('');
     setSelectedRow(null);
   };
+
 
   return (
     <>
@@ -184,12 +146,12 @@ export function ParamItem({
           ))}
         </Stack>
       </Card>
-      {DIALOG_OPEN.includes(openDialog) && (
+      {openDialog && (
         <AddItemDialog
-          open={DIALOG_OPEN.includes(openDialog)}
+          open={openDialog && true}
           onClose={handleCloseDialog}
-          name={NAME_OPTIONS[uuid].name}
-          title={NAME_OPTIONS[uuid].title}
+          name={name}
+          title={title}
           onCreate={onCreate}
           onUpdate={onUpdate}
           currentProduct={selectedRow}

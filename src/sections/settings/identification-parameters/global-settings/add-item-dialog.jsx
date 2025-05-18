@@ -10,6 +10,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
+import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
@@ -57,7 +58,7 @@ export function AddItemDialog({ open, onClose, currentProduct, name, title, onCr
       }
       reset();
       onClose();
-      // toast.success(currentProduct ? 'Update success!' : 'Create success!');
+      toast.success(currentProduct ? 'Update success!' : 'Create success!');
       // router.push(paths.dashboard.product.root);
       // console.info('DATA', updatedData);
     } catch (error) {

@@ -113,6 +113,8 @@ export const endpoints = {
         expenses: '/v1/settings/expenses',
         expenseMeasurementUnits: '/v1/settings/expense-measurement-units',
         erpNeeds: '/v1/settings/erp-needs',
+        sectors: '/v1/settings/sectors',
+        services: '/v1/settings/services',
       }
     },
   },
