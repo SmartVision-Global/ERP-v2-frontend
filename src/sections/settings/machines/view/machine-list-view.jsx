@@ -155,6 +155,25 @@ export function MachineListView() {
 
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
     },
+    {
+      type: 'actions',
+      field: 'actions',
+      headerName: ' ',
+      align: 'right',
+      headerAlign: 'right',
+      width: 80,
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      getActions: (params) => [
+        <GridActionsLinkItem
+          showInMenu
+          icon={<Iconify icon="solar:pen-bold" />}
+          label="Edit"
+          href={paths.dashboard.settings.machine.editMachine(params.row.id)}
+        />,
+      ],
+    },
   ];
 
   const getTogglableColumns = () =>

@@ -81,7 +81,6 @@ export function EntrepriseNewEditForm({ currentProduct }) {
   });
 
   const {
-    reset,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
