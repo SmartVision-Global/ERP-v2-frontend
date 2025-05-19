@@ -12,7 +12,7 @@ const swrOptions = {
   revalidateOnReconnect: true,
 };
 
-const SITE_ENDPOINT = endpoints.site;
+const ENDPOINT = endpoints.site;
 
 // ----------------------------------------------------------------------
 
@@ -37,19 +37,19 @@ export function useGetSites() {
 
 // ----------------------------------------------------------------------
 
-export function useGetProduct(productId) {
-  const url = productId ? [endpoints.product.details, { params: { productId } }] : '';
+export function useGetSite(siteId) {
+  const url = siteId ? [`${endpoints.site}/${siteId}`] : '';
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({
-      product: data?.product,
-      productLoading: isLoading,
-      productError: error,
-      productValidating: isValidating,
+      site: data?.data,
+      siteLoading: isLoading,
+      siteError: error,
+      siteValidating: isValidating,
     }),
-    [data?.product, error, isLoading, isValidating]
+    [data?.data, error, isLoading, isValidating]
   );
 
   return memoizedValue;
@@ -60,6 +60,15 @@ export async function createSite(data) {
    * Work on server
    */
   // const data = { directionData };
-  await axios.post(SITE_ENDPOINT, data);
-  mutate(SITE_ENDPOINT);
+  await axios.post(ENDPOINT, data);
+  mutate(ENDPOINT);
+}
+
+export async function updateSite(id, data) {
+  /**
+   * Work on server
+   */
+  // const data = { directionData };
+  await axios.patch(`${ENDPOINT}/${id}`, data);
+  mutate(ENDPOINT);
 }

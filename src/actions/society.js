@@ -12,7 +12,7 @@ const swrOptions = {
   revalidateOnReconnect: true,
 };
 
-const SOCIETY_ENDPOINT = endpoints.society;
+const ENDPOINT = endpoints.society;
 
 // ----------------------------------------------------------------------
 
@@ -37,19 +37,19 @@ export function useGetSocieties() {
 
 // ----------------------------------------------------------------------
 
-export function useGetSociety(productId) {
-  const url = productId ? [endpoints.product.details, { params: { productId } }] : '';
+export function useGetSociety(societyId) {
+  const url = societyId ? [`${endpoints.society}/${societyId}`] : '';
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({
-      product: data?.product,
-      productLoading: isLoading,
-      productError: error,
-      productValidating: isValidating,
+      society: data?.data,
+      societyLoading: isLoading,
+      societyError: error,
+      societyValidating: isValidating,
     }),
-    [data?.product, error, isLoading, isValidating]
+    [data?.data, error, isLoading, isValidating]
   );
 
   return memoizedValue;
@@ -60,6 +60,15 @@ export async function createSociety(data) {
    * Work on server
    */
   // const data = { directionData };
-  await axios.post(SOCIETY_ENDPOINT, data);
-  mutate(SOCIETY_ENDPOINT);
+  await axios.post(ENDPOINT, data);
+  mutate(ENDPOINT);
+}
+
+export async function updateSociety(id, data) {
+  /**
+   * Work on server
+   */
+  // const data = { directionData };
+  await axios.patch(`${ENDPOINT}/${id}`, data);
+  //   mutate(endpoints.site);
 }

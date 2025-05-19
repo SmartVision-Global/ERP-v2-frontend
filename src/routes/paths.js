@@ -204,10 +204,12 @@ export const paths = {
       site: {
         root: `${ROOTS.DASHBOARD}/settings/site`,
         newSite: `${ROOTS.DASHBOARD}/settings/site/new`,
+        editSite: (id) => `${ROOTS.DASHBOARD}/settings/site/${id}/edit`,
       },
       service: {
         root: `${ROOTS.DASHBOARD}/settings/service`,
         newService: `${ROOTS.DASHBOARD}/settings/service/new`,
+        editService: (id) => `${ROOTS.DASHBOARD}/settings/service/${id}/edit`,
       },
       // enterprise: {
       //   root: `${ROOTS.DASHBOARD}/settings/enterprise`,
@@ -216,14 +218,17 @@ export const paths = {
       workshop: {
         root: `${ROOTS.DASHBOARD}/settings/workshop`,
         newWorkshop: `${ROOTS.DASHBOARD}/settings/workshop/new`,
+        editWorkshop: (id) => `${ROOTS.DASHBOARD}/settings/workshop/${id}/edit`,
       },
       machine: {
         root: `${ROOTS.DASHBOARD}/settings/machine`,
         newMachine: `${ROOTS.DASHBOARD}/settings/machine/new`,
+        editMachine: (id) => `${ROOTS.DASHBOARD}/settings/machine/${id}/edit`,
       },
       society: {
         root: `${ROOTS.DASHBOARD}/settings/society`,
         newSociety: `${ROOTS.DASHBOARD}/settings/society/new`,
+        editSociety: (id) => `${ROOTS.DASHBOARD}/settings/society/${id}/edit`,
       },
       store: {
         root: `${ROOTS.DASHBOARD}/settings/store`,

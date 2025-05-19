@@ -218,6 +218,10 @@ export const navData = [
         path: '/dashboard/settings',
         icon: ICONS.user,
         children: [
+          {
+            title: 'Sociétés',
+            path: paths.dashboard.settings.society.root,
+          },
           // sites
           {
             title: 'General Settings',
@@ -227,10 +231,7 @@ export const navData = [
             title: 'Sites',
             path: paths.dashboard.settings.site.root,
           },
-          {
-            title: 'Entreprises',
-            path: paths.dashboard.settings.society.root,
-          },
+
           {
             title: 'Ateliers',
             path: paths.dashboard.settings.workshop.root,

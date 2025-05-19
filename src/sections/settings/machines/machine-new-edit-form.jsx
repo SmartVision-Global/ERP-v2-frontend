@@ -9,8 +9,8 @@ import { Box, Card, Stack, Divider, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { createMachine } from 'src/actions/machine';
 import { useGetLookups } from 'src/actions/lookups';
+import { createMachine, updateMachine } from 'src/actions/machine';
 
 import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
@@ -18,7 +18,7 @@ import { Form, Field } from 'src/components/hook-form';
 export const NewProductSchema = zod.object({
   name: zod.string().min(1, { message: 'Name is required!' }),
   designation: zod.string().optional(),
-  workshop_id: zod.string().min(1, { message: 'Name is required!' }),
+  workshop_id: zod.string().min(1, { message: 'Name is required!' }).or(zod.number()),
 });
 
 export function MachineNewEditForm({ currentProduct }) {
@@ -44,23 +44,15 @@ export function MachineNewEditForm({ currentProduct }) {
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
-    const updatedData = {
-      ...data,
-      // taxes: includeTaxes ? defaultValues.taxes : data.taxes,
-    };
-
     try {
-      const newData = {
-        ...data,
-        workshop_id: parseInt(data?.workshop_id),
-      };
-      await createMachine(newData);
-      // await new Promise((resolve) => setTimeout(resolve, 500));
+      if (currentProduct) {
+        await updateMachine(currentProduct.id, data);
+      } else {
+        await createMachine(data);
+      }
       reset();
-
       toast.success(currentProduct ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.settings.machine.root);
-      console.info('DATA', updatedData);
     } catch (error) {
       console.error(error);
     }

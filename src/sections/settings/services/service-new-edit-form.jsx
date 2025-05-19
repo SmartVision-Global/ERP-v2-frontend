@@ -9,7 +9,6 @@ import { Box, Card, Stack, Divider, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { useGetSites } from 'src/actions/site';
 import { createService, updateService } from 'src/actions/service';
 
 import { toast } from 'src/components/snackbar';
@@ -21,7 +20,6 @@ export const NewProductSchema = zod.object({
 });
 
 export function ServiceNewEditForm({ currentProduct }) {
-  const { sites, sitesLoading } = useGetSites();
   const router = useRouter();
   const defaultValues = {
     name: '',
@@ -35,33 +33,21 @@ export function ServiceNewEditForm({ currentProduct }) {
   });
 
   const {
-    control,
     reset,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
-    const updatedData = {
-      ...data,
-      // taxes: includeTaxes ? defaultValues.taxes : data.taxes,
-    };
-
     try {
-      const newData = {
-        ...data,
-      };
       if (currentProduct) {
-        await updateService(currentProduct.id, updatedData);
+        await updateService(currentProduct.id, data);
       } else {
-        await createService(newData);
+        await createService(data);
       }
-      // await new Promise((resolve) => setTimeout(resolve, 500));
       reset();
       toast.success(currentProduct ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.settings.service.root);
-      // router.push(paths.dashboard.settings.site.root);
-      console.info('DATA', updatedData);
     } catch (error) {
       console.error(error);
     }
