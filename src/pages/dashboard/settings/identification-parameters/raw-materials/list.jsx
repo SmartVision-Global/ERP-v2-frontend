@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
-import { ParamsListView } from 'src/sections/settings/identification-parameters/global-settings/view';
+import { ParamsListView } from 'src/sections/settings/identification-parameters/raw-materials/view';
 
 // ----------------------------------------------------------------------
 

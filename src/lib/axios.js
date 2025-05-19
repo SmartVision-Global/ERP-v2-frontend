@@ -99,6 +99,8 @@ export const endpoints = {
   careerKnowledges: '/v1/hr/function/career_knowledges',
   personal: '/v1/hr/personal/personals',
 
+
+  
   settings: {
     identification: {
       globalSettings: {
@@ -117,7 +119,11 @@ export const endpoints = {
         erpNeeds: '/v1/settings/erp-needs',
         sectors: '/v1/settings/sectors',
         services: '/v1/settings/services',
-      }
+      },
+      families: {
+        list: '/v1/settings/families',
+        
+      },
     },
   },
   // new:''

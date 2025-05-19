@@ -252,7 +252,7 @@ export const navData = [
             path: paths.dashboard.settings.identification.root,
             children: [
               { title: 'Unités mesure, Dimensions, Ateliers ...', path: paths.dashboard.settings.identification.globalSettings },
-              { title: 'Familles et catégories / MP', path: paths.dashboard.settings.identification.rawMaterialFamilies },
+              { title: 'Matières premières', path: paths.dashboard.settings.identification.rawMaterials },
             ],
           },
 

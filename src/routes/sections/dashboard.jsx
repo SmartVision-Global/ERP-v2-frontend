@@ -275,8 +275,8 @@ const SettingsIdentificationGlobalSettings = lazy(
   () => import('src/pages/dashboard/settings/identification-parameters/global-settings/list')
 );
 
-const SettingsIdentificationRawMaterialFamilies = lazy(
-  () => import('src/pages/dashboard/settings/identification-parameters/global-settings/list')
+const PageSettingsIdentRawMatList = lazy(
+  () => import('src/pages/dashboard/settings/identification-parameters/raw-materials/list')
 );
 
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
@@ -550,7 +550,7 @@ export const dashboardRoutes = [
             children: [
               { index: true, element: <SettingsIdentificationGlobalSettings /> },
               { path: 'global-settings', element: <SettingsIdentificationGlobalSettings /> },
-              { path: 'raw-material-families', element: <SettingsIdentificationRawMaterialFamilies /> },
+              { path: 'raw-materials', element: <PageSettingsIdentRawMatList /> },
             ],
           },
           {
