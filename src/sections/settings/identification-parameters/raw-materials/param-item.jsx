@@ -16,6 +16,9 @@ export function ParamItem({
   data = [],
   title,
   name,
+  label,
+  nature,
+  group,
   canAdd = false,
   icon,
   uuid,
@@ -24,6 +27,7 @@ export function ParamItem({
   sx,
   ...other
 }) {
+  
   const [openDialog, setOpenDialog] = useState('');
   const [selectedRow, setSelectedRow] = useState(null);
   const handleRowClick = (row) => {
@@ -151,7 +155,10 @@ export function ParamItem({
           open={openDialog && true}
           onClose={handleCloseDialog}
           name={name}
+          label={label}
           title={title}
+          nature={nature}
+          group={group}
           onCreate={onCreate}
           onUpdate={onUpdate}
           currentProduct={selectedRow}

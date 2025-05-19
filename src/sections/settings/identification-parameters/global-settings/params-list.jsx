@@ -39,7 +39,7 @@ const PARAMETERS_CONFIG = [
   {
     key: 'dimensions',
     title: 'Dimensions',
-    icon: 'mdi:dimension',
+    icon: 'tabler:dimensions',
     uuid: '6',
     canAdd: true,
   },

@@ -120,9 +120,17 @@ export const endpoints = {
         sectors: '/v1/settings/sectors',
         services: '/v1/settings/services',
       },
+      rawMaterials: {
+        list: '/v1/settings/identification',
+      },
       families: {
         list: '/v1/settings/families',
-        
+      },
+      categories: {
+        list: '/v1/settings/categories',
+      },
+      returnPatterns: {
+        list: '/v1/settings/return-patterns',
       },
     },
   },

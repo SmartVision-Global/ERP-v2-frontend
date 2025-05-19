@@ -556,7 +556,7 @@ export const dashboardRoutes = [
             children: [
               { index: true, element: <SettingsIdentificationGlobalSettings /> },
               { path: 'global-settings', element: <SettingsIdentificationGlobalSettings /> },
-              { path: 'raw-materials', element: <PageSettingsIdentRawMatList /> },
+              { path: 'raw-materials', element: <PageSettingsIdentRawMatList />},
             ],
           },
           {

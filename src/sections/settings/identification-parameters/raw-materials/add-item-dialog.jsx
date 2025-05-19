@@ -20,7 +20,7 @@ export const NewProductSchema = zod.object({
   designation: zod.string().min(1, { message: 'Name is required!' }),
 });
 
-export function AddItemDialog({ open, onClose, currentProduct, name, title, onCreate, onUpdate }) {
+export function AddItemDialog({ open, onClose, currentProduct, name, title, label, nature, group, onCreate, onUpdate }) {
   const defaultValues = {
     name: '',
     designation: '',
@@ -46,9 +46,13 @@ export function AddItemDialog({ open, onClose, currentProduct, name, title, onCr
     // } else {
     const updatedData = {
       ...data,
+      group,
+      
       // taxes: includeTaxes ? defaultValues.taxes : data.taxes,
     };
-
+    if(nature){
+      updatedData.nature = nature;
+    }
     try {
       // await new Promise((resolve) => setTimeout(resolve, 500));
       if (currentProduct) {
@@ -84,7 +88,7 @@ export function AddItemDialog({ open, onClose, currentProduct, name, title, onCr
               <Field.Text
                 // name={`${name}`}
                 name="name"
-                label={title}
+                label={label}
               />
               <Field.Text name="designation" label="Designation" multiline rows={3} />
             </Stack>

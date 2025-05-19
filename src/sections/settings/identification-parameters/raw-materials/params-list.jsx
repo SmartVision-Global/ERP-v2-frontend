@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 
-import { createEntity, updateEntity } from 'src/actions/settings/identification/global';
+import { createEntity, updateEntity } from 'src/actions/settings/identification/raw-materials';
 
 import { ParamItem } from './param-item';
 
@@ -9,106 +9,29 @@ import { ParamItem } from './param-item';
 // Configuration for all parameter types
 const PARAMETERS_CONFIG = [
   {
-    key: 'measurement_units',
-    title: 'Unités de mesure',
-    icon: 'mdi:ruler',
+    key: 'categories',
+    title: 'Catégories',
+    icon: 'carbon:categories',
+    label: 'category',
     uuid: '1',
+    group: 1,
     canAdd: true,
   },
   {
-    key: 'services',
-    title: 'Services',
-    icon: 'mdi:cog-outline',
+    key: 'returnPatterns',
+    title: 'Motifs de réintégration',
+    icon: 'oui:integration-general',
+    label: 'returnPattern',
     uuid: '2',
+    group: 1,
+    nature: 1,
     canAdd: true,
   },
-  {
-    key: 'calibers',
-    title: 'Calibres',
-    icon: 'mdi:ruler-square',
-    uuid: '4',
-    canAdd: true,
-  },
-  {
-    key: 'conditionings',
-    title: 'Conditionnements',
-    icon: 'mdi:package-variant-closed',
-    uuid: '5',
-    canAdd: true,
-  },
-  {
-    key: 'dimensions',
-    title: 'Dimensions',
-    icon: 'mdi:dimension',
-    uuid: '6',
-    canAdd: true,
-  },
-  {
-    key: 'sectors',
-    title: 'Secteurs',
-    icon: 'mdi:domain',
-    uuid: '7',
-    canAdd: true,
-  },
-  {
-    key: 'customer_files',
-    title: 'Dossiers clients',
-    icon: 'mdi:folder-account',
-    uuid: '8',
-    canAdd: true,
-  },
-  {
-    key: 'erp_needs',
-    title: 'Besoins ERP',
-    icon: 'mdi:cube-outline',
-    uuid: '9',
-    canAdd: true,
-  },
-  {
-    key: 'expense_measurements',
-    title: 'Mesures de dépenses',
-    icon: 'mdi:cash-register',
-    uuid: '10',
-    canAdd: true,
-  },
-  {
-    key: 'expenses',
-    title: 'Dépenses',
-    icon: 'mdi:cash',
-    uuid: '11',
-    canAdd: true,
-  },
-  {
-    key: 'files',
-    title: 'Fichiers',
-    icon: 'mdi:file-document-outline',
-    uuid: '12',
-    canAdd: true,
-  },
-  {
-    key: 'product_conditionings',
-    title: 'Conditionnements produits',
-    icon: 'mdi:package',
-    uuid: '13',
-    canAdd: true,
-  },
-  {
-    key: 'product_measurement_units',
-    title: 'Unités de mesure produits',
-    icon: 'mdi:ruler-square',
-    uuid: '14',
-    canAdd: true,
-  },
-  {
-    key: 'type_interfaces',
-    title: 'Types d\'interfaces',
-    icon: 'mdi:view-dashboard-outline',
-    uuid: '15',
-    canAdd: true,
-  },
+  
 ];
 
 export function ParamsList({ data }) {
+  
   return (
     <Box
       sx={{
@@ -117,11 +40,15 @@ export function ParamsList({ data }) {
         gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
       }}
     >
+
       {PARAMETERS_CONFIG.map((config) => (
         <ParamItem
           key={config.key}
           name={config.key}
           title={config.title}
+          label={config.label}
+          nature={config.nature}
+          group={config.group}
           data={data?.[config.key] || []}
           icon={config.icon}
           uuid={config.uuid}

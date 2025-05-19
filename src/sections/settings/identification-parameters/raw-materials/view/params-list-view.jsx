@@ -1,7 +1,7 @@
 import { paths } from 'src/routes/paths';
 
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetIdentificationEntities } from 'src/actions/settings/identification/global';
+import { useGetCategories, useGetReturnPatterns } from 'src/actions/settings/identification/raw-materials';
 
 import { EmptyContent } from 'src/components/empty-content';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
@@ -11,19 +11,27 @@ import { ParamsList } from '../params-list';
 // ----------------------------------------------------------------------
 
 export function ParamsListView() {
-  const { entities } = useGetIdentificationEntities();
-  console.log('entities params list view global settings', entities);
+  // const { entities } = useGetIdentificationEntities();
+  const { categories } = useGetCategories(1);
+  const { returnPatterns } = useGetReturnPatterns(1, 1);
+  const entities ={ 
+    categories: categories || [] ,
+    returnPatterns: returnPatterns || [],
+  };
+
+  console.log('categories params list view raw materials', categories);
+  console.log('returnPatterns params list view raw materials', returnPatterns);
 
   const notFound = !entities;
 
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="List"
+        heading="Liste des matières premières"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: "Parametrage d'identification", href: paths.dashboard.rh.rhSettings.root },
-          { name: 'List' },
+          { name: 'Paramètres', href: paths.dashboard.settings.root },
+          { name: "Parametrage d'identification", href: paths.dashboard.settings.identification.root },
+          { name: 'Liste des matières premières' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />

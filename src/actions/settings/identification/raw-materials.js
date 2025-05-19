@@ -7,21 +7,11 @@ import axios, { fetcher, endpoints } from 'src/lib/axios';
 // ----------------------------------------------------------------------
 
 const enableServer = true;
-// settings - identification - global settings
-const MEASUREMENT_UNIT_ENDPOINT = endpoints.settings.identification.globalSettings.measurementUnits;
-const DIMENSION_ENDPOINT = endpoints.settings.identification.globalSettings.dimensions;
-const CONDITIONING_ENDPOINT = endpoints.settings.identification.globalSettings.conditionings;
-const FILE_ENDPOINT = endpoints.settings.identification.globalSettings.files;
-const PRODUCT_FORMAT_ENDPOINT = endpoints.settings.identification.globalSettings.productFormats;
-const PRODUCT_CONDITIONING_ENDPOINT = endpoints.settings.identification.globalSettings.productConditionings;
-const CALIBER_ENDPOINT = endpoints.settings.identification.globalSettings.calibers;
-const TYPE_INTERFACE_ENDPOINT = endpoints.settings.identification.globalSettings.typeInterfaces;
-const CUSTOMER_FILE_ENDPOINT = endpoints.settings.identification.globalSettings.customerFiles;
-const EXPENSE_ENDPOINT = endpoints.settings.identification.globalSettings.expenses;
-const EXPENSE_MEASUREMENT_UNIT_ENDPOINT = endpoints.settings.identification.globalSettings.expenseMeasurementUnits;
-const ERP_NEED_ENDPOINT = endpoints.settings.identification.globalSettings.erpNeeds;
-const SECTOR_ENDPOINT = endpoints.settings.identification.globalSettings.sectors;
-const SERVICE_ENDPOINT = endpoints.settings.identification.globalSettings.services;
+// settings - identification - raw materials
+
+const CATEGORY_ENDPOINT = endpoints.settings.identification.categories.list;
+const RETURN_PATTERN_ENDPOINT = endpoints.settings.identification.returnPatterns.list;
+const FAMILY_ENDPOINT = endpoints.settings.identification.families.list;
 
 
 const swrOptions = {
@@ -35,20 +25,9 @@ const swrOptions = {
 
 // Map parameter keys to their endpoint constants
 const ENDPOINT_MAP = {
-  'measurement_units': MEASUREMENT_UNIT_ENDPOINT,
-  'dimensions': DIMENSION_ENDPOINT,
-  'conditionings': CONDITIONING_ENDPOINT,
-  'files': FILE_ENDPOINT,
-  'product_measurement_units': PRODUCT_FORMAT_ENDPOINT,
-  'product_conditionings': PRODUCT_CONDITIONING_ENDPOINT,
-  'calibers': CALIBER_ENDPOINT,
-  'type_interfaces': TYPE_INTERFACE_ENDPOINT,
-  'customer_files': CUSTOMER_FILE_ENDPOINT,
-  'expenses': EXPENSE_ENDPOINT,
-  'expense_measurements': EXPENSE_MEASUREMENT_UNIT_ENDPOINT,
-  'erp_needs': ERP_NEED_ENDPOINT,
-  'sectors': SECTOR_ENDPOINT,
-  'services': SERVICE_ENDPOINT,
+  'categories': CATEGORY_ENDPOINT,
+  'returnPatterns': RETURN_PATTERN_ENDPOINT,
+  'families': FAMILY_ENDPOINT,
 };
 
 /**
@@ -67,7 +46,8 @@ export async function createEntity(entityType, data) {
   
   try {
     await axios.post(endpoint, data);
-    mutate(endpoints.settings.identification.globalSettings.list);
+    mutate([CATEGORY_ENDPOINT, { params: { group: 1 } }]);
+    mutate([RETURN_PATTERN_ENDPOINT, { params: { group: 1, nature: 1 } }]);
   } catch (error) {
     console.error(`Error creating ${entityType}:`, error);
   }
@@ -90,12 +70,50 @@ export async function updateEntity(entityType, id, data) {
   
   try {
     await axios.patch(`${endpoint}/${id}`, data);
-    mutate(endpoints.settings.identification.globalSettings.list);
+    mutate([CATEGORY_ENDPOINT, { params: { group: 1 } }]);
+    mutate([RETURN_PATTERN_ENDPOINT, { params: { group: 1, nature: 1 } }]);
   } catch (error) {
     console.error(`Error updating ${entityType}:`, error);
   }
 }
 
+// ----------------------------------------------------------------------
+// Categories
+export function useGetCategories(group) {
+  const url = group ? [CATEGORY_ENDPOINT, { params: { group } }] : ''; 
+  const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
+
+  const memoizedValue = useMemo(
+    () => ({
+      categories: data?.data?.records || [],
+      categoriesLoading: isLoading,
+      categoriesError: error,
+      categoriesValidating: isValidating,
+      categoriesEmpty: !isLoading && !isValidating && !data?.data?.records.length,
+    }),
+    [data?.data?.records, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
+
+export function useGetReturnPatterns(group, nature) {
+  const url = group && nature ? [RETURN_PATTERN_ENDPOINT, { params: { group, nature } }] : '';
+  const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
+
+  const memoizedValue = useMemo(
+    () => ({
+      returnPatterns: data?.data?.records || [],
+      returnPatternsLoading: isLoading,
+      returnPatternsError: error,
+      returnPatternsValidating: isValidating,
+      returnPatternsEmpty: !isLoading && !isValidating && !data?.data?.records.length,
+    }),
+    [data?.data?.records, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
 
 // ----------------------------------------------------------------------
 
