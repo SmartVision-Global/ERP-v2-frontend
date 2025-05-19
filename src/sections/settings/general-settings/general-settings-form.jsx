@@ -1,5 +1,8 @@
 import { z } from 'zod';
+import { toast } from 'sonner';
 import React, { useState, useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 import {
   Box,
@@ -28,24 +31,26 @@ const steps = ['Paramètre général', 'Paramétrage Produit fini', 'Paramétrag
 
 const schema = z.object({
   general: z.object({
-    decimalsStorageProd: z.number().min(0),
-    decimalsCash: z.number().min(0),
-    baseSalary: z.number().min(0),
-    storageDisplay: z.string(),
-    productionDisplay: z.string(),
+    decimalsStorageProd: z.number().min(0, { message: 'This field is required' }),
+    decimalsCash: z.number().min(0, { message: 'This field is required' }),
+    baseSalary: z.number().min(0, { message: 'This field is required' }),
+    storageDisplay: z.string().nonempty({ message: 'This field is required' }),
+    productionDisplay: z.string().nonempty({ message: 'This field is required' }),
   }),
-  productSettings: z.array(
-    z.object({
-      site: z.string(),
-      consommation: z.string(),
-      production: z.string(),
-    })
-  ),
+  productSettings: z
+    .array(
+      z.object({
+        site: z.string().nonempty({ message: 'Site is required' }),
+        consommation: z.string().nonempty({ message: 'Consommation is required' }),
+        production: z.string().nonempty({ message: 'Production is required' }),
+      })
+    )
+    .nonempty({ message: 'At least one product setting is required' }),
   panelSettings: z.array(
     z.object({
-      site: z.string(),
-      consommation: z.string(),
-      production: z.string(),
+      site: z.string().nonempty({ message: 'Site is required' }),
+      consommation: z.string().nonempty({ message: 'Consommation is required' }),
+      production: z.string().nonempty({ message: 'Production is required' }),
     })
   ),
 });
@@ -54,8 +59,8 @@ export default function GeneralSettingsForm() {
   const { generalSettings } = useGetGeneralSettings();
   const { generalSettingsInfo } = useGetGeneralSettingsInfo();
   const { sites } = useGetSites();
-  const { stores } = useGetStores(); // Fetch stores
-  // console.log('stores', stores);
+  const { stores } = useGetStores();
+
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
     general: {
@@ -64,13 +69,25 @@ export default function GeneralSettingsForm() {
       baseSalary: 30,
       storageDisplay: 'PALETTE',
       productionDisplay: 'Carton/Palette',
-      remarks: '', // Added this field
+      remarks: '',
     },
     productSettings: [],
     panelSettings: [],
   });
 
-  // Load data for the first tab (general settings)
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: formData,
+  });
+
+  const onSubmit = (data) => {
+    console.log('Validated data:', data);
+  };
+
   useEffect(() => {
     if (generalSettings.length > 0) {
       const settings = generalSettings[0];
@@ -87,7 +104,6 @@ export default function GeneralSettingsForm() {
     }
   }, [generalSettings]);
 
-  // Load data for the second and third tabs (general settings info)
   useEffect(() => {
     if (generalSettingsInfo.length > 0) {
       setFormData((prev) => ({
@@ -109,7 +125,7 @@ export default function GeneralSettingsForm() {
       }));
     }
   }, [generalSettingsInfo]);
-  // Map sites and stores to product and panel settings
+
   useEffect(() => {
     if (sites.length > 0) {
       setFormData((prev) => ({
@@ -130,11 +146,10 @@ export default function GeneralSettingsForm() {
   const handleNext = async () => {
     try {
       if (activeStep === 0) {
-        // Validate and submit general settings
         const parsed = schema.shape.general.parse(formData.general);
         console.log('Submitting general settings:', parsed);
         await createGeneralSetting(parsed);
-        alert('Paramètres généraux enregistrés avec succès!');
+        toast.success('Paramètres généraux enregistrés avec succès!');
       }
 
       if (activeStep === 1) {
@@ -144,19 +159,19 @@ export default function GeneralSettingsForm() {
         const formattedData = parsed.map((data) => ({
           site_id: parseInt(data.site, 10),
           store_id: stores.find((store) => store.code === data.consommation)?.id || null,
-          nature: 'product',
+          nature: 1,
           type: 1,
         }));
 
         console.log('Formatted Product Data:', formattedData);
 
-        // Ensure all required fields are valid
         if (formattedData.some((data) => !data.store_id)) {
-          throw new Error('Invalid store_id in product settings.');
+          toast.error('Échec de la validation. Veuillez sélectionner un magasin valide.');
+          return;
         }
 
         await Promise.all(formattedData.map((data) => createGeneralSettingsInfo(data)));
-        alert('Paramètres produit fini enregistrés avec succès!');
+        toast.success('Paramètres produit fini enregistrés avec succès!');
       }
 
       if (activeStep === 2) {
@@ -166,35 +181,32 @@ export default function GeneralSettingsForm() {
         const formattedData = parsed.map((data) => ({
           site_id: parseInt(data.site, 10),
           store_id: stores.find((store) => store.code === data.production)?.id || null,
-          nature: 'panel',
+          nature: 2,
           type: 2,
         }));
 
         console.log('Formatted Panel Data:', formattedData);
 
-        // Ensure all required fields are valid
         if (formattedData.some((data) => !data.store_id)) {
-          throw new Error('Invalid store_id in panel settings.');
+          toast.error('Échec de la validation. Veuillez sélectionner un magasin valide.');
         }
 
         await Promise.all(formattedData.map((data) => createGeneralSettingsInfo(data)));
         alert('Paramètres panneau technique enregistrés avec succès!');
       }
 
-      // Go to next step unless it's the last
       if (activeStep < steps.length - 1) {
         setActiveStep((prev) => prev + 1);
       }
     } catch (err) {
       console.error('Validation or submission error:', err);
 
-      // Provide detailed feedback to the user
       if (err.name === 'ZodError') {
-        alert('Échec de la validation. Veuillez vérifier vos saisies.');
-      } else if (err.message.includes('Invalid store_id')) {
-        alert('Échec de la validation. Veuillez sélectionner un magasin valide.');
+        err.errors.forEach((error) => {
+          toast.error(error.message); // Display each error message
+        });
       } else {
-        alert("Une erreur est survenue lors de l'envoi des données. Veuillez réessayer.");
+        toast.error("Une erreur est survenue lors de l'envoi des données. Veuillez réessayer.");
       }
     }
   };
@@ -279,80 +291,89 @@ export default function GeneralSettingsForm() {
         variant="subtitle1"
         mt={2}
         mb={1}
-        sx={{ backgroundColor: '#ffb822', padding: 1, display: 'inline-block' }}
+        sx={{ backgroundColor: '#ffb822', padding: 1, display: 'inline-block', borderRadius: 1 }}
       >
         Magasinage
       </Typography>
-      {formData[section].map((item, idx) => (
-        <Grid container spacing={2} key={`magasinage-${idx}`} mt={2}>
-          <Grid item xs={6}>
-            <TextField
-              fullWidth
-              disabled
-              label="Site"
-              value={sites.find((site) => site.id.toString() === item.site)?.name || ''}
-              sx={inputStyle}
-            />
+      {formData[section].map((item, idx) => {
+        const filteredStores = stores.filter((store) => store.site_id.toString() === item.site);
+
+        return (
+          <Grid container spacing={2} key={`magasinage-${idx}`} mt={2}>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                disabled
+                label="Site"
+                value={sites.find((site) => site.id.toString() === item.site)?.name || ''}
+                sx={inputStyle}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl fullWidth sx={inputStyle}>
+                <InputLabel>Consommation</InputLabel>
+                <Select
+                  value={item.consommation}
+                  onChange={handleChange(section, idx, 'consommation')}
+                  label="Consommation"
+                >
+                  <MenuItem value="">Sélectionné</MenuItem>
+                  {filteredStores.map((store) => (
+                    <MenuItem key={store.id} value={store.code}>
+                      {store.designation}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
           </Grid>
-          <Grid item xs={6}>
-            <FormControl fullWidth sx={inputStyle}>
-              <InputLabel>Consommation</InputLabel>
-              <Select
-                value={item.consommation}
-                onChange={handleChange(section, idx, 'consommation')}
-                label="Consommation"
-              >
-                <MenuItem value="">Sélectionné</MenuItem>
-                {stores.map((store) => (
-                  <MenuItem key={store.id} value={store.code}>
-                    {store.designation}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-        </Grid>
-      ))}
+        );
+      })}
 
       {/* Production Section */}
       <Typography
         variant="subtitle1"
         mt={4}
         mb={1}
-        sx={{ backgroundColor: '#ffb822', padding: 1, display: 'inline-block' }}
+        sx={{ backgroundColor: '#ffb822', padding: 1, display: 'inline-block', borderRadius: 1 }}
       >
         Production
       </Typography>
-      {formData[section].map((item, idx) => (
-        <Grid container spacing={2} key={`production-${idx}`} mt={2}>
-          <Grid item xs={6}>
-            <TextField
-              fullWidth
-              disabled
-              label="Site"
-              value={sites.find((site) => site.id.toString() === item.site)?.name || ''}
-              sx={inputStyle}
-            />
+      {formData[section].map((item, idx) => {
+        // Filter stores based on the current site's `site_id`
+        const filteredStores = stores.filter((store) => store.site_id.toString() === item.site);
+
+        return (
+          <Grid container spacing={2} key={`production-${idx}`} mt={2}>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                disabled
+                label="Site"
+                value={sites.find((site) => site.id.toString() === item.site)?.name || ''}
+                sx={inputStyle}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl fullWidth sx={inputStyle}>
+                <InputLabel>Production</InputLabel>
+                <Select
+                  value={item.production}
+                  onChange={handleChange(section, idx, 'production')}
+                  label="Production"
+                >
+                  <MenuItem value="">Sélectionné</MenuItem>
+                  {filteredStores.map((store) => (
+                    <MenuItem key={store.id} value={store.code}>
+                      {store.designation}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
           </Grid>
-          <Grid item xs={6}>
-            <FormControl fullWidth sx={inputStyle}>
-              <InputLabel>Production</InputLabel>
-              <Select
-                value={item.production}
-                onChange={handleChange(section, idx, 'production')}
-                label="Production"
-              >
-                <MenuItem value="">Sélectionné</MenuItem>
-                {stores.map((store) => (
-                  <MenuItem key={store.id} value={store.code}>
-                    {store.designation}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-        </Grid>
-      ))}
+        );
+      })}
     </Box>
   );
 
