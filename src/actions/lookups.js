@@ -30,8 +30,8 @@ export function useMultiLookups(entities = []) {
   };
 }
 
-export function useGetLookups(subUrl) {
-  const url = `/v1/${subUrl}`;
+export function useGetLookups(subUrl, params) {
+  const url = params ? [`/v1/${subUrl}`, { params }] : `/v1/${subUrl}`;
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 

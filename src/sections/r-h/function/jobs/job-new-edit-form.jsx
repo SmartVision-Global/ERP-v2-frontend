@@ -4,14 +4,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
+import { Box, Card, Stack, Divider, CardHeader } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { USER_STATUS_OPTIONS } from 'src/_mock';
-import { useMultiLookups } from 'src/actions/lookups';
 import { createJob, updateJob } from 'src/actions/function';
+import { useGetLookups, useMultiLookups } from 'src/actions/lookups';
 
 import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
@@ -22,7 +21,7 @@ export const NewProductSchema = zod.object({
   designation: zod.string().min(1, { message: 'Name is required!' }),
   site_id: zod.string().min(1, { message: 'Name is required!' }),
   salary_category_id: zod.string().min(1, { message: 'Name is required!' }),
-  salary_grids: zod.string().min(1, { message: 'Name is required!' }),
+  salary_grids: zod.array(zod.string().or(zod.number())),
   job_employee_quota: schemaHelper.nullableInput(
     zod
       .number({ coerce: true })
@@ -54,8 +53,8 @@ export const NewProductSchema = zod.object({
   service_id: zod.string().min(1, { message: 'Name is required!' }),
   job_code: zod.string().min(1, { message: 'Name is required!' }),
   manager_job_id: zod.string().optional(),
-  mission_id: zod.string().min(1, { message: 'Name is required!' }),
-  action_id: zod.string().min(1, { message: 'Name is required!' }),
+  mission_id: zod.string().optional().nullable(),
+  action_id: zod.string().optional().nullable(),
   careerKnowledges: zod.array(zod.string()),
   dutiesResponsibilities: zod.array(zod.string()),
 });
@@ -73,6 +72,14 @@ export function JobNewEditForm({ currentProduct }) {
     { entity: 'dutiesResponsibilities', url: 'hr/lookups/duties_responsibilities' },
     { entity: 'careerKnowledges', url: 'hr/lookups/career_knowledges' },
   ]);
+
+  const { data: missions } = useGetLookups('hr/lookups/duties_responsibilities', {
+    type: 1,
+  });
+
+  const { data: actions } = useGetLookups('hr/lookups/duties_responsibilities', {
+    type: 2,
+  });
 
   const sites = dataLookups.sites;
   const salaryCategories = dataLookups.salaryCategories;
@@ -135,21 +142,23 @@ export function JobNewEditForm({ currentProduct }) {
   const {
     reset,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = methods;
+
+  console.log('err', errors);
 
   const onSubmit = handleSubmit(async (data) => {
     const updatedData = {
       // ...data,
       name: data.name,
       designation: data.designation,
-      site_id: parseInt(data.site_id),
-      salary_category_id: parseInt(data.salary_category_id),
-      direction_id: parseInt(data.direction_id),
-      service_id: parseInt(data.service_id),
-      manager_job_id: parseInt(data.manager_job_id),
-      mission_id: null,
-      action_id: null,
+      site_id: data.site_id,
+      salary_category_id: data.salary_category_id,
+      direction_id: data.direction_id,
+      service_id: data.service_id,
+      manager_job_id: data.manager_job_id,
+      mission_id: data.mission_id,
+      action_id: data.action_id,
       key_post: data.key_post === 'yes' ? true : false,
       job_code: data.job_code,
       job_employee_quota: `${data.job_employee_quota}`,
@@ -342,23 +351,22 @@ export function JobNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             {/* TODO  */}
-            <Field.Select name="mission_id" label="Missions" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+            <Field.Lookup name="mission_id" label="Missions" data={missions} />
+            {/* {USER_STATUS_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
               ))}
-            </Field.Select>
+            </Field.Select> */}
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            {/* TODO */}
-            <Field.Select name="action_id" label="Actes de Fonction" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
+            <Field.Lookup name="action_id" label="Actes de Fonction" data={actions} />
+            {/* {USER_STATUS_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
               ))}
-            </Field.Select>
+            </Field.Select> */}
           </Grid>
         </Grid>
       </Stack>

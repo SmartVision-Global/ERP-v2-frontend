@@ -14,7 +14,7 @@ export function CareerCreateView() {
       <CustomBreadcrumbs
         heading="Ajouter Parcours professionnel"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Ressources humaines', href: paths.dashboard.root },
           { name: 'Parcours professionnel', href: paths.dashboard.rh.fonction.careerPath },
           { name: 'Ajouter Parcours professionnel' },
         ]}

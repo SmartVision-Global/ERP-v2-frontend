@@ -14,7 +14,7 @@ export function JobCreateView() {
       <CustomBreadcrumbs
         heading="Ajouter Fonction"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Ressources humaines', href: paths.dashboard.root },
           { name: 'Fonctions', href: paths.dashboard.rh.fonction.fonctions },
           { name: 'Ajouter Fonction' },
         ]}

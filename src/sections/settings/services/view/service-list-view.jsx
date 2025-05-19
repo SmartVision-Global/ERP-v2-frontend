@@ -178,7 +178,7 @@ export function ServiceListView() {
           </FormControl>
         </Box>
         <DataGrid
-          checkboxSelection
+          // checkboxSelection
           disableColumnMenu
           disableRowSelectionOnClick
           rows={dataFiltered}

@@ -15,7 +15,7 @@ export function JobEditView({ fonction }) {
         heading="Edit"
         backHref={paths.dashboard.rh.personal.root}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Ressources humaines', href: paths.dashboard.root },
           { name: 'Fonctions', href: paths.dashboard.rh.fonction.fonctions },
           { name: fonction?.name },
         ]}
