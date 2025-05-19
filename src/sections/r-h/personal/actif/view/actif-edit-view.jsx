@@ -15,7 +15,7 @@ export function PersonalEditView({ personal }) {
         heading="Edit"
         backHref={paths.dashboard.rh.personal.root}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Ressources humaine', href: paths.dashboard.root },
           { name: 'Personnels', href: paths.dashboard.rh.personal },
           { name: personal?.name },
         ]}

@@ -192,11 +192,6 @@ export function ActifListView() {
   );
   const handlePaginationModelChange = async (newModel) => {
     try {
-      // const newEditedInput = editedFilters.filter((item) => item.value !== '');
-      // const result = newEditedInput.reduce((acc, item) => {
-      //   acc[item.field] = item.value;
-      //   return acc;
-      // }, {});
       const newData = {
         ...editedFilters,
         limit: newModel.pageSize,
@@ -550,9 +545,9 @@ export function ActifListView() {
         <CustomBreadcrumbs
           heading="List"
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Ressources humaine', href: paths.dashboard.root },
-            { name: 'Employés' },
+            { name: 'Personnels', href: paths.dashboard.root },
+            { name: 'Liste' },
           ]}
           action={
             <Button
