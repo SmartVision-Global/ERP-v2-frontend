@@ -53,8 +53,8 @@ export function ParamsList({ data }) {
           icon={config.icon}
           uuid={config.uuid}
           canAdd={config.canAdd}
-          onCreate={(itemData) => createEntity(config.key, itemData)}
-          onUpdate={(id, itemData) => updateEntity(config.key, id, itemData)}
+          onCreate={(itemData, group, nature) => createEntity(config.key, itemData, group, nature)}
+          onUpdate={(id, itemData, group, nature) => updateEntity(config.key, id, itemData, group, nature)}
         />
       ))}
     </Box>

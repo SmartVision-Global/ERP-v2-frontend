@@ -22,8 +22,8 @@ export const NewProductSchema = zod.object({
   designation: zod.string().min(1, { message: 'Name is required!' }),
 });
 
-export function AddItemDialog({ open, onClose, currentProduct, name, title, label, nature: entityNature, onCreate, onUpdate }) {
-  const { group } = useIdentification();
+export function AddItemDialog({ open, onClose, currentProduct, name, title, label, onCreate, onUpdate }) {
+  const { group, nature } = useIdentification();
   const defaultValues = {
     name: '',
     designation: '',
@@ -48,15 +48,15 @@ export function AddItemDialog({ open, onClose, currentProduct, name, title, labe
     //   setError(name, { message: `Remplir ${title}` });
     // } else {
     const updatedData = { ...data, group };
-    if (entityNature) {
-      updatedData.nature = entityNature;
+    if (nature) {
+      updatedData.nature = nature;
     }
     try {
       // await new Promise((resolve) => setTimeout(resolve, 500));
       if (currentProduct) {
-        await onUpdate(currentProduct.id, updatedData);
+        await onUpdate(currentProduct.id, updatedData, group, nature);
       } else {
-        await onCreate(updatedData);
+        await onCreate(updatedData, group, nature);
       }
       reset();
       onClose();

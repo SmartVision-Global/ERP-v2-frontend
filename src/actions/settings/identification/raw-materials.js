@@ -35,7 +35,7 @@ const ENDPOINT_MAP = {
  * @param {string} entityType - The type of entity to create
  * @param {object} data - The data for the new entity
  */
-export async function createEntity(entityType, data) {
+export async function createEntity(entityType, data, group, nature) {
   if (!enableServer) return;
   
   const endpoint = ENDPOINT_MAP[entityType];
@@ -46,8 +46,8 @@ export async function createEntity(entityType, data) {
   
   try {
     await axios.post(endpoint, data);
-    mutate([CATEGORY_ENDPOINT, { params: { group: 1 } }]);
-    mutate([RETURN_PATTERN_ENDPOINT, { params: { group: 1, nature: 1 } }]);
+    mutate([CATEGORY_ENDPOINT, { params: { group } }]);
+    mutate([RETURN_PATTERN_ENDPOINT, { params: { group, nature } }]);
   } catch (error) {
     console.error(`Error creating ${entityType}:`, error);
   }
@@ -59,7 +59,7 @@ export async function createEntity(entityType, data) {
  * @param {number|string} id - The ID of the entity to update
  * @param {object} data - The updated data
  */
-export async function updateEntity(entityType, id, data) {
+export async function updateEntity(entityType, id, data, group, nature) {
   if (!enableServer) return;
   
   const endpoint = ENDPOINT_MAP[entityType];
@@ -70,8 +70,8 @@ export async function updateEntity(entityType, id, data) {
   
   try {
     await axios.patch(`${endpoint}/${id}`, data);
-    mutate([CATEGORY_ENDPOINT, { params: { group: 1 } }]);
-    mutate([RETURN_PATTERN_ENDPOINT, { params: { group: 1, nature: 1 } }]);
+    mutate([CATEGORY_ENDPOINT, { params: { group } }]);
+    mutate([RETURN_PATTERN_ENDPOINT, { params: { group, nature } }]);
   } catch (error) {
     console.error(`Error updating ${entityType}:`, error);
   }
