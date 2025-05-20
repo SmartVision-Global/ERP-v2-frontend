@@ -1,203 +1,87 @@
-import { useBoolean } from 'minimal-shared/hooks';
-import { useState, useEffect, forwardRef, useCallback } from 'react';
+import { useState, useCallback } from 'react';
+import { useBoolean, useSetState } from 'minimal-shared/hooks';
 
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
-import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import { TextField, FormControl, InputAdornment } from '@mui/material';
-import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
+import Typography from '@mui/material/Typography';
 
-import { paths } from 'src/routes/paths';
-import { RouterLink } from 'src/routes/components';
+import { fIsAfter, fIsBetween } from 'src/utils/format-time';
 
-import { DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
-import { useGetProducts } from 'src/actions/product';
+import { _allFiles } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
-import { TableToolbarCustom } from 'src/components/table';
+import { fileFormat } from 'src/components/file-thumbnail';
 import { EmptyContent } from 'src/components/empty-content';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { useTable, rowInPage, getComparator } from 'src/components/table';
 
-import {
-  RenderCellId,
-  RenderCellUser,
-  RenderCellType,
-  RenderCellLang,
-  RenderCellComment,
-  RenderCellPriority,
-  RenderCellCreatedAt,
-  RenderCellDescription,
-} from '../document-table-row2';
+import { FileManagerGridView } from '../document-grid-view';
+import { FileManagerNewFolderDialog } from '../file-manager-new-folder-dialog';
 
 // ----------------------------------------------------------------------
-
-const HIDE_COLUMNS = { category: false };
-
-const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
-
-// ----------------------------------------------------------------------
-
-const FILTERS_OPTIONS = [
-  { id: 'designation', type: 'input', label: 'Designation', cols: 12, width: 0.24 },
-  { id: 'status', type: 'select', options: DOCUMENT_STATUS_OPTIONS, label: 'Etat' },
-  { id: 'valideur', type: 'select', options: DOCUMENT_STATUS_OPTIONS, label: 'Valideur' },
-
-  { id: 'startDate', type: 'date', label: 'Date de début création' },
-  { id: 'endDate', type: 'date', label: 'Date de fin création' },
-];
 
 export function DocumentListView() {
+  const table = useTable({ defaultRowsPerPage: 10 });
+
   const confirmDialog = useBoolean();
+  const newFilesDialog = useBoolean();
 
-  const { products, productsLoading } = useGetProducts();
+  const [tableData, setTableData] = useState(_allFiles);
 
-  const [tableData, setTableData] = useState(products);
-  const [selectedRowIds, setSelectedRowIds] = useState([]);
-  const [filterButtonEl, setFilterButtonEl] = useState(null);
-  const [editedFilters, setEditedFilters] = useState({});
+  const filters = useSetState({
+    name: '',
+    type: [],
+    startDate: null,
+    endDate: null,
+  });
+  const { state: currentFilters } = filters;
 
-  const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
+  const dateError = fIsAfter(currentFilters.startDate, currentFilters.endDate);
 
-  useEffect(() => {
-    if (products.length) {
-      setTableData(products);
-    }
-  }, [products]);
-  const handleReset = () => {
-    setEditedFilters({});
-  };
-  const dataFiltered = tableData;
+  const dataFiltered = applyFilter({
+    inputData: tableData,
+    comparator: getComparator(table.order, table.orderBy),
+    filters: currentFilters,
+    dateError,
+  });
 
-  const handleDeleteRow = useCallback(
+  const dataInPage = rowInPage(dataFiltered, table.page, table.rowsPerPage);
+
+  const canReset =
+    !!currentFilters.name ||
+    currentFilters.type.length > 0 ||
+    (!!currentFilters.startDate && !!currentFilters.endDate);
+
+  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+
+  const handleDeleteItem = useCallback(
     (id) => {
       const deleteRow = tableData.filter((row) => row.id !== id);
 
       toast.success('Delete success!');
 
       setTableData(deleteRow);
+
+      table.onUpdatePageDeleteRow(dataInPage.length);
     },
-    [tableData]
+    [dataInPage.length, table, tableData]
   );
 
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
+  const handleDeleteItems = useCallback(() => {
+    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
 
     toast.success('Delete success!');
 
     setTableData(deleteRows);
-  }, [selectedRowIds, tableData]);
 
-  const columns = [
-    { field: 'category', headerName: 'Category', filterable: false },
-    {
-      field: 'id',
-      headerName: 'ID',
-      flex: 0.5,
-      minWidth: 130,
-      hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellId params={params} href={paths.dashboard.root} />
-      ),
-    },
-    {
-      field: 'name',
-      headerName: 'Nom',
-      flex: 1,
-      minWidth: 260,
-      hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellUser params={params} href={paths.dashboard.root} />
-      ),
-    },
-    {
-      field: 'type',
-      headerName: 'Type',
-      width: 110,
+    table.onUpdatePageDeleteRows(dataInPage.length, dataFiltered.length);
+  }, [dataFiltered.length, dataInPage.length, table, tableData]);
 
-      renderCell: (params) => <RenderCellType params={params} />,
-    },
-    {
-      field: 'lang',
-      headerName: 'Langue',
-      width: 110,
-      renderCell: (params) => <RenderCellLang params={params} />,
-    },
-    {
-      field: 'priority',
-      headerName: 'Priorité',
-      width: 210,
-
-      renderCell: (params) => <RenderCellPriority params={params} />,
-    },
-    {
-      field: 'description',
-      headerName: 'Description',
-      width: 210,
-
-      renderCell: (params) => <RenderCellDescription params={params} />,
-    },
-    {
-      field: 'comment',
-      headerName: 'Commentaires',
-      width: 210,
-
-      renderCell: (params) => <RenderCellComment params={params} />,
-    },
-
-    {
-      field: 'created_at',
-      headerName: 'Date de création',
-      width: 160,
-      renderCell: (params) => <RenderCellCreatedAt params={params} />,
-    },
-    {
-      type: 'actions',
-      field: 'actions',
-      headerName: ' ',
-      align: 'right',
-      headerAlign: 'right',
-      width: 80,
-      sortable: false,
-      filterable: false,
-      disableColumnMenu: true,
-      getActions: (params) => [
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
-          label="View"
-          // href={paths.dashboard.product.details(params.row.id)}
-          href={paths.dashboard.root}
-        />,
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:pen-bold" />}
-          label="Edit"
-          // href={paths.dashboard.product.edit(params.row.id)}
-          href={paths.dashboard.root}
-        />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-          label="Delete"
-          onClick={() => handleDeleteRow(params.row.id)}
-          sx={{ color: 'error.main' }}
-        />,
-      ],
-    },
-  ];
-
-  const getTogglableColumns = () =>
-    columns
-      .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
-      .map((column) => column.field);
+  const renderNewFilesDialog = () => (
+    <FileManagerNewFolderDialog open={newFilesDialog.value} onClose={newFilesDialog.onFalse} />
+  );
 
   const renderConfirmDialog = () => (
     <ConfirmDialog
@@ -206,7 +90,7 @@ export function DocumentListView() {
       title="Delete"
       content={
         <>
-          Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
+          Are you sure want to delete <strong> {table.selected.length} </strong> items?
         </>
       }
       action={
@@ -214,7 +98,7 @@ export function DocumentListView() {
           variant="contained"
           color="error"
           onClick={() => {
-            handleDeleteRows();
+            handleDeleteItems();
             confirmDialog.onFalse();
           }}
         >
@@ -224,90 +108,33 @@ export function DocumentListView() {
     />
   );
 
+  const renderList = () => (
+    <FileManagerGridView
+      table={table}
+      dataFiltered={dataFiltered}
+      onDeleteItem={handleDeleteItem}
+      onOpenConfirm={confirmDialog.onTrue}
+    />
+  );
+
   return (
     <>
-      <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-        <CustomBreadcrumbs
-          heading="Documents"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Ressources humaine', href: paths.dashboard.root },
-            { name: 'Documents' },
-          ]}
-          action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.rh.personal.newPersonelDocument}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              Ajouter Document
-            </Button>
-          }
-          sx={{ mb: { xs: 3, md: 5 } }}
-        />
+      <DashboardContent>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Typography variant="h4">File manager</Typography>
+          <Button
+            variant="contained"
+            startIcon={<Iconify icon="eva:cloud-upload-fill" />}
+            onClick={newFilesDialog.onTrue}
+          >
+            Upload
+          </Button>
+        </Box>
 
-        <Card
-          sx={{
-            flexGrow: { md: 1 },
-            display: { md: 'flex' },
-            flexDirection: { md: 'column' },
-          }}
-        >
-          <TableToolbarCustom
-            filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={setEditedFilters}
-            onReset={handleReset}
-          />
-          <Box paddingX={4} paddingY={2} sx={{}}>
-            <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
-              <TextField
-                fullWidth
-                // value={currentFilters.name}
-                // onChange={handleFilterName}
-                placeholder="Search "
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-                size="small"
-              />
-            </FormControl>
-          </Box>
-          <DataGrid
-            checkboxSelection
-            disableRowSelectionOnClick
-            disableColumnMenu
-            rows={dataFiltered}
-            columns={columns}
-            loading={productsLoading}
-            getRowHeight={() => 'auto'}
-            pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
-            initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-            onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
-            columnVisibilityModel={columnVisibilityModel}
-            onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
-            // disableColumnFilter
-            slots={{
-              noRowsOverlay: () => <EmptyContent />,
-              noResultsOverlay: () => <EmptyContent title="No results found" />,
-            }}
-            slotProps={{
-              toolbar: { setFilterButtonEl },
-              panel: { anchorEl: filterButtonEl },
-              columnsManagement: { getTogglableColumns },
-            }}
-            sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
-          />
-        </Card>
+        {notFound ? <EmptyContent filled sx={{ py: 10 }} /> : renderList()}
       </DashboardContent>
 
+      {renderNewFilesDialog()}
       {renderConfirmDialog()}
     </>
   );
@@ -315,21 +142,32 @@ export function DocumentListView() {
 
 // ----------------------------------------------------------------------
 
-export const GridActionsLinkItem = forwardRef((props, ref) => {
-  const { href, label, icon, sx } = props;
+function applyFilter({ inputData, comparator, filters, dateError }) {
+  const { name, type, startDate, endDate } = filters;
 
-  return (
-    <MenuItem ref={ref} sx={sx}>
-      <Link
-        component={RouterLink}
-        href={href}
-        underline="none"
-        color="inherit"
-        sx={{ width: 1, display: 'flex', alignItems: 'center' }}
-      >
-        {icon && <ListItemIcon>{icon}</ListItemIcon>}
-        {label}
-      </Link>
-    </MenuItem>
-  );
-});
+  const stabilizedThis = inputData.map((el, index) => [el, index]);
+
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+    return a[1] - b[1];
+  });
+
+  inputData = stabilizedThis.map((el) => el[0]);
+
+  if (name) {
+    inputData = inputData.filter((file) => file.name.toLowerCase().includes(name.toLowerCase()));
+  }
+
+  if (type.length) {
+    inputData = inputData.filter((file) => type.includes(fileFormat(file.type)));
+  }
+
+  if (!dateError) {
+    if (startDate && endDate) {
+      inputData = inputData.filter((file) => fIsBetween(file.createdAt, startDate, endDate));
+    }
+  }
+
+  return inputData;
+}

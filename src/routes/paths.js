@@ -183,6 +183,8 @@ export const paths = {
 
         preparation: `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/preparation`,
         newPreparation: `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/preparation/new`,
+        preparationDetails: (id) =>
+          `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/preparation/${id}/details`,
       },
       paraTaxDeclaration: {
         root: `${ROOTS.DASHBOARD}/humain-ressource/para-tax-declaration/das`,
