@@ -244,6 +244,10 @@ const PageRhPayrollManagementPreparationNew = lazy(
   () => import('src/pages/dashboard/r-h/payroll-management/preparation/new')
 );
 
+const PageRhPayrollManagementPreparationDetails = lazy(
+  () => import('src/pages/dashboard/r-h/payroll-management/preparation/details')
+);
+
 // Account
 const AccountGeneralPage = lazy(() => import('src/pages/dashboard/user/account/general'));
 const AccountChangePasswordPage = lazy(
@@ -497,6 +501,23 @@ export const dashboardRoutes = [
               { path: 'preparation', element: <PageRhPayrollManagementPreparation /> },
               // { path: 'preparation/new', element: <ComingSoonPage /> },
               { path: 'preparation/new', element: <PageRhPayrollManagementPreparationNew /> },
+              {
+                path: 'preparation/:id/details',
+                element: <PageRhPayrollManagementPreparationDetails />,
+              },
+            ],
+          },
+          {
+            path: 'para-tax-declaration',
+            children: [
+              { path: 'das', element: <ComingSoonPage />, index: true },
+              {
+                path: 'das/new',
+                element: <ComingSoonPage />,
+              },
+
+              { path: 'dac', element: <ComingSoonPage /> },
+              { path: 'dac/new', element: <ComingSoonPage /> },
             ],
           },
         ],

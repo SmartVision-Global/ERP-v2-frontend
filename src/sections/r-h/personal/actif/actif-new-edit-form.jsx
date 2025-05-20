@@ -1,11 +1,12 @@
 import { z as zod } from 'zod';
-import { useCallback } from 'react';
 import InputMask from 'react-input-mask';
+import { useState, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
+// import ExpandMoreIcon from '@mui/';
 import {
   Box,
   Card,
@@ -27,7 +28,6 @@ import {
   COMMUN_SEXE_OPTIONS,
   PAYMENT_TYPE_OPTIONS,
   JOB_SITUATION_OPTIONS,
-  EDUCATION_LEVEL_OPTIONS,
   PRODUCT_CONTRACT_OPTIONS,
   COMMUN_BLOOD_TYPE_OPTIONS,
   PRODUCT_TEAM_TYPE_OPTIONS,
@@ -219,6 +219,7 @@ export function ActifNewEditForm({ currentProduct }) {
     { entity: 'banks', url: 'hr/lookups/identification/bank' },
     { entity: 'rates', url: 'hr/lookups/rates' },
     { entity: 'nationalities', url: 'hr/lookups/identification/nationality' },
+    { entity: 'careerKnowledges', url: 'hr/lookups/career_knowledges' },
   ]);
 
   const subsidiaries = dataLookups?.subsidiaries || [];
@@ -240,6 +241,7 @@ export function ActifNewEditForm({ currentProduct }) {
   const banks = dataLookups?.banks || [];
   const rates = dataLookups?.rates || [];
   const nationalities = dataLookups?.nationalities || [];
+  const careerKnowledges = dataLookups?.careerKnowledges || [];
 
   const defaultValues = {
     firstname_fr: '',
@@ -444,7 +446,11 @@ export function ActifNewEditForm({ currentProduct }) {
   const handleRemoveCertificate = useCallback(() => {
     setValue('employment_certificate', null);
   }, [setValue]);
+  const [expanded, setExpanded] = useState('panel1');
 
+  const handleChange = (panel) => (event, newExpanded) => {
+    setExpanded(newExpanded ? panel : false);
+  };
   const onSubmit = handleSubmit(async (data) => {
     const updatedData = {
       // ...data,
@@ -531,6 +537,11 @@ export function ActifNewEditForm({ currentProduct }) {
         title="Informations personnelles"
         // subheader="Nom, Prénom, image..."
         sx={{ mb: 3 }}
+        // action={
+        //   <IconButton>
+        //     <Iconify icon="mingcute:add-line" />
+        //   </IconButton>
+        // }
       />
 
       <Divider />
@@ -579,13 +590,6 @@ export function ActifNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Lookup name="nationality_id" label="Nationalité" data={nationalities} />
-            {/* <Field.Select name="nationality_id" label="Nationalité" size="small">
-              {COMMUN_NATIONNALITY_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select> */}
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Text name="phone" label="Téléphone" />
@@ -692,9 +696,6 @@ export function ActifNewEditForm({ currentProduct }) {
           <Grid size={{ xs: 12, md: 3 }}>
             <Field.Text name="mother_firstname_ar" label="اسم الأم بالعربية" dir="rtl" />
           </Grid>
-          {/* <Grid size={{ xs: 12, md: 3 }}>
-            <Field.Number name="number" label="Number" type="number" />
-          </Grid> */}
         </Grid>
       </Stack>
     </Card>
@@ -776,13 +777,13 @@ export function ActifNewEditForm({ currentProduct }) {
       <Stack spacing={3} sx={{ p: 3 }}>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="education" label="Niveau d’études" size="small">
-              {EDUCATION_LEVEL_OPTIONS.map((status) => (
+            <Field.Lookup name="education" label="Niveau d’études" data={careerKnowledges} />
+            {/* {EDUCATION_LEVEL_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
                 </MenuItem>
               ))}
-            </Field.Select>
+            </Field.Select> */}
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Text name="speciality" label="Spécialité" />
@@ -1185,6 +1186,67 @@ export function ActifNewEditForm({ currentProduct }) {
         {renderEmploymentInformation()}
         {renderContractInformation()}
         {renderActions()}
+        {/* <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+          <AccordionSummary
+            expandIcon={<Iconify icon="mingcute:add-line" />}
+            aria-controls="panel1-content"
+            id="panel1-header"
+          >
+            <Typography component="span">Information personnels</Typography>
+          </AccordionSummary>
+          <AccordionDetails>{renderDetails()}</AccordionDetails>
+        </Accordion>
+        <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
+          <AccordionSummary
+            expandIcon={<Iconify icon="mingcute:add-line" />}
+            aria-controls="spanel2-content"
+            id="panel2-header"
+          >
+            <Typography component="span">Informations Familiales</Typography>
+          </AccordionSummary>
+          <AccordionDetails>{renderFamilyInformation()}</AccordionDetails>
+        </Accordion>
+        <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
+          <AccordionSummary
+            expandIcon={<Iconify icon="mingcute:add-line" />}
+            aria-controls="spanel2-content"
+            id="panel2-header"
+          >
+            <Typography component="span">Education</Typography>
+          </AccordionSummary>
+          <AccordionDetails>{renderEducationInformation()}</AccordionDetails>
+        </Accordion>
+        <Accordion expanded={expanded === 'panel4'} onChange={handleChange('panel4')}>
+          <AccordionSummary
+            expandIcon={<Iconify icon="mingcute:add-line" />}
+            aria-controls="spanel2-content"
+            id="panel2-header"
+          >
+            <Typography component="span">Emplacement et Structure Organisationnelle</Typography>
+          </AccordionSummary>
+          <AccordionDetails>{renderLocationOrganizationalStructure()}</AccordionDetails>
+        </Accordion>
+        <Accordion expanded={expanded === 'panel5'} onChange={handleChange('panel5')}>
+          <AccordionSummary
+            expandIcon={<Iconify icon="mingcute:add-line" />}
+            aria-controls="spanel2-content"
+            id="panel2-header"
+          >
+            <Typography component="span">Informations sur l&apos;Emploi</Typography>
+          </AccordionSummary>
+          <AccordionDetails>{renderEmploymentInformation()}</AccordionDetails>
+        </Accordion>
+        <Accordion expanded={expanded === 'panel6'} onChange={handleChange('panel6')}>
+          <AccordionSummary
+            expandIcon={<Iconify icon="mingcute:add-line" />}
+            aria-controls="spanel2-content"
+            id="panel2-header"
+          >
+            <Typography component="span">Informations de la contrat</Typography>
+          </AccordionSummary>
+          <AccordionDetails>{renderContractInformation()}</AccordionDetails>
+        </Accordion> */}
+        {/* {renderActions()} */}
       </Stack>
       {/* )} */}
     </Form>

@@ -287,9 +287,9 @@ export function JobListView() {
       <CustomBreadcrumbs
         heading="List"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Ressources humaine', href: paths.dashboard.root },
-          { name: 'Fonctions' },
+          { name: 'Ressources humaines', href: paths.dashboard.root },
+          { name: 'Fonctions', href: paths.dashboard.root },
+          { name: 'Liste' },
         ]}
         action={
           <Button

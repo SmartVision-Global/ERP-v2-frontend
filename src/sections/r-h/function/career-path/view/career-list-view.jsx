@@ -237,9 +237,9 @@ export function CareerListView() {
       <CustomBreadcrumbs
         heading="List"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Ressources humaine', href: paths.dashboard.root },
-          { name: 'Parcours professionnel' },
+          { name: 'Ressources humaines', href: paths.dashboard.root },
+          { name: 'Parcours professionnel', href: paths.dashboard.root },
+          { name: 'Liste' },
         ]}
         action={
           <Button

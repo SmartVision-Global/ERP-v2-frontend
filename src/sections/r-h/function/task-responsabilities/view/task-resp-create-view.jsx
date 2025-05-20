@@ -12,9 +12,9 @@ export function TaskCreateView() {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Create a new tache"
+        heading="Ajouter Tache"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Ressources humaines', href: paths.dashboard.root },
           { name: 'Tâches et responsabilités', href: paths.dashboard.rh.fonction.taskResp },
           { name: 'Ajouter' },
         ]}

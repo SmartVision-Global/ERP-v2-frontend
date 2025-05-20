@@ -3,25 +3,27 @@ import { useState, useEffect, forwardRef, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
-import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { DataGrid, gridClasses } from '@mui/x-data-grid';
-import { TextField, FormControl, InputAdornment } from '@mui/material';
+import { Button, TextField, FormControl, InputAdornment } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { CONFIG } from 'src/global-config';
+import { useGetLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetPayrollMonths, getFiltredPayrollMonths } from 'src/actions/payroll-month';
+import { useGetPersonals, getFiltredPersonals } from 'src/actions/personal';
 
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
+import { RenderCellUser } from '../month-details-table-row';
 import {
+  MONTHS,
   RenderCellId,
   RenderCellPP,
   RenderCellPRC,
@@ -29,7 +31,6 @@ import {
   RenderCellYear,
   RenderCellMonth,
   RenderCellStatus,
-  RenderCellCompany,
   RenderCellMaxPoint,
   RenderCellMinPoint,
   RenderCellCreatedAt,
@@ -43,67 +44,71 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 // ----------------------------------------------------------------------
 
-const FILTERS_OPTIONS = [
-  // {
-  //   id: 'designation',
-  //   type: 'input',
-  //   label: 'Designation',
-  //   cols: 12,
-  //   width: 0.24,
-  // },
-  // {
-  //   id: 'status',
-  //   type: 'select',
-  //   options: DOCUMENT_STATUS_OPTIONS,
-  //   label: 'Etat',
-  //   cols: 3,
-  //   width: 1,
-  // },
-  // {
-  //   id: 'valideur',
-  //   type: 'select',
-  //   options: PRODUCT_STOCK_OPTIONS,
-  //   label: 'Valideur',
-  //   cols: 3,
-  //   width: 1,
-  // },
-
-  {
-    id: 'created_at',
-    type: 'date-range',
-    label: 'Date de création',
-    cols: 3,
-    width: 1,
-  },
-];
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 
-export function MonthListView() {
+export function MonthDetailsView({ month }) {
+  const { data: personalsLookups } = useGetLookups('hr/lookups/personals');
+
+  console.log('month', month);
+  const FILTERS_OPTIONS = [
+    // {
+    //   id: 'designation',
+    //   type: 'input',
+    //   label: 'Designation',
+    //   cols: 12,
+    //   width: 0.24,
+    // },
+    {
+      id: 'personal',
+      type: 'select',
+      options: personalsLookups,
+      serverData: true,
+      label: 'Personel',
+      cols: 3,
+      width: 1,
+    },
+    // {
+    //   id: 'valideur',
+    //   type: 'select',
+    //   options: PRODUCT_STOCK_OPTIONS,
+    //   label: 'Valideur',
+    //   cols: 3,
+    //   width: 1,
+    // },
+
+    //   {
+    //     id: 'created_at',
+    //     type: 'date-range',
+    //     label: 'Date de création',
+    //     cols: 3,
+    //     width: 1,
+    //   },
+  ];
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: PAGE_SIZE,
   });
-  const { payrollMonths, payrollMonthsLoading, payrollMonthsCount } = useGetPayrollMonths({
+  const { personals, personalsLoading, personalsCount } = useGetPersonals({
     limit: PAGE_SIZE,
     offset: 0,
   });
-  const [rowCount, setRowCount] = useState(payrollMonthsCount);
+  const [rowCount, setRowCount] = useState(personalsCount);
 
-  const [tableData, setTableData] = useState(payrollMonths);
+  const [tableData, setTableData] = useState(personals);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (payrollMonths.length) {
-      setTableData(payrollMonths);
-      setRowCount(payrollMonthsCount);
+    if (personals.length) {
+      setTableData(personals);
+      setRowCount(personalsCount);
     }
-  }, [payrollMonths, payrollMonthsCount]);
+  }, [personals, personalsCount]);
   const handleReset = useCallback(async () => {
     try {
-      const response = await getFiltredPayrollMonths({
+      const response = await getFiltredPersonals({
         limit: PAGE_SIZE,
         offset: 0,
       });
@@ -123,7 +128,7 @@ export function MonthListView() {
   const handleFilter = useCallback(
     async (data) => {
       try {
-        const response = await getFiltredPayrollMonths(data);
+        const response = await getFiltredPersonals(data);
         setTableData(response.data?.data?.records);
         setRowCount(response.data?.data?.total);
       } catch (error) {
@@ -145,7 +150,7 @@ export function MonthListView() {
         limit: newModel.pageSize,
         offset: newModel.page,
       };
-      const response = await getFiltredPayrollMonths(newData);
+      const response = await getFiltredPersonals(newData);
       setTableData(response.data?.data?.records);
       setPaginationModel(newModel);
     } catch (error) {
@@ -164,12 +169,12 @@ export function MonthListView() {
       renderCell: (params) => <RenderCellId params={params} href={paths.dashboard.root} />,
     },
     {
-      field: 'company',
-      headerName: 'Societé',
+      field: 'user',
+      headerName: 'Personel',
       flex: 1,
       minWidth: 300,
       hideable: false,
-      renderCell: (params) => <RenderCellCompany params={params} href={paths.dashboard.root} />,
+      renderCell: (params) => <RenderCellUser params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'month',
@@ -259,9 +264,9 @@ export function MonthListView() {
         <GridActionsLinkItem
           showInMenu
           icon={<Iconify icon="solar:eye-bold" />}
-          label="Add personel"
+          label="View"
           // href={paths.dashboard.product.details(params.row.id)}
-          href={paths.dashboard.rh.payrollManagement.preparationDetails(params.row.id)}
+          href={paths.dashboard.root}
         />,
       ],
     },
@@ -277,20 +282,20 @@ export function MonthListView() {
       <CustomBreadcrumbs
         heading="Préparation paie"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
           { name: 'Ressources humaine', href: paths.dashboard.root },
-          { name: 'Préparation paie' },
+          { name: 'Préparation paie', href: paths.dashboard.root },
+          { name: MONTHS[month?.month] },
         ]}
-        action={
-          <Button
-            component={RouterLink}
-            href={paths.dashboard.rh.payrollManagement.newPreparation}
-            variant="contained"
-            startIcon={<Iconify icon="mingcute:add-line" />}
-          >
-            Ajouter Mois
-          </Button>
-        }
+        // action={
+        //   <Button
+        //     component={RouterLink}
+        //     href={paths.dashboard.rh.payrollManagement.newPreparation}
+        //     variant="contained"
+        //     startIcon={<Iconify icon="mingcute:add-line" />}
+        //   >
+        //     Ajouter Mois
+        //   </Button>
+        // }
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
@@ -310,6 +315,16 @@ export function MonthListView() {
           setPaginationModel={setPaginationModel}
           paginationModel={paginationModel}
         />
+        <Box display="flex" alignItems="end" justifyContent="end">
+          <Button
+            component={RouterLink}
+            href={paths.dashboard.rh.payrollManagement.newPreparation}
+            variant="contained"
+            startIcon={<Iconify icon="mingcute:add-line" />}
+          >
+            Ajouter Personel
+          </Button>
+        </Box>
         <Box paddingX={4} paddingY={2} sx={{}}>
           <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
             <TextField
@@ -336,7 +351,7 @@ export function MonthListView() {
           rows={tableData}
           rowCount={rowCount}
           columns={columns}
-          loading={payrollMonthsLoading}
+          loading={personalsLoading}
           getRowHeight={() => 'auto'}
           paginationModel={paginationModel}
           paginationMode="server"

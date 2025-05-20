@@ -12,10 +12,10 @@ export function TaskEditView({ task }) {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Edit"
+        heading="Modifier"
         backHref={paths.dashboard.rh.personal.root}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Ressources humaines', href: paths.dashboard.root },
           { name: 'Tâches et responsabilités', href: paths.dashboard.rh.fonction.taskResp },
           { name: task?.label?.fr },
         ]}

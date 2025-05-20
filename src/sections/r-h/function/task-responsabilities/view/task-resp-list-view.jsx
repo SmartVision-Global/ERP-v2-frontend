@@ -12,6 +12,7 @@ import { TextField, FormControl, InputAdornment } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
+import { CONFIG } from 'src/global-config';
 import { TASK_NATURE_OPTIONS } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { getFiltredTasks, useGetDutiesResponsibilities } from 'src/actions/task';
@@ -46,11 +47,12 @@ const FILTERS_OPTIONS = [
     width: 1,
   },
 ];
+const PAGE_SIZE = CONFIG.pagination.pageSize;
 
 export function TaskRespListView() {
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
-    pageSize: 2,
+    pageSize: PAGE_SIZE,
   });
   const [editedFilters, setEditedFilters] = useState({});
   const [filterButtonEl, setFilterButtonEl] = useState(null);
@@ -72,13 +74,13 @@ export function TaskRespListView() {
   const handleReset = useCallback(async () => {
     try {
       const response = await getFiltredTasks({
-        limit: 2,
+        limit: PAGE_SIZE,
         offset: 0,
       });
       setEditedFilters({});
       setPaginationModel({
         page: 0,
-        pageSize: 2,
+        pageSize: PAGE_SIZE,
       });
       setTableData(response.data?.data?.records);
       setRowCount(response.data?.data?.total);
@@ -151,7 +153,6 @@ export function TaskRespListView() {
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}
           label="Edit"
-          // href={paths.dashboard.product.edit(params.row.id)}
           href={paths.dashboard.rh.fonction.editTask(params.row.id)}
         />,
       ],
@@ -160,11 +161,6 @@ export function TaskRespListView() {
 
   const handlePaginationModelChange = async (newModel) => {
     try {
-      // const newEditedInput = editedFilters.filter((item) => item.value !== '');
-      // const result = newEditedInput.reduce((acc, item) => {
-      //   acc[item.field] = item.value;
-      //   return acc;
-      // }, {});
       const newData = {
         ...editedFilters,
         limit: newModel.pageSize,
@@ -188,8 +184,9 @@ export function TaskRespListView() {
       <CustomBreadcrumbs
         heading="List"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Ressources humaines', href: paths.dashboard.root },
           { name: 'Tâche et responsabilité' },
+          { name: 'Liste' },
         ]}
         action={
           <Button
@@ -267,8 +264,6 @@ export function TaskRespListView() {
     </DashboardContent>
   );
 }
-
-// ----------------------------------------------------------------------
 
 // ----------------------------------------------------------------------
 

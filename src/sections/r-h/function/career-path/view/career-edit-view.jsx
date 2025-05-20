@@ -15,7 +15,7 @@ export function CareerEditView({ career }) {
         heading="Edit"
         backHref={paths.dashboard.rh.personal.root}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Ressources humaines', href: paths.dashboard.root },
           { name: 'Parcours professionnel', href: paths.dashboard.rh.fonction.careerPath },
           { name: career?.label?.fr },
         ]}

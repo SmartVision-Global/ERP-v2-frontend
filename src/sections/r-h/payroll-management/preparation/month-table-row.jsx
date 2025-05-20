@@ -11,7 +11,7 @@ import { Label } from 'src/components/label';
 
 // ----------------------------------------------------------------------
 
-const MONTHS = {
+export const MONTHS = {
   1: 'Janvier',
   2: 'Février',
   3: 'Mars',

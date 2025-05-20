@@ -14,7 +14,7 @@ export function PersonalCreateView() {
       <CustomBreadcrumbs
         heading="Ajouter personnel"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Ressources humaine', href: paths.dashboard.root },
           { name: 'Personnels', href: paths.dashboard.rh.personal.root },
           { name: 'Ajouter personnel' },
         ]}
