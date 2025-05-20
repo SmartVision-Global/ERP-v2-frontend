@@ -11,7 +11,6 @@ import { _allFiles } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { toast } from 'src/components/snackbar';
-import { Iconify } from 'src/components/iconify';
 import { fileFormat } from 'src/components/file-thumbnail';
 import { EmptyContent } from 'src/components/empty-content';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -122,13 +121,13 @@ export function DocumentListView() {
       <DashboardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography variant="h4">Gestion des dossier</Typography>
-          <Button
+          {/* <Button
             variant="contained"
             startIcon={<Iconify icon="eva:cloud-upload-fill" />}
             onClick={newFilesDialog.onTrue}
           >
             Upload
-          </Button>
+          </Button> */}
         </Box>
 
         {notFound ? <EmptyContent filled sx={{ py: 10 }} /> : renderList()}

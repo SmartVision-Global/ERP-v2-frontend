@@ -20,7 +20,7 @@ export function FileManagerGridView({ table, dataFiltered, onDeleteItem, onOpenC
 
   const containerRef = useRef(null);
 
-  const shareDialog = useBoolean();
+  //   const shareDialog = useBoolean();
   const filesCollapse = useBoolean();
 
   const newFilesDialog = useBoolean();
@@ -115,7 +115,7 @@ export function FileManagerGridView({ table, dataFiltered, onDeleteItem, onOpenC
               Delete
             </Button>
 
-            <Button
+            {/* <Button
               color="primary"
               size="small"
               variant="contained"
@@ -123,7 +123,7 @@ export function FileManagerGridView({ table, dataFiltered, onDeleteItem, onOpenC
               onClick={shareDialog.onTrue}
             >
               Share
-            </Button>
+            </Button> */}
           </>
         }
       />
