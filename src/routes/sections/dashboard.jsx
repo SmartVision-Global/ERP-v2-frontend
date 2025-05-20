@@ -279,8 +279,8 @@ const SettingsIdentificationGlobalSettings = lazy(
   () => import('src/pages/dashboard/settings/identification-parameters/global-settings/list')
 );
 
-const PageSettingsIdentRawMatList = lazy(
-  () => import('src/pages/dashboard/settings/identification-parameters/raw-materials/list')
+const PageSettingsIdentFamCategRpList = lazy(
+  () => import('src/pages/dashboard/settings/identification-parameters/fam-categ-rp/list')
 );
 const SettingsServiceEdit = lazy(() => import('src/pages/dashboard/settings/services/edit'));
 
@@ -556,7 +556,10 @@ export const dashboardRoutes = [
             children: [
               { index: true, element: <SettingsIdentificationGlobalSettings /> },
               { path: 'global-settings', element: <SettingsIdentificationGlobalSettings /> },
-              { path: 'raw-materials', element: <PageSettingsIdentRawMatList />},
+              { path: 'raw-materials', element: <PageSettingsIdentFamCategRpList group={1} nature={1} />},
+              { path: 'spare-parts', element: <PageSettingsIdentFamCategRpList group={2} nature={1} />},
+              { path: 'tools', element: <PageSettingsIdentFamCategRpList group={3} nature={1} />},
+              { path: 'supplies', element: <PageSettingsIdentFamCategRpList group={4} nature={1} />},
             ],
           },
           {

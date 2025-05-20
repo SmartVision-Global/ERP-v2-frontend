@@ -1,6 +1,7 @@
 import { paths } from 'src/routes/paths';
 
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useIdentification } from 'src/contexts/IdentificationContext';
 import { useGetCategories, useGetReturnPatterns } from 'src/actions/settings/identification/raw-materials';
 
 import { EmptyContent } from 'src/components/empty-content';
@@ -12,10 +13,11 @@ import { ParamsList } from '../params-list';
 
 export function ParamsListView() {
   // const { entities } = useGetIdentificationEntities();
-  const { categories } = useGetCategories(1);
-  const { returnPatterns } = useGetReturnPatterns(1, 1);
+  const { group, nature } = useIdentification();
+  const { categories } = useGetCategories(group);
+  const { returnPatterns } = useGetReturnPatterns(group, nature);
   const entities ={ 
-    categories: categories || [] ,
+    categories: categories || [],
     returnPatterns: returnPatterns || [],
   };
 

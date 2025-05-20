@@ -238,6 +238,9 @@ export const paths = {
         root: `${ROOTS.DASHBOARD}/settings/identification`,
         globalSettings: `${ROOTS.DASHBOARD}/settings/identification/global-settings`,
         rawMaterials: `${ROOTS.DASHBOARD}/settings/identification/raw-materials`,
+        spareParts: `${ROOTS.DASHBOARD}/settings/identification/spare-parts`,
+        tools: `${ROOTS.DASHBOARD}/settings/identification/tools`,
+        supplies: `${ROOTS.DASHBOARD}/settings/identification/supplies`,
       },
     },
     group: {

@@ -219,6 +219,17 @@ export const navData = [
         icon: ICONS.user,
         children: [
           {
+            title: 'Paramètrage d\'identification',
+            path: paths.dashboard.settings.identification.root,
+            children: [
+              { title: 'Unités mesure, Dimensions, Ateliers ...', path: paths.dashboard.settings.identification.globalSettings },
+              { title: 'Matières premières', path: paths.dashboard.settings.identification.rawMaterials },
+              { title: 'Pièces de rechange', path: paths.dashboard.settings.identification.spareParts },
+              { title: 'Outillage', path: paths.dashboard.settings.identification.tools },
+              { title: 'Fournitures', path: paths.dashboard.settings.identification.supplies },
+            ],
+          },
+          {
             title: 'Sociétés',
             path: paths.dashboard.settings.society.root,
           },
@@ -248,14 +259,7 @@ export const navData = [
             title: 'Magasins',
             path: paths.dashboard.settings.store.root,
           },
-          {
-            title: 'Paramètrage d\'identification',
-            path: paths.dashboard.settings.identification.root,
-            children: [
-              { title: 'Unités mesure, Dimensions, Ateliers ...', path: paths.dashboard.settings.identification.globalSettings },
-              { title: 'Matières premières', path: paths.dashboard.settings.identification.rawMaterials },
-            ],
-          },
+          
 
         ],
       },

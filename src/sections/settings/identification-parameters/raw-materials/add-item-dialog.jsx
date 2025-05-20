@@ -10,6 +10,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
+import { useIdentification } from 'src/contexts/IdentificationContext';
+
 import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 
@@ -20,7 +22,8 @@ export const NewProductSchema = zod.object({
   designation: zod.string().min(1, { message: 'Name is required!' }),
 });
 
-export function AddItemDialog({ open, onClose, currentProduct, name, title, label, nature, group, onCreate, onUpdate }) {
+export function AddItemDialog({ open, onClose, currentProduct, name, title, label, nature: entityNature, onCreate, onUpdate }) {
+  const { group } = useIdentification();
   const defaultValues = {
     name: '',
     designation: '',
@@ -44,14 +47,9 @@ export function AddItemDialog({ open, onClose, currentProduct, name, title, labe
     // if (!values[name]) {
     //   setError(name, { message: `Remplir ${title}` });
     // } else {
-    const updatedData = {
-      ...data,
-      group,
-      
-      // taxes: includeTaxes ? defaultValues.taxes : data.taxes,
-    };
-    if(nature){
-      updatedData.nature = nature;
+    const updatedData = { ...data, group };
+    if (entityNature) {
+      updatedData.nature = entityNature;
     }
     try {
       // await new Promise((resolve) => setTimeout(resolve, 500));
