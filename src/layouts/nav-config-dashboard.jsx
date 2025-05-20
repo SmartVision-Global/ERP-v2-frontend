@@ -55,7 +55,7 @@ export const navData = [
       // { title: 'Two', path: paths.dashboard.two, icon: ICONS.ecommerce },
       // { title: 'Three', path: paths.dashboard.three, icon: ICONS.analytics },
       {
-        title: 'resssources humaines',
+        title: 'Resssources humaines',
         path: '/dashboard/humain-ressource',
         icon: ICONS.user,
         children: [
@@ -74,8 +74,8 @@ export const navData = [
             title: 'Personnel',
             path: paths.dashboard.rh.personal.root,
             children: [
-              { title: 'Actif', path: paths.dashboard.rh.personal.root },
-              { title: 'Documents', path: paths.dashboard.rh.personal.documents },
+              { title: 'Liste', path: paths.dashboard.rh.personal.root },
+              { title: 'Dossier', path: paths.dashboard.rh.personal.documents },
               // { title: 'Bloque', path: paths.dashboard.rh.personal.bloc },
               // { title: 'DAS', path: paths.dashboard.rh.personal.das },
             ],
@@ -188,7 +188,7 @@ export const navData = [
                 path: paths.dashboard.rh.payrollManagement.calculation,
               },
               {
-                title: 'Preparation paie',
+                title: 'Préparation paie',
                 path: paths.dashboard.rh.payrollManagement.preparation,
               },
             ],
@@ -210,13 +210,23 @@ export const navData = [
               { title: 'Récupération', path: paths.dashboard.rh.entries.recovery },
             ],
           },
+          {
+            title: 'Déclaration para-fiscal',
+            // path: paths.dashboard.rh.entries.root,
+            path: '/dashboard/humain-ressource/entries',
+
+            children: [
+              { title: 'DAS', path: paths.dashboard.rh.entries.socialLoan },
+              { title: 'DAC', path: paths.dashboard.rh.entries.leaveAbsence },
+            ],
+          },
           //
         ],
       },
       {
-        title: 'parametres',
+        title: 'Paramètres',
         path: '/dashboard/settings',
-        icon: ICONS.user,
+        icon: ICONS.folder,
         children: [
           {
             title: 'Sociétés',

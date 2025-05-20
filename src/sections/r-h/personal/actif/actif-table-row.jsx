@@ -79,7 +79,7 @@ export function RenderCellStatus({ params }) {
   return (
     <Label
       variant="soft"
-      color={params.row.status === '1' ? 'info' : params.row.status === '2' ? 'warning' : 'error'}
+      color={params.row.status === 1 ? 'info' : params.row.status === 2 ? 'success' : 'error'}
     >
       {STATUS[params.row.status]}
     </Label>
