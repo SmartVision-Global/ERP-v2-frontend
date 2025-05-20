@@ -121,7 +121,7 @@ export function DocumentListView() {
     <>
       <DashboardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Typography variant="h4">File manager</Typography>
+          <Typography variant="h4">Gestion des dossier</Typography>
           <Button
             variant="contained"
             startIcon={<Iconify icon="eva:cloud-upload-fill" />}
