@@ -485,6 +485,19 @@ export const dashboardRoutes = [
               { path: 'preparation/new', element: <PageRhPayrollManagementPreparationNew /> },
             ],
           },
+          {
+            path: 'para-tax-declaration',
+            children: [
+              { path: 'das', element: <ComingSoonPage />, index: true },
+              {
+                path: 'das/new',
+                element: <ComingSoonPage />,
+              },
+
+              { path: 'dac', element: <ComingSoonPage /> },
+              { path: 'dac/new', element: <ComingSoonPage /> },
+            ],
+          },
         ],
       },
       {

@@ -213,11 +213,11 @@ export const navData = [
           {
             title: 'Déclaration para-fiscal',
             // path: paths.dashboard.rh.entries.root,
-            path: '/dashboard/humain-ressource/entries',
+            path: '/dashboard/humain-ressource/para-tax-declaration',
 
             children: [
-              { title: 'DAS', path: paths.dashboard.rh.entries.socialLoan },
-              { title: 'DAC', path: paths.dashboard.rh.entries.leaveAbsence },
+              { title: 'DAS', path: paths.dashboard.rh.paraTaxDeclaration.das },
+              { title: 'DAC', path: paths.dashboard.rh.paraTaxDeclaration.dac },
             ],
           },
           //
