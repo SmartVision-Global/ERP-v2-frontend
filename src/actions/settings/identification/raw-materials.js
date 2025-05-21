@@ -48,6 +48,7 @@ export async function createEntity(entityType, data, group, nature) {
     await axios.post(endpoint, data);
     mutate([CATEGORY_ENDPOINT, { params: { group } }]);
     mutate([RETURN_PATTERN_ENDPOINT, { params: { group, nature } }]);
+    mutate([FAMILY_ENDPOINT, { params: { group, only_parent: true } }]);
   } catch (error) {
     console.error(`Error creating ${entityType}:`, error);
   }
@@ -72,6 +73,7 @@ export async function updateEntity(entityType, id, data, group, nature) {
     await axios.patch(`${endpoint}/${id}`, data);
     mutate([CATEGORY_ENDPOINT, { params: { group } }]);
     mutate([RETURN_PATTERN_ENDPOINT, { params: { group, nature } }]);
+    mutate([FAMILY_ENDPOINT, { params: { group, only_parent: true } }]);
   } catch (error) {
     console.error(`Error updating ${entityType}:`, error);
   }
@@ -108,6 +110,25 @@ export function useGetReturnPatterns(group, nature) {
       returnPatternsError: error,
       returnPatternsValidating: isValidating,
       returnPatternsEmpty: !isLoading && !isValidating && !data?.data?.records.length,
+    }),
+    [data?.data?.records, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
+
+// Families
+export function useGetFamilies(group, only_parent) {
+  const url = group ? [FAMILY_ENDPOINT, { params: { group, only_parent } }] : '';
+  const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
+
+  const memoizedValue = useMemo(
+    () => ({
+      families: data?.data?.records || [],
+      familiesLoading: isLoading,
+      familiesError: error,
+      familiesValidating: isValidating,
+      familiesEmpty: !isLoading && !isValidating && !data?.data?.records.length,
     }),
     [data?.data?.records, error, isLoading, isValidating]
   );

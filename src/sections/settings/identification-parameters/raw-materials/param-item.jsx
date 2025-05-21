@@ -17,8 +17,6 @@ export function ParamItem({
   title,
   name,
   label,
-  nature,
-  group,
   canAdd = false,
   icon,
   uuid,
@@ -157,8 +155,6 @@ export function ParamItem({
           name={name}
           label={label}
           title={title}
-          nature={nature}
-          group={group}
           onCreate={onCreate}
           onUpdate={onUpdate}
           currentProduct={selectedRow}

@@ -2,7 +2,7 @@ import { paths } from 'src/routes/paths';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useIdentification } from 'src/contexts/IdentificationContext';
-import { useGetCategories, useGetReturnPatterns } from 'src/actions/settings/identification/raw-materials';
+import { useGetCategories, useGetReturnPatterns, useGetFamilies } from 'src/actions/settings/identification/raw-materials';
 
 import { EmptyContent } from 'src/components/empty-content';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
@@ -16,24 +16,23 @@ export function ParamsListView() {
   const { group, nature } = useIdentification();
   const { categories } = useGetCategories(group);
   const { returnPatterns } = useGetReturnPatterns(group, nature);
+  const { families } = useGetFamilies(group, true);
   const entities ={ 
     categories: categories || [],
     returnPatterns: returnPatterns || [],
+    families: families || [],
   };
-
-  console.log('categories params list view raw materials', categories);
-  console.log('returnPatterns params list view raw materials', returnPatterns);
 
   const notFound = !entities;
 
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Liste des matières premières"
+        heading="Liste"
         links={[
           { name: 'Paramètres', href: paths.dashboard.settings.root },
           { name: "Parametrage d'identification", href: paths.dashboard.settings.identification.root },
-          { name: 'Liste des matières premières' },
+          { name: 'Liste' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
