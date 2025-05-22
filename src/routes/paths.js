@@ -208,6 +208,19 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/user/${1}/edit`,
       },
     },
+    store: {
+      rawMaterials: {
+        root: `${ROOTS.DASHBOARD}/store/raw-materials`,
+        stocks: `${ROOTS.DASHBOARD}/store/raw-materials/stocks`,
+      },
+      spareParts: {
+        root: `${ROOTS.DASHBOARD}/store/spare-parts`,
+        list: `${ROOTS.DASHBOARD}/store/spare-parts/list`,
+        settings: `${ROOTS.DASHBOARD}/store/spare-parts/settings`,
+      },
+      tools: `${ROOTS.DASHBOARD}/store/tools`,
+      supplies: `${ROOTS.DASHBOARD}/store/supplies`,
+    },
     settings: {
       generalSettings: {
         root: `${ROOTS.DASHBOARD}/settings/general-settings`,

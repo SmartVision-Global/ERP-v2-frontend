@@ -35,6 +35,7 @@ const ICONS = {
   analytics: icon('ic-analytics'),
   dashboard: icon('ic-dashboard'),
   parameter: icon('ic-parameter'),
+  store: icon('ic-store'),
 };
 
 // ----------------------------------------------------------------------
@@ -54,6 +55,40 @@ export const navData = [
       },
       // { title: 'Two', path: paths.dashboard.two, icon: ICONS.ecommerce },
       // { title: 'Three', path: paths.dashboard.three, icon: ICONS.analytics },
+      {
+        title:'Gestion magasinage',
+        path: '/dashboard/store',
+        icon: ICONS.store,
+        children: [
+          {
+            title: 'Matières premières',
+            path: paths.dashboard.store.rawMaterials.root,
+            children: [
+              { title: 'Stocks', path: paths.dashboard.store.rawMaterials.stocks },
+              
+            ],
+          },
+          // {
+          //   title: 'Pièces de rechange',
+          //   path: paths.dashboard.store.spareParts,
+          //   children: [
+          //     { title: 'Liste', path: paths.dashboard.store.spareParts.root },
+          //     { title: 'Parametrage', path: paths.dashboard.store.spareParts.settings },
+          //   ],
+          // },
+          // {
+          //   title: 'Outillage',
+          //   path: paths.dashboard.store.tools,
+          // },
+          // {
+          //   title: 'Fournitures',
+          //   path: paths.dashboard.store.supplies,
+          // },
+          
+          
+        ]
+      }
+      ,
       {
         title: 'Resssources humaines',
         path: '/dashboard/humain-ressource',
