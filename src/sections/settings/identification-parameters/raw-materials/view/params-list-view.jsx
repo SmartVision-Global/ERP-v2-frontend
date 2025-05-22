@@ -12,8 +12,16 @@ import { ParamsList } from '../params-list';
 // ----------------------------------------------------------------------
 
 export function ParamsListView() {
-  // const { entities } = useGetIdentificationEntities();
+  // Get routing params
   const { group, nature } = useIdentification();
+  // Map group to a localized heading
+  const headingMap = {
+    1: 'Matières premières',
+    2: 'Pièces détachées',
+    3: 'Outillage',
+    4: 'Fournitures',
+  };
+  const heading = headingMap[group] || 'Liste';
   const { categories } = useGetCategories(group);
   const { returnPatterns } = useGetReturnPatterns(group, nature);
   const { families } = useGetFamilies(group, true);
@@ -28,7 +36,7 @@ export function ParamsListView() {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Liste"
+        heading={heading}
         links={[
           { name: 'Paramètres', href: paths.dashboard.settings.root },
           { name: "Parametrage d'identification", href: paths.dashboard.settings.identification.root },

@@ -1,10 +1,12 @@
+import { z as zod } from 'zod';
+import { useForm } from 'react-hook-form';
 import React, { useState, useEffect } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 import Dialog from '@mui/material/Dialog';
 import Select from '@mui/material/Select';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
-import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -13,73 +15,65 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 
 import { toast } from 'src/components/snackbar';
+import { Form, Field } from 'src/components/hook-form';
+// Validation schema for editing family
+const FamilySchema = zod.object({
+  name: zod.string().min(1, { message: 'Name is required!' }),
+  designation: zod.string().min(1, { message: 'Designation is required!' }),
+});
 
 export default function EditFamilyDialog({ open, onClose, families, group, family, onUpdate }) {
   const [parentId, setParentId] = useState('');
-  const [name, setName] = useState('');
-  const [designation, setDesignation] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  console.log('families', families);
+  const defaultValues = { name: '', designation: '' };
+  const methods = useForm({ resolver: zodResolver(FamilySchema), defaultValues });
+  const { reset, handleSubmit, formState: { isSubmitting } } = methods;
 
+  // Initialize form and parentId when family prop changes
   useEffect(() => {
     if (family) {
       setParentId(family.parent_id || '');
-      setName(family.name);
-      setDesignation(family.designation);
+      reset({ name: family.name || '', designation: family.designation || '' });
     }
-  }, [family]);
+  }, [family, reset]);
 
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    const payload = { name, designation, group, parent_id: parentId || null };
+  const onSubmit = handleSubmit(async (data) => {
+    const payload = { ...data, group, parent_id: parentId || null };
     try {
       await onUpdate(family.id, payload);
       onClose();
       toast.success('Update success!');
     } catch (error) {
       console.error(error);
-    } finally {
-      setIsSubmitting(false);
     }
-  };
+  });
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle>Modifier la famille</DialogTitle>
-      <DialogContent>
-        <FormControl fullWidth sx={{ mt: 2 }}>
-          <InputLabel id="family-parent-label">Famille mère</InputLabel>
-          <Select
-            labelId="family-parent-label"
-            label="Famille mère"
-            value={parentId}
-            disabled
-          >
-            <MenuItem value="">Racine</MenuItem>
-            {families.map((f) => (
-              <MenuItem key={f.id} value={f.id}>{f.name} / {f.designation}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <TextField
-          fullWidth
-          label="Nom"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          sx={{ mt: 2 }}
-        />
-        <TextField
-          fullWidth
-          label="Désignation"
-          value={designation}
-          onChange={(e) => setDesignation(e.target.value)}
-          sx={{ mt: 2 }}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} variant="outlined">Annuler</Button>
-        <LoadingButton onClick={handleSubmit} loading={isSubmitting} variant="contained">Mettre à jour</LoadingButton>
-      </DialogActions>
+      <Form methods={methods} onSubmit={onSubmit}>
+        <DialogTitle>Modifier la famille</DialogTitle>
+        <DialogContent>
+          <FormControl fullWidth sx={{ mt: 2 }}>
+            <InputLabel id="family-parent-label">Famille mère</InputLabel>
+            <Select
+              labelId="family-parent-label"
+              label="Famille mère"
+              value={parentId}
+              disabled
+            >
+              <MenuItem value="">Racine</MenuItem>
+              {families.map((f) => (
+                <MenuItem key={f.id} value={f.id}>{f.name} / {f.designation}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Field.Text name="name" label="Nom" sx={{ mt: 2 }} />
+          <Field.Text name="designation" label="Désignation" sx={{ mt: 2 }} />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose} variant="outlined">Annuler</Button>
+          <LoadingButton type="submit" loading={isSubmitting} variant="contained">Mettre à jour</LoadingButton>
+        </DialogActions>
+      </Form>
     </Dialog>
   );
 } 
