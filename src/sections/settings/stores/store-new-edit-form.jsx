@@ -27,7 +27,9 @@ export const StoreSchema = zod.object({
   store_type: zod.string().min(1, { message: 'Store type is required!' }),
   phone: zod.string()
     .min(1, { message: 'Telephone is required!' })
-    .regex(/^0[567][0-9]{8}$/, { message: 'Invalid phone number format (should be 10 digits starting with 05, 06, or 07)' }),
+    .regex(/^0[567][0-9]{8}$/, {
+      message: 'Invalid phone number format (should be 10 digits starting with 05, 06, or 07)',
+    }),
   type: zod.string().min(1, { message: 'Type is required!' }),
 });
 
