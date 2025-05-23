@@ -247,6 +247,14 @@ const PageRhPayrollManagementPreparationNew = lazy(
 const PageRhPayrollManagementPreparationDetails = lazy(
   () => import('src/pages/dashboard/r-h/payroll-management/preparation/details')
 );
+// ============== purchase_Supply ==================
+//purchase Order
+const PagePurchaseOrder = lazy(
+  () => import('src/pages/dashboard/purchase-supply/purchase-order/list')
+);
+const PageNewPurchaseOrder = lazy(
+  () => import('src/pages/dashboard/purchase-supply/purchase-order/new')
+);
 
 // Account
 const AccountGeneralPage = lazy(() => import('src/pages/dashboard/user/account/general'));
@@ -506,6 +514,14 @@ export const dashboardRoutes = [
               { path: 'dac/new', element: <ComingSoonPage /> },
             ],
           },
+        ],
+      },
+      // Purchase Supply
+      {
+        path: 'purchase-supply',
+        children: [
+          { path: 'purchase-order', element: <PagePurchaseOrder />, index: true },
+          { path: 'purchase-order/new', element: <PageNewPurchaseOrder /> },
         ],
       },
       {

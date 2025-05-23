@@ -224,6 +224,17 @@ export const navData = [
         ],
       },
       {
+        title: 'Achat et approvisionnement',
+        path: '/dashboard/purchase-supply',
+        icon: ICONS.order,
+        children: [
+          {
+            title: "Demande d'achat",
+            path: paths.dashboard.purchaseSupply.root,
+          },
+        ],
+      },
+      {
         title: 'Paramètres',
         path: '/dashboard/settings',
         icon: ICONS.folder,
