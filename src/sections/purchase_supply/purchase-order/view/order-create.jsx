@@ -12,11 +12,11 @@ export function OrderPurchaseCreate() {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Ajouter personnel"
+        heading="Demande D'achats"
         links={[
-          { name: 'Ressources humaine', href: paths.dashboard.root },
-          { name: 'Personnels', href: paths.dashboard.rh.personal.root },
-          { name: 'Ajouter personnel' },
+          { name: 'Achat et Approvisionnement', href: paths.dashboard.root },
+          { name: 'Liste', href: paths.dashboard.rh.personal.root },
+          { name: "Demande D'achats" },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />

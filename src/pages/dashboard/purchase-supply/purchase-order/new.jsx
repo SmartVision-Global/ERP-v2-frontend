@@ -6,7 +6,7 @@ import { CreatePurchaseOrder } from 'src/sections/purchase_supply/purchase-order
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Ajouter personnel | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `Demande D'achats | Dashboard - ${CONFIG.appName}` };
 
 export default function Page() {
   return (

@@ -16,17 +16,8 @@ import { RouterLink } from 'src/routes/components';
 import { CONFIG } from 'src/global-config';
 import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { ORDER_STATUS_OPTIONS, TYPE_OPTIONS, PRIORITY_OPTIONS } from 'src/_mock';
 import { useGetPersonals, validatePersonal, getFiltredPersonals } from 'src/actions/personal';
-import {
-  COMMUN_SEXE_OPTIONS,
-  PRODUCT_STATUS_OPTIONS,
-  PRODUCT_PAYMANT_OPTIONS,
-  PRODUCT_CONTRACT_OPTIONS,
-  PRODUCT_TEAM_TYPE_OPTIONS,
-  ORDER_STATUS_OPTIONS,
-  TYPE_OPTIONS,
-  PRIORITY_OPTIONS,
-} from 'src/_mock';
 
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
@@ -271,9 +262,8 @@ export function OrderPurchaseList() {
         <CustomBreadcrumbs
           heading="List"
           links={[
-            { name: 'Ressources humaine', href: paths.dashboard.root },
-            { name: 'Personnels', href: paths.dashboard.root },
-            { name: 'Liste' },
+            { name: 'Achat et Approvisionnement', href: paths.dashboard.root },
+            { name: 'Liste', href: paths.dashboard.rh.personal.root },
           ]}
           action={
             <Button
