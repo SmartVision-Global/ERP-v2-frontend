@@ -214,6 +214,9 @@ export const paths = {
       },
     },
     settings: {
+      generalSettings: {
+        root: `${ROOTS.DASHBOARD}/settings/general-settings`,
+      },
       site: {
         root: `${ROOTS.DASHBOARD}/settings/site`,
         newSite: `${ROOTS.DASHBOARD}/settings/site/new`,
@@ -242,6 +245,18 @@ export const paths = {
         root: `${ROOTS.DASHBOARD}/settings/society`,
         newSociety: `${ROOTS.DASHBOARD}/settings/society/new`,
         editSociety: (id) => `${ROOTS.DASHBOARD}/settings/society/${id}/edit`,
+      },
+      store: {
+        root: `${ROOTS.DASHBOARD}/settings/store`,
+        newStore: `${ROOTS.DASHBOARD}/settings/store/new`,
+      },
+      identification: {
+        root: `${ROOTS.DASHBOARD}/settings/identification`,
+        globalSettings: `${ROOTS.DASHBOARD}/settings/identification/global-settings`,
+        rawMaterials: `${ROOTS.DASHBOARD}/settings/identification/raw-materials`,
+        spareParts: `${ROOTS.DASHBOARD}/settings/identification/spare-parts`,
+        tools: `${ROOTS.DASHBOARD}/settings/identification/tools`,
+        supplies: `${ROOTS.DASHBOARD}/settings/identification/supplies`,
       },
     },
     group: {
