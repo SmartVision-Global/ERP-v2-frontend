@@ -268,11 +268,11 @@ export function OrderPurchaseList() {
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.rh.personal.newPersonel}
+              href={paths.dashboard.purchaseSupply.newPurchaseOrder}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              Ajouter Personnel
+              Demande d&#39;achats
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
