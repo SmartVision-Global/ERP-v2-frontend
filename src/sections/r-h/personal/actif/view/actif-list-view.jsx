@@ -87,7 +87,10 @@ export function ActifListView() {
     pageSize: PAGE_SIZE,
   });
   const [selectedRow, setSelectedRow] = useState('');
-  const { personals, personalsLoading, personalsCount } = useGetPersonals({ limit: 2, offset: 0 });
+  const { personals, personalsLoading, personalsCount } = useGetPersonals({
+    limit: PAGE_SIZE,
+    offset: 0,
+  });
   const [rowCount, setRowCount] = useState(personalsCount);
 
   const { dataLookups } = useMultiLookups([
