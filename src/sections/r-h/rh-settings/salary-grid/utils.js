@@ -23,9 +23,9 @@ const DeductionCompensationType = {
 };
 
 const TaxableContributor = {
-  CONTRIBUTABLE_TAXABLE: '1',
-  NON_CONTRIBUTABLE_TAXABLE: '2',
-  NON_CONTRIBUTABLE_NON_TAXABLE: '3',
+  CONTRIBUTABLE_TAXABLE: 1,
+  NON_CONTRIBUTABLE_TAXABLE: 2,
+  NON_CONTRIBUTABLE_NON_TAXABLE: 3,
 };
 
 export function calculateIRG(salary) {

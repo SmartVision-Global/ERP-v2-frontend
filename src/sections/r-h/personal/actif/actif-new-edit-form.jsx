@@ -660,7 +660,7 @@ export function ActifNewEditForm({ currentProduct }) {
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Photo de l&apos;employé</Typography>
               <Field.Upload
-                name="image"
+                name="photo"
                 maxSize={3145728}
                 onDelete={handleRemoveImage}
                 onDrop={onDropImage}
