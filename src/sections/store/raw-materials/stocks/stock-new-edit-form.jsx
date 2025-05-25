@@ -197,7 +197,7 @@ export const NewProductSchema = zod
     }
   });
 
-export function ActifNewEditForm({ currentProduct }) {
+export function StockNewEditForm({ currentProduct }) {
   const router = useRouter();
   const { dataLookups, dataLoading, dataError } = useMultiLookups([
     { entity: 'subsidiaries', url: 'hr/lookups/identification/subsidiary' },

@@ -4,24 +4,24 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { ActifNewEditForm } from '../actif-new-edit-form';
+import { StockNewEditForm } from '../stock-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-export function PersonalCreateView() {
+export function StockCreateView() {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Ajouter personnel"
+        heading="Ajouter stock"
         links={[
-          { name: 'Ressources humaine', href: paths.dashboard.root },
-          { name: 'Personnels', href: paths.dashboard.rh.personal.root },
-          { name: 'Ajouter personnel' },
+          { name: 'Gestion magasinage', href: paths.dashboard.root },
+          { name: 'Stocks', href: paths.dashboard.store.rawMaterials.root },
+          { name: 'Ajouter stock' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <ActifNewEditForm />
+      <StockNewEditForm />
     </DashboardContent>
   );
 }

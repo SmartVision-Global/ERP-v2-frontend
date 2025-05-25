@@ -4,25 +4,25 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { ActifNewEditForm } from '../actif-new-edit-form';
+import { StockNewEditForm } from '../stock-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-export function PersonalEditView({ personal }) {
+export function StockEditView({ stock }) {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
         heading="Edit"
         backHref={paths.dashboard.rh.personal.root}
         links={[
-          { name: 'Ressources humaine', href: paths.dashboard.root },
-          { name: 'Personnels', href: paths.dashboard.rh.personal },
-          { name: personal?.name },
+          { name: 'Gestion magasinage', href: paths.dashboard.root },
+          { name: 'Stocks', href: paths.dashboard.store.rawMaterials.root },
+          { name: stock?.name },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      {personal && <ActifNewEditForm currentProduct={personal} />}
+      {stock && <StockNewEditForm currentProduct={stock} />}
     </DashboardContent>
   );
 }

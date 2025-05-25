@@ -227,18 +227,18 @@ export function StockListView() {
         <CustomBreadcrumbs
           heading="List"
           links={[
-            { name: 'Ressources humaine', href: paths.dashboard.root },
-            { name: 'Personnels', href: paths.dashboard.root },
+            { name: 'Gestion magasinage', href: paths.dashboard.root },
+            { name: 'Stocks', href: paths.dashboard.root },
             { name: 'Liste' },
           ]}
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.rh.personal.newPersonel}
+              href={paths.dashboard.store.rawMaterials.newStock}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              Ajouter Personnel
+              Ajouter Stock
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}

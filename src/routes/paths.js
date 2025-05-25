@@ -212,6 +212,8 @@ export const paths = {
       rawMaterials: {
         root: `${ROOTS.DASHBOARD}/store/raw-materials`,
         stocks: `${ROOTS.DASHBOARD}/store/raw-materials/stocks`,
+        newStock: `${ROOTS.DASHBOARD}/store/raw-materials/stocks/new`,
+        editStock: (id) => `${ROOTS.DASHBOARD}/store/raw-materials/stocks/${id}/edit`,
       },
       spareParts: {
         root: `${ROOTS.DASHBOARD}/store/spare-parts`,
