@@ -85,9 +85,12 @@ export const endpoints = {
   rates: '/v1/hr/settings/rates',
   agency: '/v1/hr/settings/agencies',
 
+  generalSettings: '/v1/settings/global-settings',
+  generalSettingsDetails: '/v1/settings/global-setting-details',
   site: '/v1/settings/sites',
   workshop: '/v1/settings/workshops',
   service: '/v1/settings/services',
+  store: '/v1/settings/stores',
 
   machine: '/v1/settings/machines',
   society: '/v1/settings/enterprises',
@@ -95,6 +98,42 @@ export const endpoints = {
   task: 'v1/hr/function/duties_responsibilities',
   careerKnowledges: '/v1/hr/function/career_knowledges',
   personal: '/v1/hr/personal/personals',
+
+
+  
+  settings: {
+    identification: {
+      globalSettings: {
+        list: '/v1/settings/identification',
+        measurementUnits: '/v1/settings/measurement-units',
+        dimensions: '/v1/settings/dimensions',
+        conditionings: '/v1/settings/conditionings',
+        files: '/v1/settings/files',
+        productFormats: '/v1/settings/product-formats',
+        productConditionings: '/v1/settings/product-conditionings',
+        calibers: '/v1/settings/calibers',
+        typeInterfaces: '/v1/settings/type-interfaces',
+        customerFiles: '/v1/settings/customer-files',
+        expenses: '/v1/settings/expenses',
+        expenseMeasurementUnits: '/v1/settings/expense-measurement-units',
+        erpNeeds: '/v1/settings/erp-needs',
+        sectors: '/v1/settings/sectors',
+        services: '/v1/settings/services',
+      },
+      rawMaterials: {
+        list: '/v1/settings/identification',
+      },
+      families: {
+        list: '/v1/settings/families',
+      },
+      categories: {
+        list: '/v1/settings/categories',
+      },
+      returnPatterns: {
+        list: '/v1/settings/return-patterns',
+      },
+    },
+  },
   // new:''
   // ecritures
   socialLoan: '/v1/hr/writings/personal_loans',
