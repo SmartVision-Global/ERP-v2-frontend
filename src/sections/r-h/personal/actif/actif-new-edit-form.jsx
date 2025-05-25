@@ -1,6 +1,6 @@
 import { z as zod } from 'zod';
+import { useCallback } from 'react';
 import InputMask from 'react-input-mask';
-import { useState, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -20,6 +20,8 @@ import {
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
+
+import { showError } from 'src/utils/toast-error';
 
 import { uploadMedia } from 'src/actions/media';
 import { useMultiLookups } from 'src/actions/lookups';
@@ -138,17 +140,17 @@ export const NewProductSchema = zod
     // Informations de la contra
     contract_type: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
     from_date: schemaHelper.date({ message: { required: 'Veuillez remplir ce champ' } }),
-    to_date: schemaHelper.date({ message: { required: 'Veuillez remplir ce champ' } }),
+    to_date: schemaHelper.date().optional().nullable(),
     contract_probation: schemaHelper.nullableInput(
-      zod.number({ coerce: true }).min(1, { message: 'Veuillez remplir ce champ' }),
+      zod.number({ coerce: true }).min(0, { message: 'Veuillez remplir ce champ' }),
       {
         // message for null value
         message: 'Veuillez remplir ce champ',
       }
     ),
     payment_type: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
-    rib: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
-    bank_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    rib: zod.string().optional().nullable(),
+    bank_id: zod.string().optional().nullable(),
   })
   .superRefine((data, ctx) => {
     if (data.family_situation === '3') {
@@ -195,11 +197,36 @@ export const NewProductSchema = zod
         });
       }
     }
+    if (data.contract_type !== '2') {
+      if (!data.to_date) {
+        ctx.addIssue({
+          code: zod.ZodIssueCode.custom,
+          message: 'Veuillez remplir ce champ',
+          path: ['to_date'],
+        });
+      }
+    }
+    if (data.payment_type !== '2') {
+      if (!data.rib) {
+        ctx.addIssue({
+          code: zod.ZodIssueCode.custom,
+          message: 'Veuillez remplir ce champ',
+          path: ['rib'],
+        });
+      }
+      if (!data.bank_id) {
+        ctx.addIssue({
+          code: zod.ZodIssueCode.custom,
+          message: 'Veuillez remplir ce champ',
+          path: ['bank_id'],
+        });
+      }
+    }
   });
 
 export function ActifNewEditForm({ currentProduct }) {
   const router = useRouter();
-  const { dataLookups, dataLoading, dataError } = useMultiLookups([
+  const { dataLookups } = useMultiLookups([
     { entity: 'subsidiaries', url: 'hr/lookups/identification/subsidiary' },
     { entity: 'directions', url: 'hr/lookups/identification/direction' },
     { entity: 'sites', url: 'settings/lookups/sites' },
@@ -402,6 +429,7 @@ export function ActifNewEditForm({ currentProduct }) {
     reset,
     watch,
     setValue,
+    setError,
     control,
     handleSubmit,
 
@@ -446,14 +474,13 @@ export function ActifNewEditForm({ currentProduct }) {
   const handleRemoveCertificate = useCallback(() => {
     setValue('employment_certificate', null);
   }, [setValue]);
-  const [expanded, setExpanded] = useState('panel1');
+  // const [expanded, setExpanded] = useState('panel1');
 
-  const handleChange = (panel) => (event, newExpanded) => {
-    setExpanded(newExpanded ? panel : false);
-  };
+  // const handleChange = (panel) => (event, newExpanded) => {
+  //   setExpanded(newExpanded ? panel : false);
+  // };
   const onSubmit = handleSubmit(async (data) => {
     const updatedData = {
-      // ...data,
       first_name: { fr: data.firstname_fr, ar: data.firstname_ar },
       last_name: { fr: data.lastname_fr, ar: data.lastname_ar },
       birth_date: data.birth_date,
@@ -506,10 +533,10 @@ export function ActifNewEditForm({ currentProduct }) {
       pea_rate: 0,
       pea_earned: 0,
       from_date: data.from_date,
-      to_date: data.to_date,
+      to_date: data.contract_type !== '2' ? data.to_date : null,
       payment_type: data.payment_type,
-      bank_id: parseInt(data.bank_id),
-      rib: data.rib,
+      bank_id: data.payment_type !== '2' ? data.bank_id : '',
+      rib: data.payment_type !== '2' ? data.rib : '',
       address: { fr: data.adressFr, ar: data.adressAr },
       photo: data.photo ?? null,
       employment_certificate: data.employment_certificate ?? null,
@@ -527,6 +554,7 @@ export function ActifNewEditForm({ currentProduct }) {
       router.push(paths.dashboard.rh.personal.root);
       console.info('DATA', updatedData);
     } catch (error) {
+      showError(error, setError);
       console.error(error);
     }
   });
@@ -1126,9 +1154,11 @@ export function ActifNewEditForm({ currentProduct }) {
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.DatePicker name="from_date" label="Du" />
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.DatePicker name="to_date" label="Au" />
-          </Grid>
+          {values.contract_type !== '2' && (
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.DatePicker name="to_date" label="Au" />
+            </Grid>
+          )}
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Number name="contract_probation" label="Probation" type="number" />
           </Grid>
@@ -1141,20 +1171,16 @@ export function ActifNewEditForm({ currentProduct }) {
               ))}
             </Field.Select>
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="rib" label="RIB" />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="bank_id" label="Banque" data={banks} />
-
-            {/* <Field.Select name="bank_id" label="Banque" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select> */}
-          </Grid>
+          {values.payment_type !== '2' && (
+            <>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Field.Text name="rib" label="RIB" />
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Field.Lookup name="bank_id" label="Banque" data={banks} />
+              </Grid>
+            </>
+          )}
         </Grid>
       </Stack>
     </Card>
