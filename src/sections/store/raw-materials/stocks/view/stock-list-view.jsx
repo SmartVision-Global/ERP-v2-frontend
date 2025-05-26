@@ -91,7 +91,25 @@ const columns = [
     minWidth: 150,
     renderCell: (params) => <RenderCellCreatedDate params={params} />,
   },
-
+  {
+    type: 'actions',
+    field: 'actions',
+    headerName: ' ',
+    align: 'right',
+    headerAlign: 'right',
+    width: 80,
+    sortable: false,
+    filterable: false,
+    disableColumnMenu: true,
+    getActions: (params) => [
+      <GridActionsLinkItem
+        showInMenu
+        icon={<Iconify icon="solar:pen-bold" />}
+        label="Modifier"
+        href={paths.dashboard.store.rawMaterials.editStock(params.row.id)}
+      />,
+    ],
+  },
 ];
 
 // ----------------------------------------------------------------------

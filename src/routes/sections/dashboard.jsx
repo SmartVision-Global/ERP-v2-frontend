@@ -291,6 +291,7 @@ const SettingsServiceEdit = lazy(() => import('src/pages/dashboard/settings/serv
 // gestion magasinage
 const PageStoreRawMaterialsStocksList = lazy(() => import('src/pages/dashboard/store/raw-materials/stocks/list'));
 const PageStoreRawMaterialsStocksNew = lazy(() => import('src/pages/dashboard/store/raw-materials/stocks/new'));
+const PageStoreRawMaterialsStocksEdit = lazy(() => import('src/pages/dashboard/store/raw-materials/stocks/edit'));
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
 function SuspenseOutlet() {
@@ -640,6 +641,7 @@ export const dashboardRoutes = [
               { index: true, element: <PageStoreRawMaterialsStocksList /> },
               { path: 'stocks', element: <PageStoreRawMaterialsStocksList /> },
               { path: 'stocks/new', element: <PageStoreRawMaterialsStocksNew /> },
+              { path: 'stocks/:id/edit', element: <PageStoreRawMaterialsStocksEdit /> },
 
             ],
           },

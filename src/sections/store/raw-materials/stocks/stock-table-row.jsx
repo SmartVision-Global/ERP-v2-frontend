@@ -69,7 +69,6 @@ export function RenderCellCategory({ params }) {
 
 export function RenderCellLocation({ params }) {
   const arr = params.row.product_storage;
-  console.log('params RenderCellLocation', params);
   return <Typography>{Array.isArray(arr) && arr.length ? arr[0].location : 'N/I'}</Typography>;
 }
 

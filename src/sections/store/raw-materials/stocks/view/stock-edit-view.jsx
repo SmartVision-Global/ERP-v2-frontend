@@ -22,7 +22,7 @@ export function StockEditView({ stock }) {
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      {stock && <StockNewEditForm currentProduct={stock} />}
+      {stock && <StockNewEditForm currentStock={stock} />}
     </DashboardContent>
   );
 }

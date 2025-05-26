@@ -48,6 +48,25 @@ export async function getFiltredStocks(params) {
   return response;
 }
 
+export function useGetStock(id) {
+  const url = id ? `${endpoints.stores.list}/${id}` : '';
+  console.log('url', url);
+  const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
+
+  const memoizedValue = useMemo(
+    () => ({
+      stock: data?.data,
+      stockLoading: isLoading,
+      stockError: error,
+      stockValidating: isValidating,
+      stockEmpty: !isLoading && !isValidating && !data?.data,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
+
 // ----------------------------------------------------------------------
 
 /**

@@ -1,11 +1,11 @@
 import { z as zod } from 'zod';
 import { useCallback } from 'react';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm, useFieldArray } from 'react-hook-form';
 
 import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Stack, Divider, CardHeader, MenuItem, Typography } from '@mui/material';
+import { Box, Card, Stack, Divider, CardHeader, MenuItem, Typography, CircularProgress } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -13,7 +13,7 @@ import { useRouter } from 'src/routes/hooks';
 import { uploadMedia } from 'src/actions/media';
 import { useMultiLookups } from 'src/actions/lookups';
 import { TYPE_OPTIONS } from 'src/_mock/stores/raw-materials/data';
-import { createEntity, updateEntity } from 'src/actions/settings/identification/global';
+import { createEntity, updateEntity } from 'src/actions/stores/raw-materials/stocks';
 
 import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
@@ -30,25 +30,30 @@ const StockSchema = zod.object({
   designation: zod.string().min(1, { message: 'Designation is required' }),
   weight: zod.number({ coerce: true }).min(1, { message: 'Poids is required' }),
   min: zod.number({ coerce: true }).min(1, { message: 'Quantité Min is required' }),
-  alert: zod.string().min(1, { message: 'Quantité Alerte is required' }),
+  alert: zod.number({ coerce: true }).min(1, { message: 'Quantité Alerte is required' }),
   type: zod.string().min(1, { message: 'Type is required' }),
   image: schemaHelper.file().optional(),
   catalog: schemaHelper.file().optional(),
+}).extend({
+  dimensions: zod.array(zod.object({ id: zod.number(), value: zod.number({ coerce: true }) })).optional(),
 });
 
 export function StockNewEditForm({ currentStock }) {
   const router = useRouter();
         
-  const { dataLookups } = useMultiLookups([
-    { entity: 'families', url: 'settings/lookups/families' , params: { group: 1, only_parent: true }},
+  const { dataLookups, dataLoading } = useMultiLookups([
+    { entity: 'families', url: 'settings/lookups/families', params: { group: 1, only_parent: true }},
     { entity: 'workshops', url: 'settings/lookups/workshops' },
     { entity: 'categories', url: 'settings/lookups/categories', params: { group: 1 }},
     { entity: 'units', url: 'settings/lookups/measurement-units' },
+    { entity: 'dimensions', url: 'settings/lookups/dimensions' },
   ]);
   const families = dataLookups.families || [];
   const workshops = dataLookups.workshops || [];
   const categories = dataLookups.categories || [];
   const units = dataLookups.units || [];
+  const dimensionDefs = dataLookups.dimensions || [];
+  console.log('currentStock', currentStock);
 
   const defaultValues = {
     builder_code: '',
@@ -65,20 +70,40 @@ export function StockNewEditForm({ currentStock }) {
     type: TYPE_OPTIONS[0]?.value || '',
     image: '',
     catalog: '',
+    dimensions: dimensionDefs.map((d) => ({ id: Number(d.value), value: 0 })),
   };
 
   const methods = useForm({
     resolver: zodResolver(StockSchema),
     defaultValues,
-    values: currentStock,
+    values: {
+      ...currentStock,
+      family_id: currentStock?.family?.id?.toString() || '',
+      workshop_id: currentStock?.workshop_id?.toString() || '',
+      category_id: currentStock?.category?.id?.toString() || '',
+      unit_measure_id: currentStock?.unit_measure?.id?.toString() || '',
+      type: currentStock?.type || '',
+      image: currentStock?.image || '',
+      catalog: currentStock?.catalog || '',
+      builder_code: currentStock?.builder_code || '',
+      supplier_code: currentStock?.supplier_code || '',
+      appellation: currentStock?.appellation || '',
+      designation: currentStock?.designation || '',
+      weight: currentStock?.weight || '',
+      min: currentStock?.min || '',
+      alert: currentStock?.alert || '',
+      dimensions: currentStock?.dimensions || dimensionDefs.map((d) => ({ id: Number(d.value), value: 0 })),
+    },
   });
 
   const {
     reset,
     handleSubmit,
     setValue,
+    control,
     formState: { isSubmitting },
   } = methods;
+  const { fields: dimensionFields } = useFieldArray({ control, name: 'dimensions', keyName: 'fieldKey' });
 
   const onDropImage = async (acceptedFiles) => {
     const value = acceptedFiles[0];
@@ -181,10 +206,23 @@ export function StockNewEditForm({ currentStock }) {
             <Field.Number name="min" label="Quantité Min" />
           </Grid>
           <Grid size={{ xs: 12, md: 4 }}>
-            <Field.Text name="alert" label="Quantité Alerte" />
+            <Field.Number name="alert" label="Quantité Alerte" />
           </Grid>
         </Grid>
-       
+        <Grid container spacing={3}>
+          {dimensionFields.map((field, index) => {
+            const def = dimensionDefs.find((d) => Number(d.value) === field.id) || {};
+            const label = def.text || def.name || `Dimension ${field.id}`;
+            return (
+              <Grid key={field.id} size={{ xs: 12, md: 4 }}>
+                <Field.Number
+                  name={`dimensions.${index}.value`}
+                  label={label}
+                />
+              </Grid>
+            );
+          })}
+        </Grid>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="type" label="Type">
@@ -236,8 +274,8 @@ export function StockNewEditForm({ currentStock }) {
   return (
     <Form methods={methods} onSubmit={onSubmit}>
       <Stack spacing={5} sx={{ mx: 'auto', maxWidth: { xs: 720, xl: 1080 } }}>
-        {renderDetails()}
-        {renderActions()}
+        {dataLoading ? <CircularProgress /> : renderDetails()}
+        {dataLoading ? <CircularProgress /> : renderActions()}
       </Stack>
     </Form>
   );
