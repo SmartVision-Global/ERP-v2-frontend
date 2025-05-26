@@ -56,7 +56,7 @@ export const navData = [
       // { title: 'Two', path: paths.dashboard.two, icon: ICONS.ecommerce },
       // { title: 'Three', path: paths.dashboard.three, icon: ICONS.analytics },
       {
-        title:'Gestion magasinage',
+        title: 'Gestion magasinage',
         path: '/dashboard/store',
         icon: ICONS.store,
         children: [
@@ -65,7 +65,7 @@ export const navData = [
             path: paths.dashboard.store.rawMaterials.root,
             children: [
               { title: 'Stocks', path: paths.dashboard.store.rawMaterials.stocks },
-              
+              { title: 'Lieu de stockage', path: paths.dashboard.store.rawMaterials.storageArea },
             ],
           },
           // {
@@ -84,11 +84,8 @@ export const navData = [
           //   title: 'Fournitures',
           //   path: paths.dashboard.store.supplies,
           // },
-          
-          
-        ]
-      }
-      ,
+        ],
+      },
       {
         title: 'Resssources humaines',
         path: '/dashboard/humain-ressource',
@@ -264,12 +261,21 @@ export const navData = [
         icon: ICONS.folder,
         children: [
           {
-            title: 'Paramètrage d\'identification',
+            title: "Paramètrage d'identification",
             path: paths.dashboard.settings.identification.root,
             children: [
-              { title: 'Unités mesure, Dimensions, Ateliers ...', path: paths.dashboard.settings.identification.globalSettings },
-              { title: 'Matières premières', path: paths.dashboard.settings.identification.rawMaterials },
-              { title: 'Pièces de rechange', path: paths.dashboard.settings.identification.spareParts },
+              {
+                title: 'Unités mesure, Dimensions, Ateliers ...',
+                path: paths.dashboard.settings.identification.globalSettings,
+              },
+              {
+                title: 'Matières premières',
+                path: paths.dashboard.settings.identification.rawMaterials,
+              },
+              {
+                title: 'Pièces de rechange',
+                path: paths.dashboard.settings.identification.spareParts,
+              },
               { title: 'Outillage', path: paths.dashboard.settings.identification.tools },
               { title: 'Fournitures', path: paths.dashboard.settings.identification.supplies },
             ],
@@ -304,8 +310,6 @@ export const navData = [
             title: 'Magasins',
             path: paths.dashboard.settings.store.root,
           },
-          
-
         ],
       },
     ],

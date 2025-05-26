@@ -289,7 +289,15 @@ const PageSettingsIdentFamCategRpList = lazy(
 const SettingsServiceEdit = lazy(() => import('src/pages/dashboard/settings/services/edit'));
 
 // gestion magasinage
-const PageStoreRawMaterialsStocksList = lazy(() => import('src/pages/dashboard/store/raw-materials/stocks/list'));
+const PageStoreRawMaterialsStocksList = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/stocks/list')
+);
+const PageStoreStorageEreaList = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/storage-area/list')
+);
+const PageStoreStorageAreaNew = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/storage-area/new')
+);
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
 function SuspenseOutlet() {
@@ -579,10 +587,19 @@ export const dashboardRoutes = [
             children: [
               { index: true, element: <SettingsIdentificationGlobalSettings /> },
               { path: 'global-settings', element: <SettingsIdentificationGlobalSettings /> },
-              { path: 'raw-materials', element: <PageSettingsIdentFamCategRpList group={1} nature={1} />},
-              { path: 'spare-parts', element: <PageSettingsIdentFamCategRpList group={2} nature={1} />},
-              { path: 'tools', element: <PageSettingsIdentFamCategRpList group={3} nature={1} />},
-              { path: 'supplies', element: <PageSettingsIdentFamCategRpList group={4} nature={1} />},
+              {
+                path: 'raw-materials',
+                element: <PageSettingsIdentFamCategRpList group={1} nature={1} />,
+              },
+              {
+                path: 'spare-parts',
+                element: <PageSettingsIdentFamCategRpList group={2} nature={1} />,
+              },
+              { path: 'tools', element: <PageSettingsIdentFamCategRpList group={3} nature={1} /> },
+              {
+                path: 'supplies',
+                element: <PageSettingsIdentFamCategRpList group={4} nature={1} />,
+              },
             ],
           },
           {
@@ -638,7 +655,8 @@ export const dashboardRoutes = [
             children: [
               { index: true, element: <PageStoreRawMaterialsStocksList /> },
               { path: 'stocks', element: <PageStoreRawMaterialsStocksList /> },
-
+              { path: 'storage-area', element: <PageStoreStorageEreaList /> },
+              { path: 'storage-area/new', element: <PageStoreStorageAreaNew /> }, // Update this line
             ],
           },
         ],

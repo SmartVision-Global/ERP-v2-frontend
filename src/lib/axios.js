@@ -99,8 +99,6 @@ export const endpoints = {
   careerKnowledges: '/v1/hr/function/career_knowledges',
   personal: '/v1/hr/personal/personals',
 
-
-  
   settings: {
     identification: {
       globalSettings: {
@@ -135,11 +133,11 @@ export const endpoints = {
     },
   },
   // gestion magasinage
-  stores:{
-    // raw materials stocks : product_type=1, 
+  stores: {
+    // raw materials stocks : product_type=1,
     list: '/v1/inventory/products',
+    storageArea: '/v1/inventory/storage-areas',
   },
-
 
   // new:''
   // ecritures

@@ -16,8 +16,8 @@ import { RouterLink } from 'src/routes/components';
 import { CONFIG } from 'src/global-config';
 import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetPersonals, validatePersonal, getFiltredPersonals } from 'src/actions/personal';
 import { useGetStocks } from 'src/actions/stores/raw-materials/stocks';
+import { useGetPersonals, validatePersonal, getFiltredPersonals } from 'src/actions/personal';
 import {
   COMMUN_SEXE_OPTIONS,
   PRODUCT_STATUS_OPTIONS,
