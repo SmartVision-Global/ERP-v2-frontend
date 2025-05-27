@@ -61,11 +61,11 @@ export function NoCotisNoImposTableRow({ row, selected, onDeleteRow, index, upda
     <ConfirmDialog
       open={confirmDialog.value}
       onClose={confirmDialog.onFalse}
-      title="Delete"
-      content="Are you sure want to delete?"
+      title="Supprimer"
+      content="Êtes-vous sûr de vouloir effacer?"
       action={
         <Button variant="contained" color="error" onClick={onDeleteRow}>
-          Delete
+          Supprimer
         </Button>
       }
     />

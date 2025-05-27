@@ -46,7 +46,7 @@ export function ImposCotisNewEditForm() {
         amount: 0,
       };
       append(newProduct);
-      handleCloseProductDialog();
+      // handleCloseProductDialog();
     } else {
       confirmDialog.onTrue();
     }
@@ -110,7 +110,7 @@ export function ImposCotisNewEditForm() {
       <Divider sx={{ my: 2, borderStyle: 'dashed' }} />
       {openProductDialog && (
         <ProductListDialog
-          title="Liste des produits"
+          title="Liste des indemnités / retenues"
           open={openProductDialog}
           onClose={handleCloseProductDialog}
           selected={() => false}
@@ -126,7 +126,7 @@ export function ImposCotisNewEditForm() {
       <ConfirmDialog
         open={confirmDialog.value}
         onClose={confirmDialog.onFalse}
-        title="Delete"
+        // title="Information"
         content={<>Vous ne pouvez pas ajouter cet article deux fois</>}
         // action={
         //   <Button

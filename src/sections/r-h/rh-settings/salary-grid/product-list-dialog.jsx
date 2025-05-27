@@ -5,9 +5,9 @@ import Stack from '@mui/material/Stack';
 import Dialog from '@mui/material/Dialog';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { MenuItem, ListItemIcon } from '@mui/material';
 import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import InputAdornment from '@mui/material/InputAdornment';
+import { Tooltip, MenuItem, IconButton, ListItemIcon } from '@mui/material';
 
 import { useGetDeductionsCompensationsByContributoryImposable } from 'src/actions/deduction-conpensation';
 
@@ -137,26 +137,40 @@ export function ProductListDialog({
       ),
     },
     {
-      type: 'actions',
       field: 'actions',
-      headerName: ' ',
-      align: 'right',
-      headerAlign: 'right',
-      width: 80,
-      sortable: false,
-      filterable: false,
-      disableColumnMenu: true,
-      getActions: (params) => [
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="mingcute:add-line" />}
-          label="Ajouter"
-          onClick={() => handleSelectAddress(params.row)}
-          // href={paths.dashboard.product.details(params.row.id)}
-          // href={paths.dashboard.root}
-        />,
-      ],
+      headerName: 'Actions',
+      flex: 1,
+      minWidth: 250,
+      hideable: false,
+      renderCell: (params) => (
+        <Tooltip title="Ajouter">
+          <IconButton onClick={() => handleSelectAddress(params.row)}>
+            <Iconify icon="mingcute:add-line" />
+          </IconButton>
+        </Tooltip>
+      ),
     },
+    // {
+    //   type: 'actions',
+    //   field: 'actions',
+    //   headerName: ' ',
+    //   align: 'right',
+    //   headerAlign: 'right',
+    //   width: 80,
+    //   sortable: false,
+    //   filterable: false,
+    //   disableColumnMenu: true,
+    //   getActions: (params) => [
+    //     <GridActionsLinkItem
+    //       showInMenu
+    //       icon={<Iconify icon="mingcute:add-line" />}
+    //       label="Ajouter"
+    //       onClick={() => handleSelectAddress(params.row)}
+    //       // href={paths.dashboard.product.details(params.row.id)}
+    //       // href={paths.dashboard.root}
+    //     />,
+    //   ],
+    // },
   ];
   const productsLoading = false;
 

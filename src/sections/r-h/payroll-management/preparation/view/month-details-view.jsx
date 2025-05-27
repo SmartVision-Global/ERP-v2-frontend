@@ -7,7 +7,7 @@ import Card from '@mui/material/Card';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { DataGrid, gridClasses } from '@mui/x-data-grid';
-import { Button, TextField, IconButton, FormControl, InputAdornment } from '@mui/material';
+import { Button, Tooltip, TextField, IconButton, FormControl, InputAdornment } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -15,7 +15,6 @@ import { RouterLink } from 'src/routes/components';
 import { showError } from 'src/utils/toast-error';
 
 import { CONFIG } from 'src/global-config';
-import { useGetLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { getFiltredPersonals } from 'src/actions/personal';
 import {
@@ -58,19 +57,19 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 
 export function MonthDetailsView({ month }) {
-  const { data: personalsLookups } = useGetLookups('hr/lookups/personals');
+  // const { data: personalsLookups } = useGetLookups('hr/lookups/personals');
 
-  const FILTERS_OPTIONS = [
-    {
-      id: 'personal_id',
-      type: 'select',
-      options: personalsLookups,
-      serverData: true,
-      label: 'Personel',
-      cols: 3,
-      width: 1,
-    },
-  ];
+  // const FILTERS_OPTIONS = [
+  //   {
+  //     id: 'personal_id',
+  //     type: 'select',
+  //     options: personalsLookups,
+  //     serverData: true,
+  //     label: 'Personel',
+  //     cols: 3,
+  //     width: 1,
+  //   },
+  // ];
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: PAGE_SIZE,
@@ -263,9 +262,11 @@ export function MonthDetailsView({ month }) {
       minWidth: 160,
       hideable: false,
       renderCell: (params) => (
-        <IconButton onClick={() => handleDeleteRow(params.row.id)}>
-          <Iconify icon="eva:person-delete-outline" />
-        </IconButton>
+        <Tooltip title="Retirer">
+          <IconButton onClick={() => handleDeleteRow(params.row.id)}>
+            <Iconify icon="eva:person-delete-outline" sx={{ color: 'error.main' }} />
+          </IconButton>
+        </Tooltip>
       ),
     },
     // {
@@ -345,7 +346,7 @@ export function MonthDetailsView({ month }) {
           }}
         >
           <TableToolbarCustom
-            filterOptions={FILTERS_OPTIONS}
+            // filterOptions={FILTERS_OPTIONS}
             filters={editedFilters}
             setFilters={setEditedFilters}
             onReset={handleReset}

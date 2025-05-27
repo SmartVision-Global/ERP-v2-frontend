@@ -6,8 +6,8 @@ import Dialog from '@mui/material/Dialog';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import InputAdornment from '@mui/material/InputAdornment';
-import { Button, MenuItem, IconButton, ListItemIcon } from '@mui/material';
 import { DataGrid, gridClasses, GridToolbarContainer } from '@mui/x-data-grid';
+import { Button, Tooltip, MenuItem, IconButton, ListItemIcon } from '@mui/material';
 
 import { fDate } from 'src/utils/format-time';
 
@@ -304,9 +304,11 @@ export function UnattachedPersonalsDialog({
       minWidth: 300,
       hideable: false,
       renderCell: (params) => (
-        <IconButton onClick={() => handleSelectAddress(params.row)}>
-          <Iconify icon="eva:person-add-outline" />
-        </IconButton>
+        <Tooltip title="Ajouter">
+          <IconButton onClick={() => handleSelectAddress(params.row)}>
+            <Iconify icon="eva:person-add-outline" />
+          </IconButton>
+        </Tooltip>
       ),
     },
 
