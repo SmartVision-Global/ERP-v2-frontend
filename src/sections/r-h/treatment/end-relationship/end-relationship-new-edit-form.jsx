@@ -9,6 +9,8 @@ import { Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { showError } from 'src/utils/toast-error';
+
 import { useGetLookups } from 'src/actions/lookups';
 import { RELATIONSHIP_NATURE_OPTIONS } from 'src/_mock';
 import { createEndContract, updateEndContract } from 'src/actions/end-contract';
@@ -40,6 +42,7 @@ export function EndRelationshipNewEditForm({ currentTaux }) {
   });
 
   const {
+    setError,
     reset,
     handleSubmit,
     formState: { isSubmitting },
@@ -64,6 +67,8 @@ export function EndRelationshipNewEditForm({ currentTaux }) {
       router.push(paths.dashboard.rh.treatment.endRelationship);
       console.info('DATA', data);
     } catch (error) {
+      showError(error, setError);
+
       console.error(error);
     }
   });

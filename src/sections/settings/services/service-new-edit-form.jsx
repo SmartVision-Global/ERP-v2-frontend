@@ -9,6 +9,8 @@ import { Box, Card, Stack, Divider, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { showError } from 'src/utils/toast-error';
+
 import { createService, updateService } from 'src/actions/service';
 
 import { toast } from 'src/components/snackbar';
@@ -33,6 +35,7 @@ export function ServiceNewEditForm({ currentProduct }) {
   });
 
   const {
+    setError,
     reset,
     handleSubmit,
     formState: { isSubmitting },
@@ -49,6 +52,8 @@ export function ServiceNewEditForm({ currentProduct }) {
       toast.success(currentProduct ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.settings.service.root);
     } catch (error) {
+      showError(error, setError);
+
       console.error(error);
     }
   });

@@ -9,6 +9,8 @@ import { Box, Card, Stack, Divider, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { showError } from 'src/utils/toast-error';
+
 import { useMultiLookups } from 'src/actions/lookups';
 import { createSalaryGrid, updateSalaryGrid } from 'src/actions/salary-grid';
 
@@ -141,6 +143,7 @@ export function SalaryGridNewEditForm({ currentProduct }) {
   });
 
   const {
+    setError,
     reset,
     control,
     setValue,
@@ -199,6 +202,7 @@ export function SalaryGridNewEditForm({ currentProduct }) {
       router.push(paths.dashboard.rh.rhSettings.salaryGrid);
       console.info('DATA', newData);
     } catch (error) {
+      showError(error, setError);
       console.error(error);
     }
   });

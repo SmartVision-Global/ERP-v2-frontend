@@ -9,6 +9,8 @@ import { Box, Card, Stack, Divider, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { showError } from 'src/utils/toast-error';
+
 import { createJob, updateJob } from 'src/actions/function';
 import { useGetLookups, useMultiLookups } from 'src/actions/lookups';
 
@@ -140,6 +142,7 @@ export function JobNewEditForm({ currentProduct }) {
   });
 
   const {
+    setError,
     reset,
     handleSubmit,
     formState: { isSubmitting, errors },
@@ -184,6 +187,8 @@ export function JobNewEditForm({ currentProduct }) {
       router.push(paths.dashboard.rh.fonction.fonctions);
       console.info('DATA', updatedData);
     } catch (error) {
+      showError(error, setError);
+
       console.error(error);
     }
   });
