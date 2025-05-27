@@ -30,7 +30,8 @@ export function ProductListDialog({
   title = 'Address book',
   type,
 }) {
-  const { deductionsCompensations } = useGetDeductionsCompensationsByContributoryImposable(type);
+  const { deductionsCompensations, deductionsCompensationsLoading } =
+    useGetDeductionsCompensationsByContributoryImposable(type);
   const [searchAddress, setSearchAddress] = useState('');
   // const [selectedRowIds, setSelectedRowIds] = useState([]);
 
@@ -104,7 +105,7 @@ export function ProductListDialog({
       field: 'type',
       headerName: 'Type',
       flex: 1,
-      minWidth: 160,
+      minWidth: 95,
       hideable: false,
       renderCell: (params) => (
         <Label variant="soft" color="info">
@@ -172,33 +173,24 @@ export function ProductListDialog({
     //   ],
     // },
   ];
-  const productsLoading = false;
 
   const renderList = () => (
     <Scrollbar sx={{ p: 4, maxHeight: 480 }}>
       <DataGrid
-        // checkboxSelection
+        disableColumnSorting
         disableRowSelectionOnClick
+        disableColumnMenu
         rows={dataFiltered}
         columns={columns}
-        loading={productsLoading}
+        loading={deductionsCompensationsLoading}
         getRowHeight={() => 'auto'}
-        pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
-        initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-        // onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
+        pageSizeOptions={[2, 10, 20, { value: -1, label: 'All' }]}
         columnVisibilityModel={columnVisibilityModel}
         onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
-        // disableColumnFilter
         slots={{
-          // toolbar: CustomToolbarCallback,
           noRowsOverlay: () => <EmptyContent />,
           noResultsOverlay: () => <EmptyContent title="No results found" />,
         }}
-        //   slotProps={{
-        //     toolbar: { setFilterButtonEl },
-        //     panel: { anchorEl: filterButtonEl },
-        //     columnsManagement: { getTogglableColumns },
-        //   }}
         sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
       />
     </Scrollbar>

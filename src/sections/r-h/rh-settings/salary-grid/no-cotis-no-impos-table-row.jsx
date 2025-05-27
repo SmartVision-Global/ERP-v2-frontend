@@ -194,8 +194,16 @@ export function NoCotisNoImposTableRow({ row, selected, onDeleteRow, index, upda
           />
         </TableCell>
         <TableCell align="right" sx={{ px: 1 }}>
-          <IconButton color={menuActions.open ? 'inherit' : 'default'} onClick={menuActions.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
+          <IconButton
+            color={menuActions.open ? 'inherit' : 'default'}
+            onClick={confirmDialog.onTrue}
+          >
+            <Iconify
+              icon="solar:trash-bin-trash-bold"
+              sx={{
+                color: 'error.main',
+              }}
+            />
           </IconButton>
         </TableCell>
       </TableRow>
