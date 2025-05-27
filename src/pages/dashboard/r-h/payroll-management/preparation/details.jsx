@@ -20,7 +20,7 @@ export default function Page() {
         <title> {metadata.title}</title>
       </Helmet>
 
-      <MonthDetailsView month={payrollMonth} />
+      {payrollMonth && <MonthDetailsView month={payrollMonth} />}
     </>
   );
 }

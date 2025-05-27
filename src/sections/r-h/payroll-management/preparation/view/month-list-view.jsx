@@ -143,7 +143,7 @@ export function MonthListView() {
       const newData = {
         ...editedFilters,
         limit: newModel.pageSize,
-        offset: newModel.page,
+        offset: newModel.page * newModel.pageSize,
       };
       const response = await getFiltredPayrollMonths(newData);
       setTableData(response.data?.data?.records);

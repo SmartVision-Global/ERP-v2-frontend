@@ -146,7 +146,7 @@ export function RenewalContractListView() {
       const newData = {
         ...editedFilters,
         limit: newModel.pageSize,
-        offset: newModel.page,
+        offset: newModel.page * newModel.pageSize,
       };
       const response = await getFiltredContracts(newData);
       setTableData(response.data?.data?.records);

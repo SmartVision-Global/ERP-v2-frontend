@@ -141,7 +141,7 @@ export function PromotionDemotionListView() {
       const newData = {
         ...editedFilters,
         limit: newModel.pageSize,
-        offset: newModel.page,
+        offset: newModel.page * newModel.pageSize,
       };
       const response = await getFiltredDecisions(newData);
       setTableData(response.data?.data?.records);

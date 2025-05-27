@@ -29,6 +29,7 @@ export function TableToolbarCustom({
   paginationModel,
 }) {
   const rangeCalendarPicker = useDateRangePicker(dayjs(new Date('2024/08/08')), null);
+  console.log('filters', filters);
 
   const getInput = useCallback(
     (event, type) => {
