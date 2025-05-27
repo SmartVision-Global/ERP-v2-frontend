@@ -103,7 +103,6 @@ export function ActifListView() {
     confirmDialog.onTrue();
     setSelectedRow(id);
   };
-  // const personalsLookup = dataLookups.personalsLookup;
   const banks = dataLookups.banks;
   const departments = dataLookups.departments;
   const sites = dataLookups.sites;

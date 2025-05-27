@@ -6,7 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
-// import ExpandMoreIcon from '@mui/';
 import {
   Box,
   Card,
@@ -76,8 +75,6 @@ export const NewProductSchema = zod
 
     // Informations Familiales
     family_situation: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
-    // children: schemaHelper.nullableInput(zod.number({ coerce: true }).optional().nullable()),
-    // minor_children: schemaHelper.nullableInput(zod.number({ coerce: true }).optional().nullable()),
     children: zod.number({ coerce: true }).optional().nullable(),
     minor_children: zod.number({ coerce: true }).optional().nullable(),
     spouse_fullname_fr: zod.string().optional(),
@@ -93,7 +90,6 @@ export const NewProductSchema = zod
     subsidiary_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
     direction_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
     site_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
-    // lieu: zod.string().min(1, { message: 'lieu is required!' }),
 
     division_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
     department_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
@@ -144,7 +140,6 @@ export const NewProductSchema = zod
     contract_probation: schemaHelper.nullableInput(
       zod.number({ coerce: true }).min(0, { message: 'Veuillez remplir ce champ' }),
       {
-        // message for null value
         message: 'Veuillez remplir ce champ',
       }
     ),
@@ -291,7 +286,6 @@ export function ActifNewEditForm({ currentProduct }) {
     adressFr: '',
     adressAr: '',
 
-    // category: PRODUCT_CATEGORY_GROUP_OPTIONS[0].classify[1],
     national_number: '',
     act_of_birth_number: '',
     image: null,
@@ -474,11 +468,7 @@ export function ActifNewEditForm({ currentProduct }) {
   const handleRemoveCertificate = useCallback(() => {
     setValue('employment_certificate', null);
   }, [setValue]);
-  // const [expanded, setExpanded] = useState('panel1');
 
-  // const handleChange = (panel) => (event, newExpanded) => {
-  //   setExpanded(newExpanded ? panel : false);
-  // };
   const onSubmit = handleSubmit(async (data) => {
     const updatedData = {
       first_name: { fr: data.firstname_fr, ar: data.firstname_ar },
@@ -499,7 +489,6 @@ export function ActifNewEditForm({ currentProduct }) {
       family_situation: data.family_situation,
       spouse: { fr: data.spouse_fullname_fr, ar: data.spouse_fullname_ar },
       spouse_phone: data.spouse_phone,
-      // spouse_situation: data.spouse_situation ? data.spouse_situation : null,
       children: data.children,
       minor_children: data.minor_children,
       subsidiary_id: parseInt(data.subsidiary_id),
@@ -543,7 +532,6 @@ export function ActifNewEditForm({ currentProduct }) {
     };
 
     try {
-      // await new Promise((resolve) => setTimeout(resolve, 500));
       if (currentProduct) {
         await updatePersonal(currentProduct?.id, updatedData);
       } else {
@@ -552,7 +540,6 @@ export function ActifNewEditForm({ currentProduct }) {
       reset();
       toast.success(currentProduct ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.rh.personal.root);
-      console.info('DATA', updatedData);
     } catch (error) {
       showError(error, setError);
       console.error(error);
@@ -561,16 +548,7 @@ export function ActifNewEditForm({ currentProduct }) {
 
   const renderDetails = () => (
     <Card>
-      <CardHeader
-        title="Informations personnelles"
-        // subheader="Nom, Prénom, image..."
-        sx={{ mb: 3 }}
-        // action={
-        //   <IconButton>
-        //     <Iconify icon="mingcute:add-line" />
-        //   </IconButton>
-        // }
-      />
+      <CardHeader title="Informations personnelles" sx={{ mb: 3 }} />
 
       <Divider />
 
@@ -639,7 +617,6 @@ export function ActifNewEditForm({ currentProduct }) {
             <Field.Text name="email" label="Email" />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            {/* <Field.Text name="social_number" label="Numéro de sécurité sociale" /> */}
             <Controller
               name="social_security_number"
               control={control}
@@ -730,11 +707,7 @@ export function ActifNewEditForm({ currentProduct }) {
   );
   const renderFamilyInformation = () => (
     <Card>
-      <CardHeader
-        title="Informations Familiales"
-        // subheader="Nom, Prenom, image..."
-        sx={{ mb: 3 }}
-      />
+      <CardHeader title="Informations Familiales" sx={{ mb: 3 }} />
 
       <Divider />
 
@@ -940,11 +913,7 @@ export function ActifNewEditForm({ currentProduct }) {
 
   const renderEmploymentInformation = () => (
     <Card>
-      <CardHeader
-        title="Informations sur l'Emploi"
-        // subheader="Nom, Prenom, image..."
-        sx={{ mb: 3 }}
-      />
+      <CardHeader title="Informations sur l'Emploi" sx={{ mb: 3 }} />
 
       <Divider />
 
@@ -952,25 +921,9 @@ export function ActifNewEditForm({ currentProduct }) {
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Lookup name="enterprise_id" label="Societé" data={enterprises} />
-
-            {/* <Field.Select name="enterprise_id" label="Societé" size="small">
-              {DAS_DENOM_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select> */}
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Lookup name="job_id" label="Function" data={jobs} />
-
-            {/* <Field.Select name="job_id" label="Function" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select> */}
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Lookup
@@ -978,27 +931,8 @@ export function ActifNewEditForm({ currentProduct }) {
               label="Catégorie socio-professionnelle"
               data={salaryCategories}
             />
-
-            {/* <Field.Select
-              name="salary_category_id"
-              label="Catégorie socio-professionnelle"
-              size="small"
-            >
-              {SALARY_CATEGORY_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select> */}
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            {/* <Field.Select name="rung_id" label="Échelons" size="small">
-              {SALARY_ECHEL_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select> */}
             <Field.Lookup name="rung_id" label="Échelons" data={rungs} />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
@@ -1007,25 +941,9 @@ export function ActifNewEditForm({ currentProduct }) {
               label="Niveau de grille salariale"
               data={salaryScaleLevels}
             />
-
-            {/* <Field.Select name="salary_grid_id" label="Niveau de grille salariale" size="small">
-              {COMMUN_GRID_SALARY_LEVEL_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select> */}
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Lookup name="salary_grid_id" label="Net à payer" data={salaryGrids} />
-
-            {/* <Field.Select name="salary_grid_id" label="Net à payer" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select> */}
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Text
@@ -1047,20 +965,12 @@ export function ActifNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Lookup name="agency_id" label="Agences" data={agencies} />
-            {/* <Field.Select name="agency_id" label="Agences" size="small">
-              {COMMUN_AGENCIES_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select> */}
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Switch
               name="allowed_overtime"
               labelPlacement="start"
               label="Peut effectuer des heures supplémentaires"
-              // sx={{ mt: 5, justidyContent: 'space-between' }}
               sx={{ display: 'flex', justifyContent: 'space-between' }}
             />
           </Grid>
@@ -1069,7 +979,6 @@ export function ActifNewEditForm({ currentProduct }) {
               name="allowed_exit_voucher"
               labelPlacement="start"
               label="Peut effectuer des prélèvements du stock"
-              // sx={{ mt: 5 }}
               sx={{ display: 'flex', justifyContent: 'space-between' }}
             />
           </Grid>
@@ -1078,7 +987,6 @@ export function ActifNewEditForm({ currentProduct }) {
               name="pea_exist"
               labelPlacement="start"
               label="Indemnité d'expérience professionnelle"
-              // sx={{ mt: 5 }}
               sx={{ display: 'flex', justifyContent: 'space-between' }}
             />
           </Grid>
@@ -1086,13 +994,6 @@ export function ActifNewEditForm({ currentProduct }) {
 
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Lookup name="rate_id" label="Regime de cotisation" data={rates} />
-            {/* <Field.Select name="rate_id" label="Regime de cotisation" size="small">
-              {COMMUN_CONTRIBUTION_SCHEME_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select> */}
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select
@@ -1108,16 +1009,9 @@ export function ActifNewEditForm({ currentProduct }) {
             </Field.Select>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            {/* <FieldContainer label="Jours par mois" sx={{ alignItems: 'center' }}>
-              <Field.NumberInput name="days_per_month" />
-            </FieldContainer> */}
-
             <Field.Number name="days_per_month" label="Jours par mois" type="number" />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            {/* <FieldContainer label="Heures par mois" sx={{ alignItems: 'center' }}>
-              <Field.NumberInput name="hours_per_month" />
-            </FieldContainer> */}
             <Field.Number name="hours_per_month" label="Heures par mois" type="number" />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
@@ -1132,11 +1026,7 @@ export function ActifNewEditForm({ currentProduct }) {
   );
   const renderContractInformation = () => (
     <Card>
-      <CardHeader
-        title="Informations de la contrat"
-        // subheader="Nom, Prenom, image..."
-        sx={{ mb: 3 }}
-      />
+      <CardHeader title="Informations de la contrat" sx={{ mb: 3 }} />
 
       <Divider />
 
@@ -1203,7 +1093,6 @@ export function ActifNewEditForm({ currentProduct }) {
 
   return (
     <Form methods={methods} onSubmit={onSubmit}>
-      {/* {!dataLoading && !dataError && ( */}
       <Stack spacing={{ xs: 3, md: 5 }} sx={{ mx: 'auto', maxWidth: { xs: 720, xl: 1080 } }}>
         {renderDetails()}
         {renderFamilyInformation()}
@@ -1212,103 +1101,7 @@ export function ActifNewEditForm({ currentProduct }) {
         {renderEmploymentInformation()}
         {renderContractInformation()}
         {renderActions()}
-        {/* <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
-          <AccordionSummary
-            expandIcon={<Iconify icon="mingcute:add-line" />}
-            aria-controls="panel1-content"
-            id="panel1-header"
-          >
-            <Typography component="span">Information personnels</Typography>
-          </AccordionSummary>
-          <AccordionDetails>{renderDetails()}</AccordionDetails>
-        </Accordion>
-        <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
-          <AccordionSummary
-            expandIcon={<Iconify icon="mingcute:add-line" />}
-            aria-controls="spanel2-content"
-            id="panel2-header"
-          >
-            <Typography component="span">Informations Familiales</Typography>
-          </AccordionSummary>
-          <AccordionDetails>{renderFamilyInformation()}</AccordionDetails>
-        </Accordion>
-        <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
-          <AccordionSummary
-            expandIcon={<Iconify icon="mingcute:add-line" />}
-            aria-controls="spanel2-content"
-            id="panel2-header"
-          >
-            <Typography component="span">Education</Typography>
-          </AccordionSummary>
-          <AccordionDetails>{renderEducationInformation()}</AccordionDetails>
-        </Accordion>
-        <Accordion expanded={expanded === 'panel4'} onChange={handleChange('panel4')}>
-          <AccordionSummary
-            expandIcon={<Iconify icon="mingcute:add-line" />}
-            aria-controls="spanel2-content"
-            id="panel2-header"
-          >
-            <Typography component="span">Emplacement et Structure Organisationnelle</Typography>
-          </AccordionSummary>
-          <AccordionDetails>{renderLocationOrganizationalStructure()}</AccordionDetails>
-        </Accordion>
-        <Accordion expanded={expanded === 'panel5'} onChange={handleChange('panel5')}>
-          <AccordionSummary
-            expandIcon={<Iconify icon="mingcute:add-line" />}
-            aria-controls="spanel2-content"
-            id="panel2-header"
-          >
-            <Typography component="span">Informations sur l&apos;Emploi</Typography>
-          </AccordionSummary>
-          <AccordionDetails>{renderEmploymentInformation()}</AccordionDetails>
-        </Accordion>
-        <Accordion expanded={expanded === 'panel6'} onChange={handleChange('panel6')}>
-          <AccordionSummary
-            expandIcon={<Iconify icon="mingcute:add-line" />}
-            aria-controls="spanel2-content"
-            id="panel2-header"
-          >
-            <Typography component="span">Informations de la contrat</Typography>
-          </AccordionSummary>
-          <AccordionDetails>{renderContractInformation()}</AccordionDetails>
-        </Accordion> */}
-        {/* {renderActions()} */}
       </Stack>
-      {/* )} */}
     </Form>
   );
 }
-
-// function FieldContainer({ sx, children, label = 'RHFTextField' }) {
-//   return (
-//     <Box
-//       sx={[
-//         () => ({
-//           gap: 1,
-//           width: 1,
-//           display: 'flex',
-//           // flexDirection: 'row',
-//           justifyContent: 'space-between',
-//         }),
-//         ...(Array.isArray(sx) ? sx : [sx]),
-//       ]}
-//     >
-//       <Typography
-//         variant="caption"
-//         sx={[
-//           (theme) => ({
-//             textAlign: 'right',
-//             // fontStyle: 'italic',
-//             // color: 'text.disabled',
-//             fontSize: theme.typography.pxToRem(12),
-//             textWrap: 'nowrap',
-//           }),
-//         ]}
-//       >
-//         {label}
-//       </Typography>
-
-//       {children}
-//     </Box>
-//   );
-// }
