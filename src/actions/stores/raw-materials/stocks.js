@@ -50,7 +50,6 @@ export async function getFiltredStocks(params) {
 
 export function useGetStock(id) {
   const url = id ? `${endpoints.stores.list}/${id}` : '';
-  console.log('url', url);
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
