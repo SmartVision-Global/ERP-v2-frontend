@@ -80,14 +80,9 @@ export async function deletePersonalPayroll(id, monthId, params) {
    * Work on server
    */
   // const data = { directionData };
-  console.log('monthId', monthId);
 
   await axios.delete(`${endpoints.payrolls}/${id}`);
-  // const key = params
-  //   ? [endpoints.payrollMonthPersonalAttached(monthId), { params }]
-  //   : endpoints.payrollMonthPersonalAttached(monthId);
-  // mutate([`/v1/hr/payroll/preparation/month/${monthId}/payrolls/attached`, { params }]);
-  // mutate(key);
+
   mutate([endpoints.payrollMonthPersonalAttached(monthId), { params }]);
 }
 

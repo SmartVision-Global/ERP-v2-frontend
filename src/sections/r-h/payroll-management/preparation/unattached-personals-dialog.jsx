@@ -43,7 +43,6 @@ export function UnattachedPersonalsDialog({
   id,
 }) {
   const { payrollMonthsUnAttachedPersonals } = useGetPayrollMonthsPersonalUnAttached(id);
-  console.log('payrollMonthsUnAttachedPersonals', payrollMonthsUnAttachedPersonals);
 
   const [searchAddress, setSearchAddress] = useState('');
   // const [selectedRowIds, setSelectedRowIds] = useState([]);
@@ -91,7 +90,6 @@ export function UnattachedPersonalsDialog({
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
   const handleDeleteRows = useCallback(async () => {
     const deleteRows = dataFiltered.filter((row) => selectedRowIds.includes(row.personal_id));
-    console.log('deelelele', deleteRows);
     const newData = deleteRows.map((item) => ({
       personal_id: item.personal_id,
       payroll_month_id: id,
