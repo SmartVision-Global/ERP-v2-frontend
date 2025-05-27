@@ -7,7 +7,7 @@ import Card from '@mui/material/Card';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { DataGrid, gridClasses } from '@mui/x-data-grid';
-import { Button, TextField, FormControl, InputAdornment } from '@mui/material';
+import { Button, TextField, IconButton, FormControl, InputAdornment } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -256,6 +256,18 @@ export function MonthDetailsView({ month }) {
       hideable: false,
       renderCell: (params) => <RenderCellStatus params={params} />,
     },
+    {
+      field: 'Actions',
+      headerName: 'Actions',
+      flex: 1,
+      minWidth: 160,
+      hideable: false,
+      renderCell: (params) => (
+        <IconButton onClick={() => handleDeleteRow(params.row.id)}>
+          <Iconify icon="eva:person-delete-outline" />
+        </IconButton>
+      ),
+    },
     // {
     //   field: 'service_start',
     //   headerName: "Date d'entrée",
@@ -273,27 +285,28 @@ export function MonthDetailsView({ month }) {
     //   renderCell: (params) => <RenderCellServiceEnd params={params} />,
     // },
 
-    {
-      type: 'actions',
-      field: 'actions',
-      headerName: ' ',
-      align: 'right',
-      headerAlign: 'right',
-      width: 80,
-      sortable: false,
-      filterable: false,
-      disableColumnMenu: true,
-      getActions: (params) => [
-        <GridActionsClickItem
-          showInMenu
-          icon={<Iconify icon="mingcute:add-line" />}
-          label="Retirer"
-          onClick={() => handleDeleteRow(params.row.id)}
-          // href={paths.dashboard.product.details(params.row.id)}
-          // href={paths.dashboard.root}
-        />,
-      ],
-    },
+    // {
+    //   type: 'actions',
+    //   field: 'actions',
+    //   headerName: ' ',
+    //   align: 'right',
+    //   headerAlign: 'right',
+    //   width: 80,
+    //   sortable: false,
+    //   filterable: false,
+    //   disableColumnMenu: true,
+
+    //   getActions: (params) => [
+    //     <GridActionsClickItem
+    //       showInMenu
+    //       icon={<Iconify icon="mingcute:add-line" />}
+    //       label="Retirer"
+    //       onClick={() => handleDeleteRow(params.row.id)}
+    //       // href={paths.dashboard.product.details(params.row.id)}
+    //       // href={paths.dashboard.root}
+    //     />,
+    //   ],
+    // },
   ];
 
   const getTogglableColumns = () =>

@@ -6,7 +6,7 @@ import Dialog from '@mui/material/Dialog';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import InputAdornment from '@mui/material/InputAdornment';
-import { Button, MenuItem, ListItemIcon } from '@mui/material';
+import { Button, MenuItem, IconButton, ListItemIcon } from '@mui/material';
 import { DataGrid, gridClasses, GridToolbarContainer } from '@mui/x-data-grid';
 
 import { fDate } from 'src/utils/format-time';
@@ -298,26 +298,39 @@ export function UnattachedPersonalsDialog({
     },
 
     {
-      type: 'actions',
-      field: 'actions',
-      headerName: ' ',
-      align: 'right',
-      headerAlign: 'right',
-      width: 80,
-      sortable: false,
-      filterable: false,
-      disableColumnMenu: true,
-      getActions: (params) => [
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="mingcute:add-line" />}
-          label="Ajouter"
-          onClick={() => handleSelectAddress(params.row)}
-          // href={paths.dashboard.product.details(params.row.id)}
-          // href={paths.dashboard.root}
-        />,
-      ],
+      field: 'Actions',
+      headerName: 'Actions',
+      flex: 1,
+      minWidth: 300,
+      hideable: false,
+      renderCell: (params) => (
+        <IconButton onClick={() => handleSelectAddress(params.row)}>
+          <Iconify icon="eva:person-add-outline" />
+        </IconButton>
+      ),
     },
+
+    // {
+    //   type: 'actions',
+    //   field: 'actions',
+    //   headerName: ' ',
+    //   align: 'right',
+    //   headerAlign: 'right',
+    //   width: 80,
+    //   sortable: false,
+    //   filterable: false,
+    //   disableColumnMenu: true,
+    //   getActions: (params) => [
+    //     <GridActionsLinkItem
+    //       showInMenu
+    //       icon={<Iconify icon="mingcute:add-line" />}
+    //       label="Ajouter"
+    //       onClick={() => handleSelectAddress(params.row)}
+    //       // href={paths.dashboard.product.details(params.row.id)}
+    //       // href={paths.dashboard.root}
+    //     />,
+    //   ],
+    // },
   ];
   const productsLoading = false;
   const CustomToolbarCallback = useCallback(
