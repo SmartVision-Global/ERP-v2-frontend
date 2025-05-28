@@ -190,7 +190,7 @@ export function OvertimeListView() {
       const newData = {
         ...editedFilters,
         limit: newModel.pageSize,
-        offset: newModel.page,
+        offset: newModel.page * newModel.pageSize,
       };
       const response = await getFiltredOvertimeList(newData);
       setTableData(response.data?.data?.records);

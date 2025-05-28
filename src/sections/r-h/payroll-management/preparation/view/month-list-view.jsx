@@ -12,6 +12,7 @@ import { TextField, FormControl, InputAdornment } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
+import { MONTHS } from 'src/_mock';
 import { CONFIG } from 'src/global-config';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useGetPayrollMonths, getFiltredPayrollMonths } from 'src/actions/payroll-month';
@@ -43,35 +44,52 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 // ----------------------------------------------------------------------
 
-const FILTERS_OPTIONS = [
-  // {
-  //   id: 'designation',
-  //   type: 'input',
-  //   label: 'Designation',
-  //   cols: 12,
-  //   width: 0.24,
-  // },
-  // {
-  //   id: 'status',
-  //   type: 'select',
-  //   options: DOCUMENT_STATUS_OPTIONS,
-  //   label: 'Etat',
-  //   cols: 3,
-  //   width: 1,
-  // },
-  // {
-  //   id: 'valideur',
-  //   type: 'select',
-  //   options: PRODUCT_STOCK_OPTIONS,
-  //   label: 'Valideur',
-  //   cols: 3,
-  //   width: 1,
-  // },
+// const FILTERS_OPTIONS = [
+//   // {
+//   //   id: 'designation',
+//   //   type: 'input',
+//   //   label: 'Designation',
+//   //   cols: 12,
+//   //   width: 0.24,
+//   // },
+//   // {
+//   //   id: 'status',
+//   //   type: 'select',
+//   //   options: DOCUMENT_STATUS_OPTIONS,
+//   //   label: 'Etat',
+//   //   cols: 3,
+//   //   width: 1,
+//   // },
+//   // {
+//   //   id: 'valideur',
+//   //   type: 'select',
+//   //   options: PRODUCT_STOCK_OPTIONS,
+//   //   label: 'Valideur',
+//   //   cols: 3,
+//   //   width: 1,
+//   // },
 
+//   {
+//     id: 'created_at',
+//     type: 'date-range',
+//     label: 'Date de création',
+//     cols: 3,
+//     width: 1,
+//   },
+// ];
+const FILTERS_OPTIONS = [
   {
-    id: 'created_at',
-    type: 'date-range',
-    label: 'Date de création',
+    id: 'month',
+    type: 'select',
+    options: MONTHS,
+    label: 'Mois',
+    cols: 3,
+    width: 1,
+  },
+  {
+    id: 'year',
+    type: 'input',
+    label: 'Année',
     cols: 3,
     width: 1,
   },
@@ -143,7 +161,7 @@ export function MonthListView() {
       const newData = {
         ...editedFilters,
         limit: newModel.pageSize,
-        offset: newModel.page,
+        offset: newModel.page * newModel.pageSize,
       };
       const response = await getFiltredPayrollMonths(newData);
       setTableData(response.data?.data?.records);
@@ -259,7 +277,7 @@ export function MonthListView() {
         <GridActionsLinkItem
           showInMenu
           icon={<Iconify icon="solar:eye-bold" />}
-          label="Add personel"
+          label="Ajouter personel"
           // href={paths.dashboard.product.details(params.row.id)}
           href={paths.dashboard.rh.payrollManagement.preparationDetails(params.row.id)}
         />,

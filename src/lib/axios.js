@@ -99,8 +99,6 @@ export const endpoints = {
   careerKnowledges: '/v1/hr/function/career_knowledges',
   personal: '/v1/hr/personal/personals',
 
-
-  
   settings: {
     identification: {
       globalSettings: {
@@ -155,4 +153,8 @@ export const endpoints = {
   endContract: '/v1/hr/treatment/personal_end_services',
   // payroll
   payrollMonth: '/v1/hr/payroll/preparation/payroll_months',
+  payrollMonthPersonalAttached: (id) => `/v1/hr/payroll/preparation/month/${id}/payrolls/attached`,
+  payrollMonthPersonalUnAttached: (id) =>
+    `/v1/hr/payroll/preparation/month/${id}/payrolls/unattached`,
+  payrolls: '/v1/hr/payroll/preparation/payrolls',
 };

@@ -9,6 +9,8 @@ import { Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { showError } from 'src/utils/toast-error';
+
 import { useMultiLookups } from 'src/actions/lookups';
 import { CE_MISSION_NATURE_OPTIONS } from 'src/_mock';
 import { createRelocation, updateRelocation } from 'src/actions/relocation';
@@ -72,6 +74,7 @@ export function LocationAssignmentNewEditForm({ currentTaux }) {
   });
 
   const {
+    setError,
     watch,
     reset,
     handleSubmit,
@@ -99,6 +102,8 @@ export function LocationAssignmentNewEditForm({ currentTaux }) {
 
       console.info('DATA', data);
     } catch (error) {
+      showError(error, setError);
+
       console.error(error);
     }
   });

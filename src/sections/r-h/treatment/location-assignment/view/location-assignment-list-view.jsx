@@ -156,7 +156,7 @@ export function LocationAssignmentListView() {
       const newData = {
         ...editedFilters,
         limit: newModel.pageSize,
-        offset: newModel.page,
+        offset: newModel.page * newModel.pageSize,
       };
       const response = await getFiltredRelocations(newData);
       setTableData(response.data?.data?.records);

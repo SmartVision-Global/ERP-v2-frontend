@@ -156,7 +156,7 @@ export function JobListView() {
       const newData = {
         ...editedFilters,
         limit: newModel.pageSize,
-        offset: newModel.page,
+        offset: newModel.page * newModel.pageSize,
       };
       const response = await getFiltredJobs(newData);
       setTableData(response.data?.data?.records);

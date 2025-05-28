@@ -9,6 +9,8 @@ import { Card, Stack, Divider, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { showError } from 'src/utils/toast-error';
+
 import { createRate, updateRate } from 'src/actions/cnas-rate';
 
 import { toast } from 'src/components/snackbar';
@@ -61,6 +63,7 @@ export function RateNewEditForm({ currentTaux }) {
   });
 
   const {
+    setError,
     reset,
     handleSubmit,
     formState: { isSubmitting },
@@ -79,6 +82,8 @@ export function RateNewEditForm({ currentTaux }) {
       router.push(paths.dashboard.rh.rhSettings.cnasRate);
       console.info('DATA', data);
     } catch (error) {
+      showError(error, setError);
+
       console.error(error);
     }
   });

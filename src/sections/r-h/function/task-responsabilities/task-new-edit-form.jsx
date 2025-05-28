@@ -8,6 +8,8 @@ import { Box, Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { showError } from 'src/utils/toast-error';
+
 import { TASK_NATURE_OPTIONS } from 'src/_mock';
 import { createDutyResponsibility, updateDutyResponsibility } from 'src/actions/task';
 
@@ -42,6 +44,7 @@ export function TaskNewEditForm({ currentProduct }) {
   });
 
   const {
+    setError,
     reset,
     handleSubmit,
     formState: { isSubmitting },
@@ -71,6 +74,8 @@ export function TaskNewEditForm({ currentProduct }) {
       router.push(paths.dashboard.rh.fonction.taskResp);
       console.info('DATA', updatedData);
     } catch (error) {
+      showError(error, setError);
+
       console.error(error);
     }
   });
