@@ -129,13 +129,16 @@ export function StockListView() {
     { entity: 'banks', url: 'hr/lookups/identification/bank' },
     { entity: 'departments', url: 'hr/lookups/identification/department' },
     { entity: 'sites', url: 'settings/lookups/sites' },
+    { entity: 'measurementUnits', url: 'settings/lookups/measurement-units' },
   ]);
 
   const banks = dataLookups.banks;
   const departments = dataLookups.departments;
   const sites = dataLookups.sites;
+  const measurementUnits = dataLookups.measurementUnits;
 
   const FILTERS_OPTIONS = [
+    { id: 'unit_measure_id', type: 'select', options: measurementUnits, label: 'Unit', serverData: true },
     // { id: 'id', type: 'input', label: 'ID', inputType: 'number' },
     // {
     //   id: 'full_name',
@@ -206,6 +209,7 @@ export function StockListView() {
 
   const handleFilter = useCallback(
     async (data) => {
+      console.log('data', data);
       try {
         const response = await getFiltredStocks(data);
         setTableData(response.data?.data?.records);

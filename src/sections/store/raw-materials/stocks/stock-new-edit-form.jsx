@@ -13,6 +13,7 @@ import { useRouter } from 'src/routes/hooks';
 import { uploadMedia } from 'src/actions/media';
 import { useMultiLookups } from 'src/actions/lookups';
 import { TYPE_OPTIONS } from 'src/_mock/stores/raw-materials/data';
+import { useGetFamilies } from 'src/actions/settings/identification/raw-materials';
 import { createEntity, updateEntity } from 'src/actions/stores/raw-materials/stocks';
 
 import { toast } from 'src/components/snackbar';
@@ -55,7 +56,6 @@ export function StockNewEditForm({ currentStock }) {
   const router = useRouter();
         
   const { dataLookups, dataLoading } = useMultiLookups([
-    { entity: 'families', url: 'settings/lookups/families', params: { group: 1, only_parent: true }},
     { entity: 'workshops', url: 'settings/lookups/workshops' },
     { entity: 'categories', url: 'settings/lookups/categories', params: { group: 1 }},
     { entity: 'units', url: 'settings/lookups/measurement-units' },
@@ -63,7 +63,7 @@ export function StockNewEditForm({ currentStock }) {
     { entity: 'conditionings', url: 'settings/lookups/conditionings' },
     { entity: 'storageAreas', url: 'inventory/lookups/storage-areas' },
   ]);
-  const families = dataLookups.families || [];
+  const { families: parentFamilies, familiesLoading } = useGetFamilies(1, true);
   const workshops = dataLookups.workshops || [];
   const categories = dataLookups.categories || [];
   const units = dataLookups.units || [];
@@ -75,6 +75,7 @@ export function StockNewEditForm({ currentStock }) {
   const defaultValues = {
     builder_code: '',
     supplier_code: '',
+    family_parent_id: '',
     family_id: '',
     workshop_id: '',
     category_id: '',
@@ -124,6 +125,7 @@ export function StockNewEditForm({ currentStock }) {
     handleSubmit,
     setValue,
     control,
+    watch,
     formState: { isSubmitting },
   } = methods;
 
@@ -132,12 +134,23 @@ export function StockNewEditForm({ currentStock }) {
   const { fields: conditioningFields } = useFieldArray({ control, name: 'conditionings', keyName: 'fieldKey' });
   const { fields: storageAreaFields, append: appendStorageArea, remove: removeStorageArea } = useFieldArray({ control, name: 'storage_areas', keyName: 'fieldKey' });
 
+  // parent-child family select logic
+  const selectedParent = watch('family_parent_id');
+  const parentOptions = parentFamilies.map((f) => ({ value: f.id.toString(), text: f.name }));
+  const childOptions = parentFamilies.find((f) => f.id.toString() === selectedParent)?.children || [];
+  const childOptionsData = childOptions.map((c) => ({ value: c.id.toString(), text: c.name }));
+  // clear child selection when parent changes
+  useEffect(() => {
+    setValue('family_id', '');
+  }, [selectedParent, setValue]);
+
   // Reset form when lookups (and optionally stock data) are ready, for both new and edit
   useEffect(() => {
-    if (!dataLoading && dimensionDefs.length > 0 && conditionDefs.length > 0) {
+    if (!dataLoading && !familiesLoading && dimensionDefs.length > 0 && conditionDefs.length > 0) {
       reset({
         builder_code: currentStock?.builder_code || '',
         supplier_code: currentStock?.supplier_code || '',
+        family_parent_id: currentStock?.family?.parent_id?.toString() || '',
         family_id: currentStock?.family?.id?.toString() || '',
         workshop_id: currentStock?.workshop_id?.toString() || '',
         category_id: currentStock?.category?.id?.toString() || '',
@@ -163,7 +176,7 @@ export function StockNewEditForm({ currentStock }) {
         fees: currentStock?.fees || { douan: '', position: '' },
       });
     }
-  }, [dataLoading, dimensionDefs, conditionDefs, currentStock, reset]);
+  }, [dataLoading, familiesLoading, dimensionDefs, conditionDefs, currentStock, reset]);
 
   const onDropImage = async (acceptedFiles) => {
     const value = acceptedFiles[0];
@@ -218,7 +231,7 @@ export function StockNewEditForm({ currentStock }) {
     } catch (error) {
       console.error(error);
       toast.error(error?.message || 'Operation failed');
-    }
+    } 
   });
 
   const renderDetails = () => (
@@ -235,10 +248,13 @@ export function StockNewEditForm({ currentStock }) {
           </Grid>
         </Grid>
         <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="family_id" label="Famille" data={families} />
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Field.Lookup name="family_parent_id" label="Famille Principale" data={parentOptions} />
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Field.Lookup name="family_id" label="Sous famille" data={childOptionsData} />
+          </Grid>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Field.Lookup name="workshop_id" label="Atelier" data={workshops} />
           </Grid>
         </Grid>
@@ -393,7 +409,7 @@ export function StockNewEditForm({ currentStock }) {
   return (
     <Form methods={methods} onSubmit={onSubmit}>
       <Stack spacing={5} sx={{ mx: 'auto', maxWidth: { xs: 720, xl: 1080 } }}>
-        {dataLoading ? (
+        {(dataLoading || familiesLoading) ? (
           <CircularProgress />
         ) : (
           <>
