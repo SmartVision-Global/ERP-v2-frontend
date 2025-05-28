@@ -234,7 +234,7 @@ export function RecoveryListView() {
       const newData = {
         ...editedFilters,
         limit: newModel.pageSize,
-        offset: newModel.page,
+        offset: newModel.page * newModel.pageSize,
       };
       const response = await getFiltredRecoveries(newData);
       setTableData(response.data?.data?.records);

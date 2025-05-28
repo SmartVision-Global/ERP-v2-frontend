@@ -1,5 +1,5 @@
-import useSWR from 'swr';
 import { useMemo } from 'react';
+import useSWR, { mutate } from 'swr';
 
 // import { fetcher, endpoints } from 'src/lib/axios';
 import axios, { fetcher, endpoints } from 'src/lib/axios';
@@ -72,7 +72,7 @@ export async function createPersonal(data) {
   // const data = { directionData };
   await axios.post(ENDPOINT, data);
 
-  //   mutate(endpoints.site);
+  mutate(ENDPOINT);
 }
 
 export async function updatePersonal(id, data) {
@@ -81,7 +81,7 @@ export async function updatePersonal(id, data) {
    */
   // const data = { directionData };
   await axios.patch(`${ENDPOINT}/${id}`, data);
-  //   mutate(endpoints.site);
+  mutate(ENDPOINT);
 }
 
 export async function validatePersonal(id, data) {
@@ -90,5 +90,5 @@ export async function validatePersonal(id, data) {
    */
   // const data = { directionData };
   await axios.post(`${ENDPOINT}/${id}/validate`, data);
-  //   mutate(endpoints.site);
+  mutate(ENDPOINT);
 }

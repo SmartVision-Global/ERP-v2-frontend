@@ -8,6 +8,8 @@ import { Box, Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { showError } from 'src/utils/toast-error';
+
 import { CAREER_TYPE_OPTIONS } from 'src/_mock';
 import { createCareerKnowledge, updateCareerKnowledge } from 'src/actions/knowledge-career';
 
@@ -57,6 +59,7 @@ export function CareerNewEditForm({ currentProduct }) {
   });
 
   const {
+    setError,
     watch,
     handleSubmit,
     formState: { isSubmitting },
@@ -105,6 +108,8 @@ export function CareerNewEditForm({ currentProduct }) {
       router.push(paths.dashboard.rh.fonction.careerPath);
       console.info('DATA', updatedData);
     } catch (error) {
+      showError(error, setError);
+
       console.error(error);
     }
   });

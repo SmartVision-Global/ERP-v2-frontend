@@ -2,11 +2,11 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
-import { PersonalCreateView } from 'src/sections/r-h/personal/actif/view';
+import { StockCreateView } from 'src/sections/store/raw-materials/stocks/view';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Ajouter personnel | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `Ajouter stock | Dashboard - ${CONFIG.appName}` };
 
 export default function Page() {
   return (
@@ -15,7 +15,7 @@ export default function Page() {
         <title> {metadata.title}</title>
       </Helmet>
 
-      <PersonalCreateView />
+      <StockCreateView />
     </>
   );
 }

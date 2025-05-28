@@ -10,6 +10,8 @@ import { Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { showError } from 'src/utils/toast-error';
+
 import { RECOVERY_TYPE_OPTIONS } from 'src/_mock';
 import { useGetLookups } from 'src/actions/lookups';
 import { useGetOvertimeList } from 'src/actions/overtime';
@@ -155,6 +157,7 @@ export function RecoveryNewEditForm({ currentTaux }) {
   });
 
   const {
+    setError,
     watch,
     reset,
     handleSubmit,
@@ -206,6 +209,7 @@ export function RecoveryNewEditForm({ currentTaux }) {
       router.push(paths.dashboard.rh.entries.recovery);
       console.info('DATA', data);
     } catch (error) {
+      showError(error, setError);
       console.error(error);
     }
   });

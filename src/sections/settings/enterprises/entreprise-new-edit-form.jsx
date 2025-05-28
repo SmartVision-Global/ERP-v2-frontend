@@ -9,6 +9,8 @@ import { Box, Card, Chip, Stack, Divider, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { showError } from 'src/utils/toast-error';
+
 import { createSociety, updateSociety } from 'src/actions/society';
 
 import { toast } from 'src/components/snackbar';
@@ -81,6 +83,7 @@ export function EntrepriseNewEditForm({ currentProduct }) {
   });
 
   const {
+    setError,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
@@ -102,6 +105,8 @@ export function EntrepriseNewEditForm({ currentProduct }) {
       router.push(paths.dashboard.settings.society.root);
       console.info('DATA', updatedData);
     } catch (error) {
+      showError(error, setError);
+
       console.error(error);
     }
   });

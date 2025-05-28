@@ -11,6 +11,7 @@ import { Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { showError } from 'src/utils/toast-error';
 import { calculateDifference } from 'src/utils/format-time';
 
 import { useGetLookups } from 'src/actions/lookups';
@@ -55,6 +56,7 @@ export function PermanenceNewEditForm({ currentTaux }) {
   });
 
   const {
+    setError,
     setValue,
     watch,
     reset,
@@ -89,6 +91,8 @@ export function PermanenceNewEditForm({ currentTaux }) {
       router.push(paths.dashboard.rh.entries.permanence);
       console.info('DATA', data);
     } catch (error) {
+      showError(error, setError);
+
       console.error(error);
     }
   });

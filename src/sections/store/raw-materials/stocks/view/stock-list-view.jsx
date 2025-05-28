@@ -1,4 +1,3 @@
-import { useBoolean } from 'minimal-shared/hooks';
 import { useState, useEffect, forwardRef, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
@@ -16,8 +15,7 @@ import { RouterLink } from 'src/routes/components';
 import { CONFIG } from 'src/global-config';
 import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetStocks } from 'src/actions/stores/raw-materials/stocks';
-import { useGetPersonals, validatePersonal, getFiltredPersonals } from 'src/actions/personal';
+import { useGetStocks, getFiltredStocks } from 'src/actions/stores/raw-materials/stocks';
 import {
   COMMUN_SEXE_OPTIONS,
   PRODUCT_STATUS_OPTIONS,
@@ -29,48 +27,27 @@ import {
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-
-import { GridActionsClickItem } from 'src/sections/r-h/entries/recovery/view';
 
 import {
   RenderCellId,
-  RenderCellSex,
-  RenderCellNss,
-  RenderCellRib,
-  RenderCellUser,
-  RenderCellBanq,
-  RenderCellGrid,
-  RenderCellSite,
-  RenderCellPrice,
-  RenderCellBlood,
-  RenderCellPhone,
-  RenderCellAdress,
+  RenderCellCode,
+  RenderCellSupplierCode,
+  RenderCellBuilderCode,
+  RenderCellDesignation,
+  RenderCellQuantity,
   RenderCellStatus,
-  RenderCellCompany,
-  RenderCellFiliale,
-  RenderCellSection,
-  RenderCellAtelier,
-  RenderCellContract,
-  RenderCellBirthday,
-  RenderCellMilitary,
-  RenderCellTeamType,
-  RenderCellFunction,
-  RenderCellCreatedAt,
-  RenderCellDirection,
-  RenderCellUpdatedAt,
-  RenderCellExpiration,
-  RenderCellDepartment,
-  RenderCellServiceEnd,
-  RenderCellNationality,
-  RenderCellPaymantType,
-  RenderCellServiceStart,
-  RenderCellBirthLocation,
-  RenderCellContractEndAt,
-  RenderCellFamilySituation,
-  RenderCellContractStartAt,
-} from '../actif-table-row';
+  RenderCellUnit,
+  RenderCellAlert,
+  RenderCellMin,
+  RenderCellUnknown1,
+  RenderCellUnknown2,
+  RenderCellFamily,
+  RenderCellSousFamilles,
+  RenderCellCategory,
+  RenderCellLocation,
+  RenderCellCreatedDate,
+} from '../stock-table-row';
 
 // ----------------------------------------------------------------------
 
@@ -78,37 +55,137 @@ const HIDE_COLUMNS = { category: false };
 
 const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
+const columns = [
+  {
+    field: 'id',
+    headerName: 'ID',
+    width: 100,
+    minWidth: 100,
+    renderCell: (params) => <RenderCellId params={params} />,
+  },
+  { field: 'code', headerName: 'Code', flex: 1, minWidth: 150 },
+  { field: 'supplier_code', headerName: 'Supplier Code', flex: 1, minWidth: 150 },
+  { field: 'builder_code', headerName: 'Builder Code', flex: 1, minWidth: 150 },
+  { field: 'designation', headerName: 'Designation', flex: 1.5, minWidth: 200 },
+  { field: 'quantity', headerName: 'Quantity', type: 'number', width: 120, minWidth: 120 },
+  { field: 'status', headerName: 'Status', width: 150, minWidth: 150 },
+  {
+    field: 'unit_measure',
+    headerName: 'Unit',
+    flex: 1,
+    minWidth: 120,
+    renderCell: (params) => <RenderCellUnit params={params} />,
+  },
+  { field: 'alert', headerName: 'Quantité Alert', flex: 1, minWidth: 100 },
+  { field: 'min', headerName: 'Min', type: 'number', width: 70, minWidth: 70 },
+  {
+    field: 'unknown1',
+    headerName: 'Consommation journalière prévisionnelle',
+    type: 'number',
+    width: 150,
+    minWidth: 120,
+    renderCell: () => <RenderCellUnknown1 />,
+  },
+  {
+    field: 'unknown2',
+    headerName: 'Journée de consommation prévisionnelle',
+    type: 'number',
+    width: 150,
+    minWidth: 120,
+    renderCell: () => <RenderCellUnknown2 />,
+  },
+  {
+    field: 'family',
+    headerName: 'Family',
+    flex: 1,
+    minWidth: 150,
+    renderCell: (params) => <RenderCellFamily params={params} />,
+  },
+  {
+    field: 'unknown3',
+    headerName: 'Sous familles',
+    flex: 1,
+    minWidth: 150,
+    renderCell: () => <RenderCellSousFamilles />,
+  },
+  {
+    field: 'category',
+    headerName: 'Category',
+    flex: 1,
+    minWidth: 150,
+    renderCell: (params) => <RenderCellCategory params={params} />,
+  },
+  {
+    field: 'location',
+    headerName: 'Location',
+    flex: 1,
+    minWidth: 150,
+    renderCell: (params) => <RenderCellLocation params={params} />,
+  },
+  {
+    field: 'created_date',
+    headerName: 'Created Date',
+    flex: 1,
+    minWidth: 150,
+    renderCell: (params) => <RenderCellCreatedDate params={params} />,
+  },
+  {
+    type: 'actions',
+    field: 'actions',
+    headerName: ' ',
+    align: 'right',
+    headerAlign: 'right',
+    width: 80,
+    sortable: false,
+    filterable: false,
+    disableColumnMenu: true,
+    getActions: (params) => [
+      <GridActionsLinkItem
+        showInMenu
+        icon={<Iconify icon="solar:pen-bold" />}
+        label="Modifier"
+        href={paths.dashboard.store.rawMaterials.editStock(params.row.id)}
+      />,
+    ],
+  },
+];
+
 // ----------------------------------------------------------------------
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 
 export function StockListView() {
-  const confirmDialog = useBoolean();
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: PAGE_SIZE,
   });
-  const [selectedRow, setSelectedRow] = useState('');
-  const { personals, personalsLoading, personalsCount } = useGetPersonals({ limit: 2, offset: 0 });
-  const { stocks, stocksLoading, stocksCount } = useGetStocks(1);
-  console.log('stocks', stocks);
-  const [rowCount, setRowCount] = useState(personalsCount);
+  const { stocks, stocksLoading, stocksCount } = useGetStocks({
+    limit: paginationModel.pageSize,
+    offset: paginationModel.page,
+  });
+  const [rowCount, setRowCount] = useState(stocksCount);
+  const [tableData, setTableData] = useState(stocks);
 
   const { dataLookups } = useMultiLookups([
     { entity: 'personalsLookup', url: 'hr/lookups/personals' },
     { entity: 'banks', url: 'hr/lookups/identification/bank' },
     { entity: 'departments', url: 'hr/lookups/identification/department' },
     { entity: 'sites', url: 'settings/lookups/sites' },
+    { entity: 'measurementUnits', url: 'settings/lookups/measurement-units' },
   ]);
-  const handleOpenValidateConfirmDialog = (id) => {
-    confirmDialog.onTrue();
-    setSelectedRow(id);
-  };
-  // const personalsLookup = dataLookups.personalsLookup;
+
   const banks = dataLookups.banks;
   const departments = dataLookups.departments;
   const sites = dataLookups.sites;
+  const measurementUnits = dataLookups.measurementUnits;
 
   const FILTERS_OPTIONS = [
+    {
+      id: 'unit_measure_id',
+      type: 'select',
+      options: measurementUnits,
+      label: 'Unit',
+      serverData: true,
+    },
     // { id: 'id', type: 'input', label: 'ID', inputType: 'number' },
     // {
     //   id: 'full_name',
@@ -149,22 +226,19 @@ export function StockListView() {
     },
     { id: 'site', type: 'select', options: sites, label: 'Site', serverData: true },
   ];
-  const [tableData, setTableData] = useState(personals);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (personals.length) {
-      setTableData(personals);
-      setRowCount(personalsCount);
-    }
-  }, [personals, personalsCount]);
+    setTableData(stocks);
+    setRowCount(stocksCount);
+  }, [stocks, stocksCount]);
 
   const handleReset = useCallback(async () => {
     try {
-      const response = await getFiltredPersonals({
+      const response = await getFiltredStocks({
         limit: PAGE_SIZE,
         offset: 0,
       });
@@ -182,8 +256,9 @@ export function StockListView() {
 
   const handleFilter = useCallback(
     async (data) => {
+      console.log('data', data);
       try {
-        const response = await getFiltredPersonals(data);
+        const response = await getFiltredStocks(data);
         setTableData(response.data?.data?.records);
         setRowCount(response.data?.data?.total);
       } catch (error) {
@@ -200,342 +275,13 @@ export function StockListView() {
         limit: newModel.pageSize,
         offset: newModel.page,
       };
-      const response = await getFiltredPersonals(newData);
+      const response = await getFiltredStocks(newData);
       setTableData(response.data?.data?.records);
       setPaginationModel(newModel);
     } catch (error) {
       console.log('error in pagination search request', error);
     }
   };
-
-  const renderConfirmValidationDialog = () => (
-    <ConfirmDialog
-      open={confirmDialog.value}
-      onClose={confirmDialog.onFalse}
-      title="Valider récupération"
-      content={
-        // <>
-        //   Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
-        // </>
-        <Box my={2}>
-          <TextField
-            // value={message}
-            // onChange={(e) => setMessage(e.target.value)}
-            label="Message"
-            fullWidth
-            multiline
-            rows={3}
-          />
-        </Box>
-      }
-      action={
-        <Button
-          variant="contained"
-          color="info"
-          onClick={async () => {
-            // handleDeleteRows();
-            await validatePersonal(selectedRow, { message: 'validation' });
-            confirmDialog.onFalse();
-          }}
-        >
-          Valider
-        </Button>
-      }
-    />
-  );
-
-  const columns = [
-    { field: 'category', headerName: 'Category', filterable: false },
-    {
-      field: 'id',
-      headerName: 'ID',
-      flex: 1,
-      minWidth: 100,
-      hideable: false,
-      renderCell: (params) => <RenderCellId params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'name',
-      headerName: 'Nom-Prénom',
-      flex: 1,
-      minWidth: 260,
-      hideable: false,
-      renderCell: (params) => <RenderCellUser params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'expiration',
-      headerName: 'Expiration',
-      flex: 1,
-      minWidth: 260,
-      renderCell: (params) => <RenderCellExpiration params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'status',
-      headerName: 'Etat',
-      width: 110,
-      renderCell: (params) => <RenderCellStatus params={params} />,
-    },
-
-    {
-      field: 'sex',
-      headerName: 'Sex',
-      minWidth: 110,
-      renderCell: (params) => <RenderCellSex params={params} />,
-    },
-
-    // Declaration
-    {
-      field: 'company',
-      headerName: 'Entreprise',
-      minWidth: 260,
-      renderCell: (params) => <RenderCellCompany params={params} />,
-    },
-    {
-      field: 'site',
-      headerName: 'Site',
-      minWidth: 120,
-      renderCell: (params) => <RenderCellSite params={params} />,
-    },
-    {
-      field: 'fonction',
-      headerName: 'Fonction',
-      width: 210,
-      renderCell: (params) => <RenderCellFunction params={params} />,
-    },
-    {
-      field: 'net',
-      headerName: 'Salaire net á payer',
-      width: 210,
-      renderCell: (params) => <RenderCellPrice params={params} />,
-    },
-    {
-      field: 'service_start',
-      headerName: 'Démarrage du service',
-      width: 200,
-      renderCell: (params) => <RenderCellServiceStart params={params} />,
-    },
-    {
-      field: 'service_end_date',
-      headerName: 'Fin du service',
-      width: 200,
-      renderCell: (params) => <RenderCellServiceEnd params={params} />,
-    },
-
-    {
-      field: 'blood_type',
-      headerName: 'Groupe sanguin',
-      flex: 1,
-      minWidth: 150,
-      renderCell: (params) => <RenderCellBlood params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'nationality',
-      headerName: 'Nationalité',
-      flex: 1,
-      minWidth: 150,
-      renderCell: (params) => <RenderCellNationality params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'birthday',
-      headerName: 'Date de naissance',
-      flex: 1,
-      minWidth: 150,
-      renderCell: (params) => <RenderCellBirthday params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'birthday_location',
-      headerName: 'Lieu de naissance',
-      flex: 1,
-      minWidth: 150,
-      renderCell: (params) => (
-        <RenderCellBirthLocation params={params} href={paths.dashboard.root} />
-      ),
-    },
-
-    {
-      field: 'military',
-      headerName: 'Situation Service National',
-      flex: 1,
-      minWidth: 200,
-      renderCell: (params) => <RenderCellMilitary params={params} href={paths.dashboard.root} />,
-    },
-
-    {
-      field: 'nss',
-      headerName: 'Numéro de sécurité sociale',
-      flex: 1,
-      minWidth: 200,
-      renderCell: (params) => <RenderCellNss params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'address',
-      headerName: 'Address',
-      flex: 1,
-      minWidth: 200,
-      renderCell: (params) => <RenderCellAdress params={params} href={paths.dashboard.root} />,
-    },
-
-    {
-      field: 'family_situation',
-      headerName: 'Situation familiale',
-      flex: 1,
-      minWidth: 200,
-      renderCell: (params) => (
-        <RenderCellFamilySituation params={params} href={paths.dashboard.root} />
-      ),
-    },
-
-    {
-      field: 'department',
-      headerName: 'Département',
-      flex: 1,
-      minWidth: 260,
-      renderCell: (params) => <RenderCellDepartment params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'direction',
-      headerName: 'Direction',
-      flex: 1,
-      minWidth: 200,
-      renderCell: (params) => <RenderCellDirection params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'filiale',
-      headerName: 'Filiale',
-      flex: 1,
-      minWidth: 200,
-      renderCell: (params) => <RenderCellFiliale params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'section',
-      headerName: 'Section',
-      flex: 1,
-      minWidth: 200,
-      renderCell: (params) => <RenderCellSection params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'atelier',
-      headerName: 'Atelier',
-      flex: 1,
-      minWidth: 200,
-      renderCell: (params) => <RenderCellAtelier params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'paymant_type',
-      headerName: 'Type de payment',
-      flex: 1,
-      minWidth: 200,
-      renderCell: (params) => <RenderCellPaymantType params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'banq',
-      headerName: 'Banque',
-      flex: 1,
-      minWidth: 200,
-      renderCell: (params) => <RenderCellBanq params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'rib',
-      headerName: 'Rib',
-      flex: 1,
-      minWidth: 200,
-      renderCell: (params) => <RenderCellRib params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'created_at',
-      headerName: 'Date de création',
-      flex: 1,
-      minWidth: 200,
-      renderCell: (params) => <RenderCellCreatedAt params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'updated_at',
-      headerName: 'Date de mise à jour',
-      flex: 1,
-      minWidth: 200,
-      renderCell: (params) => <RenderCellUpdatedAt params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'team_type',
-      headerName: 'Type équipe',
-      flex: 1,
-      minWidth: 200,
-      renderCell: (params) => <RenderCellTeamType params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'salary_grid',
-      headerName: 'Grille',
-      flex: 1,
-      minWidth: 240,
-      renderCell: (params) => <RenderCellGrid params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'phone',
-      headerName: 'Telephone',
-      flex: 1,
-      minWidth: 200,
-      renderCell: (params) => <RenderCellPhone params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'contrat',
-      headerName: 'Contrat',
-      width: 110,
-      renderCell: (params) => <RenderCellContract params={params} />,
-    },
-
-    {
-      field: 'from_date',
-      headerName: 'De',
-      width: 160,
-      renderCell: (params) => <RenderCellContractStartAt params={params} />,
-    },
-    {
-      field: 'to_date',
-      headerName: 'Au',
-      width: 160,
-      renderCell: (params) => <RenderCellContractEndAt params={params} />,
-    },
-    {
-      type: 'actions',
-      field: 'actions',
-      headerName: ' ',
-      align: 'right',
-      headerAlign: 'right',
-      width: 80,
-      sortable: false,
-      filterable: false,
-      disableColumnMenu: true,
-      getActions: (params) => [
-        // <GridActionsLinkItem
-        //   showInMenu
-        //   icon={<Iconify icon="solar:eye-bold" />}
-        //   label="View"
-        //   href={paths.dashboard.root}
-        // />,
-        <GridActionsClickItem
-          showInMenu
-          icon={<Iconify icon="eva:checkmark-fill" />}
-          label="Valider"
-          onClick={() => handleOpenValidateConfirmDialog(params.row.id)}
-          // href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
-        />,
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:pen-bold" />}
-          label="Modifier"
-          href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
-        />,
-
-        // <GridActionsCellItem
-        //   showInMenu
-        //   icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-        //   label="Delete"
-        //   onClick={() => handleDeleteRow(params.row.id)}
-        //   sx={{ color: 'error.main' }}
-        // />,
-      ],
-    },
-  ];
 
   const getTogglableColumns = () =>
     columns
@@ -548,18 +294,18 @@ export function StockListView() {
         <CustomBreadcrumbs
           heading="List"
           links={[
-            { name: 'Ressources humaine', href: paths.dashboard.root },
-            { name: 'Personnels', href: paths.dashboard.root },
+            { name: 'Gestion magasinage', href: paths.dashboard.root },
+            { name: 'Stocks', href: paths.dashboard.root },
             { name: 'Liste' },
           ]}
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.rh.personal.newPersonel}
+              href={paths.dashboard.store.rawMaterials.newStock}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              Ajouter Personnel
+              Ajouter Stock
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
@@ -607,7 +353,7 @@ export function StockListView() {
             rows={tableData}
             rowCount={rowCount}
             columns={columns}
-            loading={personalsLoading}
+            loading={stocksLoading}
             getRowHeight={() => 'auto'}
             paginationModel={paginationModel}
             paginationMode="server"
@@ -628,7 +374,6 @@ export function StockListView() {
           />
         </Card>
       </DashboardContent>
-      {renderConfirmValidationDialog()}
     </>
   );
 }

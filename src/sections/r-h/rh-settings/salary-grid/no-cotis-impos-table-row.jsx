@@ -61,11 +61,11 @@ export function NoCotisImposTableRow({ row, selected, onDeleteRow, index, update
     <ConfirmDialog
       open={confirmDialog.value}
       onClose={confirmDialog.onFalse}
-      title="Delete"
-      content="Are you sure want to delete?"
+      title="Supprimer"
+      content="Êtes-vous sûr de vouloir effacer?"
       action={
         <Button variant="contained" color="error" onClick={onDeleteRow}>
-          Delete
+          Supprimer
         </Button>
       }
     />
@@ -194,8 +194,16 @@ export function NoCotisImposTableRow({ row, selected, onDeleteRow, index, update
           />
         </TableCell>
         <TableCell align="right" sx={{ px: 1 }}>
-          <IconButton color={menuActions.open ? 'inherit' : 'default'} onClick={menuActions.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
+          <IconButton
+            color={menuActions.open ? 'inherit' : 'default'}
+            onClick={confirmDialog.onTrue}
+          >
+            <Iconify
+              icon="solar:trash-bin-trash-bold"
+              sx={{
+                color: 'error.main',
+              }}
+            />
           </IconButton>
         </TableCell>
       </TableRow>

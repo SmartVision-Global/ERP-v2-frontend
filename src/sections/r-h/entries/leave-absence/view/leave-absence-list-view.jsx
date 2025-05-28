@@ -247,7 +247,7 @@ export function LeaveAbsenceListView() {
       const newData = {
         ...editedFilters,
         limit: newModel.pageSize,
-        offset: newModel.page,
+        offset: newModel.page * newModel.pageSize,
       };
       const response = await getFiltredLeavesAbesences(newData);
       setTableData(response.data?.data?.records);

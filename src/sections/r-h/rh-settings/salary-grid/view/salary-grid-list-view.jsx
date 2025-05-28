@@ -162,7 +162,7 @@ export function SalaryGridListView() {
       const newData = {
         ...editedFilters,
         limit: newModel.pageSize,
-        offset: newModel.page,
+        offset: newModel.page * newModel.pageSize,
       };
       const response = await getFiltredSalaryGrids(newData);
       setTableData(response.data?.data?.records);

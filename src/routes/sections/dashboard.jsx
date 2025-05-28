@@ -298,6 +298,13 @@ const PageStoreStorageEreaList = lazy(
 const PageStoreStorageAreaNew = lazy(
   () => import('src/pages/dashboard/store/raw-materials/storage-area/new')
 );
+
+const PageStoreRawMaterialsStocksNew = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/stocks/new')
+);
+const PageStoreRawMaterialsStocksEdit = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/stocks/edit')
+);
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
 function SuspenseOutlet() {
@@ -657,6 +664,8 @@ export const dashboardRoutes = [
               { path: 'stocks', element: <PageStoreRawMaterialsStocksList /> },
               { path: 'storage-area', element: <PageStoreStorageEreaList /> },
               { path: 'storage-area/new', element: <PageStoreStorageAreaNew /> }, // Update this line
+              { path: 'stocks/new', element: <PageStoreRawMaterialsStocksNew /> },
+              { path: 'stocks/:id/edit', element: <PageStoreRawMaterialsStocksEdit /> },
             ],
           },
         ],

@@ -9,6 +9,8 @@ import { Box, Card, Stack, Divider, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { showError } from 'src/utils/toast-error';
+
 import { CALENDAR_COLOR_OPTIONS } from 'src/_mock';
 import { useGetLookups } from 'src/actions/lookups';
 import { createZone, updateZone } from 'src/actions/zone';
@@ -54,6 +56,7 @@ export function ZoneNewEditForm({ currentProduct }) {
   });
 
   const {
+    setError,
     control,
     reset,
     handleSubmit,
@@ -78,6 +81,8 @@ export function ZoneNewEditForm({ currentProduct }) {
       router.push(paths.dashboard.rh.rhSettings.zones);
       console.info('DATA', updatedData);
     } catch (error) {
+      showError(error, setError);
+
       console.error(error);
     }
   });

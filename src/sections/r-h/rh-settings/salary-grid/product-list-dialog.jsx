@@ -5,9 +5,9 @@ import Stack from '@mui/material/Stack';
 import Dialog from '@mui/material/Dialog';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { MenuItem, ListItemIcon } from '@mui/material';
 import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import InputAdornment from '@mui/material/InputAdornment';
+import { Tooltip, MenuItem, IconButton, ListItemIcon } from '@mui/material';
 
 import { useGetDeductionsCompensationsByContributoryImposable } from 'src/actions/deduction-conpensation';
 
@@ -30,7 +30,8 @@ export function ProductListDialog({
   title = 'Address book',
   type,
 }) {
-  const { deductionsCompensations } = useGetDeductionsCompensationsByContributoryImposable(type);
+  const { deductionsCompensations, deductionsCompensationsLoading } =
+    useGetDeductionsCompensationsByContributoryImposable(type);
   const [searchAddress, setSearchAddress] = useState('');
   // const [selectedRowIds, setSelectedRowIds] = useState([]);
 
@@ -104,7 +105,7 @@ export function ProductListDialog({
       field: 'type',
       headerName: 'Type',
       flex: 1,
-      minWidth: 160,
+      minWidth: 95,
       hideable: false,
       renderCell: (params) => (
         <Label variant="soft" color="info">
@@ -137,54 +138,59 @@ export function ProductListDialog({
       ),
     },
     {
-      type: 'actions',
       field: 'actions',
-      headerName: ' ',
-      align: 'right',
-      headerAlign: 'right',
-      width: 80,
-      sortable: false,
-      filterable: false,
-      disableColumnMenu: true,
-      getActions: (params) => [
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="mingcute:add-line" />}
-          label="Ajouter"
-          onClick={() => handleSelectAddress(params.row)}
-          // href={paths.dashboard.product.details(params.row.id)}
-          // href={paths.dashboard.root}
-        />,
-      ],
+      headerName: 'Actions',
+      flex: 1,
+      minWidth: 250,
+      hideable: false,
+      renderCell: (params) => (
+        <Tooltip title="Ajouter">
+          <IconButton onClick={() => handleSelectAddress(params.row)}>
+            <Iconify icon="mingcute:add-line" />
+          </IconButton>
+        </Tooltip>
+      ),
     },
+    // {
+    //   type: 'actions',
+    //   field: 'actions',
+    //   headerName: ' ',
+    //   align: 'right',
+    //   headerAlign: 'right',
+    //   width: 80,
+    //   sortable: false,
+    //   filterable: false,
+    //   disableColumnMenu: true,
+    //   getActions: (params) => [
+    //     <GridActionsLinkItem
+    //       showInMenu
+    //       icon={<Iconify icon="mingcute:add-line" />}
+    //       label="Ajouter"
+    //       onClick={() => handleSelectAddress(params.row)}
+    //       // href={paths.dashboard.product.details(params.row.id)}
+    //       // href={paths.dashboard.root}
+    //     />,
+    //   ],
+    // },
   ];
-  const productsLoading = false;
 
   const renderList = () => (
     <Scrollbar sx={{ p: 4, maxHeight: 480 }}>
       <DataGrid
-        // checkboxSelection
+        disableColumnSorting
         disableRowSelectionOnClick
+        disableColumnMenu
         rows={dataFiltered}
         columns={columns}
-        loading={productsLoading}
+        loading={deductionsCompensationsLoading}
         getRowHeight={() => 'auto'}
-        pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
-        initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-        // onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
+        pageSizeOptions={[2, 10, 20, { value: -1, label: 'All' }]}
         columnVisibilityModel={columnVisibilityModel}
         onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
-        // disableColumnFilter
         slots={{
-          // toolbar: CustomToolbarCallback,
           noRowsOverlay: () => <EmptyContent />,
           noResultsOverlay: () => <EmptyContent title="No results found" />,
         }}
-        //   slotProps={{
-        //     toolbar: { setFilterButtonEl },
-        //     panel: { anchorEl: filterButtonEl },
-        //     columnsManagement: { getTogglableColumns },
-        //   }}
         sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
       />
     </Scrollbar>

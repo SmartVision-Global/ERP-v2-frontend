@@ -132,7 +132,7 @@ export function CareerListView() {
       const newData = {
         ...editedFilters,
         limit: newModel.pageSize,
-        offset: newModel.page,
+        offset: newModel.page * newModel.pageSize,
       };
       const response = await getFiltredCareerKnowledges(newData);
       setTableData(response.data?.data?.records);
