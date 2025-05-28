@@ -65,7 +65,7 @@ export default function StorageAreaExportButton({ data }) {
 
         <MenuItem onClick={() => handleExport('csv')}>
           <ListItemIcon>
-            <Iconify icon="mdi:file-delimited-outline" /> {/* Changed icon */}
+            <Iconify icon="mdi:file-delimited-outline" />
           </ListItemIcon>
           CSV
         </MenuItem>

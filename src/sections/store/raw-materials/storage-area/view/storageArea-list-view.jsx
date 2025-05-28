@@ -7,8 +7,9 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import { TextField, FormControl, InputAdornment } from '@mui/material';
 import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
+import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { TextField, FormControl, InputAdornment, Container, CircularProgress } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -16,8 +17,7 @@ import { RouterLink } from 'src/routes/components';
 import { useGetSites } from 'src/actions/site';
 import { useGetStores } from 'src/actions/store';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetStorageAreas } from 'src/actions/storageArea';
-import { PRODUCT_STOCK_OPTIONS, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
+import { useGetStorageAreas, deleteStorageArea } from 'src/actions/storageArea';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -47,14 +47,6 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 const FILTERS_OPTIONS = [
   {
-    id: 'site',
-    type: 'select',
-    label: 'Site',
-    cols: 4,
-    width: 1,
-    options: [],
-  },
-  {
     id: 'magazin',
     type: 'select',
     label: 'Magasin',
@@ -63,7 +55,7 @@ const FILTERS_OPTIONS = [
     options: [],
   },
   {
-    id: 'entrepot',
+    id: 'enterpot',
     type: 'input',
     label: 'Entrepôt',
     cols: 4,
@@ -81,106 +73,187 @@ const FILTERS_OPTIONS = [
 export function StorageAreaListView() {
   const confirmDialog = useBoolean();
 
-  const { storageAreas, storageAreasLoading } = useGetStorageAreas({ limit: 10, offset: 0 });
+  // 1. Single source of truth for filters
+  const [filterParams, setFilterParams] = useState({
+    only_parent: true,
+    parent: null,
+    store: null,
+    code: '',
+    designation: '',
+    search: '',
+  });
+
+  // 2. Use SWR hook with filterParams
+  const { storageAreas, storageAreasLoading, storageAreasError } = useGetStorageAreas(filterParams);
+
+  // 3. Keep editedFilters just for UI state
+  const [editedFilters, setEditedFilters] = useState([]);
+
+  // 4. Update filter params when filters change
+  const handleFilterChange = (newFilters) => {
+    const updatedParams = {
+      ...filterParams,
+      store: null,
+      code: '',
+      designation: '',
+    };
+
+    newFilters.forEach((filter) => {
+      switch (filter.id) {
+        case 'magasin':
+          updatedParams.store = filter.value ? Number(filter.value) : null;
+          break;
+        case 'entrepot':
+          updatedParams.code = filter.value || '';
+          break;
+        case 'designation':
+          updatedParams.designation = filter.value || '';
+          break;
+        default:
+          break;
+      }
+    });
+
+    setFilterParams(updatedParams);
+    setEditedFilters(newFilters);
+  };
+
+  // 5. Update search in filter params
+  const handleSearch = (event) => {
+    setFilterParams((prev) => ({
+      ...prev,
+      search: event.target.value,
+    }));
+  };
+
+  // 6. Reset all filters
+  const handleReset = () => {
+    setFilterParams({
+      only_parent: true,
+      store: null,
+      code: '',
+      designation: '',
+      search: '',
+    });
+    setEditedFilters([]);
+  };
+
   const { stores } = useGetStores();
   const { sites } = useGetSites();
 
   const [tableData, setTableData] = useState([]);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
-  const [filterButtonEl, setFilterButtonEl] = useState(null);
-  const [editedFilters, setEditedFilters] = useState([]);
-
-  const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
+  const [filterButtonEl, setFilterButtonEl] = useState([]);
   const [search, setSearch] = useState('');
+  const [showForm, setShowForm] = useState(false);
+  const [selectedStorageArea, setSelectedStorageArea] = useState(null);
+  const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
+
+  const [showChildrenDialog, setShowChildrenDialog] = useState(false);
+  const [selectedChildren, setSelectedChildren] = useState([]);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [selectedParentId, setSelectedParentId] = useState(null);
+
+  const [selectedChildForEdit, setSelectedChildForEdit] = useState(null);
+  const [openChildEditDialog, setOpenChildEditDialog] = useState(false);
+
+  const [childrenParams, setChildrenParams] = useState({
+    only_parent: false,
+    parent: null,
+  });
+
+  const { storageAreas: childrenData, storageAreasLoading: childrenLoading } =
+    useGetStorageAreas(childrenParams);
 
   useEffect(() => {
-    if (storageAreas.length) {
-      setTableData(storageAreas);
+    if (storageAreasError) {
+      toast.error('Failed to get storage areas');
     }
-  }, [storageAreas]);
+
+    if (storageAreas?.length) {
+      const parentAreas = storageAreas.filter((area) => area.parent === null);
+
+      const transformedData = parentAreas.map((area) => {
+        const children = storageAreas
+          .filter((child) => child.parent?.id === area.id)
+          .map((child) => ({
+            id: child.id,
+            magazin_id: child.store?.id,
+            magazin: child.store?.designation,
+            entrepot: child.code,
+            observation: child.designation,
+            level: child.level,
+            parent_id: child.parent?.id,
+            product_type: child.product_type,
+            createdAt: child.store?.created_at,
+          }));
+
+        const parentData = {
+          id: area.id,
+          magazin_id: area.store?.id,
+          magazin: area.store?.designation,
+          entrepot: area.code,
+          observation: area.designation,
+          level: area.level,
+          parent_id: null,
+          product_type: area.product_type,
+          createdAt: area.store?.created_at,
+          children: children,
+        };
+
+        return parentData;
+      });
+
+      setTableData(transformedData);
+    }
+  }, [storageAreas, storageAreasLoading, storageAreasError]);
 
   useEffect(() => {
-    if (sites?.length) {
-      FILTERS_OPTIONS[0].options = sites.map((site) => ({
-        label: site.name,
-        value: site.id,
-      }));
-    }
     if (stores?.length) {
-      FILTERS_OPTIONS[1].options = stores.map((store) => ({
+      FILTERS_OPTIONS[0].options = stores.map((store) => ({
         label: store.designation,
         value: store.id,
       }));
     }
-  }, [sites, stores]);
+  }, [stores]);
 
-  const handleReset = () => {
-    setEditedFilters([]);
-  };
+  useEffect(() => {
+    if (childrenData?.length) {
+      const transformedChildren = childrenData
+        .filter((child) => child.parent !== null && child.parent.id === selectedParentId)
+        .map((child) => ({
+          id: child.id,
+          magazin_id: child.store?.id,
+          magazin: child.store?.designation,
+          entrepot: child.code,
+          observation: child.designation,
+          level: child.level,
+          parent_id: child.parent?.id,
+          product_type: child.product_type,
+          createdAt: child.store?.created_at,
+        }));
 
-  const filterData = useCallback(
-    (searchQuery, filters) => {
-      let filteredData = [...tableData];
-
-      if (searchQuery) {
-        filteredData = filteredData.filter((item) =>
-          Object.keys(item).some((key) => {
-            const value = item[key];
-            return (
-              typeof value === 'string' && value.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-          })
-        );
-      }
-
-      if (filters.length) {
-        filteredData = filteredData.filter((item) =>
-          filters.every((filter) => {
-            const value = filter.value;
-            switch (filter.id) {
-              case 'site':
-                return value ? item.site?.id === value : true;
-              case 'magazin':
-                return value ? item.magazin_id === value : true;
-              case 'entrepot':
-                return value ? item.entrepot?.toLowerCase().includes(value.toLowerCase()) : true;
-              case 'designation':
-                return value ? item.designation?.toLowerCase().includes(value.toLowerCase()) : true;
-              default:
-                return true;
-            }
-          })
-        );
-      }
-
-      return filteredData;
-    },
-    [tableData]
-  );
-
-  const dataFiltered = filterData(search, editedFilters);
-
-  const handleDeleteRow = useCallback(
-    (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-      toast.success('Delete success!');
-      setTableData(deleteRow);
-    },
-    [tableData]
-  );
-
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
-    toast.success('Delete success!');
-    setTableData(deleteRows);
-  }, [selectedRowIds, tableData]);
-
-  const handleSearch = (event) => {
-    setSearch(event.target.value);
-  };
+      setSelectedChildren(transformedChildren);
+    }
+  }, [childrenData, selectedParentId]);
 
   const handleStorageAreaAdded = (newStorageArea) => {
     setTableData((prev) => [...prev, newStorageArea]);
+  };
+
+  const handleFormClose = () => {
+    setShowForm(false);
+    setSelectedStorageArea(null);
+  };
+
+  const handleCloseEdit = () => {
+    setOpenEditDialog(false);
+    setSelectedStorageArea(null);
+  };
+
+  const handleChildEditClose = () => {
+    setOpenChildEditDialog(false);
+    setSelectedChildForEdit(null);
   };
 
   const columns = [
@@ -193,14 +266,7 @@ export function StorageAreaListView() {
         <RenderCellId params={params} href={paths.dashboard.store.rawMaterials.storageArea} />
       ),
     },
-    {
-      field: 'site',
-      headerName: 'Site',
-      flex: 1,
-      minWidth: 160,
-      hideable: false,
-      renderCell: (params) => <RenderCellSite params={params} />,
-    },
+
     {
       field: 'magazin',
       headerName: 'Magasin',
@@ -244,26 +310,37 @@ export function StorageAreaListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => [
-        <GridActionsLinkItem
+        <GridActionsCellItem
           showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
-          label="View"
-          // href={paths.dashboard.product.details(params.row.id)}
-          href={paths.dashboard.root}
-        />,
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:pen-bold" />}
-          label="Edit"
-          // href={paths.dashboard.product.edit(params.row.id)}
-          href={paths.dashboard.root}
+          icon={<Iconify icon="solar:users-group-rounded-bold" />}
+          label="Voir les zones enfants"
+          onClick={() => {
+            const parentId = params.row.id;
+            setSelectedParentId(parentId);
+            setChildrenParams({
+              only_parent: false,
+              parent: parentId,
+            });
+            setShowChildrenDialog(true);
+          }}
         />,
         <GridActionsCellItem
           showInMenu
-          icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-          label="Delete"
-          onClick={() => handleDeleteRow(params.row.id)}
-          sx={{ color: 'error.main' }}
+          icon={<Iconify icon="solar:pen-bold" />}
+          label="Edit"
+          onClick={() => {
+            const formData = {
+              id: params.row.id,
+              code: params.row.entrepot,
+              designation: params.row.observation,
+              store: params.row.magazin_id,
+              level: params.row.level,
+              parent_id: params.row.parent_id,
+              product_type: params.row.product_type,
+            };
+            setSelectedStorageArea(formData);
+            setOpenEditDialog(true);
+          }}
         />,
       ],
     },
@@ -284,23 +361,126 @@ export function StorageAreaListView() {
           Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
         </>
       }
-      action={
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => {
-            handleDeleteRows();
-            confirmDialog.onFalse();
-          }}
-        >
-          Delete
-        </Button>
-      }
     />
   );
 
+  // Add this function near your other render functions
+  const renderChildrenDialog = () => (
+    <Dialog
+      fullWidth
+      maxWidth="md"
+      open={showChildrenDialog}
+      onClose={() => {
+        setShowChildrenDialog(false);
+        setSelectedChildren([]);
+        setChildrenParams({ only_parent: false, parent: null });
+        setSelectedParentId(null);
+      }}
+    >
+      <DialogTitle>Zones Enfants</DialogTitle>
+      <DialogContent>
+        {childrenLoading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+            <CircularProgress />
+          </Box>
+        ) : selectedChildren.length > 0 ? (
+          <DataGrid
+            autoHeight
+            rows={selectedChildren}
+            columns={[
+              ...columns.filter((col) => col.field !== 'actions'),
+              {
+                type: 'actions',
+                field: 'actions',
+                headerName: ' ',
+                width: 80,
+                getActions: (params) => [
+                  <GridActionsCellItem
+                    showInMenu
+                    icon={<Iconify icon="solar:pen-bold" />}
+                    label="Edit"
+                    onClick={() => {
+                      const formData = {
+                        id: params.row.id,
+                        code: params.row.entrepot,
+                        designation: params.row.observation,
+                        store: params.row.magazin_id,
+                        level: params.row.level,
+                        parent_id: params.row.parent_id,
+                        product_type: params.row.product_type,
+                      };
+                      setSelectedChildForEdit(formData);
+                      setOpenChildEditDialog(true);
+                    }}
+                  />,
+                ],
+              },
+            ]}
+            disableRowSelectionOnClick
+            initialState={{ pagination: { paginationModel: { pageSize: 5 } } }}
+            pageSizeOptions={[5, 10]}
+            getRowHeight={() => 'auto'}
+          />
+        ) : (
+          <EmptyContent title="Aucune zone enfant trouvée" />
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button
+          onClick={() => {
+            setShowChildrenDialog(false);
+            setSelectedChildren([]);
+            setChildrenParams({ only_parent: false, parent: null });
+            setSelectedParentId(null);
+          }}
+        >
+          Fermer
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+
+  // Add this new dialog for editing children
+  const renderChildEditDialog = () => (
+    <Dialog fullWidth maxWidth="md" open={openChildEditDialog} onClose={handleChildEditClose}>
+      <DialogTitle>Modifier la zone enfant</DialogTitle>
+      <DialogContent>
+        <Box sx={{ pt: 3 }}>
+          {selectedChildForEdit && (
+            <StorageAreaNewEditForm
+              isEdit
+              currentStorageArea={selectedChildForEdit}
+              onStorageAreaAdded={(updatedChild) => {
+                // Update the children list
+                const updatedChildren = selectedChildren.map((child) => {
+                  if (child.id === updatedChild.id) {
+                    return {
+                      id: updatedChild.id,
+                      magazin_id: updatedChild.store,
+                      magazin: stores.find((s) => s.id === updatedChild.store)?.designation,
+                      entrepot: updatedChild.code,
+                      observation: updatedChild.designation,
+                      level: updatedChild.level,
+                      parent_id: updatedChild.parent_id,
+                      product_type: updatedChild.product_type,
+                      createdAt: child.createdAt,
+                    };
+                  }
+                  return child;
+                });
+                setSelectedChildren(updatedChildren);
+                handleChildEditClose();
+                toast.success('Zone enfant modifiée avec succès');
+              }}
+            />
+          )}
+        </Box>
+      </DialogContent>
+    </Dialog>
+  );
+
   return (
-    <>
+    <Container maxWidth={false}>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <CustomBreadcrumbs
           heading="List"
@@ -311,7 +491,7 @@ export function StorageAreaListView() {
           ]}
           action={
             <Box sx={{ display: 'flex', gap: 1 }}>
-              <StorageAreaExportButton data={dataFiltered} />
+              <StorageAreaExportButton data={tableData} />
               <Button
                 component={RouterLink}
                 href={paths.dashboard.store.rawMaterials.newStorageArea}
@@ -335,14 +515,14 @@ export function StorageAreaListView() {
           <TableToolbarCustom
             filterOptions={FILTERS_OPTIONS}
             filters={editedFilters}
-            setFilters={setEditedFilters}
+            setFilters={handleFilterChange}
             onReset={handleReset}
           />
           <Box paddingX={4} paddingY={2} sx={{}}>
             <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
               <TextField
                 fullWidth
-                value={search}
+                value={filterParams.search}
                 onChange={handleSearch}
                 placeholder="Search..."
                 slotProps={{
@@ -362,14 +542,14 @@ export function StorageAreaListView() {
             checkboxSelection
             disableColumnMenu
             disableRowSelectionOnClick
-            rows={dataFiltered}
+            rows={tableData}
             columns={columns}
             loading={storageAreasLoading}
             getRowHeight={() => 'auto'}
             pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
             onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
-            columnVisibilityModel={columnVisibilityModel}
+            columnVisibilityModel={HIDE_COLUMNS}
             onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
             slots={{
               noRowsOverlay: () => <EmptyContent />,
@@ -385,8 +565,58 @@ export function StorageAreaListView() {
         </Card>
       </DashboardContent>
 
+      {showForm ? (
+        <StorageAreaNewEditForm
+          currentStorageArea={selectedStorageArea}
+          onStorageAreaAdded={(updatedStorageArea) => {
+            const newTableData = tableData.map((item) =>
+              item.id === updatedStorageArea.id ? updatedStorageArea : item
+            );
+            setTableData(newTableData);
+            handleFormClose();
+          }}
+        />
+      ) : null}
+
       {renderConfirmDialog()}
-    </>
+      {renderChildrenDialog()}
+      {renderChildEditDialog()}
+
+      <Dialog fullWidth maxWidth="md" open={openEditDialog} onClose={handleCloseEdit}>
+        <DialogTitle>Modifier la zone de stockage</DialogTitle>
+        <DialogContent>
+          <Box sx={{ pt: 3 }}>
+            {selectedStorageArea && (
+              <StorageAreaNewEditForm
+                isEdit
+                currentStorageArea={selectedStorageArea}
+                onStorageAreaAdded={(updatedStorageArea) => {
+                  const newTableData = tableData.map((item) => {
+                    if (item.id === updatedStorageArea.id) {
+                      return {
+                        id: updatedStorageArea.id,
+                        magazin_id: updatedStorageArea.store,
+                        magazin: stores.find((s) => s.id === updatedStorageArea.store)?.designation,
+                        entrepot: updatedStorageArea.code,
+                        observation: updatedStorageArea.designation,
+                        level: updatedStorageArea.level,
+                        parent_id: updatedStorageArea.parent_id,
+                        product_type: updatedStorageArea.product_type,
+                        createdAt: item.createdAt,
+                      };
+                    }
+                    return item;
+                  });
+                  setTableData(newTableData);
+                  handleCloseEdit();
+                  toast.success('Zone de stockage modifiée avec succès');
+                }}
+              />
+            )}
+          </Box>
+        </DialogContent>
+      </Dialog>
+    </Container>
   );
 }
 
