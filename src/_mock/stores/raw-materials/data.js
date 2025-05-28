@@ -5,3 +5,10 @@ export const TYPE_OPTIONS = [
     {value: '4', label: 'Composition d\'émaux'},
     {value: '5', label: 'Produit semi-fini panneau technique'},
 ]
+
+export const IMAGE_OPTIONS = [
+    {value: 'define', label: 'Non Défini'},
+    {value: 'undefine', label: 'Défini'},
+    
+]
+

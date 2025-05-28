@@ -47,8 +47,8 @@ export function RenderCellMin({ params }) {
   return <Typography>{params.row.min}</Typography>;
 }
 
-export function RenderCellUnknown1() {
-  return <Typography>N/I</Typography>;
+export function RenderCellConsumption({ params }) {
+  return <Typography>{params.row.consumption}</Typography>;
 }
 
 export function RenderCellUnknown2() {

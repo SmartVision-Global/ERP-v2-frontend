@@ -17,11 +17,11 @@ import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useGetStocks, getFiltredStocks } from 'src/actions/stores/raw-materials/stocks';
 import {
-  COMMUN_SEXE_OPTIONS,
   PRODUCT_STATUS_OPTIONS,
   PRODUCT_PAYMANT_OPTIONS,
   PRODUCT_CONTRACT_OPTIONS,
   PRODUCT_TEAM_TYPE_OPTIONS,
+  IMAGE_OPTIONS,
 } from 'src/_mock';
 
 import { Iconify } from 'src/components/iconify';
@@ -40,7 +40,7 @@ import {
   RenderCellUnit,
   RenderCellAlert,
   RenderCellMin,
-  RenderCellUnknown1,
+  RenderCellConsumption,
   RenderCellUnknown2,
   RenderCellFamily,
   RenderCellSousFamilles,
@@ -58,22 +58,60 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 const columns = [
   { field: 'id', headerName: 'ID', width: 100, minWidth: 100, renderCell: (params) => <RenderCellId params={params} /> },
   { field: 'code', headerName: 'Code', flex: 1, minWidth: 150 },
-  { field: 'supplier_code', headerName: 'Supplier Code', flex: 1, minWidth: 150 },
-  { field: 'builder_code', headerName: 'Builder Code', flex: 1, minWidth: 150 },
-  { field: 'designation', headerName: 'Designation', flex: 1.5, minWidth: 200 },
-  { field: 'quantity', headerName: 'Quantity', type: 'number', width: 120, minWidth: 120 },
-  { field: 'status', headerName: 'Status', width: 150, minWidth: 150 },
+  { field: 'supplier_code', headerName: 'Supplier Code', flex: 1, minWidth: 120 },
+  { field: 'builder_code', headerName: 'Builder Code', flex: 1, minWidth: 120 },
+  { field: 'designation', headerName: 'Designation', flex: 1.5, minWidth: 120 },
+  { field: 'quantity', headerName: 'Quantity', type: 'number', width: 100, minWidth: 100 },
+  { field: 'status', headerName: 'Status', width: 100, minWidth: 100 },
   {
     field: 'unit_measure',
     headerName: 'Unit',
     flex: 1,
-    minWidth: 120,
+    minWidth: 60,
     renderCell: (params) => <RenderCellUnit params={params} />,
   },
-  { field: 'alert', headerName: 'Quantité Alert', flex: 1, minWidth: 100 },
-  { field: 'min', headerName: 'Min', type: 'number', width: 70, minWidth: 70 },
-  { field: 'unknown1', headerName: 'Consommation journalière prévisionnelle', type: 'number', width: 150, minWidth: 120, renderCell: () => <RenderCellUnknown1 /> },
-  { field: 'unknown2', headerName: 'Journée de consommation prévisionnelle', type: 'number', width: 150, minWidth: 120, renderCell: () => <RenderCellUnknown2 /> },
+  {
+    field: 'alert',
+    headerName: 'Quantité Alert',
+    flex: 1,
+    minWidth: 100,
+    headerClassName: 'alert-column',
+    cellClassName: 'alert-column',
+  },
+  {
+    field: 'min',
+    headerName: 'Min',
+    type: 'number',
+    width: 70,
+    minWidth: 70,
+    headerClassName: 'min-column',
+    cellClassName: 'min-column',
+  },
+  {
+    field: 'consumption',
+    headerName: 'Consommation journalière prévisionnelle',
+    headerClassName: 'consumption-column',
+    cellClassName: 'consumption-column',
+    renderHeader: () => (
+      <div style={{ whiteSpace: 'normal', lineHeight: 1.2, textAlign: 'center', fontWeight: 'bold' }}>
+        Consommation<br />journalière<br />prévisionnelle
+      </div>
+    ),
+    type: 'number',
+    width: 150,
+    minWidth: 120,
+    renderCell: (params) => <RenderCellConsumption params={params} />,
+  },
+  {
+    field: 'unknown2',
+    headerName: 'Journée de consommation prévisionnelle',
+    type: 'number',
+    width: 150,
+    minWidth: 120,
+    renderCell: () => <RenderCellUnknown2 />,
+    headerClassName: 'unknown2-column',
+    cellClassName: 'unknown2-column',
+  },
   { field: 'family', headerName: 'Family', flex: 1, minWidth: 150, renderCell: (params) => <RenderCellFamily params={params} /> },
   { field: 'unknown3', headerName: 'Sous familles', flex: 1, minWidth: 150, renderCell: () => <RenderCellSousFamilles /> },
   { field: 'category', headerName: 'Category', flex: 1, minWidth: 150, renderCell: (params) => <RenderCellCategory params={params} /> },
@@ -112,6 +150,8 @@ const columns = [
   },
 ];
 
+
+
 // ----------------------------------------------------------------------
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 
@@ -126,59 +166,39 @@ export function StockListView() {
 
   const { dataLookups } = useMultiLookups([
     { entity: 'personalsLookup', url: 'hr/lookups/personals' },
-    { entity: 'banks', url: 'hr/lookups/identification/bank' },
-    { entity: 'departments', url: 'hr/lookups/identification/department' },
-    { entity: 'sites', url: 'settings/lookups/sites' },
     { entity: 'measurementUnits', url: 'settings/lookups/measurement-units' },
+    { entity: 'categories', url: 'settings/lookups/categories', params: { group: 1 } },
+    { entity: 'families', url: 'settings/lookups/families', params: { group: 1 } },
+    { entity: 'stores', url: 'settings/lookups/stores' },
   ]);
 
-  const banks = dataLookups.banks;
-  const departments = dataLookups.departments;
-  const sites = dataLookups.sites;
   const measurementUnits = dataLookups.measurementUnits;
+  const categories = dataLookups.categories;
+  const families = dataLookups.families;
+  const stores = dataLookups.stores;
 
   const FILTERS_OPTIONS = [
-    { id: 'unit_measure_id', type: 'select', options: measurementUnits, label: 'Unit', serverData: true },
-    // { id: 'id', type: 'input', label: 'ID', inputType: 'number' },
-    // {
-    //   id: 'full_name',
-    //   type: 'select',
-    //   options: personalsLookup,
-    //   label: 'Nom-Prénom',
-    //   serverData: true,
-    // },
-    { id: 'gender', type: 'select', options: COMMUN_SEXE_OPTIONS, label: 'Sexe' },
+    { id: 'store', type: 'select', options: stores, label: 'Magasin', serverData: true },
+    { id: 'code', type: 'input', label: 'Code' },
+    { id: 'supplier_code', type: 'input', label: 'Supplier Code' },
+    { id: 'designation', type: 'input', label: 'Designation' },
     { id: 'status', type: 'select', options: PRODUCT_STATUS_OPTIONS, label: 'Etat' },
+    { id: 'unit_measure', type: 'select', options: measurementUnits, label: 'Unit', serverData: true },
+    { id: 'category', type: 'select', options: categories, label: 'Category', serverData: true },
+    { id: 'family', type: 'select', options: families, label: 'Family', serverData: true },
+    { id: 'image', type: 'select', options: IMAGE_OPTIONS, label: 'Image' },
+    
     {
-      id: 'payment_type',
-      type: 'select',
-      options: PRODUCT_PAYMANT_OPTIONS,
-      label: 'Type de paiement',
+      id: 'created_date_start',
+      type: 'date-range',
+      label: 'Date de création',
+      operatorMin: 'gte',
+      operatorMax: 'lte',
+      cols: 3,
+      width: 1,
     },
-    { id: 'job_regime', type: 'select', options: PRODUCT_TEAM_TYPE_OPTIONS, label: 'Type équipe' },
-
-    { id: 'bank_id', type: 'select', options: banks, label: 'Banque', serverData: true },
-    {
-      id: 'contract_type',
-      type: 'select',
-      options: PRODUCT_CONTRACT_OPTIONS,
-      label: 'Type de contrat',
-    },
-    // {
-    //   id: 'workDepartment',
-    //   type: 'select',
-    //   options: PRODUCT_WORK_DEPARTEMENT_OPTIONS,
-    //   label: 'Lieu de travail',
-    // },
-    {
-      id: 'departement',
-      type: 'select',
-      options: departments,
-      label: 'Département',
-      serverData: true,
-    },
-    { id: 'site', type: 'select', options: sites, label: 'Site', serverData: true },
   ];
+  
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState({});
 
@@ -325,7 +345,13 @@ export function StockListView() {
               panel: { anchorEl: filterButtonEl },
               columnsManagement: { getTogglableColumns },
             }}
-            sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
+            sx={{
+              [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' },
+              '& .alert-column': { backgroundColor: '#FFEFCE' },
+              '& .min-column': { backgroundColor: '#FCD1D1' },
+              '& .consumption-column': { backgroundColor: '#BFDEFF' },
+              '& .unknown2-column': { backgroundColor: '#C7F1E5' },
+            }}
           />
         </Card>
       </DashboardContent>
