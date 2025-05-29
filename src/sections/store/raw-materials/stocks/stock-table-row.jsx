@@ -59,7 +59,7 @@ export function RenderCellFamily({ params }) {
   return <Typography>{params.row.family?.parent?.name ?? 'N/I'}</Typography>;
 }
 
-export function RenderCellSousFamilles({ params }) {
+export function RenderCellSubFamilies({ params }) {
   return <Typography>{params.row.family?.name ?? 'N/I'}</Typography>;
 }
 

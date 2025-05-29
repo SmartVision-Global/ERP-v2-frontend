@@ -46,7 +46,7 @@ import {
   RenderCellConsumption,
   RenderCellUnknown2,
   RenderCellFamily,
-  RenderCellSousFamilles,
+  RenderCellSubFamilies,
   RenderCellCategory,
   RenderCellLocation,
   RenderCellCreatedDate,
@@ -116,7 +116,7 @@ const columns = [
     cellClassName: 'unknown2-column',
   },
   { field: 'family', headerName: 'Family', flex: 1, minWidth: 150, renderCell: (params) => <RenderCellFamily params={params} /> },
-  { field: 'sub_family', headerName: 'Sous familles', flex: 1, minWidth: 150, renderCell: (params) =>  <RenderCellSousFamilles params={params} /> },
+  { field: 'sub_family', headerName: 'Sous familles', flex: 1, minWidth: 150, renderCell: (params) =>  <RenderCellSubFamilies params={params} /> },
   { field: 'category', headerName: 'Category', flex: 1, minWidth: 150, renderCell: (params) => <RenderCellCategory params={params} /> },
   {
     field: 'location',
