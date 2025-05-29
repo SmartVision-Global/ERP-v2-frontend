@@ -31,22 +31,17 @@ jobs:
       - name: Build app
         run: npm run build
 
-      - name: Create branch-specific .htaccess
+      - name: Modify asset paths
         run: |
           BRANCH_NAME=${{ steps.get_branch.outputs.branch }}
-          cat > dist/.htaccess <<EOL
-          RewriteEngine On
-          RewriteBase /$BRANCH_NAME/
-
-          # Redirect asset requests to correct path
-          RewriteCond %{REQUEST_URI} !^/$BRANCH_NAME/
-          RewriteRule ^(assets/.+|static/.+|.*\.(js|css|png|jpg|jpeg|gif|ico|svg|woff2?|ttf))$ /$BRANCH_NAME/$1 [L,R=301]
-
-          # Handle client-side routing
-          RewriteCond %{REQUEST_FILENAME} !-f
-          RewriteCond %{REQUEST_FILENAME} !-d
-          RewriteRule . /$BRANCH_NAME/index.html [L]
-          EOL
+          # Fix asset paths in index.html
+          sed -i "s|='/|='/$BRANCH_NAME/|g" dist/index.html
+          sed -i "s|=\"/|=\"/$BRANCH_NAME/|g" dist/index.html
+          sed -i "s|=\" /|=\" /|g" dist/index.html  # Fix potential over-replacement
+          
+          # Fix asset paths in JS/CSS files
+          find dist -type f \( -name "*.js" -o -name "*.css" \) -exec sed -i "s|('/|('/$BRANCH_NAME/|g" {} \;
+          find dist -type f \( -name "*.js" -o -name "*.css" \) -exec sed -i "s|(\"/|(\"/$BRANCH_NAME/|g" {} \;
 
       - name: Deploy dist folder to server via SSH
         uses: easingthemes/ssh-deploy@main
