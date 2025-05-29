@@ -1,13 +1,18 @@
+import 'jspdf-autotable';
+
+import jsPDF from 'jspdf';
+import * as XLSX from 'xlsx';
 import { useState, useEffect, forwardRef, useCallback, useMemo } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
+import Menu from '@mui/material/Menu';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 import { TextField, FormControl, InputAdornment } from '@mui/material';
+import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 import { Dialog, DialogTitle, DialogContent, DialogActions, List, ListItem, ListItemText, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
@@ -16,14 +21,11 @@ import { RouterLink } from 'src/routes/components';
 import { CONFIG } from 'src/global-config';
 import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetStocks, getFiltredStocks } from 'src/actions/stores/raw-materials/stocks';
 import {
   PRODUCT_STATUS_OPTIONS,
-  PRODUCT_PAYMANT_OPTIONS,
-  PRODUCT_CONTRACT_OPTIONS,
-  PRODUCT_TEAM_TYPE_OPTIONS,
   IMAGE_OPTIONS,
 } from 'src/_mock';
+import { useGetStocks, getFiltredStocks } from 'src/actions/stores/raw-materials/stocks';
 
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
@@ -52,9 +54,9 @@ import {
 
 // ----------------------------------------------------------------------
 
-const HIDE_COLUMNS = { category: false };
+const HIDE_COLUMNS = { categoies: false };
 
-const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
+const HIDE_COLUMNS_TOGGLABLE = ['actions'];
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 100, minWidth: 100, renderCell: (params) => <RenderCellId params={params} /> },
@@ -114,7 +116,7 @@ const columns = [
     cellClassName: 'unknown2-column',
   },
   { field: 'family', headerName: 'Family', flex: 1, minWidth: 150, renderCell: (params) => <RenderCellFamily params={params} /> },
-  { field: 'unknown3', headerName: 'Sous familles', flex: 1, minWidth: 150, renderCell: () => <RenderCellSousFamilles /> },
+  { field: 'sub_family', headerName: 'Sous familles', flex: 1, minWidth: 150, renderCell: (params) =>  <RenderCellSousFamilles params={params} /> },
   { field: 'category', headerName: 'Category', flex: 1, minWidth: 150, renderCell: (params) => <RenderCellCategory params={params} /> },
   {
     field: 'location',
@@ -163,6 +165,7 @@ export function StockListView() {
   });
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [toolsAnchorEl, setToolsAnchorEl] = useState(null);
   const { stocks, stocksLoading, stocksCount } = useGetStocks({ limit: paginationModel.pageSize, offset: paginationModel.page });
   const [rowCount, setRowCount] = useState(stocksCount);
   const [tableData, setTableData] = useState(stocks);
@@ -175,10 +178,11 @@ export function StockListView() {
     { entity: 'stores', url: 'settings/lookups/stores' },
   ]);
 
-  const measurementUnits = dataLookups.measurementUnits;
-  const categories = dataLookups.categories;
-  const families = dataLookups.families;
-  const stores = dataLookups.stores;
+  const measurementUnits = dataLookups.measurementUnits || [];
+  const categories = dataLookups.categories || [];
+  const families = dataLookups.families || [];
+  // const subFamilies = families.length > 0 ? families.find((f) => f?.id.toString() === selectedParent)?.children || [] : [];
+  const stores = dataLookups.stores || [];
 
   const FILTERS_OPTIONS = [
     { id: 'store', type: 'select', options: stores, label: 'Magasin', serverData: true },
@@ -189,6 +193,7 @@ export function StockListView() {
     { id: 'unit_measure', type: 'select', options: measurementUnits, label: 'Unit', serverData: true },
     { id: 'category', type: 'select', options: categories, label: 'Category', serverData: true },
     { id: 'family', type: 'select', options: families, label: 'Family', serverData: true },
+    // { id: 'sub_family', type: 'select', options: subFamilies, label: 'Sub Family' },
     { id: 'image', type: 'select', options: IMAGE_OPTIONS, label: 'Image' },
     
     {
@@ -232,7 +237,7 @@ export function StockListView() {
 
   const handleFilter = useCallback(
     async (data) => {
-      console.log('data', data);
+      
       try {
         const response = await getFiltredStocks(data);
         setTableData(response.data?.data?.records);
@@ -245,13 +250,16 @@ export function StockListView() {
     []
   );
   const handlePaginationModelChange = async (newModel) => {
+    
     try {
       const newData = {
         ...editedFilters,
         limit: newModel.pageSize,
         offset: newModel.page,
       };
+      console.log('newData', newData);
       const response = await getFiltredStocks(newData);
+      console.log('response', response.data?.data?.records);
       setTableData(response.data?.data?.records);
       setPaginationModel(newModel);
     } catch (error) {
@@ -303,6 +311,88 @@ export function StockListView() {
   [handleOpenDetail]
   );
 
+  const handleToolsClick = (event) => {
+    setToolsAnchorEl(event.currentTarget);
+  };
+
+  const handleToolsClose = () => {
+    setToolsAnchorEl(null);
+  };
+
+  const printTable = () => {
+    window.print();
+  };
+
+  const copyToClipboard = () => {
+    const text = tableData.map(row => Object.values(row).join('\t')).join('\n');
+    navigator.clipboard.writeText(text);
+  };
+
+  const exportToCsv = () => {
+    const header = columns.map(col => col.headerName).join(',');
+    const rows = tableData.map(row =>
+      columns.map(col => {
+        let value = row[col.field];
+        if (col.field === 'family') value = row.family?.name;
+        if (col.field === 'category') value = row.category?.name;
+        if(col.field === 'unit_measure') value = row.unit_measure?.designation;
+        if (col.field === 'location') {
+          const arr = row.product_storage;
+          value = Array.isArray(arr) && arr.length
+            ? arr.map(item => item.location).filter(Boolean).join(', ')
+            : '';
+        }
+        return value ?? '';
+      }).join(',')
+    );
+    const csvContent = [header, ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', 'stocks.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const exportToExcel = () => {
+    const exportData = tableData.map(row =>
+      columns.reduce((acc, col) => {
+        let value = row[col.field];
+        if (col.field === 'family') value = row.family?.name;
+        if (col.field === 'category') value = row.category?.name;
+        if(col.field === 'unit_measure') value = row.unit_measure?.designation;
+if (col.field === 'location') {
+  const arr = row.product_storage;
+  value = Array.isArray(arr) && arr.length
+    ? arr.map(item => item.location).filter(Boolean).join(', ')
+    : '';
+}
+        acc[col.headerName] = value ?? '';
+        return acc;
+      }, {})
+    );
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Stocks');
+    XLSX.writeFile(wb, 'stocks.xlsx');
+  };
+
+  const exportToPdf = () => {
+    const doc = new jsPDF();
+    const header = columns.map(col => col.headerName);
+    const rows = tableData.map(row =>
+      columns.map(col => {
+        let value = row[col.field];
+        if (col.field === 'family') value = row.family?.name;
+        if (col.field === 'category') value = row.category?.name;
+        return value ?? '';
+      })
+    );
+    doc.autoTable({ head: [header], body: rows });
+    doc.save('stocks.pdf');
+  };
+
   return (
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
@@ -314,14 +404,47 @@ export function StockListView() {
             { name: 'Liste' },
           ]}
           action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.store.rawMaterials.newStock}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              Ajouter Stock
-            </Button>
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+              <Button
+                component={RouterLink}
+                href={paths.dashboard.store.rawMaterials.newStock}
+                variant="contained"
+                startIcon={<Iconify icon="mingcute:add-line" />}
+              >
+                Ajouter Stock
+              </Button>
+              <Button
+                variant="contained"
+                // color="info"
+                startIcon={<Iconify icon="si:warning-fill" />}
+                onClick={handleToolsClick}
+              >
+                Outils
+              </Button>
+              <Menu
+                anchorEl={toolsAnchorEl}
+                open={Boolean(toolsAnchorEl)}
+                onClose={handleToolsClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+              >
+                <MenuItem onClick={() => { printTable(); handleToolsClose(); }}>
+                  <ListItemIcon><Iconify icon="eva:printer-fill" /></ListItemIcon>Impression
+                </MenuItem>
+                <MenuItem onClick={() => { copyToClipboard(); handleToolsClose(); }}>
+                  <ListItemIcon><Iconify icon="eva:copy-fill" /></ListItemIcon>Copie
+                </MenuItem>
+                <MenuItem onClick={() => { exportToExcel(); handleToolsClose(); }}>
+                  <ListItemIcon><Iconify icon="catppuccin:ms-excel" /></ListItemIcon>Excel
+                </MenuItem>
+                <MenuItem onClick={() => { exportToCsv(); handleToolsClose(); }}>
+                  <ListItemIcon><Iconify icon="catppuccin:csv" /></ListItemIcon>CSV
+                </MenuItem>
+                <MenuItem onClick={() => { exportToPdf(); handleToolsClose(); }}>
+                  <ListItemIcon><Iconify icon="material-icon-theme:pdf" /></ListItemIcon>PDF
+                </MenuItem>
+              </Menu>
+            </Box>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
         />

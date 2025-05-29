@@ -87,6 +87,7 @@ export async function createEntity(entityType, data) {
     mutate(endpoints.stores.list);
   } catch (error) {
     console.error(`Error creating ${entityType}:`, error);
+    throw error;
   }
 }
 
@@ -110,5 +111,6 @@ export async function updateEntity(entityType, id, data) {
     mutate(endpoints.stores.list);
   } catch (error) {
     console.error(`Error updating ${entityType}:`, error);
+    throw error;
   }
 }

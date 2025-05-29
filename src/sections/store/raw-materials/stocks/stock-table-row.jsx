@@ -56,11 +56,11 @@ export function RenderCellUnknown2() {
 }
 
 export function RenderCellFamily({ params }) {
-  return <Typography>{params.row.family?.name ?? 'N/I'}</Typography>;
+  return <Typography>{params.row.family?.parent?.name ?? 'N/I'}</Typography>;
 }
 
-export function RenderCellSousFamilles() {
-  return <Typography>N/I</Typography>;
+export function RenderCellSousFamilles({ params }) {
+  return <Typography>{params.row.family?.name ?? 'N/I'}</Typography>;
 }
 
 export function RenderCellCategory({ params }) {
@@ -69,7 +69,10 @@ export function RenderCellCategory({ params }) {
 
 export function RenderCellLocation({ params }) {
   const arr = params.row.product_storage;
-  return <Typography>{Array.isArray(arr) && arr.length ? arr[0].location : 'N/I'}</Typography>;
+  const locations = Array.isArray(arr) && arr.length
+    ? arr.map(item => item.location).filter(Boolean).join(', ')
+    : 'N/I';
+  return <Typography>{locations}</Typography>;
 }
 
 export function RenderCellCreatedDate({ params }) {
