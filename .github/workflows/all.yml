@@ -24,15 +24,29 @@ jobs:
       - name: Get sanitized branch name
         id: get_branch
         run: |
-          # Extract branch name and replace problematic characters
           BRANCH_NAME=${GITHUB_REF##*/}
           SANITIZED_BRANCH_NAME=$(echo "$BRANCH_NAME" | sed -e 's/[^[:alnum:]_-]/-/g')
           echo "branch=$SANITIZED_BRANCH_NAME" >> $GITHUB_OUTPUT
 
-      - name: Build app with dynamic base URL
+      - name: Build app
+        run: npm run build
+
+      - name: Create branch-specific .htaccess
         run: |
-          # Set PUBLIC_URL to match the deployment subdirectory
-          PUBLIC_URL=/${{ steps.get_branch.outputs.branch }}/ npm run build
+          BRANCH_NAME=${{ steps.get_branch.outputs.branch }}
+          cat > dist/.htaccess <<EOL
+          RewriteEngine On
+          RewriteBase /$BRANCH_NAME/
+
+          # Redirect asset requests to correct path
+          RewriteCond %{REQUEST_URI} !^/$BRANCH_NAME/
+          RewriteRule ^(assets/.+|static/.+|.*\.(js|css|png|jpg|jpeg|gif|ico|svg|woff2?|ttf))$ /$BRANCH_NAME/$1 [L,R=301]
+
+          # Handle client-side routing
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteRule . /$BRANCH_NAME/index.html [L]
+          EOL
 
       - name: Deploy dist folder to server via SSH
         uses: easingthemes/ssh-deploy@main
