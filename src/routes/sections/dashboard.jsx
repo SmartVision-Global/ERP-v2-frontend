@@ -299,6 +299,12 @@ const PageStoreStorageAreaNew = lazy(
   () => import('src/pages/dashboard/store/raw-materials/storage-area/new')
 );
 
+const PageStoreInitialStorageList = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/initial-storage/list')
+);
+const PageStoreInitialStorageNew = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/initial-storage/new')
+);
 const PageStoreRawMaterialsStocksNew = lazy(
   () => import('src/pages/dashboard/store/raw-materials/stocks/new')
 );
@@ -663,7 +669,9 @@ export const dashboardRoutes = [
               { index: true, element: <PageStoreRawMaterialsStocksList /> },
               { path: 'stocks', element: <PageStoreRawMaterialsStocksList /> },
               { path: 'storage-area', element: <PageStoreStorageEreaList /> },
-              { path: 'storage-area/new', element: <PageStoreStorageAreaNew /> }, // Update this line
+              { path: 'storage-area/new', element: <PageStoreStorageAreaNew /> },
+              { path: 'initial-storage', element: <PageStoreInitialStorageList /> },
+              { path: 'initial-storage/new', element: <PageStoreInitialStorageNew /> },
               { path: 'stocks/new', element: <PageStoreRawMaterialsStocksNew /> },
               { path: 'stocks/:id/edit', element: <PageStoreRawMaterialsStocksEdit /> },
             ],
