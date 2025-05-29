@@ -32,7 +32,7 @@ jobs:
 
     - name: Fix asset paths in index.html
       run: |
-        sed -i "s|/static|/${{ steps.get_branch.outputs.branch }}/static|g" build/index.html
+        sed -i "s|/static|/${{ steps.get_branch.outputs.branch }}/static|g" dist/index.html
 
     - name: Add .htaccess for SPA routing
       run: |
