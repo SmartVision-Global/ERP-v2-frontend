@@ -21,15 +21,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Get branch name
+      - name: Get sanitized branch name
         id: get_branch
         run: |
+          # Extract branch name and replace problematic characters
           BRANCH_NAME=${GITHUB_REF##*/}
-          BRANCH_NAME=${BRANCH_NAME//\//-}
-          echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          SANITIZED_BRANCH_NAME=$(echo "$BRANCH_NAME" | sed -e 's/[^[:alnum:]_-]/-/g')
+          echo "branch=$SANITIZED_BRANCH_NAME" >> $GITHUB_OUTPUT
 
-      - name: Build app
-        run: npm run build
+      - name: Build app with dynamic base URL
+        run: |
+          # Set PUBLIC_URL to match the deployment subdirectory
+          PUBLIC_URL=/${{ steps.get_branch.outputs.branch }}/ npm run build
 
       - name: Deploy dist folder to server via SSH
         uses: easingthemes/ssh-deploy@main
