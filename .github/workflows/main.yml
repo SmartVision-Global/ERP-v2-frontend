@@ -43,7 +43,7 @@ jobs:
         RewriteCond %{REQUEST_FILENAME} !-f
         RewriteCond %{REQUEST_FILENAME} !-d
         RewriteRule . /${{ steps.get_branch.outputs.branch }}/index.html [L]
-        </IfModule>' > build/.htaccess
+        </IfModule>' > dist/.htaccess
 
     - name: Deploy to Server
       uses: easingthemes/ssh-deploy@main
