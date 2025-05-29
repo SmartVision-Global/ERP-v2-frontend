@@ -9,6 +9,8 @@ import { Box, Card, Stack, Divider, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { showError } from 'src/utils/toast-error';
+
 import { useGetLookups } from 'src/actions/lookups';
 import { createMachine, updateMachine } from 'src/actions/machine';
 
@@ -38,6 +40,7 @@ export function MachineNewEditForm({ currentProduct }) {
   });
 
   const {
+    setError,
     reset,
     handleSubmit,
     formState: { isSubmitting },
@@ -54,6 +57,8 @@ export function MachineNewEditForm({ currentProduct }) {
       toast.success(currentProduct ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.settings.machine.root);
     } catch (error) {
+      showError(error, setError);
+
       console.error(error);
     }
   });

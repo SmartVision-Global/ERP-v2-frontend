@@ -10,6 +10,8 @@ import { Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { showError } from 'src/utils/toast-error';
+
 import { COMMUN_OVERIME_OPTIONS } from 'src/_mock';
 import { useGetLookups } from 'src/actions/lookups';
 import { createOvertime, updateOvertime } from 'src/actions/overtime';
@@ -53,6 +55,7 @@ export function OvertimeNewEditForm({ currentTaux }) {
   });
 
   const {
+    setError,
     reset,
     handleSubmit,
     formState: { isSubmitting },
@@ -74,6 +77,8 @@ export function OvertimeNewEditForm({ currentTaux }) {
       router.push(paths.dashboard.rh.entries.overtime);
       console.info('DATA', data);
     } catch (error) {
+      showError(error, setError);
+
       console.error(error);
     }
   });

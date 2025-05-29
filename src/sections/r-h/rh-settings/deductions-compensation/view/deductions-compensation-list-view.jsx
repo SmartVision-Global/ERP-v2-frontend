@@ -170,7 +170,7 @@ export function DeductionsCompensationListView() {
       const newData = {
         ...editedFilters,
         limit: newModel.pageSize,
-        offset: newModel.page,
+        offset: newModel.page * newModel.pageSize,
       };
       const response = await getFiltredDeductionsCompensations(newData);
       setTableData(response.data?.data?.records);

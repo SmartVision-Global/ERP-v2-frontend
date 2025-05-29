@@ -10,6 +10,8 @@ import { Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { showError } from 'src/utils/toast-error';
+
 import { ABS_TYPE_OPTIONS } from 'src/_mock';
 import { useGetLookups } from 'src/actions/lookups';
 import { createLeaveAbesence, updateLeaveAbesence } from 'src/actions/leave-absence';
@@ -51,6 +53,7 @@ export function LeaveAbsenceNewEditForm({ currentTaux }) {
   });
 
   const {
+    setError,
     reset,
     handleSubmit,
     formState: { isSubmitting },
@@ -73,6 +76,7 @@ export function LeaveAbsenceNewEditForm({ currentTaux }) {
       toast.success(currentTaux ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.rh.entries.leaveAbsence);
     } catch (error) {
+      showError(error, setError);
       console.error(error);
     }
   });

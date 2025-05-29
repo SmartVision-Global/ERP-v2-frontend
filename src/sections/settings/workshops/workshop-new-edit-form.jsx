@@ -9,6 +9,8 @@ import { Box, Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { showError } from 'src/utils/toast-error';
+
 import { useGetSites } from 'src/actions/site';
 import { createWorkshop, updateWorkshop } from 'src/actions/workshop';
 
@@ -37,6 +39,7 @@ export function WorkshopNewEditForm({ currentProduct }) {
   });
 
   const {
+    setError,
     reset,
     handleSubmit,
     formState: { isSubmitting },
@@ -54,6 +57,7 @@ export function WorkshopNewEditForm({ currentProduct }) {
       toast.success(currentProduct ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.settings.workshop.root);
     } catch (error) {
+      showError(error, setError);
       console.error(error);
     }
   });

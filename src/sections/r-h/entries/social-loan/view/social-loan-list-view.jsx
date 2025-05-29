@@ -177,7 +177,7 @@ export function SocialLoanListView() {
       const newData = {
         ...editedFilters,
         limit: newModel.pageSize,
-        offset: newModel.page,
+        offset: newModel.page * newModel.pageSize,
       };
       const response = await getFiltredSocialLoans(newData);
       setTableData(response.data?.data?.records);

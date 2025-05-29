@@ -1,35 +1,124 @@
-import { Box, Avatar, Typography, ListItemText } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+
+import { fDate } from 'src/utils/format-time';
+
+import { Label } from 'src/components/label';
+
+const STATUS = {
+  1: 'En Attente',
+  2: 'Actif',
+  3: 'Bloqué',
+};
+
+export function RenderCellId({ params, href }) {
+  return (
+    <Box>
+      <Typography>{params.row.personal_id}</Typography>
+    </Box>
+  );
+}
 
 export function RenderCellUser({ params, href }) {
   return (
-    <Box
-      sx={{
-        py: 0,
-        gap: 1,
-        width: 1,
-        display: 'flex',
-        alignItems: 'center',
-      }}
-    >
-      <Avatar
-        alt={params.row.name}
-        src={params.row.coverUrl}
-        variant="rounded"
-        sx={{ width: 34, height: 34, borderRadius: '50%' }}
-      />
+    <Box>
+      <Typography>{params.row.personal_name}</Typography>
+    </Box>
+  );
+}
 
-      <ListItemText
-        primary={
-          <Typography
-            fontSize={14}
-          >{`${params.row.first_name?.fr} ${params.row.last_name?.fr}`}</Typography>
-        }
-        secondary={`${params.row.first_name?.ar} ${params.row.last_name?.ar}`}
-        slotProps={{
-          primary: { noWrap: true },
-          secondary: { sx: { color: 'text.disabled', fontSize: 14 } },
-        }}
-      />
+export function RenderCellDaysPerMonth({ params, href }) {
+  return (
+    <Box>
+      <Typography>{params.row.days_per_month}</Typography>
+    </Box>
+  );
+}
+
+export function RenderCellHoursPerMonth({ params, href }) {
+  return (
+    <Box>
+      <Typography>{params.row.hours_per_month}</Typography>
+    </Box>
+  );
+}
+
+export function RenderCellDaysWorked({ params, href }) {
+  return (
+    <Box>
+      <Typography>{params.row.days_worked}</Typography>
+    </Box>
+  );
+}
+
+export function RenderCellAbsence({ params, href }) {
+  return (
+    <Box>
+      <Typography>{params.row.absence}</Typography>
+    </Box>
+  );
+}
+
+export function RenderCellDelay({ params, href }) {
+  return (
+    <Box>
+      <Typography>{params.row.delay}</Typography>
+    </Box>
+  );
+}
+
+export function RenderCellHoliday({ params, href }) {
+  return (
+    <Box>
+      <Typography>{params.row.holiday}</Typography>
+    </Box>
+  );
+}
+
+export function RenderCellOvertime50({ params, href }) {
+  return (
+    <Box>
+      <Typography>{params.row.overtime_50}</Typography>
+    </Box>
+  );
+}
+export function RenderCellOvertime75({ params, href }) {
+  return (
+    <Box>
+      <Typography>{params.row.overtime_75}</Typography>
+    </Box>
+  );
+}
+export function RenderCellOvertime100({ params, href }) {
+  return (
+    <Box>
+      <Typography>{params.row.overtime_100}</Typography>
+    </Box>
+  );
+}
+
+export function RenderCellStatus({ params, href }) {
+  return (
+    <Label
+      variant="soft"
+      color={params.row.status === 1 ? 'info' : params.row.status === 2 ? 'success' : 'error'}
+    >
+      {STATUS[params.row.status]}
+    </Label>
+  );
+}
+
+export function RenderCellServiceStart({ params, href }) {
+  return (
+    <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
+      <span>{fDate(params.row.service_start)}</span>
+    </Box>
+  );
+}
+
+export function RenderCellServiceEnd({ params, href }) {
+  return (
+    <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
+      <span>{params.row.service_end ? fDate(params.row.service_end) : '-'}</span>
     </Box>
   );
 }

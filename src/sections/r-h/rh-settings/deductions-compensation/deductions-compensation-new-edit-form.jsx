@@ -9,6 +9,8 @@ import { Box, Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { showError } from 'src/utils/toast-error';
+
 import { DEDUCTIONS_TYPE_OPTIONS } from 'src/_mock';
 import {
   createDeductionsCompensations,
@@ -64,6 +66,7 @@ export function DeductionsCompensationNewEditForm({ currentProduct }) {
   });
 
   const {
+    setError,
     reset,
     handleSubmit,
     formState: { isSubmitting },
@@ -98,6 +101,8 @@ export function DeductionsCompensationNewEditForm({ currentProduct }) {
       router.push(paths.dashboard.rh.rhSettings.deductionsCompensation);
       console.info('DATA', updatedData);
     } catch (error) {
+      showError(error, setError);
+
       console.error(error);
     }
   });

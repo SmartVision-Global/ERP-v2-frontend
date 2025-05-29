@@ -103,7 +103,6 @@ export function ActifListView() {
     confirmDialog.onTrue();
     setSelectedRow(id);
   };
-  // const personalsLookup = dataLookups.personalsLookup;
   const banks = dataLookups.banks;
   const departments = dataLookups.departments;
   const sites = dataLookups.sites;
@@ -198,7 +197,7 @@ export function ActifListView() {
       const newData = {
         ...editedFilters,
         limit: newModel.pageSize,
-        offset: newModel.page,
+        offset: newModel.page * newModel.pageSize,
       };
       const response = await getFiltredPersonals(newData);
       setTableData(response.data?.data?.records);

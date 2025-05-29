@@ -10,6 +10,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
+import { showError } from 'src/utils/toast-error';
+
 import { Form, Field } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
@@ -33,6 +35,7 @@ export function AddItemDialog({ open, onClose, currentProduct, name, title, onCr
 
   const {
     // watch,
+    setError,
     reset,
     handleSubmit,
     // setError,
@@ -61,6 +64,8 @@ export function AddItemDialog({ open, onClose, currentProduct, name, title, onCr
       // router.push(paths.dashboard.product.root);
       // console.info('DATA', updatedData);
     } catch (error) {
+      showError(error, setError);
+
       console.error(error);
     }
     // }

@@ -9,6 +9,8 @@ import { Card, Stack, Divider, MenuItem, CardHeader } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { showError } from 'src/utils/toast-error';
+
 import { YEARS, MONTHS } from 'src/_mock';
 import { useGetLookups } from 'src/actions/lookups';
 import { createPayrollMonth, updatePayrollMonth } from 'src/actions/payroll-month';
@@ -67,6 +69,7 @@ export function MonthNewEditForm({ currentTaux }) {
   });
 
   const {
+    setError,
     reset,
     handleSubmit,
     formState: { isSubmitting },
@@ -84,6 +87,8 @@ export function MonthNewEditForm({ currentTaux }) {
       router.push(paths.dashboard.rh.payrollManagement.preparation);
       console.info('DATA', data);
     } catch (error) {
+      showError(error, setError);
+
       console.error(error);
     }
   });

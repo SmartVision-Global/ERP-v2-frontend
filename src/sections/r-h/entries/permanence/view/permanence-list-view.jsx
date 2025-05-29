@@ -223,8 +223,7 @@ export function PermanenceListView() {
       const newData = {
         ...editedFilters,
         limit: newModel.pageSize,
-        offset: newModel.page,
-        // page: newModel.page,
+        offset: newModel.page * newModel.pageSize,
       };
       const response = await getFiltredPermanencies(newData);
       setTableData(response.data?.data?.records);
