@@ -31,17 +31,33 @@ jobs:
       - name: Build app
         run: npm run build
 
-      - name: Modify asset paths
+      - name: Modify files for branch deployment
         run: |
           BRANCH_NAME=${{ steps.get_branch.outputs.branch }}
-          # Fix asset paths in index.html
+          
+          # 1. Fix asset paths
           sed -i "s|='/|='/$BRANCH_NAME/|g" dist/index.html
           sed -i "s|=\"/|=\"/$BRANCH_NAME/|g" dist/index.html
-          sed -i "s|=\" /|=\" /|g" dist/index.html  # Fix potential over-replacement
           
-          # Fix asset paths in JS/CSS files
-          find dist -type f \( -name "*.js" -o -name "*.css" \) -exec sed -i "s|('/|('/$BRANCH_NAME/|g" {} \;
-          find dist -type f \( -name "*.js" -o -name "*.css" \) -exec sed -i "s|(\"/|(\"/$BRANCH_NAME/|g" {} \;
+          # 2. Fix router configuration
+          find dist -type f -name '*.js' -exec sed -i \
+            -e "s|history.createBrowserHistory()|history.createBrowserHistory({basename:'/$BRANCH_NAME'})|g" \
+            -e "s|new Router(|new Router({basename:'/$BRANCH_NAME',|g" \
+            -e "s|createBrowserRouter(|createBrowserRouter([],{basename:'/$BRANCH_NAME'})|g" {} \;
+          
+          # 3. Create .htaccess for routing
+          cat > dist/.htaccess <<EOL
+          RewriteEngine On
+          RewriteBase /$BRANCH_NAME/
+          
+          # Redirect root to index.html
+          RewriteRule ^index\.html$ - [L]
+          
+          # Handle client-side routing
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteRule . /$BRANCH_NAME/index.html [L]
+          EOL
 
       - name: Deploy dist folder to server via SSH
         uses: easingthemes/ssh-deploy@main
