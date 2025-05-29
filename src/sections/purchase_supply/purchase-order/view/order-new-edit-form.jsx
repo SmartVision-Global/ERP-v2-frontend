@@ -11,38 +11,31 @@ import {
   CircularProgress,
   MenuItem,
 } from '@mui/material';
-import { useGetSites } from 'src/actions/site';
 import { Form, Field } from 'src/components/hook-form'; // Assuming RHF-integrated
 import { FormProvider, useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PRIORITY_OPTIONS, TYPE_OPTIONS } from 'src/_mock';
 import { useMultiLookups } from 'src/actions/lookups';
-// Assuming BebTableRowCell is designed to work within a RHF context for a row
 // import { BebTableRowCell } from '../beb-table-new-edit-form';
 
 const steps = ['Informations', 'Produits'];
 
-// Schema for individual product
 const productSchema = z.object({
-  productId: z.string().min(1, 'Product selection is required'),
-  quantity: z.number().min(1, 'Quantity must be at least 1'),
+  productId: z.string().min(1, 'La sélection du produit est requise'),
+  quantity: z.number().min(1, 'La quantité doit être au moins de 1'),
   // notes: z.string().optional(), // Example optional field
 });
 
 // Main schema
 const formSchema = z.object({
   // Step 1: Informations
-  site: z.string().min(1, 'Site is required!'),
-  type: z.string().min(1, 'Type is required!'),
-  priority: z.string().min(1, 'Priority is required!'),
-  designation: z.string().min(1, 'Designation is required!'),
+  site: z.string().min(1, 'Le site est requis !'),
+  type: z.string().min(1, 'Le type est requis !'),
+  priority: z.string().min(1, 'La priorité est requise !'),
+  designation: z.string().min(1, 'La désignation est requise !'),
   // Step 2: Produits
-  products: z.array(productSchema).min(1, 'At least one product is required.'),
+  products: z.array(productSchema).min(1, 'Au moins un produit est requis.'),
 });
-
-// Define types for better intellisense if using TypeScript
-// type ProductFormValues = z.infer<typeof productSchema>;
-// type PurchaseOrderFormValues = z.infer<typeof formSchema>;
 
 export function PurchaseOrderNewEditForm() {
   const [activeStep, setActiveStep] = useState(0);
@@ -66,9 +59,9 @@ export function PurchaseOrderNewEditForm() {
 
   const {
     reset,
-    control, // Needed for useFieldArray
+    control,
     handleSubmit,
-    trigger, // For per-step validation
+    trigger,
     formState: { isSubmitting, errors },
   } = methods;
 
@@ -80,16 +73,14 @@ export function PurchaseOrderNewEditForm() {
   const handleActualFormSubmit = async (data) => {
     console.log('Final Validated Form Data:', data);
     try {
-      // Simulate API call for final submission
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate delay
-      console.log('Final submission (Simulated):', data);
-      alert('Purchase Order submitted successfully!');
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      alert("Commande d'achat soumise avec succès !");
       reset();
       setActiveStep(0);
     } catch (err) {
-      console.error('Submission error:', err);
-      alert('Submission failed. Please check your inputs or try again.');
-      // Potentially set server-side errors using methods.setError
+      console.error('Erreur de soumission:', err);
+      alert('Échec de la soumission. Veuillez vérifier vos données ou réessayer.');
     }
   };
 
@@ -99,15 +90,7 @@ export function PurchaseOrderNewEditForm() {
       // Validate fields of the "Informations" step
       isValid = await trigger(['site', 'type', 'priority', 'designation']);
     } else if (activeStep === 1) {
-      // For the "Produits" step, validation of the 'products' array will happen
-      // on final submit with handleSubmit.
-      // If you wanted to trigger validation for all product fields before "submitting":
-      // isValid = await trigger('products');
-      // However, for the last step, we usually proceed to the actual submit handler.
-      // So, this branch might not be strictly needed if the next button becomes "Submit".
-      // The primary use of handleNext is for intermediate steps.
-      // For the last step, the button action will be handleSubmit(handleActualFormSubmit)
-      isValid = true; // Or trigger specific product validations if needed before final submit
+      isValid = true;
     }
 
     if (isValid) {
