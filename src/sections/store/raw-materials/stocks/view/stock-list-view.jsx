@@ -1,4 +1,4 @@
-import { useState, useEffect, forwardRef, useCallback } from 'react';
+import { useState, useEffect, forwardRef, useCallback, useMemo } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -6,8 +6,9 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import { DataGrid, gridClasses } from '@mui/x-data-grid';
+import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 import { TextField, FormControl, InputAdornment } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, List, ListItem, ListItemText, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -160,6 +161,8 @@ export function StockListView() {
     page: 0,
     pageSize: PAGE_SIZE,
   });
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
   const { stocks, stocksLoading, stocksCount } = useGetStocks({ limit: paginationModel.pageSize, offset: paginationModel.page });
   const [rowCount, setRowCount] = useState(stocksCount);
   const [tableData, setTableData] = useState(stocks);
@@ -263,14 +266,51 @@ export function StockListView() {
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
 
+  const handleOpenDetail = (row) => {
+    console.log('row', row);
+    setSelectedRow(row);
+    setDetailOpen(true);
+  };
+
+  const handleCloseDetail = () => {
+    setDetailOpen(false);
+    setSelectedRow(null);
+  };
+
+  const columnsWithActions = useMemo(() =>
+    columns.map((col) => {
+      if (col.field === 'actions') {
+        return {
+          ...col,
+          getActions: (params) => [
+            <GridActionsLinkItem
+              showInMenu
+              icon={<Iconify icon="solar:pen-bold" />}
+              label="Modifier"
+              href={paths.dashboard.store.rawMaterials.editStock(params.row.id)}
+            />,
+            <GridActionsCellItem
+              showInMenu
+              icon={<Iconify icon="eva:eye-fill" />}
+              label="Consulter"
+              onClick={() => handleOpenDetail(params.row)}
+            />,
+          ],
+        };
+      }
+      return col;
+    }),
+  [handleOpenDetail]
+  );
+
   return (
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <CustomBreadcrumbs
           heading="List"
           links={[
-            { name: 'Gestion magasinage', href: paths.dashboard.root },
-            { name: 'Stocks', href: paths.dashboard.root },
+            { name: 'Gestion magasinage', href: paths.dashboard.store.rawMaterials.root },
+            { name: 'Stocks', href: paths.dashboard.store.rawMaterials.root },
             { name: 'Liste' },
           ]}
           action={
@@ -327,7 +367,7 @@ export function StockListView() {
             disableColumnMenu
             rows={tableData}
             rowCount={rowCount}
-            columns={columns}
+            columns={columnsWithActions}
             loading={stocksLoading}
             getRowHeight={() => 'auto'}
             paginationModel={paginationModel}
@@ -353,6 +393,55 @@ export function StockListView() {
               '& .unknown2-column': { backgroundColor: '#C7F1E5' },
             }}
           />
+          {selectedRow && (
+            <Dialog open={detailOpen} onClose={handleCloseDetail} maxWidth="sm" fullWidth>
+              <DialogTitle>Details produit: {selectedRow.code} -- {selectedRow.designation}</DialogTitle>
+              <DialogContent dividers>
+                <Box sx={{ display: 'inline-block', bgcolor: 'primary.main', color: '#fff', px: 1.5, py: 0.5, borderRadius: 1}}>
+                  <Typography variant="body2">Informations</Typography>
+                </Box>
+                <List>
+                  <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography variant="body2">Codification</Typography>
+                    <Typography variant="body2">{selectedRow.code}</Typography>
+                  </ListItem>
+                  <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography variant="body2">Désignation</Typography>
+                    <Typography variant="body2">{selectedRow.designation}</Typography>
+                  </ListItem>
+                  <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography variant="body2">Unité de mesure</Typography>
+                    <Typography variant="body2">{selectedRow.unit_measure?.designation}</Typography>
+                  </ListItem>
+                  <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography variant="body2">Famille</Typography>
+                    <Typography variant="body2">{selectedRow.family?.name}</Typography>
+                  </ListItem>
+                  <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography variant="body2">Date de création</Typography>
+                    <Typography variant="body2">{selectedRow.created_date ? new Date(selectedRow.created_date).toLocaleDateString('fr-FR') : ''}</Typography>
+                  </ListItem>
+                  {selectedRow.catalog && (
+                    <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2">Catalogue</Typography>
+                      <Link href={selectedRow.catalog} target="_blank" rel="noopener">
+                        <Typography variant="body2" color="primary">Voir PDF</Typography>
+                      </Link>
+                    </ListItem>
+                  )}
+                  {selectedRow.image && (
+                    <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)' }}>
+                      <ListItemText primary="Image" />
+                      <Box component="img" src={selectedRow.image} alt="item image" sx={{ maxWidth: '100%', maxHeight: 300 }} />
+                    </ListItem>
+                  )}
+                </List>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleCloseDetail}>Fermer</Button>
+              </DialogActions>
+            </Dialog>
+          )}
         </Card>
       </DashboardContent>
     </>
