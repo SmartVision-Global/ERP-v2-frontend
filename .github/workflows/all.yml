@@ -28,11 +28,6 @@ jobs:
           BRANCH_NAME=${BRANCH_NAME//\//-}
           echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
-      - name: Set homepage in package.json
-        run: |
-          BRANCH=${{ steps.get_branch.outputs.branch }}
-          jq --arg url "/$BRANCH/" '.homepage = $url' package.json > temp.json && mv temp.json package.json
-
       - name: Build app
         run: npm run build
 
