@@ -1,283 +1,256 @@
-import { z as zod } from 'zod';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+/* eslint-disable */
+import { useState } from 'react';
+import { useBoolean } from 'minimal-shared/hooks';
+import { useFieldArray, useFormContext } from 'react-hook-form';
 
-import Grid from '@mui/material/Grid2';
-import { LoadingButton } from '@mui/lab';
-import { Box, Card, Stack, Divider, CardHeader } from '@mui/material';
+import { BEBListDialog } from './beb-list-dialog';
 
-import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
+import {
+  Box,
+  Stack,
+  Table,
+  Button,
+  Divider,
+  TableBody,
+  IconButton,
+  Typography,
+  TableRow,
+  TableCell,
+  TextField,
+  Alert,
+} from '@mui/material';
 
-import { useMultiLookups } from 'src/actions/lookups';
-import { createSalaryGrid, updateSalaryGrid } from 'src/actions/salary-grid';
+import { Iconify } from 'src/components/iconify';
+import { Scrollbar } from 'src/components/scrollbar';
+import { TableHeadCustom } from 'src/components/table';
+import { ConfirmDialog } from 'src/components/custom-dialog';
+import BEBTableRow from './BEBTableRow';
 
-import { toast } from 'src/components/snackbar';
-import { NumberInput } from 'src/components/number-input';
-import { Form, Field, schemaHelper } from 'src/components/hook-form';
-import { FieldContainer } from 'src/components/form-validation-view';
+const TABLE_HEAD = [
+  { id: 'date', label: 'Date' },
+  { id: 'code', label: 'Code' },
+  { id: 'applicant', label: 'Demandeur' },
+  { id: 'service', label: 'Service' },
+  { id: 'observation', label: 'Observation' },
+  { id: 'actions', label: '' },
+];
 
-import { BebTableRowCell } from './beb-table-new-edit-form';
+export function BEBNewEditForm() {
+  const [openBEBDialog, setOpenBEBDialog] = useState(false);
+  const [error, setError] = useState('');
+  const confirmDialog = useBoolean();
+  const deleteDialog = useBoolean();
+  const [itemToDelete, setItemToDelete] = useState(null);
 
-export const NewProductSchema = zod.object({
-  code: zod.string().min(1, { message: 'Name is required!' }),
-  designation: zod.string().min(1, { message: 'Name is required!' }),
+  const { control } = useFormContext();
+  const { fields, append, remove, update } = useFieldArray({
+    control,
+    name: 'beb_items',
+    keyName: 'reactHookFormId',
+  });
 
-  salary: schemaHelper.nullableInput(
-    zod
-      .number({ coerce: true })
-      .min(1, { message: 'Quantity is required!' })
-      .max(10000000, { message: 'Quantity must be between 1 and 99' }),
-    // message for null value
-    { message: 'Quantity is required!' }
-  ),
-  salary_category_id: zod.string().min(1, { message: 'Name is required!' }).or(zod.number()),
-  rung_id: zod.string().min(1, { message: 'Name is required!' }).or(zod.number()),
-  salary_scale_level_id: zod.string().min(1, { message: 'Name is required!' }).or(zod.number()),
-  cotis_impos_items: zod.array(
-    zod.object({
-      id: zod.number(),
-      code: zod.string().min(1, { message: 'Title is required!' }),
-      name: zod.string().min(1, { message: 'Service is required!' }),
-      percent: zod
-        .number()
-        // .int()
-        .positive()
-        .min(0, { message: 'Quantity must be more than 0' })
-        .max(100, { message: 'Quantity must be less than 100' }),
-      amount: zod.number().positive().min(0, { message: 'Quantity must be more than 0' }),
-
-      // Not required
-    })
-  ),
-
-  salary_position: zod.string().optional(),
-  s_s_retenue: zod.string().optional(),
-  salary_position_retenue: zod.string().optional(),
-  cotis_no_impos_items: zod.array(
-    zod.object({
-      id: zod.number(),
-      code: zod.string().min(1, { message: 'Title is required!' }),
-      name: zod.string().min(1, { message: 'Service is required!' }),
-      percent: zod
-        .number()
-        // .int()
-        .positive()
-        .min(0, { message: 'Quantity must be more than 0' })
-        .max(100, { message: 'Quantity must be less than 100' }),
-      amount: zod.number().positive().min(0, { message: 'Quantity must be more than 0' }),
-
-      // Not required
-    })
-  ),
-  salary_impos: zod.string().optional(),
-  retenueIRG: zod.string().optional(),
-  net_salary: zod.string().optional(),
-  no_cotis_no_impos_items: zod.array(
-    zod.object({
-      id: zod.number(),
-      code: zod.string().min(1, { message: 'Title is required!' }),
-      name: zod.string().min(1, { message: 'Service is required!' }),
-      percent: zod
-        .number()
-        // .f()
-        .positive()
-        .min(0, { message: 'Quantity must be more than 0' })
-        .max(100, { message: 'Quantity must be less than 100' }),
-      amount: zod.number().positive().min(0, { message: 'Quantity must be more than 0' }),
-      // Not required
-    })
-  ),
-  net_salary_payer: zod.string().optional(),
-});
-
-export function SalaryGridNewEditForm({ currentProduct }) {
-  const router = useRouter();
-  const { dataLookups } = useMultiLookups([
-    { entity: 'rungs', url: 'hr/lookups/identification/rung' },
-    { entity: 'salaryCategories', url: 'hr/lookups/identification/salary_category' },
-    { entity: 'salaryScaleLevels', url: 'hr/lookups/identification/salary_scale_level' },
-  ]);
-
-  const rungs = dataLookups.rungs;
-  const salaryCategories = dataLookups.salaryCategories;
-  const salaryScaleLevels = dataLookups.salaryScaleLevels;
-  const defaultValues = {
-    code: '',
-    designation: '',
-
-    salary: 0,
-    salary_category_id: '',
-    rung_id: '',
-    salary_scale_level_id: '',
-    cotis_impos_items: [],
-    salary_position: 0,
-    s_s_retenue: '',
-    salary_position_retenue: '',
-    cotis_no_impos_items: 0,
-    salary_impos: '',
-    retenueIRG: '0',
-    net_salary: '',
-    no_cotis_no_impos_items: 0,
-    net_salary_payer: '',
+  // Event handlers
+  const handleOpenBEBDialog = () => {
+    setError('');
+    setOpenBEBDialog(true);
   };
 
-  const methods = useForm({
-    mode: 'all',
-    resolver: zodResolver(NewProductSchema),
-    defaultValues,
-    values: {
-      ...currentProduct,
-      cotis_impos_items:
-        currentProduct?.salary_deductions_compensations?.filter((item) => item.type === '1') || [],
-      cotis_no_impos_items:
-        currentProduct?.salary_deductions_compensations?.filter((item) => item.type === '2') || [],
-      no_cotis_no_impos_items:
-        currentProduct?.salary_deductions_compensations?.filter((item) => item.type === '3') || [],
-    },
-  });
+  const handleCloseProductDialog = () => {
+    setOpenBEBDialog(false);
+  };
 
-  const {
-    reset,
-    control,
-    setValue,
-    watch,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
-
-  const values = watch();
-
-  const onSubmit = handleSubmit(async (data) => {
-    const deductionsCompensationsItems = [
-      ...data.cotis_impos_items,
-      ...data.cotis_no_impos_items,
-      ...data.no_cotis_no_impos_items,
-    ];
-    const newArray = deductionsCompensationsItems.map((item) => ({
-      deduction_compensation_id: item.id,
-      percentage_amount: item.percent,
-    }));
-    // const newArray = [
-    //   {
-    //     deduction_compensation_id: 30,
-    //     percentage_amount: 54.22,
-    //   },
-    //   {
-    //     deduction_compensation_id: 31,
-    //     percentage_amount: 30.98,
-    //   },
-    // ];
-    // const updatedData = {
-    //   ...data,
-    //   // taxes: includeTaxes ? defaultValues.taxes : data.taxes,
-    // };
-
+  const handleSelectBEB = (beb) => {
     try {
-      // const elements=
-      // await new Promise((resolve) => setTimeout(resolve, 500));
-      const newData = {
-        code: data.code,
-        designation: data.designation,
-        salary: data.salary,
-        rung_id: parseInt(data.rung_id),
-        salary_category_id: parseInt(data.salary_category_id),
-        salary_scale_level_id: parseInt(data.salary_scale_level_id),
-        elements: newArray,
-        // retenueIRG: parseInt(data.retenueIRG),
-      };
-      if (currentProduct) {
-        await updateSalaryGrid(currentProduct.id, newData);
+      const itemExists = fields.some((field) => field.id === beb.id);
+
+      if (!itemExists) {
+        const newBEBItem = {
+          ...beb,
+          date: new Date().toISOString().split('T')[0],
+          code: beb.code || '',
+          applicant: '',
+          service: '',
+          observation: '',
+        };
+
+        append(newBEBItem);
+        handleCloseProductDialog();
+        setError('');
       } else {
-        await createSalaryGrid(newData);
+        confirmDialog.onTrue();
       }
-      reset();
-      toast.success(currentProduct ? 'Update success!' : 'Create success!');
-      router.push(paths.dashboard.rh.rhSettings.salaryGrid);
-      console.info('DATA', newData);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error('Error adding product:', err);
+      setError("Erreur lors de l'ajout du produit");
     }
-  });
-  // const watchedSalary = watch('salary');
-  // const cotisImposItems = watch('cotis_impos_items');
-  // const cotisNoImposItems = watch('cotis_no_impos_items');
-  // const noCotisNoImposItems = watch('no_cotis_no_impos_items');
-  // const deductionsCompensationsMemo = useMemo(
-  //   () => [
-  //     ...(cotisImposItems || []),
-  //     ...(cotisNoImposItems || []),
-  //     ...(noCotisNoImposItems || []),
-  //   ],
-  //   [cotisImposItems, cotisNoImposItems, noCotisNoImposItems]
-  // );
-  // console.log('deductionsCompensations', deductionsCompensations);
-  // const { }=salaryCalculation(values.salary)
-  // useEffect(() => {
-  //   if (watchedSalary != null) {
-  //     const {
-  //       postSalary,
-  //       socialSecurityRetenue,
-  //       postSalaryMinSSRetunue,
-  //       salaryWithTax,
-  //       retenueIRG,
-  //       netSalary,
-  //       netPaySalary,
-  //     } = salaryCalculation(watchedSalary, deductionsCompensationsMemo);
+  };
 
-  //     setValue('salary_position', postSalary);
-  //     setValue('s_s_retenue', socialSecurityRetenue);
-  //     setValue('salary_position_retenue', postSalaryMinSSRetunue);
-  //     setValue('salary_impos', salaryWithTax);
-  //     setValue('retenueIRG', retenueIRG);
-  //     setValue('net_salary', netSalary);
-  //     setValue('net_salary_payer', netPaySalary);
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [
-  //   setValue,
-  //   watchedSalary,
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  //   JSON.stringify(deductionsCompensationsMemo), // stable serialization
-  //   // deductionsCompensations
-  // ]);
-  const rendernbrcontent = () => (
-    <Card>
-      <CardHeader
-        title="Non Cotisable - Non Imposable"
-        // subheader="Utilisez cet espace pour gérer les tâches et responsabilités des employés"
-        sx={{ mb: 3 }}
-      />
+  const handleDeleteRow = (index) => {
+    setItemToDelete(index);
+    deleteDialog.onTrue();
+  };
 
-      <Divider />
+  const confirmDelete = () => {
+    if (itemToDelete !== null) {
+      remove(itemToDelete);
+      setItemToDelete(null);
+    }
+    deleteDialog.onFalse();
+  };
 
-      <Stack spacing={3} sx={{ p: 3 }}>
-        <BebTableRowCell />
-      </Stack>
-    </Card>
-  );
-  const renderActions = () => (
-    <Box
-      sx={{
-        gap: 3,
-        display: 'flex',
-        flexWrap: 'wrap',
-        alignItems: 'center',
-      }}
-    >
-      <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
-        {!currentProduct ? 'Create' : 'Save changes'}
-      </LoadingButton>
-    </Box>
-  );
+  const handleUpdateRow = (index, newData) => {
+    try {
+      update(index, newData);
+      setError('');
+    } catch (err) {
+      console.error('Error updating row:', err);
+      setError('Erreur lors de la mise à jour');
+    }
+  };
+
+  const handleAddNewRow = () => {
+    const newBEBItem = {
+      id: Date.now(), // Simple ID generation
+      date: new Date().toISOString().split('T')[0],
+      code: '',
+      applicant: '',
+      service: '',
+      observation: '',
+    };
+
+    append(newBEBItem);
+  };
 
   return (
-    <Form methods={methods} onSubmit={onSubmit}>
-      <Stack spacing={{ xs: 3, md: 5 }} sx={{ mx: 'auto', maxWidth: { xs: 720, xl: 1080 } }}>
-        {rendernbrcontent()}
+    <Box sx={{ p: 2 }}>
+      <Stack spacing={3}>
+        {/* Header Section */}
+        <Box
+          sx={{
+            gap: 3,
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            alignItems: { xs: 'flex-start', md: 'center' },
+            justifyContent: 'space-between',
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Liste BEB
+          </Typography>
 
-        {renderActions()}
+          <Stack direction="row" spacing={2}>
+            <Button
+              size="small"
+              color="primary"
+              startIcon={<Iconify icon="mingcute:add-line" />}
+              onClick={handleAddNewRow}
+              variant="outlined"
+            >
+              Nouvelle ligne
+            </Button>
+
+            <Button
+              size="small"
+              color="info"
+              startIcon={<Iconify icon="mingcute:search-line" />}
+              onClick={handleOpenBEBDialog}
+              variant="outlined"
+            >
+              Sélectionner BEB
+            </Button>
+          </Stack>
+        </Box>
+
+        {/* Error Alert */}
+        {error && (
+          <Alert severity="error" onClose={() => setError('')}>
+            {error}
+          </Alert>
+        )}
+
+        {/* Table Section */}
+        <Scrollbar>
+          <Table size="small" sx={{ minWidth: 800 }}>
+            <TableHeadCustom headCells={TABLE_HEAD} />
+
+            <TableBody>
+              {fields.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={TABLE_HEAD.length} align="center" sx={{ py: 3 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      Aucun élément BEB ajouté
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                fields.map((row, index) => (
+                  <BEBTableRow
+                    key={row.reactHookFormId || row.id}
+                    row={row}
+                    index={index}
+                    onDeleteRow={() => handleDeleteRow(index)}
+                    onUpdateRow={handleUpdateRow}
+                  />
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </Scrollbar>
+
+        {/* Summary */}
+        {fields.length > 0 && (
+          <Box sx={{ p: 2, bgcolor: 'background.neutral', borderRadius: 1 }}>
+            <Typography variant="body2" color="text.secondary">
+              Total: {fields.length} élément{fields.length > 1 ? 's' : ''} BEB
+            </Typography>
+          </Box>
+        )}
       </Stack>
-    </Form>
+
+      <Divider sx={{ my: 3, borderStyle: 'dashed' }} />
+
+      {openBEBDialog && (
+        <BEBListDialog
+          title="Sélectionner un BEB"
+          open={openBEBDialog}
+          onClose={handleCloseProductDialog}
+          selected={() => false}
+          onSelect={handleSelectBEB}
+          action={
+            <IconButton size="small" onClick={handleCloseProductDialog}>
+              <Iconify icon="mdi:close" />
+            </IconButton>
+          }
+          type="beb"
+        />
+      )}
+
+      {/* Confirmation Dialogs */}
+      <ConfirmDialog
+        open={confirmDialog.value}
+        onClose={confirmDialog.onFalse}
+        title="Produit déjà ajouté"
+        content="Ce produit est déjà présent dans la liste BEB."
+        action={
+          <Button variant="outlined" onClick={confirmDialog.onFalse}>
+            Fermer
+          </Button>
+        }
+      />
+
+      <ConfirmDialog
+        open={deleteDialog.value}
+        onClose={deleteDialog.onFalse}
+        title="Confirmer la suppression"
+        content="Êtes-vous sûr de vouloir supprimer cet élément BEB ?"
+        action={
+          <Stack marginX={2}>
+            <Button variant="contained" color="error" onClick={confirmDelete}>
+              Supprimer
+            </Button>
+          </Stack>
+        }
+      />
+    </Box>
   );
 }
