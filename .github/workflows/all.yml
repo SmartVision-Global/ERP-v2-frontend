@@ -21,9 +21,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build app
-        run: npm run build
-
       - name: Get branch name
         id: get_branch
         run: |
@@ -31,26 +28,13 @@ jobs:
           BRANCH_NAME=${BRANCH_NAME//\//-}
           echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
-      - name: Rewrite asset paths in index.html
+      - name: Set homepage in package.json
         run: |
-          FOLDER=${{ steps.get_branch.outputs.branch }}
-          sed -i "s|=\"/static|=\"/${FOLDER}/static|g" dist/index.html
-          sed -i "s|='/static|='/${FOLDER}/static|g" dist/index.html
-          if [ -f dist/asset-manifest.json ]; then
-            sed -i "s|\"/static|\"/${FOLDER}/static|g" dist/asset-manifest.json
-          fi
+          BRANCH=${{ steps.get_branch.outputs.branch }}
+          jq --arg url "/$BRANCH/" '.homepage = $url' package.json > temp.json && mv temp.json package.json
 
-      - name: Add .htaccess for React Router
-        run: |
-          FOLDER=${{ steps.get_branch.outputs.branch }}
-          echo '<IfModule mod_rewrite.c>
-          RewriteEngine On
-          RewriteBase /'"${FOLDER}"'/
-          RewriteRule ^index\.html$ - [L]
-          RewriteCond %{REQUEST_FILENAME} !-f
-          RewriteCond %{REQUEST_FILENAME} !-d
-          RewriteRule . /'"${FOLDER}"'/index.html [L]
-          </IfModule>' > dist/.htaccess
+      - name: Build app
+        run: npm run build
 
       - name: Deploy to Server via SSH
         uses: easingthemes/ssh-deploy@main
@@ -60,5 +44,5 @@ jobs:
           REMOTE_PORT: ${{ secrets.WEKODE_SSH_PORT }}
           REMOTE_USER: ${{ secrets.WEKODE_SSH_USERNAME }}
           SOURCE: dist/
-          TARGET: ${{ secrets.WEKODE_ALL_SSH_PROJECT_DIRECTORY }}/${{ steps.get_branch.outputs.branch }}
+          TARGET: ${{ secrets.WEKODE_MAIN_SSH_PROJECT_DIRECTORY }}/${{ steps.get_branch.outputs.branch }}
           CLEAN: true
