@@ -1,0 +1,64 @@
+name: Deploy React App by Branch
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.11.0'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build app
+        run: npm run build
+
+      - name: Get branch name
+        id: get_branch
+        run: |
+          BRANCH_NAME=${GITHUB_REF##*/}
+          BRANCH_NAME=${BRANCH_NAME//\//-}
+          echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+      - name: Rewrite asset paths in index.html
+        run: |
+          FOLDER=${{ steps.get_branch.outputs.branch }}
+          sed -i "s|=\"/static|=\"/${FOLDER}/static|g" dist/index.html
+          sed -i "s|='/static|='/${FOLDER}/static|g" dist/index.html
+          if [ -f dist/asset-manifest.json ]; then
+            sed -i "s|\"/static|\"/${FOLDER}/static|g" dist/asset-manifest.json
+          fi
+
+      - name: Add .htaccess for React Router
+        run: |
+          FOLDER=${{ steps.get_branch.outputs.branch }}
+          echo '<IfModule mod_rewrite.c>
+          RewriteEngine On
+          RewriteBase /'"${FOLDER}"'/
+          RewriteRule ^index\.html$ - [L]
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteRule . /'"${FOLDER}"'/index.html [L]
+          </IfModule>' > dist/.htaccess
+
+      - name: Deploy to Server via SSH
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.WEKODE_SSH_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ secrets.WEKODE_SSH_HOST }}
+          REMOTE_PORT: ${{ secrets.WEKODE_SSH_PORT }}
+          REMOTE_USER: ${{ secrets.WEKODE_SSH_USERNAME }}
+          SOURCE: dist/
+          TARGET: ${{ secrets.WEKODE_ALL_SSH_PROJECT_DIRECTORY }}/${{ steps.get_branch.outputs.branch }}
+          CLEAN: true
