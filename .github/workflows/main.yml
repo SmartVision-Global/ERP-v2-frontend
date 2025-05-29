@@ -60,5 +60,5 @@ jobs:
           REMOTE_PORT: ${{ secrets.WEKODE_SSH_PORT }}
           REMOTE_USER: ${{ secrets.WEKODE_SSH_USERNAME }}
           SOURCE: dist/
-          TARGET: ${{ secrets.WEKODE_MAIN_SSH_PROJECT_DIRECTORY }}/${{ steps.get_branch.outputs.branch }}
+          TARGET: ${{ secrets.WEKODE_ALL_SSH_PROJECT_DIRECTORY }}/${{ steps.get_branch.outputs.branch }}
           CLEAN: true
