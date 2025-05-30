@@ -26,6 +26,10 @@ jobs:
           SANITIZED=$(echo "$BRANCH" | tr '[:upper:]' '[:lower:]' | sed -e 's/[^a-z0-9]/-/g' -e 's/-\{2,\}/-/g')
           echo "name=$SANITIZED" >> $GITHUB_OUTPUT
 
+      - name: Create .env file
+        run: |
+          echo "VITE_SERVER_URL=https://erp-api.wekode.agency" > .env
+
       - name: Build app
         run: npm run build
 
