@@ -37,6 +37,6 @@ jobs:
           REMOTE_PORT: ${{ secrets.WEKODE_SSH_PORT }}
           REMOTE_USER: ${{ secrets.WEKODE_SSH_USERNAME }}
           SOURCE: 'dist/'
-          TARGET: '${{ secrets.WEKODE_ALL_SSH_PROJECT_DIRECTORY}}/frontend-${{ steps.branch_name.outputs.name }}'
+          TARGET: '${{ secrets.WEKODE_ALL_SSH_PROJECT_DIRECTORY}}/erp-frontend-${{ steps.branch_name.outputs.name }}'
           ARGS: '-avz --delete'
           CLEAN: true
