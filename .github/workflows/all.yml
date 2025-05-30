@@ -32,7 +32,7 @@ jobs:
 
       - name: Deploy to Hostinger
         uses: easingthemes/ssh-deploy@v4
-        with:
+        env:
           SSH_PRIVATE_KEY: ${{ secrets.WEKODE_SSH_PRIVATE_KEY }}
           REMOTE_HOST: ${{ secrets.WEKODE_SSH_HOST }}
           REMOTE_PORT: ${{ secrets.WEKODE_SSH_PORT }}
