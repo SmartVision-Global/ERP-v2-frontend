@@ -32,10 +32,10 @@ jobs:
       - name: Create remote directory
         run: |
           ssh -o StrictHostKeyChecking=no \
-            -p ${{ secrets.WEKODE_SSH_PORT }}
+            -p ${{ secrets.WEKODE_SSH_PORT }} \
             -i ${{ secrets.WEKODE_SSH_PRIVATE_KEY }} \
             ${{ secrets.WEKODE_SSH_USERNAME }}@${{ secrets.WEKODE_SSH_HOST }} \
-            "mkdir -p /domains/yourdomain.com/public_html/frontend-${{ steps.branch_name.outputs.name }}"
+            "mkdir -p ${{ secrets.WEKODE_ALL_SSH_PROJECT_DIRECTORY}}/frontend-${{ steps.branch_name.outputs.name }}"
 
       - name: Deploy to Hostinger
         uses: easingthemes/ssh-deploy@main
@@ -45,6 +45,6 @@ jobs:
           REMOTE_PORT: ${{ secrets.WEKODE_SSH_PORT }}
           REMOTE_USER: ${{ secrets.WEKODE_SSH_USERNAME }}
           SOURCE: 'dist/'
-          TARGET: '${{ secrets.WEKODE_ALL_SSH_PROJECT_DIRECTORY}}/erp-${{ steps.branch_name.outputs.name }}'
+          TARGET: '${{ secrets.WEKODE_ALL_SSH_PROJECT_DIRECTORY}}/frontend-${{ steps.branch_name.outputs.name }}'
           ARGS: '-avz --delete'
           CLEAN: true
