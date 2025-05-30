@@ -29,14 +29,6 @@ jobs:
       - name: Build app
         run: npm run build
 
-      - name: Create remote directory
-        run: |
-          ssh -o StrictHostKeyChecking=no \
-            -p ${{ secrets.WEKODE_SSH_PORT }} \
-            -i ${{ secrets.WEKODE_SSH_PRIVATE_KEY }} \
-            ${{ secrets.WEKODE_SSH_USERNAME }}@${{ secrets.WEKODE_SSH_HOST }} \
-            "mkdir -p ${{ secrets.WEKODE_ALL_SSH_PROJECT_DIRECTORY}}/frontend-${{ steps.branch_name.outputs.name }}"
-
       - name: Deploy to Hostinger
         uses: easingthemes/ssh-deploy@main
         env:
