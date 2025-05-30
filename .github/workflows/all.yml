@@ -38,6 +38,6 @@ jobs:
           REMOTE_PORT: ${{ secrets.WEKODE_SSH_PORT }}
           REMOTE_USER: ${{ secrets.WEKODE_SSH_USERNAME }}
           SOURCE: 'dist/'
-          TARGET: '/home/u775206864/domains/wekode.agency/public_html/erp-front/erp-${{ steps.branch_name.outputs.name }}'
+          TARGET: '${{ secrets.WEKODE_ALL_SSH_PROJECT_DIRECTORY}}/erp-${{ steps.branch_name.outputs.name }}'
           ARGS: '-avz --delete'
           CLEAN: true
