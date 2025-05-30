@@ -1,84 +1,43 @@
-name: Deploy React App by Branch
+name: Deploy to Hostinger ERP Subdomains
 
 on:
   push:
-    branches:
-      - '**'
+    branches: ['**']
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '22.11.0'
+          node-version: '20'
 
       - name: Install dependencies
         run: npm ci
 
       - name: Get sanitized branch name
-        id: get_branch
+        id: branch_name
         run: |
-          BRANCH_NAME=${GITHUB_REF##*/}
-          SANITIZED_BRANCH_NAME=$(echo "$BRANCH_NAME" | sed -e 's/[^[:alnum:]_-]/-/g')
-          echo "branch=$SANITIZED_BRANCH_NAME" >> $GITHUB_OUTPUT
+          BRANCH=${GITHUB_REF##*/}
+          # More aggressive sanitization for Hostinger
+          SANITIZED=$(echo "$BRANCH" | tr '[:upper:]' '[:lower:]' | sed -e 's/[^a-z0-9]/-/g' -e 's/-\{2,\}/-/g')
+          echo "name=$SANITIZED" >> $GITHUB_OUTPUT
 
-      - name: Build app
+      - name: Build React app
         run: npm run build
 
-      - name: Modify files for branch deployment
-        run: |
-          BRANCH_NAME=${{ steps.get_branch.outputs.branch }}
-          
-          # 1. Fix asset paths
-          sed -i "s|='/|='/$BRANCH_NAME/|g" dist/index.html
-          sed -i "s|=\"/|=\"/$BRANCH_NAME/|g" dist/index.html
-          
-          # 2. Fix router configuration - more robust search/replace
-          find dist -type f -name '*.js' -exec sed -i \
-            -e "s|history:\([^)]*\)|history:\1, basename: '/$BRANCH_NAME'|g" \
-            -e "s|createBrowserRouter(\([^)]*\)|createBrowserRouter(\1, {basename: '/$BRANCH_NAME'}|g" \
-            -e "s|new Router(\([^)]*\)|new Router(\1, {basename: '/$BRANCH_NAME'}|g" \
-            -e "s|Router(\([^)]*\)|Router(\1, {basename: '/$BRANCH_NAME'}|g" {} \;
-            
-          # 3. Fix router links in JS files
-          find dist -type f -name '*.js' -exec sed -i \
-            -e "s|href='/|href='/$BRANCH_NAME/|g" \
-            -e "s|href=\"/|href=\"/$BRANCH_NAME/|g" \
-            -e "s|to='/|to='/$BRANCH_NAME/|g" \
-            -e "s|to=\"/|to=\"/$BRANCH_NAME/|g" {} \;
-
-      - name: Create .htaccess for routing
-        run: |
-          BRANCH_NAME=${{ steps.get_branch.outputs.branch }}
-          cat > dist/.htaccess <<EOL
-          <IfModule mod_rewrite.c>
-            RewriteEngine On
-            RewriteBase /$BRANCH_NAME/
-            
-            # Redirect Trailing Slashes If Not A Folder...
-            RewriteCond %{REQUEST_FILENAME} !-d
-            RewriteRule ^(.*)/$ /$BRANCH_NAME/$1 [L,R=301]
-            
-            # Handle Client-Side Routing
-            RewriteCond %{REQUEST_FILENAME} !-f
-            RewriteCond %{REQUEST_FILENAME} !-d
-            RewriteRule ^ /$BRANCH_NAME/index.html [L]
-          </IfModule>
-          EOL
-
-      - name: Deploy dist folder to server via SSH
-        uses: easingthemes/ssh-deploy@main
-        env:
+      - name: Deploy to Hostinger
+        uses: easingthemes/ssh-deploy@v4
+        with:
           SSH_PRIVATE_KEY: ${{ secrets.WEKODE_SSH_PRIVATE_KEY }}
           REMOTE_HOST: ${{ secrets.WEKODE_SSH_HOST }}
           REMOTE_PORT: ${{ secrets.WEKODE_SSH_PORT }}
           REMOTE_USER: ${{ secrets.WEKODE_SSH_USERNAME }}
-          SOURCE: dist/
-          TARGET: ${{ secrets.WEKODE_ALL_SSH_PROJECT_DIRECTORY }}/${{ steps.get_branch.outputs.branch }}
+          SOURCE: 'dist/'
+          TARGET: '/home/u775206864/domains/wekode.agency/public_html/erp-front/erp-${{ steps.branch_name.outputs.name }}'
+          ARGS: '-avz --delete'
           CLEAN: true
