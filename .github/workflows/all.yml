@@ -1,4 +1,4 @@
-name: Deploy to Hostinger ERP Subdomains
+name: Deploy React App by Branch
 
 on:
   push:
@@ -9,9 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
@@ -23,12 +23,19 @@ jobs:
         id: branch_name
         run: |
           BRANCH=${GITHUB_REF##*/}
-          # More aggressive sanitization for Hostinger
           SANITIZED=$(echo "$BRANCH" | tr '[:upper:]' '[:lower:]' | sed -e 's/[^a-z0-9]/-/g' -e 's/-\{2,\}/-/g')
           echo "name=$SANITIZED" >> $GITHUB_OUTPUT
 
-      - name: Build React app
+      - name: Build app
         run: npm run build
+
+      - name: Create remote directory
+        run: |
+          ssh -o StrictHostKeyChecking=no \
+            -p ${{ secrets.WEKODE_SSH_PORT }}
+            -i ${{ secrets.WEKODE_SSH_PRIVATE_KEY }} \
+            ${{ secrets.WEKODE_SSH_USERNAME }}@${{ secrets.WEKODE_SSH_HOST }} \
+            "mkdir -p /domains/yourdomain.com/public_html/frontend-${{ steps.branch_name.outputs.name }}"
 
       - name: Deploy to Hostinger
         uses: easingthemes/ssh-deploy@main
