@@ -36,7 +36,10 @@ import {
   RenderCellType,
   RenderCellBEB,
   RenderCellPriority,
-} from '../order-table-row';
+  RenderCellObservation,
+  RenderCellCreatedBy,
+  RenderCellTreatedBy,
+} from '../processing-da-table-row';
 
 // ----------------------------------------------------------------------
 
@@ -47,7 +50,7 @@ const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 // ----------------------------------------------------------------------
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 
-export function OrderPurchaseList() {
+export function ProcessingDaList() {
   const confirmDialog = useBoolean();
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
@@ -66,7 +69,7 @@ export function OrderPurchaseList() {
   const sites = dataLookups.sites;
 
   const FILTERS_OPTIONS = [
-    { id: 'id', type: 'input', label: 'ID', inputType: 'number' },
+    { id: 'id', type: 'input', label: 'N°', inputType: 'number' },
     { id: 'beb', type: 'input', label: 'B.E.B', inputType: 'string' },
     { id: 'status', type: 'select', options: ORDER_STATUS_OPTIONS, label: 'Etat' },
     {
@@ -75,11 +78,18 @@ export function OrderPurchaseList() {
       options: TYPE_OPTIONS,
       label: 'Type',
     },
+    { id: 'site', type: 'select', options: sites, label: 'Site', serverData: true },
     { id: 'priority', type: 'select', options: PRIORITY_OPTIONS, label: 'Priorité' },
     { id: 'created_by', type: 'input', label: 'Créee par', inputType: 'string' },
+
     { id: 'treat_by', type: 'input', label: 'Traiter par', inputType: 'string' },
-    { id: 'site', type: 'select', options: sites, label: 'Site', serverData: true },
     { id: 'created_at', type: 'date-range', label: 'Date', cols: 3 },
+    {
+      id: 'processing-das',
+      type: 'select',
+      label: "Suivis Traitement Des Demandes D'achat",
+      options: [{}],
+    },
   ];
   const [tableData, setTableData] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
@@ -169,7 +179,7 @@ export function OrderPurchaseList() {
   const columns = [
     {
       field: 'id',
-      headerName: 'ID',
+      headerName: 'N°',
       flex: 1,
       minWidth: 100,
       hideable: false,
@@ -222,6 +232,24 @@ export function OrderPurchaseList() {
       minWidth: 260,
       renderCell: (params) => <RenderCellPriority params={params} />,
     },
+    {
+      field: 'observation',
+      headerName: 'Observations',
+      minWidth: 260,
+      renderCell: (params) => <RenderCellObservation params={params} />,
+    },
+    {
+      field: 'createdBy',
+      headerName: 'Créé par',
+      minWidth: 260,
+      renderCell: (params) => <RenderCellCreatedBy params={params} />,
+    },
+    {
+      field: 'treatedBy',
+      headerName: 'Traiter par',
+      minWidth: 260,
+      renderCell: (params) => <RenderCellTreatedBy params={params} />,
+    },
 
     {
       type: 'actions',
@@ -262,19 +290,13 @@ export function OrderPurchaseList() {
         <CustomBreadcrumbs
           heading="List"
           links={[
-            { name: 'Achat et Approvisionnement', href: paths.dashboard.root },
-            { name: 'Liste', href: paths.dashboard.purchaseSupply.purchaseOrder.root },
+            {
+              name: "Traitement des demandes d'achats",
+              href: paths.dashboard.purchaseSupply.processingDa.root,
+            },
+            { name: 'Liste', href: paths.dashboard.purchaseSupply.processingDa.root },
           ]}
-          action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.purchaseSupply.purchaseOrder.newPurchaseOrder}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              Demande d&#39;achats
-            </Button>
-          }
+          action={() => {}}
           sx={{ mb: { xs: 3, md: 5 } }}
         />
 

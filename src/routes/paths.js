@@ -197,9 +197,14 @@ export const paths = {
       },
     },
     purchaseSupply: {
-      root: `${ROOTS.DASHBOARD}/purchase-supply/purchase-order`,
-      newPurchaseOrder: `${ROOTS.DASHBOARD}/purchase-supply/purchase-order/new`,
-      editPurchaseOrder: (id) => `${ROOTS.DASHBOARD}/purchase-supply/purchase-order/${id}/edit`,
+      purchaseOrder: {
+        root: `${ROOTS.DASHBOARD}/purchase-supply/purchase-order`,
+        newPurchaseOrder: `${ROOTS.DASHBOARD}/purchase-supply/purchase-order/new`,
+        editPurchaseOrder: (id) => `${ROOTS.DASHBOARD}/purchase-supply/purchase-order/${id}/edit`,
+      },
+      processingDa: {
+        root: `${ROOTS.DASHBOARD}/purchase-supply/processing-da`,
+      },
     },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
