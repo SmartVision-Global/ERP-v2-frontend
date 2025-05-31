@@ -223,6 +223,15 @@ export const paths = {
       tools: `${ROOTS.DASHBOARD}/store/tools`,
       supplies: `${ROOTS.DASHBOARD}/store/supplies`,
     },
+    expressionOfNeeds: {
+      root: `${ROOTS.DASHBOARD}/expression-of-needs`,
+      beb: {
+        root: `${ROOTS.DASHBOARD}/expression-of-needs/beb`,
+        new: `${ROOTS.DASHBOARD}/expression-of-needs/beb/new`,
+        edit: (id) => `${ROOTS.DASHBOARD}/expression-of-needs/beb/${id}/edit`,
+      },
+      bmb: {
+    },
     settings: {
       generalSettings: {
         root: `${ROOTS.DASHBOARD}/settings/general-settings`,

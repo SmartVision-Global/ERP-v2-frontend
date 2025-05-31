@@ -47,7 +47,7 @@ const StockSchema = zod.object({
     })
   ).optional(),
   fees: zod.object({
-    douan: zod.string().min(1, { message: 'Douan is required' }),
+    douan: zod.number({ coerce: true }).min(1, { message: 'Douan is required' }),
     position: zod.string().min(1, { message: 'Position is required' })
   }).optional(),
 });
@@ -161,7 +161,7 @@ export function StockNewEditForm({ currentStock }) {
         min: currentStock?.min || '',
         alert: currentStock?.alert || '',
         consumption: currentStock?.consumption || '',
-        type: currentStock?.type || TYPE_OPTIONS[0]?.value || '',
+        type: currentStock?.type.toString() || TYPE_OPTIONS[0]?.value || '',
         image: currentStock?.image || '',
         catalog: currentStock?.catalog || '',
         dimensions: currentStock?.dimensions?.length
@@ -277,7 +277,7 @@ export function StockNewEditForm({ currentStock }) {
         {/* Fees Section */}
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="fees.douan" label="Douan" />
+            <Field.Number name="fees.douan" label="Douan" />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Text name="fees.position" label="Position" />

@@ -19,11 +19,13 @@ const ENDPOINT = endpoints.stores.list;
 
 // ----------------------------------------------------------------------
 
-export function useGetStocks(product_type) {
-  // const url = endpoints.personal;
-  const url = product_type ? [endpoints.stores.list, { product_type }] : endpoints.stores.list;
+export function useGetStocks(params) {
+  // Use params to request paginated/filter data
+  const key = params
+    ? [ENDPOINT, { params }]
+    : ENDPOINT;
 
-  const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
+  const { data, isLoading, error, isValidating } = useSWR(key, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({

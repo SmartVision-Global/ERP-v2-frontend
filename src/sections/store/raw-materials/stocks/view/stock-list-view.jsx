@@ -54,7 +54,7 @@ import {
 
 // ----------------------------------------------------------------------
 
-const HIDE_COLUMNS = { categoies: false };
+const HIDE_COLUMNS = { categories: false };
 
 const HIDE_COLUMNS_TOGGLABLE = ['actions'];
 
@@ -250,16 +250,14 @@ export function StockListView() {
     []
   );
   const handlePaginationModelChange = async (newModel) => {
-    
+    console.log('handlePaginationModelChange', newModel);
     try {
       const newData = {
         ...editedFilters,
         limit: newModel.pageSize,
         offset: newModel.page,
       };
-      console.log('newData', newData);
       const response = await getFiltredStocks(newData);
-      console.log('response', response.data?.data?.records);
       setTableData(response.data?.data?.records);
       setPaginationModel(newModel);
     } catch (error) {
@@ -275,7 +273,6 @@ export function StockListView() {
       .map((column) => column.field);
 
   const handleOpenDetail = (row) => {
-    console.log('row', row);
     setSelectedRow(row);
     setDetailOpen(true);
   };
@@ -561,7 +558,7 @@ if (col.field === 'location') {
                 </List>
               </DialogContent>
               <DialogActions>
-                <Button onClick={handleCloseDetail}>Fermer</Button>
+                <Button variant="contained" onClick={handleCloseDetail}>Fermer</Button>
               </DialogActions>
             </Dialog>
           )}
