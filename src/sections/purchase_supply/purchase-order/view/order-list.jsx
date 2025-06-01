@@ -16,7 +16,7 @@ import { RouterLink } from 'src/routes/components';
 import { CONFIG } from 'src/global-config';
 import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { ORDER_STATUS_OPTIONS, TYPE_OPTIONS, PRIORITY_OPTIONS } from 'src/_mock';
+import { ORDER_STATUS_OPTIONS, TYPE_OPTIONS_ORDER, PRIORITY_OPTIONS } from 'src/_mock';
 import { useGetPersonals, validatePersonal, getFiltredPersonals } from 'src/actions/personal';
 
 import { Iconify } from 'src/components/iconify';
@@ -72,7 +72,7 @@ export function OrderPurchaseList() {
     {
       id: 'type',
       type: 'select',
-      options: TYPE_OPTIONS,
+      options: TYPE_OPTIONS_ORDER,
       label: 'Type',
     },
     { id: 'priority', type: 'select', options: PRIORITY_OPTIONS, label: 'Priorité' },

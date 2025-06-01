@@ -15,13 +15,13 @@ import {
   CircularProgress,
   MenuItem,
   Stack,
-  Alert, 
+  Alert,
 } from '@mui/material';
 
 import { Form, Field } from 'src/components/hook-form';
 
 import { useMultiLookups } from 'src/actions/lookups';
-import { PRIORITY_OPTIONS, TYPE_OPTIONS } from 'src/_mock';
+import { PRIORITY_OPTIONS, TYPE_OPTIONS_ORDER } from 'src/_mock';
 
 import { BEBNewEditForm } from '../beb-new-edit-form';
 import { showError } from 'src/utils/toast-error';
@@ -48,31 +48,29 @@ const formSchema = z.object({
   site: z.string().min(1, 'Le site est requis !'),
   type: z.string().min(1, 'Le type est requis !'),
   priority: z.string().min(1, 'La priorité est requise !'),
-  designation: z.string().min(1, 'La désignation est requise !'), 
+  designation: z.string().min(1, 'La désignation est requise !'),
   products: z.array(productSchema).min(1, 'Au moins un produit est requis.'),
 });
-
 
 const DEFAULT_VALUES = {
   site: '',
   type: '',
   priority: '',
-  designation: '', 
+  designation: '',
   products: [
     {
       codeFournisseur: '',
-      designation: '', 
-      qteActuelle: 0, 
+      designation: '',
+      qteActuelle: 0,
       qteAAcheter: 1,
-      observation: '', 
+      observation: '',
     },
   ],
 };
 
-
 export function PurchaseOrderNewEditForm() {
   const [activeStep, setActiveStep] = useState(0);
-  const [submitError, setSubmitError] = useState(''); 
+  const [submitError, setSubmitError] = useState('');
 
   // Data fetching
   const { dataLookups, isLoading } = useMultiLookups([
@@ -144,7 +142,6 @@ export function PurchaseOrderNewEditForm() {
     setActiveStep((prev) => prev - 1);
   };
 
-
   const addProduct = () => {
     append({
       codeFournisseur: '',
@@ -176,7 +173,7 @@ export function PurchaseOrderNewEditForm() {
 
       <Grid item xs={12} md={6}>
         <Field.Select name="type" label="Type" size="small">
-          {TYPE_OPTIONS?.map((type) => (
+          {TYPE_OPTIONS_ORDER?.map((type) => (
             <MenuItem key={type.value} value={type.value}>
               {type.label}
             </MenuItem>
@@ -210,7 +207,6 @@ export function PurchaseOrderNewEditForm() {
     </Grid>
   );
 
-  
   const renderProductsStep = () => (
     <Box sx={{ mt: 2 }}>
       <Typography variant="subtitle1" gutterBottom>
@@ -239,7 +235,7 @@ export function PurchaseOrderNewEditForm() {
               name={`products.${index}.qteActuelle`}
               label="Qte actuelle"
               type="number"
-              InputProps={{ inputProps: { min: 0 } }} 
+              InputProps={{ inputProps: { min: 0 } }}
             />
           </Grid>
 
@@ -248,12 +244,11 @@ export function PurchaseOrderNewEditForm() {
               name={`products.${index}.qteAAcheter`}
               label="Qte à acheter"
               type="number"
-              InputProps={{ inputProps: { min: 1 } }} 
+              InputProps={{ inputProps: { min: 1 } }}
             />
           </Grid>
 
           <Grid item xs={12} sm={3} md={2}>
-           
             <Field.Text name={`products.${index}.observation`} label="Observation Produit" />
           </Grid>
 
@@ -269,7 +264,6 @@ export function PurchaseOrderNewEditForm() {
               pt: { xs: 1, sm: 3.5 },
             }}
           >
-          
             {fields.length > 1 && (
               <Button
                 color="error"
@@ -289,16 +283,13 @@ export function PurchaseOrderNewEditForm() {
         Ajouter un produit
       </Button>
 
-     
       {errors.products && !Array.isArray(errors.products) && errors.products.message && (
         <Typography color="error" variant="caption" sx={{ display: 'block', mt: 1 }}>
           {errors.products.message}
         </Typography>
       )}
-     
     </Box>
   );
-
 
   const renderStepContent = () => {
     switch (activeStep) {
@@ -334,7 +325,6 @@ export function PurchaseOrderNewEditForm() {
           {getStepTitle()}
         </Typography>
 
-        
         {submitError && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {submitError}
@@ -375,7 +365,6 @@ export function PurchaseOrderNewEditForm() {
     </FormProvider>
   );
 }
-
 
 const BEBFormSection = () => (
   <Stack spacing={2}>

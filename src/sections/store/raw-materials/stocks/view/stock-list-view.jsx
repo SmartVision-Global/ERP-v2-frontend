@@ -1,3 +1,4 @@
+/* eslint-disable */
 import 'jspdf-autotable';
 
 import jsPDF from 'jspdf';
@@ -13,7 +14,16 @@ import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { TextField, FormControl, InputAdornment } from '@mui/material';
 import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
-import { Dialog, DialogTitle, DialogContent, DialogActions, List, ListItem, ListItemText, Typography } from '@mui/material';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+} from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -21,10 +31,7 @@ import { RouterLink } from 'src/routes/components';
 import { CONFIG } from 'src/global-config';
 import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
-import {
-  PRODUCT_STATUS_OPTIONS,
-  IMAGE_OPTIONS,
-} from 'src/_mock';
+import { PRODUCT_STATUS_OPTIONS, IMAGE_OPTIONS } from 'src/_mock';
 import { useGetStocks, getFiltredStocks } from 'src/actions/stores/raw-materials/stocks';
 
 import { Iconify } from 'src/components/iconify';
@@ -59,7 +66,13 @@ const HIDE_COLUMNS = { categories: false };
 const HIDE_COLUMNS_TOGGLABLE = ['actions'];
 
 const columns = [
-  { field: 'id', headerName: 'ID', width: 100, minWidth: 100, renderCell: (params) => <RenderCellId params={params} /> },
+  {
+    field: 'id',
+    headerName: 'ID',
+    width: 100,
+    minWidth: 100,
+    renderCell: (params) => <RenderCellId params={params} />,
+  },
   { field: 'code', headerName: 'Code', flex: 1, minWidth: 150 },
   { field: 'supplier_code', headerName: 'Supplier Code', flex: 1, minWidth: 120 },
   { field: 'builder_code', headerName: 'Builder Code', flex: 1, minWidth: 120 },
@@ -96,8 +109,14 @@ const columns = [
     headerClassName: 'consumption-column',
     cellClassName: 'consumption-column',
     renderHeader: () => (
-      <div style={{ whiteSpace: 'normal', lineHeight: 1.2, textAlign: 'center', fontWeight: 'bold' }}>
-        Consommation<br />journalière<br />prévisionnelle
+      <div
+        style={{ whiteSpace: 'normal', lineHeight: 1.2, textAlign: 'center', fontWeight: 'bold' }}
+      >
+        Consommation
+        <br />
+        journalière
+        <br />
+        prévisionnelle
       </div>
     ),
     type: 'number',
@@ -115,9 +134,27 @@ const columns = [
     headerClassName: 'unknown2-column',
     cellClassName: 'unknown2-column',
   },
-  { field: 'family', headerName: 'Family', flex: 1, minWidth: 150, renderCell: (params) => <RenderCellFamily params={params} /> },
-  { field: 'sub_family', headerName: 'Sous familles', flex: 1, minWidth: 150, renderCell: (params) =>  <RenderCellSubFamilies params={params} /> },
-  { field: 'category', headerName: 'Category', flex: 1, minWidth: 150, renderCell: (params) => <RenderCellCategory params={params} /> },
+  {
+    field: 'family',
+    headerName: 'Family',
+    flex: 1,
+    minWidth: 150,
+    renderCell: (params) => <RenderCellFamily params={params} />,
+  },
+  {
+    field: 'sub_family',
+    headerName: 'Sous familles',
+    flex: 1,
+    minWidth: 150,
+    renderCell: (params) => <RenderCellSubFamilies params={params} />,
+  },
+  {
+    field: 'category',
+    headerName: 'Category',
+    flex: 1,
+    minWidth: 150,
+    renderCell: (params) => <RenderCellCategory params={params} />,
+  },
   {
     field: 'location',
     headerName: 'Location',
@@ -153,8 +190,6 @@ const columns = [
   },
 ];
 
-
-
 // ----------------------------------------------------------------------
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 
@@ -166,7 +201,10 @@ export function StockListView() {
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [toolsAnchorEl, setToolsAnchorEl] = useState(null);
-  const { stocks, stocksLoading, stocksCount } = useGetStocks({ limit: paginationModel.pageSize, offset: paginationModel.page });
+  const { stocks, stocksLoading, stocksCount } = useGetStocks({
+    limit: paginationModel.pageSize,
+    offset: paginationModel.page,
+  });
   const [rowCount, setRowCount] = useState(stocksCount);
   const [tableData, setTableData] = useState(stocks);
 
@@ -190,12 +228,18 @@ export function StockListView() {
     { id: 'supplier_code', type: 'input', label: 'Supplier Code' },
     { id: 'designation', type: 'input', label: 'Designation' },
     { id: 'status', type: 'select', options: PRODUCT_STATUS_OPTIONS, label: 'Etat' },
-    { id: 'unit_measure', type: 'select', options: measurementUnits, label: 'Unit', serverData: true },
+    {
+      id: 'unit_measure',
+      type: 'select',
+      options: measurementUnits,
+      label: 'Unit',
+      serverData: true,
+    },
     { id: 'category', type: 'select', options: categories, label: 'Category', serverData: true },
     { id: 'family', type: 'select', options: families, label: 'Family', serverData: true },
     // { id: 'sub_family', type: 'select', options: subFamilies, label: 'Sub Family' },
     { id: 'image', type: 'select', options: IMAGE_OPTIONS, label: 'Image' },
-    
+
     {
       id: 'created_date_start',
       type: 'date-range',
@@ -206,7 +250,7 @@ export function StockListView() {
       width: 1,
     },
   ];
-  
+
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState({});
 
@@ -237,7 +281,6 @@ export function StockListView() {
 
   const handleFilter = useCallback(
     async (data) => {
-      
       try {
         const response = await getFiltredStocks(data);
         setTableData(response.data?.data?.records);
@@ -265,8 +308,6 @@ export function StockListView() {
     }
   };
 
-  
-
   const getTogglableColumns = () =>
     columns
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
@@ -282,30 +323,31 @@ export function StockListView() {
     setSelectedRow(null);
   };
 
-  const columnsWithActions = useMemo(() =>
-    columns.map((col) => {
-      if (col.field === 'actions') {
-        return {
-          ...col,
-          getActions: (params) => [
-            <GridActionsLinkItem
-              showInMenu
-              icon={<Iconify icon="solar:pen-bold" />}
-              label="Modifier"
-              href={paths.dashboard.store.rawMaterials.editStock(params.row.id)}
-            />,
-            <GridActionsCellItem
-              showInMenu
-              icon={<Iconify icon="eva:eye-fill" />}
-              label="Consulter"
-              onClick={() => handleOpenDetail(params.row)}
-            />,
-          ],
-        };
-      }
-      return col;
-    }),
-  [handleOpenDetail]
+  const columnsWithActions = useMemo(
+    () =>
+      columns.map((col) => {
+        if (col.field === 'actions') {
+          return {
+            ...col,
+            getActions: (params) => [
+              <GridActionsLinkItem
+                showInMenu
+                icon={<Iconify icon="solar:pen-bold" />}
+                label="Modifier"
+                href={paths.dashboard.store.rawMaterials.editStock(params.row.id)}
+              />,
+              <GridActionsCellItem
+                showInMenu
+                icon={<Iconify icon="eva:eye-fill" />}
+                label="Consulter"
+                onClick={() => handleOpenDetail(params.row)}
+              />,
+            ],
+          };
+        }
+        return col;
+      }),
+    [handleOpenDetail]
   );
 
   const handleToolsClick = (event) => {
@@ -321,26 +363,32 @@ export function StockListView() {
   };
 
   const copyToClipboard = () => {
-    const text = tableData.map(row => Object.values(row).join('\t')).join('\n');
+    const text = tableData.map((row) => Object.values(row).join('\t')).join('\n');
     navigator.clipboard.writeText(text);
   };
 
   const exportToCsv = () => {
-    const header = columns.map(col => col.headerName).join(',');
-    const rows = tableData.map(row =>
-      columns.map(col => {
-        let value = row[col.field];
-        if (col.field === 'family') value = row.family?.name;
-        if (col.field === 'category') value = row.category?.name;
-        if(col.field === 'unit_measure') value = row.unit_measure?.designation;
-        if (col.field === 'location') {
-          const arr = row.product_storage;
-          value = Array.isArray(arr) && arr.length
-            ? arr.map(item => item.location).filter(Boolean).join(', ')
-            : '';
-        }
-        return value ?? '';
-      }).join(',')
+    const header = columns.map((col) => col.headerName).join(',');
+    const rows = tableData.map((row) =>
+      columns
+        .map((col) => {
+          let value = row[col.field];
+          if (col.field === 'family') value = row.family?.name;
+          if (col.field === 'category') value = row.category?.name;
+          if (col.field === 'unit_measure') value = row.unit_measure?.designation;
+          if (col.field === 'location') {
+            const arr = row.product_storage;
+            value =
+              Array.isArray(arr) && arr.length
+                ? arr
+                    .map((item) => item.location)
+                    .filter(Boolean)
+                    .join(', ')
+                : '';
+          }
+          return value ?? '';
+        })
+        .join(',')
     );
     const csvContent = [header, ...rows].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -353,18 +401,22 @@ export function StockListView() {
   };
 
   const exportToExcel = () => {
-    const exportData = tableData.map(row =>
+    const exportData = tableData.map((row) =>
       columns.reduce((acc, col) => {
         let value = row[col.field];
         if (col.field === 'family') value = row.family?.name;
         if (col.field === 'category') value = row.category?.name;
-        if(col.field === 'unit_measure') value = row.unit_measure?.designation;
-if (col.field === 'location') {
-  const arr = row.product_storage;
-  value = Array.isArray(arr) && arr.length
-    ? arr.map(item => item.location).filter(Boolean).join(', ')
-    : '';
-}
+        if (col.field === 'unit_measure') value = row.unit_measure?.designation;
+        if (col.field === 'location') {
+          const arr = row.product_storage;
+          value =
+            Array.isArray(arr) && arr.length
+              ? arr
+                  .map((item) => item.location)
+                  .filter(Boolean)
+                  .join(', ')
+              : '';
+        }
         acc[col.headerName] = value ?? '';
         return acc;
       }, {})
@@ -377,9 +429,9 @@ if (col.field === 'location') {
 
   const exportToPdf = () => {
     const doc = new jsPDF();
-    const header = columns.map(col => col.headerName);
-    const rows = tableData.map(row =>
-      columns.map(col => {
+    const header = columns.map((col) => col.headerName);
+    const rows = tableData.map((row) =>
+      columns.map((col) => {
         let value = row[col.field];
         if (col.field === 'family') value = row.family?.name;
         if (col.field === 'category') value = row.category?.name;
@@ -425,20 +477,60 @@ if (col.field === 'location') {
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                 transformOrigin={{ vertical: 'top', horizontal: 'right' }}
               >
-                <MenuItem onClick={() => { printTable(); handleToolsClose(); }}>
-                  <ListItemIcon><Iconify icon="eva:printer-fill" /></ListItemIcon>Impression
+                <MenuItem
+                  onClick={() => {
+                    printTable();
+                    handleToolsClose();
+                  }}
+                >
+                  <ListItemIcon>
+                    <Iconify icon="eva:printer-fill" />
+                  </ListItemIcon>
+                  Impression
                 </MenuItem>
-                <MenuItem onClick={() => { copyToClipboard(); handleToolsClose(); }}>
-                  <ListItemIcon><Iconify icon="eva:copy-fill" /></ListItemIcon>Copie
+                <MenuItem
+                  onClick={() => {
+                    copyToClipboard();
+                    handleToolsClose();
+                  }}
+                >
+                  <ListItemIcon>
+                    <Iconify icon="eva:copy-fill" />
+                  </ListItemIcon>
+                  Copie
                 </MenuItem>
-                <MenuItem onClick={() => { exportToExcel(); handleToolsClose(); }}>
-                  <ListItemIcon><Iconify icon="catppuccin:ms-excel" /></ListItemIcon>Excel
+                <MenuItem
+                  onClick={() => {
+                    exportToExcel();
+                    handleToolsClose();
+                  }}
+                >
+                  <ListItemIcon>
+                    <Iconify icon="catppuccin:ms-excel" />
+                  </ListItemIcon>
+                  Excel
                 </MenuItem>
-                <MenuItem onClick={() => { exportToCsv(); handleToolsClose(); }}>
-                  <ListItemIcon><Iconify icon="catppuccin:csv" /></ListItemIcon>CSV
+                <MenuItem
+                  onClick={() => {
+                    exportToCsv();
+                    handleToolsClose();
+                  }}
+                >
+                  <ListItemIcon>
+                    <Iconify icon="catppuccin:csv" />
+                  </ListItemIcon>
+                  CSV
                 </MenuItem>
-                <MenuItem onClick={() => { exportToPdf(); handleToolsClose(); }}>
-                  <ListItemIcon><Iconify icon="material-icon-theme:pdf" /></ListItemIcon>PDF
+                <MenuItem
+                  onClick={() => {
+                    exportToPdf();
+                    handleToolsClose();
+                  }}
+                >
+                  <ListItemIcon>
+                    <Iconify icon="material-icon-theme:pdf" />
+                  </ListItemIcon>
+                  PDF
                 </MenuItem>
               </Menu>
             </Box>
@@ -515,50 +607,116 @@ if (col.field === 'location') {
           />
           {selectedRow && (
             <Dialog open={detailOpen} onClose={handleCloseDetail} maxWidth="sm" fullWidth>
-              <DialogTitle>Details produit: {selectedRow.code} -- {selectedRow.designation}</DialogTitle>
+              <DialogTitle>
+                Details produit: {selectedRow.code} -- {selectedRow.designation}
+              </DialogTitle>
               <DialogContent dividers>
-                <Box sx={{ display: 'inline-block', bgcolor: 'primary.main', color: '#fff', px: 1.5, py: 0.5, borderRadius: 1}}>
+                <Box
+                  sx={{
+                    display: 'inline-block',
+                    bgcolor: 'primary.main',
+                    color: '#fff',
+                    px: 1.5,
+                    py: 0.5,
+                    borderRadius: 1,
+                  }}
+                >
                   <Typography variant="body2">Informations</Typography>
                 </Box>
                 <List>
-                  <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <ListItem
+                    sx={{
+                      borderTop: '1px solid rgba(0,0,0,0.12)',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
                     <Typography variant="body2">Codification</Typography>
                     <Typography variant="body2">{selectedRow.code}</Typography>
                   </ListItem>
-                  <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <ListItem
+                    sx={{
+                      borderTop: '1px solid rgba(0,0,0,0.12)',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
                     <Typography variant="body2">Désignation</Typography>
                     <Typography variant="body2">{selectedRow.designation}</Typography>
                   </ListItem>
-                  <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <ListItem
+                    sx={{
+                      borderTop: '1px solid rgba(0,0,0,0.12)',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
                     <Typography variant="body2">Unité de mesure</Typography>
                     <Typography variant="body2">{selectedRow.unit_measure?.designation}</Typography>
                   </ListItem>
-                  <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <ListItem
+                    sx={{
+                      borderTop: '1px solid rgba(0,0,0,0.12)',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
                     <Typography variant="body2">Famille</Typography>
                     <Typography variant="body2">{selectedRow.family?.name}</Typography>
                   </ListItem>
-                  <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <ListItem
+                    sx={{
+                      borderTop: '1px solid rgba(0,0,0,0.12)',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
                     <Typography variant="body2">Date de création</Typography>
-                    <Typography variant="body2">{selectedRow.created_date ? new Date(selectedRow.created_date).toLocaleDateString('fr-FR') : ''}</Typography>
+                    <Typography variant="body2">
+                      {selectedRow.created_date
+                        ? new Date(selectedRow.created_date).toLocaleDateString('fr-FR')
+                        : ''}
+                    </Typography>
                   </ListItem>
                   {selectedRow.catalog && (
-                    <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <ListItem
+                      sx={{
+                        borderTop: '1px solid rgba(0,0,0,0.12)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
+                    >
                       <Typography variant="body2">Catalogue</Typography>
                       <Link href={selectedRow.catalog} target="_blank" rel="noopener">
-                        <Typography variant="body2" color="primary">Voir PDF</Typography>
+                        <Typography variant="body2" color="primary">
+                          Voir PDF
+                        </Typography>
                       </Link>
                     </ListItem>
                   )}
                   {selectedRow.image && (
                     <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)' }}>
                       <ListItemText primary="Image" />
-                      <Box component="img" src={selectedRow.image} alt="item image" sx={{ maxWidth: '100%', maxHeight: 300 }} />
+                      <Box
+                        component="img"
+                        src={selectedRow.image}
+                        alt="item image"
+                        sx={{ maxWidth: '100%', maxHeight: 300 }}
+                      />
                     </ListItem>
                   )}
                 </List>
               </DialogContent>
               <DialogActions>
-                <Button variant="contained" onClick={handleCloseDetail}>Fermer</Button>
+                <Button variant="contained" onClick={handleCloseDetail}>
+                  Fermer
+                </Button>
               </DialogActions>
             </Dialog>
           )}
