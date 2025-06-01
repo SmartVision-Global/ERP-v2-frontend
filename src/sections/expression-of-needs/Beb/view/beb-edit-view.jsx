@@ -4,25 +4,24 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { StockNewEditForm } from '../stock-new-edit-form';
+import { BebNewEditForm } from '../beb-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-export function StockEditView({ stock }) {
+export function BebEditView({ beb }) {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
         heading="Edit"
         backHref={paths.dashboard.rh.personal.root}
         links={[
-          { name: 'Gestion magasinage', href: paths.dashboard.root },
-          { name: 'Stocks', href: paths.dashboard.store.rawMaterials.root },
-          { name: stock?.name },
+          { name: 'Expression des besoins', href: paths.dashboard.expressionOfNeeds.beb.root },
+          { name: beb?.name },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      {stock && <StockNewEditForm currentStock={stock} />}
+      {beb && <BebNewEditForm currentBeb={beb} />}
     </DashboardContent>
   );
 }

@@ -344,11 +344,11 @@ if (col.field === 'location') {
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
               <Button
                 component={RouterLink}
-                href={paths.dashboard.store.rawMaterials.newStock}
+                href={paths.dashboard.expressionOfNeeds.beb.new}
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >
-                Ajouter Stock
+                Ajouter B.E.B
               </Button>
               <Button
                 variant="contained"
