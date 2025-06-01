@@ -1,4 +1,4 @@
-export const TYPE_OPTIONS = [
+export const DATA_TYPE_OPTIONS = [
     {value: '1', label: 'Matière première'},
     {value: '2', label: 'Produit semi-fini'},
     {value: '3', label: 'Composition d\'argile'},

@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid2';
 import { Box, Button, Tab, Tabs, MenuItem } from '@mui/material';
 import { Form, Field } from 'src/components/hook-form';
 import { useMultiLookups } from 'src/actions/lookups';
-import { TYPE_OPTIONS, PRIORITY_OPTIONS } from 'src/_mock/expression-of-needs/Beb/Beb';
+import { PRODUCT_TYPE_OPTIONS, PRIORITY_OPTIONS } from 'src/_mock/expression-of-needs/Beb/Beb';
 
 // Validation schema for the first tab fields
 const bebSchema = z.object({
@@ -33,7 +33,7 @@ export function BebNewEditForm({ initialData, onSubmit }) {
       nature: initialData?.nature || '',
       requested_date: initialData?.requested_date || '',
       site_id: initialData?.site_id?.toString() || '',
-      type: initialData?.type?.toString() || TYPE_OPTIONS[0]?.value?.toString() || '',
+      type: initialData?.type?.toString() || PRODUCT_TYPE_OPTIONS[0]?.value?.toString() || '',
       priority:
         initialData?.priority?.toString() || PRIORITY_OPTIONS[0]?.value?.toString() || '',
       observation: initialData?.observation || '',
@@ -104,7 +104,7 @@ export function BebNewEditForm({ initialData, onSubmit }) {
 
             <Grid size={{ xs: 12, md: 4 }}>
               <Field.Select name="type" label="Type" size="small">
-                {TYPE_OPTIONS.map((option) => (
+                {PRODUCT_TYPE_OPTIONS.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.label}
                   </MenuItem>

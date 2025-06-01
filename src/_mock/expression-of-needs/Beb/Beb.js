@@ -10,7 +10,7 @@ export const STATUS_OPTIONS = [
 ];  
 
 
-export const TYPE_OPTIONS = [
+export const PRODUCT_TYPE_OPTIONS = [
     { label: 'Matière première', value: 1 , color: 'primary'},
     { label: 'Équipement', value: 2 , color: 'secondary'},
     { label: 'Outil', value: 3 , color: 'success'},

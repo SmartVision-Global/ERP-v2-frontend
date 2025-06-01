@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 
 import { fDate, fTime } from 'src/utils/format-time';
 
-import { NATURE_OPTIONS, TYPE_OPTIONS, STATUS_OPTIONS, PRIORITY_OPTIONS } from 'src/_mock/expression-of-needs/Beb/Beb';
+import { NATURE_OPTIONS, PRODUCT_TYPE_OPTIONS, STATUS_OPTIONS, PRIORITY_OPTIONS } from 'src/_mock/expression-of-needs/Beb/Beb';
 
 import { Label } from 'src/components/label';
 
@@ -50,7 +50,7 @@ export function RenderCellStatus({ params }) {
 }
 
 export function RenderCellType({ params }) {
-  const type = TYPE_OPTIONS.find(option => option.value === params.row.type);
+  const type = PRODUCT_TYPE_OPTIONS.find(option => option.value === params.row.type);
   const color = type ? type.color : 'default';
   const label = type ? type.label : 'N/I';
   return <Label variant="soft" color={color}>{label}</Label>;
