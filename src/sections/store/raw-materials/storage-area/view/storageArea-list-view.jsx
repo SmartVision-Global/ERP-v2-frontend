@@ -17,6 +17,7 @@ import { RouterLink } from 'src/routes/components';
 import { useGetSites } from 'src/actions/site';
 import { useGetStores } from 'src/actions/store';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useGetInitialStorages } from 'src/actions/initialStorage';
 import { useGetStorageAreas, deleteStorageArea } from 'src/actions/storageArea';
 
 import { toast } from 'src/components/snackbar';
@@ -36,6 +37,8 @@ import {
   RenderCellObservation,
   RenderCellCreatedAt,
 } from '../storageArea-table-row';
+
+const PAGE_SIZE = 10; // or whatever default page size you want
 
 // ----------------------------------------------------------------------
 
@@ -91,31 +94,12 @@ export function StorageAreaListView() {
 
   // 4. Update filter params when filters change
   const handleFilterChange = (newFilters) => {
-    const updatedParams = {
-      ...filterParams,
-      store: null,
-      code: '',
-      designation: '',
-    };
-
+    // newFilters is an array of {id, value}
+    const updatedParams = { ...filterParams };
     newFilters.forEach((filter) => {
-      switch (filter.id) {
-        case 'magasin':
-          updatedParams.store = filter.value ? Number(filter.value) : null;
-          break;
-        case 'entrepot':
-          updatedParams.code = filter.value || '';
-          break;
-        case 'designation':
-          updatedParams.designation = filter.value || '';
-          break;
-        default:
-          break;
-      }
+      updatedParams[filter.id] = filter.value;
     });
-
     setFilterParams(updatedParams);
-    setEditedFilters(newFilters);
   };
 
   // 5. Update search in filter params
@@ -129,13 +113,11 @@ export function StorageAreaListView() {
   // 6. Reset all filters
   const handleReset = () => {
     setFilterParams({
-      only_parent: true,
-      store: null,
-      code: '',
-      designation: '',
+      limit: PAGE_SIZE,
+      offset: 0,
       search: '',
+      store_id: null,
     });
-    setEditedFilters([]);
   };
 
   const { stores } = useGetStores();
@@ -165,6 +147,9 @@ export function StorageAreaListView() {
   const { storageAreas: childrenData, storageAreasLoading: childrenLoading } =
     useGetStorageAreas(childrenParams);
 
+  const { initialStorages, initialStoragesLoading, initialStoragesError, initialStoragesCount } =
+    useGetInitialStorages(filterParams);
+
   useEffect(() => {
     if (storageAreasError) {
       toast.error('Failed to get storage areas');
@@ -188,7 +173,7 @@ export function StorageAreaListView() {
             createdAt: child.store?.created_at,
           }));
 
-        const parentData = {
+        return {
           id: area.id,
           magazin_id: area.store?.id,
           magazin: area.store?.designation,
@@ -200,8 +185,6 @@ export function StorageAreaListView() {
           createdAt: area.store?.created_at,
           children: children,
         };
-
-        return parentData;
       });
 
       setTableData(transformedData);
@@ -514,8 +497,8 @@ export function StorageAreaListView() {
         >
           <TableToolbarCustom
             filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={handleFilterChange}
+            filters={filterParams}
+            setFilters={setFilterParams}
             onReset={handleReset}
           />
           <Box paddingX={4} paddingY={2} sx={{}}>
@@ -523,7 +506,7 @@ export function StorageAreaListView() {
               <TextField
                 fullWidth
                 value={filterParams.search}
-                onChange={handleSearch}
+                onChange={(e) => setFilterParams((prev) => ({ ...prev, search: e.target.value }))}
                 placeholder="Search..."
                 slotProps={{
                   input: {

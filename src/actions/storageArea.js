@@ -1,5 +1,5 @@
-import useSWR from 'swr';
 import { useMemo } from 'react';
+import useSWR, { mutate } from 'swr';
 
 import axios, { fetcher, endpoints } from 'src/lib/axios';
 
@@ -99,12 +99,15 @@ export function useGetStorageAreaChildren(parentId) {
 
 export async function createStorageArea(data) {
   await axios.post(STORAGE_AREA_ENDPOINT, data);
+  mutate(STORAGE_AREA_ENDPOINT);
 }
 
 export async function updateStorageArea(id, data) {
   await axios.put(`${STORAGE_AREA_ENDPOINT}/${id}`, data);
+  mutate(STORAGE_AREA_ENDPOINT);
 }
 
 export async function deleteStorageArea(id) {
   await axios.delete(`${STORAGE_AREA_ENDPOINT}/${id}`);
+  mutate(STORAGE_AREA_ENDPOINT);
 }

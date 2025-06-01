@@ -1,4 +1,5 @@
 import { z as zod } from 'zod';
+import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useFieldArray } from 'react-hook-form';
 
@@ -26,6 +27,8 @@ import { createInitialStorage } from 'src/actions/initialStorage';
 import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 
+import { ProductSelectionDialog } from './product-selection-dialog';
+
 // -------------------- Schema --------------------
 const ProductEntrySchema = zod.object({
   product_id: zod.string().optional(),
@@ -45,6 +48,8 @@ const StorageAreaSchema = zod.object({
 export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdded, onClose }) {
   const router = useRouter();
   const { stores } = useGetStores();
+  const [selectedRowIndex, setSelectedRowIndex] = useState(null);
+  const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
 
   const methods = useForm({
     resolver: zodResolver(StorageAreaSchema),
@@ -80,13 +85,27 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
     try {
       await createInitialStorage(data);
       toast.success('Lieu de stockage créé avec succès!');
-      router.push(paths.dashboard.store.rawMaterials.storageArea);
+      router.push(paths.dashboard.store.rawMaterials.initialStorage);
       onClose?.();
     } catch (error) {
       console.error(error);
       toast.error(error?.message || "Échec de l'opération");
     }
   });
+
+  const handleProductSelect = (product) => {
+    if (selectedRowIndex !== null) {
+      update(selectedRowIndex, {
+        product_id: product.id,
+        designation: product.designation,
+        lot: 'non-défini',
+        pmp: 0,
+        quantity: 0,
+        observation: '',
+      });
+    }
+    setSelectedRowIndex(null);
+  };
 
   // -------------------- Table Row Component --------------------
   const renderProductRows = () =>
@@ -100,11 +119,18 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
       >
         <Grid xs={1.5} marginLeft={2}>
           <Field.Text
-            name={`items.${index}.product_id`} // Changed from productEntries to items
+            name={`items.${index}.product_id`}
             label="Code"
             variant="outlined"
             size="small"
             fullWidth
+            onDoubleClick={() => {
+              setSelectedRowIndex(index);
+              setIsProductDialogOpen(true);
+            }}
+            InputProps={{
+              readOnly: true,
+            }}
           />
         </Grid>
         <Grid xs={2}>
@@ -218,55 +244,66 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
     ));
 
   return (
-    <Form methods={methods} onSubmit={onSubmit}>
-      <Card>
-        <CardHeader title="Ajouter un lieu de stockage" />
-        <Divider />
+    <>
+      <Form methods={methods} onSubmit={onSubmit}>
+        <Card>
+          <CardHeader title="Ajouter un lieu de stockage" />
+          <Divider />
 
-        <Box sx={{ p: 3 }}>
-          <Grid container spacing={3}>
-            <Grid xs={12} md={6} marginTop={4} marginLeft={2}>
-              <Field.Select name="store_id" label="Magasin" size="small" fullWidth>
-                <MenuItem value={undefined}>Sélectionner un magasin</MenuItem>
-                {stores?.map((store) => (
-                  <MenuItem key={store.id} value={store.id}>
-                    {store.designation}
-                  </MenuItem>
-                ))}
-              </Field.Select>
+          <Box sx={{ p: 3 }}>
+            <Grid container spacing={3}>
+              <Grid xs={12} md={6} marginTop={4} marginLeft={2}>
+                <Field.Select name="store_id" label="Magasin" size="small" fullWidth>
+                  <MenuItem value={undefined}>Sélectionner un magasin</MenuItem>
+                  {stores?.map((store) => (
+                    <MenuItem key={store.id} value={store.id}>
+                      {store.designation}
+                    </MenuItem>
+                  ))}
+                </Field.Select>
+              </Grid>
             </Grid>
-          </Grid>
 
-          <Divider sx={{ my: 3 }} />
+            <Divider sx={{ my: 3 }} />
 
-          <Stack spacing={1}>
-            <Box display="flex" justifyContent="flex-start" mb={1}>
-              <Button
-                onClick={() =>
-                  append({
-                    code: '',
-                    designation: '',
-                    lot: 'non-défini',
-                    pmp: 0,
-                    quantity: 0,
-                    observation: '',
-                  })
-                }
-                startIcon={<Add />}
-              >
-                Ajouter une ligne
-              </Button>
+            <Stack spacing={1}>
+              <Box display="flex" justifyContent="flex-start" mb={1}>
+                <Button
+                  onClick={() =>
+                    append({
+                      code: '',
+                      designation: '',
+                      lot: 'non-défini',
+                      pmp: 0,
+                      quantity: 0,
+                      observation: '',
+                    })
+                  }
+                  startIcon={<Add />}
+                >
+                  Ajouter une ligne
+                </Button>
+              </Box>
+              {renderProductRows()}
+            </Stack>
+
+            <Box display="flex" justifyContent="right" mt={4}>
+              <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                VALIDER
+              </LoadingButton>
             </Box>
-            {renderProductRows()}
-          </Stack>
-
-          <Box display="flex" justifyContent="right" mt={4}>
-            <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-              VALIDER
-            </LoadingButton>
           </Box>
-        </Box>
-      </Card>
-    </Form>
+        </Card>
+      </Form>
+
+      <ProductSelectionDialog
+        open={isProductDialogOpen}
+        onClose={() => {
+          setIsProductDialogOpen(false);
+          setSelectedRowIndex(null);
+        }}
+        onProductSelect={handleProductSelect}
+      />
+    </>
   );
 }

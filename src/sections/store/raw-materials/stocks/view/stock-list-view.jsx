@@ -153,14 +153,16 @@ const columns = [
 // ----------------------------------------------------------------------
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 
-export function StockListView() {
+export function StockListView({ isSelectionDialog = false, componentsProps, onSearch }) {
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: PAGE_SIZE,
   });
+  const [searchQuery, setSearchQuery] = useState('');
   const { stocks, stocksLoading, stocksCount } = useGetStocks({
     limit: paginationModel.pageSize,
     offset: paginationModel.page,
+    search: searchQuery,
   });
   const [rowCount, setRowCount] = useState(stocksCount);
   const [tableData, setTableData] = useState(stocks);
@@ -288,28 +290,38 @@ export function StockListView() {
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
 
+  const handleSearch = (event) => {
+    const value = event.target.value;
+    setSearchQuery(value);
+    if (onSearch) {
+      onSearch(value);
+    }
+  };
+
   return (
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-        <CustomBreadcrumbs
-          heading="List"
-          links={[
-            { name: 'Gestion magasinage', href: paths.dashboard.root },
-            { name: 'Stocks', href: paths.dashboard.root },
-            { name: 'Liste' },
-          ]}
-          action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.store.rawMaterials.newStock}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              Ajouter Stock
-            </Button>
-          }
-          sx={{ mb: { xs: 3, md: 5 } }}
-        />
+        {!isSelectionDialog && (
+          <CustomBreadcrumbs
+            heading="List"
+            links={[
+              { name: 'Gestion magasinage', href: paths.dashboard.root },
+              { name: 'Stocks', href: paths.dashboard.root },
+              { name: 'Liste' },
+            ]}
+            action={
+              <Button
+                component={RouterLink}
+                href={paths.dashboard.store.rawMaterials.newStock}
+                variant="contained"
+                startIcon={<Iconify icon="mingcute:add-line" />}
+              >
+                Ajouter Stock
+              </Button>
+            }
+            sx={{ mb: { xs: 3, md: 5 } }}
+          />
+        )}
 
         <Card
           sx={{
@@ -318,36 +330,42 @@ export function StockListView() {
             flexDirection: { md: 'column' },
           }}
         >
-          <TableToolbarCustom
-            filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={setEditedFilters}
-            onReset={handleReset}
-            handleFilter={handleFilter}
-            setPaginationModel={setPaginationModel}
-            paginationModel={paginationModel}
-          />
-          <Box paddingX={4} paddingY={2} sx={{}}>
-            <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
-              <TextField
-                fullWidth
-                // value={currentFilters.name}
-                // onChange={handleFilterName}
-                placeholder="Search "
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-                size="small"
+          {!isSelectionDialog && (
+            <>
+              <TableToolbarCustom
+                filterOptions={FILTERS_OPTIONS}
+                filters={editedFilters}
+                setFilters={setEditedFilters}
+                onReset={handleReset}
+                handleFilter={handleFilter}
+                setPaginationModel={setPaginationModel}
+                paginationModel={paginationModel}
               />
-            </FormControl>
-          </Box>
+              <Box paddingX={4} paddingY={2}>
+                <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
+                  <TextField
+                    fullWidth
+                    placeholder="Search "
+                    value={searchQuery}
+                    onChange={handleSearch}
+                    slotProps={{
+                      input: {
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                          </InputAdornment>
+                        ),
+                      },
+                    }}
+                    size="small"
+                  />
+                </FormControl>
+              </Box>
+            </>
+          )}
+
           <DataGrid
+            {...componentsProps}
             disableRowSelectionOnClick
             disableColumnMenu
             rows={tableData}
@@ -370,7 +388,17 @@ export function StockListView() {
               panel: { anchorEl: filterButtonEl },
               columnsManagement: { getTogglableColumns },
             }}
-            sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
+            sx={{
+              [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' },
+              '& .MuiDataGrid-row': {
+                cursor: isSelectionDialog ? 'pointer' : 'default',
+                '&:hover': isSelectionDialog
+                  ? {
+                      backgroundColor: 'action.hover',
+                    }
+                  : {},
+              },
+            }}
           />
         </Card>
       </DashboardContent>

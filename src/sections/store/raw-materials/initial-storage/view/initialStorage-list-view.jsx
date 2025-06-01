@@ -1,9 +1,11 @@
+import { mutate } from 'swr';
 import { useBoolean } from 'minimal-shared/hooks';
+import { useSearchParams } from 'react-router-dom';
 import { useState, useEffect, forwardRef, useCallback } from 'react';
 
 import Link from '@mui/material/Link';
+import { Close, Add, Remove } from '@mui/icons-material';
 import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
-import { TextField, FormControl, InputAdornment, Container, CircularProgress } from '@mui/material';
 import {
   Dialog,
   DialogTitle,
@@ -11,6 +13,14 @@ import {
   DialogActions,
   Stack,
   Typography,
+} from '@mui/material';
+import {
+  TextField,
+  FormControl,
+  InputAdornment,
+  Container,
+  CircularProgress,
+  IconButton,
 } from '@mui/material';
 import {
   Box,
@@ -27,10 +37,9 @@ import {
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetSites } from 'src/actions/site';
 import { useGetStores } from 'src/actions/store';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetStorageAreas, deleteStorageArea } from 'src/actions/storageArea';
+import { useGetInitialStorages, getFiltredInitialStorages } from 'src/actions/initialStorage';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -56,11 +65,14 @@ const HIDE_COLUMNS = { category: false };
 
 const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
+// Add PAGE_SIZE constant
+const PAGE_SIZE = 10; // or whatever size you want as default
+
 // ----------------------------------------------------------------------
 
 const FILTERS_OPTIONS = [
   {
-    id: 'magazin',
+    id: 'store_id',
     type: 'select',
     label: 'Magasin',
     cols: 4,
@@ -68,9 +80,9 @@ const FILTERS_OPTIONS = [
     options: [],
   },
   {
-    id: 'enterpot',
+    id: 'observation',
     type: 'input',
-    label: 'Entrepôt',
+    label: 'Observation',
     cols: 4,
     width: 1,
   },
@@ -81,85 +93,136 @@ const FILTERS_OPTIONS = [
     cols: 4,
     width: 1,
   },
+  {
+    id: 'lot',
+    type: 'input',
+    label: 'Lot',
+    cols: 4,
+    width: 1,
+  },
+  {
+    id: 'date_de_creation',
+    type: 'date',
+    label: 'Date de creation',
+    cols: 4,
+    width: 1,
+  },
 ];
 
 export function InitialStorageListView() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const confirmDialog = useBoolean();
 
-  // 1. Single source of truth for filters
-  const [filterParams, setFilterParams] = useState({
-    only_parent: true,
-    parent: null,
-    store: null,
-    code: '',
-    designation: '',
-    search: '',
+  // Initialize pagination state
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: PAGE_SIZE,
   });
 
-  // 2. Use SWR hook with filterParams
-  const { storageAreas, storageAreasLoading, storageAreasError } = useGetStorageAreas(filterParams);
+  // Initialize table data state
+  const [tableData, setTableData] = useState([]);
+  const [rowCount, setRowCount] = useState(0);
+  const [editedFilters, setEditedFilters] = useState({});
 
-  // 3. Keep editedFilters just for UI state
-  const [editedFilters, setEditedFilters] = useState([]);
+  // Get initial data
+  const { initialStorages, initialStoragesLoading, initialStoragesCount } = useGetInitialStorages({
+    limit: PAGE_SIZE,
+    offset: 0,
+  });
 
-  // 4. Update filter params when filters change
-  const handleFilterChange = (newFilters) => {
-    const updatedParams = {
-      ...filterParams,
-      store: null,
-      code: '',
-      designation: '',
-    };
-
-    newFilters.forEach((filter) => {
-      switch (filter.id) {
-        case 'magasin':
-          updatedParams.store = filter.value ? Number(filter.value) : null;
-          break;
-        case 'entrepot':
-          updatedParams.code = filter.value || '';
-          break;
-        case 'designation':
-          updatedParams.designation = filter.value || '';
-          break;
-        default:
-          break;
-      }
-    });
-
-    setFilterParams(updatedParams);
-    setEditedFilters(newFilters);
-  };
-
-  // 5. Update search in filter params
-  const handleSearch = (event) => {
-    setFilterParams((prev) => ({
-      ...prev,
-      search: event.target.value,
+  // Helper function to transform data
+  const transformStorageData = (data) => {
+    return data.map((storage) => ({
+      id: storage.id,
+      product_id: storage.product?.code || storage.product_id,
+      designation: storage.product?.designation || storage.designation,
+      lot: storage.lot,
+      pmp: storage.pmp,
+      quantity: storage.quantity,
+      observation: storage.observation,
+      store_id: storage.store?.id || storage.store_id,
     }));
   };
 
-  // 6. Reset all filters
-  const handleReset = () => {
-    setFilterParams({
-      only_parent: true,
-      store: null,
-      code: '',
-      designation: '',
-      search: '',
-    });
-    setEditedFilters([]);
+  // Handle filter reset
+  const handleReset = useCallback(async () => {
+    try {
+      const response = await getFiltredInitialStorages({
+        limit: PAGE_SIZE,
+        offset: 0,
+      });
+      setEditedFilters({});
+      setPaginationModel({
+        page: 0,
+        pageSize: PAGE_SIZE,
+      });
+      const transformedData = transformStorageData(response.data?.data?.records);
+      setTableData(transformedData);
+      setRowCount(response.data?.data?.total);
+      setSearchParams({}, { replace: true });
+    } catch (error) {
+      console.error('Error resetting filters:', error);
+    }
+  }, [setSearchParams]);
+
+  // Handle filter submission
+  const handleFilter = useCallback(
+    async (data) => {
+      try {
+        const response = await getFiltredInitialStorages(data);
+        const transformedData = transformStorageData(response.data?.data?.records);
+        setTableData(transformedData);
+        setRowCount(response.data?.data?.total);
+
+        // Update URL params
+        const newSearchParams = new URLSearchParams();
+        Object.entries(data).forEach(([key, value]) => {
+          if (value !== null && value !== '' && value !== undefined) {
+            newSearchParams.set(key, value.toString());
+          }
+        });
+        setSearchParams(newSearchParams, { replace: true });
+      } catch (error) {
+        console.error('Error in filter submission:', error);
+      }
+    },
+    [setSearchParams]
+  );
+
+  // Handle pagination changes
+  const handlePaginationModelChange = async (newModel) => {
+    try {
+      const newData = {
+        ...editedFilters,
+        limit: newModel.pageSize,
+        offset: newModel.page * newModel.pageSize,
+      };
+      const response = await getFiltredInitialStorages(newData);
+      const transformedData = transformStorageData(response.data?.data?.records);
+      setTableData(transformedData);
+      setPaginationModel(newModel);
+    } catch (error) {
+      console.error('Error in pagination:', error);
+    }
+  };
+
+  // Handle search
+  const handleSearch = (event) => {
+    const searchValue = event.target.value;
+    const newData = {
+      ...editedFilters,
+      search: searchValue,
+      limit: paginationModel.pageSize,
+      offset: 0,
+    };
+    handleFilter(newData);
   };
 
   const { stores } = useGetStores();
-  const { sites } = useGetSites();
 
-  const [tableData, setTableData] = useState([]);
-  const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState([]);
-  const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
-  const [selectedStorageArea, setSelectedStorageArea] = useState(null);
+  const [selectedInitialStorage, setSelectedInitialStorage] = useState(null);
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   const [showChildrenDialog, setShowChildrenDialog] = useState(false);
@@ -175,51 +238,13 @@ export function InitialStorageListView() {
     parent: null,
   });
 
-  const { storageAreas: childrenData, storageAreasLoading: childrenLoading } =
-    useGetStorageAreas(childrenParams);
-
   useEffect(() => {
-    if (storageAreasError) {
-      toast.error('Failed to get storage areas');
-    }
-
-    if (storageAreas?.length) {
-      const parentAreas = storageAreas.filter((area) => area.parent === null);
-
-      const transformedData = parentAreas.map((area) => {
-        const children = storageAreas
-          .filter((child) => child.parent?.id === area.id)
-          .map((child) => ({
-            id: child.id,
-            magazin_id: child.store?.id,
-            magazin: child.store?.designation,
-            entrepot: child.code,
-            observation: child.designation,
-            level: child.level,
-            parent_id: child.parent?.id,
-            product_type: child.product_type,
-            createdAt: child.store?.created_at,
-          }));
-
-        const parentData = {
-          id: area.id,
-          magazin_id: area.store?.id,
-          magazin: area.store?.designation,
-          entrepot: area.code,
-          observation: area.designation,
-          level: area.level,
-          parent_id: null,
-          product_type: area.product_type,
-          createdAt: area.store?.created_at,
-          children: children,
-        };
-
-        return parentData;
-      });
-
+    if (initialStorages?.length) {
+      const transformedData = transformStorageData(initialStorages);
       setTableData(transformedData);
+      setRowCount(initialStoragesCount);
     }
-  }, [storageAreas, storageAreasLoading, storageAreasError]);
+  }, [initialStorages, initialStoragesCount]);
 
   useEffect(() => {
     if (stores?.length) {
@@ -230,122 +255,82 @@ export function InitialStorageListView() {
     }
   }, [stores]);
 
-  useEffect(() => {
-    if (childrenData?.length) {
-      const transformedChildren = childrenData
-        .filter((child) => child.parent !== null && child.parent.id === selectedParentId)
-        .map((child) => ({
-          id: child.id,
-          magazin_id: child.store?.id,
-          magazin: child.store?.designation,
-          entrepot: child.code,
-          observation: child.designation,
-          level: child.level,
-          parent_id: child.parent?.id,
-          product_type: child.product_type,
-          createdAt: child.store?.created_at,
-        }));
-
-      setSelectedChildren(transformedChildren);
-    }
-  }, [childrenData, selectedParentId]);
-
-  const handleStorageAreaAdded = (newStorageArea) => {
-    setTableData((prev) => [...prev, newStorageArea]);
-  };
-
   const handleFormClose = () => {
     setShowForm(false);
-    setSelectedStorageArea(null);
+    setSelectedInitialStorage(null);
   };
 
   const handleCloseEdit = () => {
     setOpenEditDialog(false);
-    setSelectedStorageArea(null);
+    setSelectedInitialStorage(null);
   };
 
-  const handleChildEditClose = () => {
-    setOpenChildEditDialog(false);
-    setSelectedChildForEdit(null);
+  const handleEdit = (row) => {
+    const formData = {
+      id: row.id,
+      store_id: row.store_id,
+
+      items: [
+        {
+          product_id: row.product_id,
+          designation: row.designation,
+          lot: row.lot || 'non-défini',
+          pmp: row.pmp || 0,
+          quantity: row.quantity || 0,
+          observation: row.observation || '',
+        },
+      ],
+    };
+    console.log('Editing initial storage:', formData);
+    setSelectedInitialStorage(formData);
+    setOpenEditDialog(true);
   };
 
   const columns = [
     {
-      field: 'code',
+      field: 'id',
+      headerName: 'ID',
+      flex: 1,
+      minWidth: 100,
+      renderCell: (params) => <Typography variant="body2">{params.row.id}</Typography>,
+    },
+    {
+      field: 'product_id',
       headerName: 'Code',
       flex: 1,
       minWidth: 120,
-      renderCell: (params) => <RenderCellEntrepot params={params} />,
     },
     {
       field: 'designation',
       headerName: 'Désignation',
       flex: 1,
       minWidth: 160,
-      renderCell: (params) => (
-        <Typography variant="body2">{params.row.designation || '-'}</Typography>
-      ),
-    },
-    {
-      field: 'observation',
-      headerName: 'Observation',
-      flex: 1,
-      minWidth: 160,
-      renderCell: (params) => <RenderCellObservation params={params} />,
     },
     {
       field: 'lot',
       headerName: 'Lot',
       flex: 1,
       minWidth: 120,
-      renderCell: (params) => {
-        const items = params.row.items || [];
-        return (
-          <Stack spacing={0.5}>
-            {items.map((item, index) => (
-              <Typography key={index} variant="body2">
-                {item.lot || '-'}
-              </Typography>
-            ))}
-          </Stack>
-        );
-      },
-    },
-    {
-      field: 'quantity',
-      headerName: 'Quantité',
-      flex: 1,
-      minWidth: 100,
-      renderCell: (params) => {
-        const items = params.row.items || [];
-        return (
-          <Stack spacing={0.5}>
-            {items.map((item, index) => (
-              <Typography key={index} variant="body2">
-                {item.quantity || '0'}
-              </Typography>
-            ))}
-          </Stack>
-        );
-      },
     },
     {
       field: 'pmp',
       headerName: 'PMP',
       flex: 1,
       minWidth: 100,
-      renderCell: (params) => {
-        const items = params.row.items || [];
-        return (
-          <Stack spacing={0.5}>
-            {items.map((item, index) => (
-              <Typography key={index} variant="body2">
-                {item.pmp || '0'}
-              </Typography>
-            ))}
-          </Stack>
-        );
-      },
+      type: 'number',
+    },
+    {
+      field: 'quantity',
+      headerName: 'Quantité',
+      flex: 1,
+      minWidth: 100,
+      type: 'number',
+    },
+    {
+      field: 'observation',
+      headerName: 'Observation',
+      flex: 1,
+      minWidth: 160,
     },
     {
       field: 'store_id',
@@ -358,55 +343,16 @@ export function InitialStorageListView() {
       },
     },
     {
-      field: 'createdAt',
-      headerName: 'Date de création',
-      flex: 1,
-      width: 160,
-      renderCell: (params) => <RenderCellCreatedAt params={params} />,
-    },
-    {
       type: 'actions',
       field: 'actions',
       headerName: ' ',
-      align: 'right',
-      headerAlign: 'right',
       width: 80,
-      sortable: false,
-      filterable: false,
-      disableColumnMenu: true,
       getActions: (params) => [
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:users-group-rounded-bold" />}
-          label="Voir les zones enfants"
-          onClick={() => {
-            const parentId = params.row.id;
-            setSelectedParentId(parentId);
-            setChildrenParams({
-              only_parent: false,
-              parent: parentId,
-            });
-            setShowChildrenDialog(true);
-          }}
-        />,
         <GridActionsCellItem
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}
           label="Edit"
-          onClick={() => {
-            const formData = {
-              id: params.row.id,
-              store_id: params.row.store_id,
-              code: params.row.code,
-              designation: params.row.designation,
-              items: params.row.items,
-              level: params.row.level,
-              parent_id: params.row.parent_id,
-              product_type: params.row.product_type,
-            };
-            setSelectedStorageArea(formData);
-            setOpenEditDialog(true);
-          }}
+          onClick={() => handleEdit(params.row)}
         />,
       ],
     },
@@ -418,97 +364,11 @@ export function InitialStorageListView() {
       .map((column) => column.field);
 
   const renderConfirmDialog = () => (
-    <ConfirmDialog
-      open={confirmDialog.value}
-      onClose={confirmDialog.onFalse}
-      title="Delete"
-      content={
-        <>
-          Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
-        </>
-      }
-    />
+    <ConfirmDialog open={confirmDialog.value} onClose={confirmDialog.onFalse} title="Delete" />
   );
 
-  // Add this function near your other render functions
-  const renderChildrenDialog = () => (
-    <Dialog
-      fullWidth
-      maxWidth="md"
-      open={showChildrenDialog}
-      onClose={() => {
-        setShowChildrenDialog(false);
-        setSelectedChildren([]);
-        setChildrenParams({ only_parent: false, parent: null });
-        setSelectedParentId(null);
-      }}
-    >
-      <DialogTitle>Zones Enfants</DialogTitle>
-      <DialogContent>
-        {childrenLoading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-            <CircularProgress />
-          </Box>
-        ) : selectedChildren.length > 0 ? (
-          <DataGrid
-            autoHeight
-            rows={selectedChildren}
-            columns={[
-              ...columns.filter((col) => col.field !== 'actions'),
-              {
-                type: 'actions',
-                field: 'actions',
-                headerName: ' ',
-                width: 80,
-                getActions: (params) => [
-                  <GridActionsCellItem
-                    showInMenu
-                    icon={<Iconify icon="solar:pen-bold" />}
-                    label="Edit"
-                    onClick={() => {
-                      const formData = {
-                        id: params.row.id,
-                        code: params.row.entrepot,
-                        designation: params.row.observation,
-                        store: params.row.magazin_id,
-                        level: params.row.level,
-                        parent_id: params.row.parent_id,
-                        product_type: params.row.product_type,
-                      };
-                      setSelectedChildForEdit(formData);
-                      setOpenChildEditDialog(true);
-                    }}
-                  />,
-                ],
-              },
-            ]}
-            disableRowSelectionOnClick
-            initialState={{ pagination: { paginationModel: { pageSize: 5 } } }}
-            pageSizeOptions={[5, 10]}
-            getRowHeight={() => 'auto'}
-          />
-        ) : (
-          <EmptyContent title="Aucune zone enfant trouvée" />
-        )}
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={() => {
-            setShowChildrenDialog(false);
-            setSelectedChildren([]);
-            setChildrenParams({ only_parent: false, parent: null });
-            setSelectedParentId(null);
-          }}
-        >
-          Fermer
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-
-  // Add this new dialog for editing children
   const renderChildEditDialog = () => (
-    <Dialog fullWidth maxWidth="md" open={openChildEditDialog} onClose={handleChildEditClose}>
+    <Dialog fullWidth maxWidth="md" open={openChildEditDialog}>
       <DialogTitle>Modifier la zone enfant</DialogTitle>
       <DialogContent>
         <Box sx={{ pt: 3 }}>
@@ -535,7 +395,7 @@ export function InitialStorageListView() {
                   return child;
                 });
                 setSelectedChildren(updatedChildren);
-                handleChildEditClose();
+
                 toast.success('Zone enfant modifiée avec succès');
               }}
             />
@@ -581,14 +441,17 @@ export function InitialStorageListView() {
           <TableToolbarCustom
             filterOptions={FILTERS_OPTIONS}
             filters={editedFilters}
-            setFilters={handleFilterChange}
+            setFilters={setEditedFilters}
             onReset={handleReset}
+            handleFilter={handleFilter}
+            setPaginationModel={setPaginationModel}
+            paginationModel={paginationModel}
           />
-          <Box paddingX={4} paddingY={2} sx={{}}>
+          <Box paddingX={4} paddingY={2}>
             <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
               <TextField
                 fullWidth
-                value={filterParams.search}
+                value={editedFilters.search || ''}
                 onChange={handleSearch}
                 placeholder="Search..."
                 slotProps={{
@@ -605,16 +468,18 @@ export function InitialStorageListView() {
             </FormControl>
           </Box>
           <DataGrid
-            checkboxSelection
             disableColumnMenu
             disableRowSelectionOnClick
             rows={tableData}
             columns={columns}
-            loading={storageAreasLoading}
+            loading={initialStoragesLoading}
             getRowHeight={() => 'auto'}
-            pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
-            initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-            onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
+            rowCount={rowCount}
+            paginationModel={paginationModel}
+            onPaginationModelChange={handlePaginationModelChange}
+            paginationMode="server"
+            filterMode="server"
+            pageSizeOptions={[5, 10, 20, 50]}
             columnVisibilityModel={HIDE_COLUMNS}
             onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
             slots={{
@@ -631,53 +496,133 @@ export function InitialStorageListView() {
         </Card>
       </DashboardContent>
 
-      {showForm ? (
-        <InitialStorageNewEditForm
-          currentStorageArea={selectedStorageArea}
-          onStorageAreaAdded={(updatedStorageArea) => {
-            const newTableData = tableData.map((item) =>
-              item.id === updatedStorageArea.id ? updatedStorageArea : item
-            );
-            setTableData(newTableData);
-            handleFormClose();
-          }}
-        />
-      ) : null}
-
       {renderConfirmDialog()}
-      {renderChildrenDialog()}
       {renderChildEditDialog()}
 
-      <Dialog fullWidth maxWidth="md" open={openEditDialog} onClose={handleCloseEdit}>
-        <DialogTitle>Modifier la zone de stockage</DialogTitle>
+      <Dialog fullWidth maxWidth="sm" open={openEditDialog} onClose={handleCloseEdit}>
+        <DialogTitle>
+          Modifier le stock
+          <IconButton
+            aria-label="close"
+            onClick={handleCloseEdit}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+            }}
+          >
+            <Close />
+          </IconButton>
+        </DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 3 }}>
-            {selectedStorageArea && (
-              <InitialStorageNewEditForm
-                isEdit
-                currentStorageArea={selectedStorageArea}
-                onStorageAreaAdded={(updatedStorageArea) => {
-                  const newTableData = tableData.map((item) => {
-                    if (item.id === updatedStorageArea.id) {
-                      return {
-                        id: updatedStorageArea.id,
-                        magazin_id: updatedStorageArea.store,
-                        magazin: stores.find((s) => s.id === updatedStorageArea.store)?.designation,
-                        entrepot: updatedStorageArea.code,
-                        observation: updatedStorageArea.designation,
-                        level: updatedStorageArea.level,
-                        parent_id: updatedStorageArea.parent_id,
-                        product_type: updatedStorageArea.product_type,
-                        createdAt: item.createdAt,
-                      };
-                    }
-                    return item;
-                  });
-                  setTableData(newTableData);
-                  handleCloseEdit();
-                  toast.success('Zone de stockage modifiée avec succès');
-                }}
-              />
+            {selectedInitialStorage && (
+              <Stack spacing={3}>
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="subtitle1" sx={{ mb: 1, color: 'text.secondary' }}>
+                    {selectedInitialStorage.items[0].designation}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                    Code: {selectedInitialStorage.items[0].product_id}
+                  </Typography>
+                </Box>
+
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                  <TextField
+                    fullWidth
+                    label="PMP"
+                    type="number"
+                    defaultValue={selectedInitialStorage.items[0].pmp}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => {
+                              const currentValue = Number(selectedInitialStorage.items[0].pmp) || 0;
+                              selectedInitialStorage.items[0].pmp = currentValue + 1;
+                            }}
+                          >
+                            <Add fontSize="small" />
+                          </IconButton>
+                          <IconButton
+                            onClick={() => {
+                              const currentValue = Number(selectedInitialStorage.items[0].pmp) || 0;
+                              selectedInitialStorage.items[0].pmp = Math.max(0, currentValue - 1);
+                            }}
+                          >
+                            <Remove fontSize="small" />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                    onChange={(e) => {
+                      selectedInitialStorage.items[0].pmp = Number(e.target.value);
+                    }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    label="Quantité"
+                    type="number"
+                    defaultValue={selectedInitialStorage.items[0].quantity}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => {
+                              const currentValue =
+                                Number(selectedInitialStorage.items[0].quantity) || 0;
+                              selectedInitialStorage.items[0].quantity = currentValue + 1;
+                            }}
+                          >
+                            <Add fontSize="small" />
+                          </IconButton>
+                          <IconButton
+                            onClick={() => {
+                              const currentValue =
+                                Number(selectedInitialStorage.items[0].quantity) || 0;
+                              selectedInitialStorage.items[0].quantity = Math.max(
+                                0,
+                                currentValue - 1
+                              );
+                            }}
+                          >
+                            <Remove fontSize="small" />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                    onChange={(e) => {
+                      selectedInitialStorage.items[0].quantity = Number(e.target.value);
+                    }}
+                  />
+                </Box>
+
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      // Update the table data
+                      setTableData((currentData) =>
+                        currentData.map((item) => {
+                          if (item.id === selectedInitialStorage.id) {
+                            return {
+                              ...item,
+                              pmp: selectedInitialStorage.items[0].pmp,
+                              quantity: selectedInitialStorage.items[0].quantity,
+                            };
+                          }
+                          return item;
+                        })
+                      );
+                      handleCloseEdit();
+                      toast.success('Stock modifié avec succès');
+                    }}
+                  >
+                    Enregistrer
+                  </Button>
+                </Box>
+              </Stack>
             )}
           </Box>
         </DialogContent>

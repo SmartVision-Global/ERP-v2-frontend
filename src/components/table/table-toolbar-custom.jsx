@@ -21,7 +21,7 @@ import { useDateRangePicker, CustomDateRangePicker } from '../custom-date-range-
 
 export function TableToolbarCustom({
   filterOptions = [],
-  filters,
+  filters = {},
   setFilters,
   onReset,
   handleFilter,
@@ -117,18 +117,13 @@ export function TableToolbarCustom({
               <FormControl fullWidth size="small">
                 <InputLabel>{filter.label}</InputLabel>
                 <Select
-                  value={filters.find((f) => f.id === filter.id)?.value || ''}
+                  value={filters[filter.id] || ''} // Access as object property
                   onChange={(event) => {
                     const newValue = event.target.value;
-                    setFilters((prev) => {
-                      const existing = prev.find((f) => f.id === filter.id);
-                      if (existing) {
-                        return prev.map((f) =>
-                          f.id === filter.id ? { ...f, value: newValue } : f
-                        );
-                      }
-                      return [...prev, { id: filter.id, value: newValue }];
-                    });
+                    setFilters((prev) => ({
+                      ...prev,
+                      [filter.id]: newValue || undefined, // Remove if empty
+                    }));
                   }}
                   label={filter.label}
                 >
@@ -147,16 +142,13 @@ export function TableToolbarCustom({
                 fullWidth
                 size="small"
                 label={filter.label}
-                value={filters.find((f) => f.id === filter.id)?.value || ''}
+                value={filters[filter.id] || ''} // Access as object property
                 onChange={(event) => {
                   const newValue = event.target.value;
-                  setFilters((prev) => {
-                    const existing = prev.find((f) => f.id === filter.id);
-                    if (existing) {
-                      return prev.map((f) => (f.id === filter.id ? { ...f, value: newValue } : f));
-                    }
-                    return [...prev, { id: filter.id, value: newValue }];
-                  });
+                  setFilters((prev) => ({
+                    ...prev,
+                    [filter.id]: newValue || undefined, // Remove if empty
+                  }));
                 }}
               />
             )}
