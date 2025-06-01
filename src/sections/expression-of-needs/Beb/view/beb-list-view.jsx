@@ -25,7 +25,7 @@ import {
   PRODUCT_STATUS_OPTIONS,
   IMAGE_OPTIONS,
 } from 'src/_mock';
-import { useGetStocks, getFiltredStocks } from 'src/actions/stores/raw-materials/stocks';
+import { useGetBebs, getFiltredBeb } from 'src/actions/expression-of-needs/beb/beb';
 
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
@@ -34,23 +34,17 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import {
   RenderCellId,
-  RenderCellCode,
-  RenderCellSupplierCode,
-  RenderCellBuilderCode,
-  RenderCellDesignation,
-  RenderCellQuantity,
+  RenderCellSite,
+  RenderCellTime,
+  RenderCellNature,
+  RenderCellRequestedDate,
+  RenderCellCreatedBy,  
+  RenderCellType,
+  RenderCellService,
+  RenderCellPriority,
   RenderCellStatus,
-  RenderCellUnit,
-  RenderCellAlert,
-  RenderCellMin,
-  RenderCellConsumption,
-  RenderCellUnknown2,
-  RenderCellFamily,
-  RenderCellSubFamilies,
-  RenderCellCategory,
-  RenderCellLocation,
   RenderCellCreatedDate,
-} from '../stock-table-row';
+} from '../beb-table-row';
 
 // ----------------------------------------------------------------------
 
@@ -61,70 +55,17 @@ const HIDE_COLUMNS_TOGGLABLE = ['actions'];
 const columns = [
   { field: 'id', headerName: 'ID', width: 100, minWidth: 100, renderCell: (params) => <RenderCellId params={params} /> },
   { field: 'code', headerName: 'Code', flex: 1, minWidth: 150 },
-  { field: 'supplier_code', headerName: 'Supplier Code', flex: 1, minWidth: 120 },
-  { field: 'builder_code', headerName: 'Builder Code', flex: 1, minWidth: 120 },
-  { field: 'designation', headerName: 'Designation', flex: 1.5, minWidth: 120 },
-  { field: 'quantity', headerName: 'Quantity', type: 'number', width: 100, minWidth: 100 },
-  { field: 'status', headerName: 'Status', width: 100, minWidth: 100 },
-  {
-    field: 'unit_measure',
-    headerName: 'Unit',
-    flex: 1,
-    minWidth: 60,
-    renderCell: (params) => <RenderCellUnit params={params} />,
-  },
-  {
-    field: 'alert',
-    headerName: 'Quantité Alert',
-    flex: 1,
-    minWidth: 100,
-    headerClassName: 'alert-column',
-    cellClassName: 'alert-column',
-  },
-  {
-    field: 'min',
-    headerName: 'Min',
-    type: 'number',
-    width: 70,
-    minWidth: 70,
-    headerClassName: 'min-column',
-    cellClassName: 'min-column',
-  },
-  {
-    field: 'consumption',
-    headerName: 'Consommation journalière prévisionnelle',
-    headerClassName: 'consumption-column',
-    cellClassName: 'consumption-column',
-    renderHeader: () => (
-      <div style={{ whiteSpace: 'normal', lineHeight: 1.2, textAlign: 'center', fontWeight: 'bold' }}>
-        Consommation<br />journalière<br />prévisionnelle
-      </div>
-    ),
-    type: 'number',
-    width: 150,
-    minWidth: 120,
-    renderCell: (params) => <RenderCellConsumption params={params} />,
-  },
-  {
-    field: 'unknown2',
-    headerName: 'Journée de consommation prévisionnelle',
-    type: 'number',
-    width: 150,
-    minWidth: 120,
-    renderCell: () => <RenderCellUnknown2 />,
-    headerClassName: 'unknown2-column',
-    cellClassName: 'unknown2-column',
-  },
-  { field: 'family', headerName: 'Family', flex: 1, minWidth: 150, renderCell: (params) => <RenderCellFamily params={params} /> },
-  { field: 'sub_family', headerName: 'Sous familles', flex: 1, minWidth: 150, renderCell: (params) =>  <RenderCellSubFamilies params={params} /> },
-  { field: 'category', headerName: 'Category', flex: 1, minWidth: 150, renderCell: (params) => <RenderCellCategory params={params} /> },
-  {
-    field: 'location',
-    headerName: 'Location',
-    flex: 1,
-    minWidth: 150,
-    renderCell: (params) => <RenderCellLocation params={params} />,
-  },
+  { field: 'requested_date', headerName: 'Date de besoins', flex: 1, minWidth: 150, renderCell: (params) => <RenderCellRequestedDate params={params} />},
+  { field: 'time', headerName: 'Temps', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellTime params={params} />},
+  { field: 'created_by', headerName: 'Demandeur', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellCreatedBy params={params} />},
+  { field: 'status', headerName: 'Statut', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellStatus params={params} />},
+  { field: 'type', headerName: 'Type', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellType params={params} />},
+  { field: 'site', headerName: 'Site', flex: 1.5, minWidth: 120 , renderCell: (params) => <RenderCellSite params={params} />},
+  { field: 'service', headerName: 'Structure', width: 100, minWidth: 100, renderCell: (params) => <RenderCellService params={params} />},
+  { field: 'observation', headerName: 'Observations', flex: 1, minWidth: 120 },
+  { field: 'nature', headerName: 'Nature', width: 100, minWidth: 100, renderCell: (params) => <RenderCellNature params={params} />},
+  { field: 'priority', headerName: 'Priorité', width: 100, minWidth: 100, renderCell: (params) => <RenderCellPriority params={params} />},
+  
   {
     field: 'created_date',
     headerName: 'Created Date',
@@ -158,7 +99,7 @@ const columns = [
 // ----------------------------------------------------------------------
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 
-export function StockListView() {
+export function BebListView() {
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: PAGE_SIZE,
@@ -166,9 +107,9 @@ export function StockListView() {
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [toolsAnchorEl, setToolsAnchorEl] = useState(null);
-  const { stocks, stocksLoading, stocksCount } = useGetStocks({ limit: paginationModel.pageSize, offset: paginationModel.page });
-  const [rowCount, setRowCount] = useState(stocksCount);
-  const [tableData, setTableData] = useState(stocks);
+  const { bebs, bebsLoading, bebsCount } = useGetBebs({ limit: paginationModel.pageSize, offset: 0 });
+  const [rowCount, setRowCount] = useState(bebsCount);
+  const [tableData, setTableData] = useState(bebs);
 
   const { dataLookups } = useMultiLookups([
     { entity: 'measurementUnits', url: 'settings/lookups/measurement-units' },
@@ -212,13 +153,13 @@ export function StockListView() {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    setTableData(stocks);
-    setRowCount(stocksCount);
-  }, [stocks, stocksCount]);
+    setTableData(bebs);
+    setRowCount(bebsCount);
+  }, [bebs, bebsCount]);
 
   const handleReset = useCallback(async () => {
     try {
-      const response = await getFiltredStocks({
+      const response = await getFiltredBeb({
         limit: PAGE_SIZE,
         offset: 0,
       });
@@ -238,7 +179,7 @@ export function StockListView() {
     async (data) => {
       
       try {
-        const response = await getFiltredStocks(data);
+        const response = await getFiltredBeb(data);
         setTableData(response.data?.data?.records);
         setRowCount(response.data?.data?.total);
       } catch (error) {
@@ -256,7 +197,7 @@ export function StockListView() {
         limit: newModel.pageSize,
         offset: newModel.page * newModel.pageSize,
       };
-      const response = await getFiltredStocks(newData);
+      const response = await getFiltredBeb(newData);
       setTableData(response.data?.data?.records);
       setPaginationModel(newModel);
     } catch (error) {
@@ -393,10 +334,10 @@ if (col.field === 'location') {
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <CustomBreadcrumbs
-          heading="List"
+          heading="Bon d'expression des besoin"
           links={[
-            { name: 'Gestion magasinage', href: paths.dashboard.store.rawMaterials.root },
-            { name: 'Stocks', href: paths.dashboard.store.rawMaterials.root },
+            { name: 'Expression des besoins', href: paths.dashboard.expressionOfNeeds.root },
+            { name: 'Bon d\'expression des besoins', href: paths.dashboard.expressionOfNeeds.beb.root },
             { name: 'Liste' },
           ]}
           action={
@@ -487,12 +428,12 @@ if (col.field === 'location') {
             rows={tableData}
             rowCount={rowCount}
             columns={columnsWithActions}
-            loading={stocksLoading}
+            loading={bebsLoading}
             getRowHeight={() => 'auto'}
             paginationModel={paginationModel}
             paginationMode="server"
             onPaginationModelChange={(model) => handlePaginationModelChange(model)}
-            pageSizeOptions={[2, 10, 20, { value: -1, label: 'All' }]}
+            pageSizeOptions={[2,10, 20, { value: -1, label: 'All' }]}
             columnVisibilityModel={columnVisibilityModel}
             onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
             slots={{

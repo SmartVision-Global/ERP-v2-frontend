@@ -137,6 +137,12 @@ export const endpoints = {
     // raw materials stocks : product_type=1, 
     list: '/v1/inventory/products',
   },
+  // expression of needs
+  expressionOfNeeds: {
+   beb: {
+    list: '/v1/expression-of-need/eon-vouchers',
+   }
+  },
 
 
   // new:''
