@@ -247,7 +247,7 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
     <>
       <Form methods={methods} onSubmit={onSubmit}>
         <Card>
-          <CardHeader title="Ajouter un lieu de stockage" />
+          <CardHeader title="Ajouter une entrée de stock" />
           <Divider />
 
           <Box sx={{ p: 3 }}>

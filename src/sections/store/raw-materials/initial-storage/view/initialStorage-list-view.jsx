@@ -131,8 +131,8 @@ export function InitialStorageListView() {
   });
 
   // Helper function to transform data
-  const transformStorageData = (data) => {
-    return data.map((storage) => ({
+  const transformStorageData = (data) =>
+    data.map((storage) => ({
       id: storage.id,
       product_id: storage.product?.code || storage.product_id,
       designation: storage.product?.designation || storage.designation,
@@ -142,7 +142,6 @@ export function InitialStorageListView() {
       observation: storage.observation,
       store_id: storage.store?.id || storage.store_id,
     }));
-  };
 
   // Handle filter reset
   const handleReset = useCallback(async () => {
@@ -413,7 +412,7 @@ export function InitialStorageListView() {
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Matiéres premiéres', href: paths.dashboard.root },
-            { name: 'Lieu de stockage' },
+            { name: 'Entrées de stock' },
           ]}
           action={
             <Box sx={{ display: 'flex', gap: 1 }}>

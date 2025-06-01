@@ -12,11 +12,11 @@ export function InitialStorageCreateView() {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Ajouter un lieu de stockage"
+        heading="Ajouter une entrée de stock"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Lieux de stockage', href: paths.dashboard.store.rawMaterials.storageArea },
-          { name: 'Ajouter un lieu de stockage' },
+          { name: 'Entrées de stock', href: paths.dashboard.store.rawMaterials.initialStorage },
+          { name: 'Ajouter une entrée de stock' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />

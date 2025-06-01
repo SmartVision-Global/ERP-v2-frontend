@@ -6,7 +6,7 @@ import { InitialStorageCreateView } from 'src/sections/store/raw-materials/initi
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Ajouter un lieu de stockage | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `Ajouter une entrée de stock | Dashboard - ${CONFIG.appName}` };
 
 export default function Page() {
   return (

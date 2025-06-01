@@ -8,7 +8,7 @@ import { InitialStorageListView } from 'src/sections/store/raw-materials/initial
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Lieu de stockage | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `Entrée de stock | Dashboard - ${CONFIG.appName}` };
 
 export default function Page() {
   return (
