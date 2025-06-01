@@ -27,13 +27,15 @@ import {
   createGeneralSettingsInfo,
 } from 'src/actions/generalSettingsInfo.js';
 
+import { Field } from 'src/components/hook-form';
+
 const steps = ['Paramètre général', 'Paramétrage Produit fini', 'Paramétrage Panneau technique'];
 
 const schema = z.object({
   general: z.object({
-    decimalsStorageProd: z.number().min(0, { message: 'This field is required' }),
-    decimalsCash: z.number().min(0, { message: 'This field is required' }),
-    baseSalary: z.number().min(0, { message: 'This field is required' }),
+    decimalsStorageProd: z.number().min(1, { message: 'This field is required' }),
+    decimalsCash: z.number().min(1, { message: 'This field is required' }),
+    baseSalary: z.number().min(1, { message: 'This field is required' }),
     storageDisplay: z.string().nonempty({ message: 'This field is required' }),
     productionDisplay: z.string().nonempty({ message: 'This field is required' }),
   }),
@@ -351,6 +353,7 @@ export default function GeneralSettingsForm() {
                   fullWidth
                   disabled
                   label="Site"
+                  size="small"
                   value={sites?.find((site) => site.id.toString() === item.site)?.name || ''}
                   sx={inputStyle}
                 />
@@ -362,6 +365,7 @@ export default function GeneralSettingsForm() {
                     value={item.consommation || ''}
                     onChange={handleChange(section, idx, 'consommation')}
                     label="Consommation"
+                    size="small"
                   >
                     <MenuItem value="">Aucune sélection</MenuItem>
                     {filteredStores.map((store) => (
@@ -395,6 +399,7 @@ export default function GeneralSettingsForm() {
                 <TextField
                   fullWidth
                   disabled
+                  size="small"
                   label="Site"
                   value={sites?.find((site) => site.id.toString() === item.site)?.name || ''}
                   sx={inputStyle}
@@ -407,6 +412,7 @@ export default function GeneralSettingsForm() {
                     value={item.production || ''}
                     onChange={handleChange(section, idx, 'production')}
                     label="Production"
+                    size="small"
                   >
                     <MenuItem value="">Aucune sélection</MenuItem>
                     {filteredStores.map((store) => (
@@ -450,7 +456,7 @@ export default function GeneralSettingsForm() {
             ÉTAPE PRÉCÉDENTE
           </Button>
         )}
-        <Button variant="contained" color="primary" onClick={handleNext}>
+        <Button variant="contained" sx={{ background: '#000' }} onClick={handleNext}>
           {activeStep === steps.length - 1 || activeStep === 0 ? 'VALIDÉ' : "L'ÉTAPE SUIVANTE"}
         </Button>
       </Box>

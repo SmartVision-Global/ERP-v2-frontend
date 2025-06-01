@@ -296,6 +296,22 @@ const PageStoreRawMaterialsStocksEdit = lazy(() => import('src/pages/dashboard/s
 const PageExpressionOfNeedsBebList = lazy(() => import('src/pages/dashboard/expression-of-needs/Beb/list'));
 const PageExpressionOfNeedsBebNew = lazy(() => import('src/pages/dashboard/expression-of-needs/Beb/new'));
 const PageExpressionOfNeedsBebEdit = lazy(() => import('src/pages/dashboard/expression-of-needs/Beb/edit'));
+
+const PageStoreStorageEreaList = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/storage-area/list')
+);
+const PageStoreStorageAreaNew = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/storage-area/new')
+);
+
+const PageStoreInitialStorageList = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/initial-storage/list')
+);
+const PageStoreInitialStorageNew = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/initial-storage/new')
+);
+
+
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
 function SuspenseOutlet() {
@@ -585,10 +601,19 @@ export const dashboardRoutes = [
             children: [
               { index: true, element: <SettingsIdentificationGlobalSettings /> },
               { path: 'global-settings', element: <SettingsIdentificationGlobalSettings /> },
-              { path: 'raw-materials', element: <PageSettingsIdentFamCategRpList group={1} nature={1} />},
-              { path: 'spare-parts', element: <PageSettingsIdentFamCategRpList group={2} nature={1} />},
-              { path: 'tools', element: <PageSettingsIdentFamCategRpList group={3} nature={1} />},
-              { path: 'supplies', element: <PageSettingsIdentFamCategRpList group={4} nature={1} />},
+              {
+                path: 'raw-materials',
+                element: <PageSettingsIdentFamCategRpList group={1} nature={1} />,
+              },
+              {
+                path: 'spare-parts',
+                element: <PageSettingsIdentFamCategRpList group={2} nature={1} />,
+              },
+              { path: 'tools', element: <PageSettingsIdentFamCategRpList group={3} nature={1} /> },
+              {
+                path: 'supplies',
+                element: <PageSettingsIdentFamCategRpList group={4} nature={1} />,
+              },
             ],
           },
           {
@@ -644,9 +669,12 @@ export const dashboardRoutes = [
             children: [
               { index: true, element: <PageStoreRawMaterialsStocksList /> },
               { path: 'stocks', element: <PageStoreRawMaterialsStocksList /> },
+              { path: 'storage-area', element: <PageStoreStorageEreaList /> },
+              { path: 'storage-area/new', element: <PageStoreStorageAreaNew /> },
+              { path: 'initial-storage', element: <PageStoreInitialStorageList /> },
+              { path: 'initial-storage/new', element: <PageStoreInitialStorageNew /> },
               { path: 'stocks/new', element: <PageStoreRawMaterialsStocksNew /> },
               { path: 'stocks/:id/edit', element: <PageStoreRawMaterialsStocksEdit /> },
-
             ],
           },
         ],

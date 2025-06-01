@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { initial } from 'es-toolkit';
 
 import { CONFIG } from 'src/global-config';
 
@@ -133,9 +134,11 @@ export const endpoints = {
     },
   },
   // gestion magasinage
-  stores:{
-    // raw materials stocks : product_type=1, 
+  stores: {
+    // raw materials stocks : product_type=1,
     list: '/v1/inventory/products',
+    storageArea: '/v1/inventory/storage-areas',
+    initialStorage: '/v1/inventory/initial-storages',
   },
   // expression of needs
   expressionOfNeeds: {
@@ -143,7 +146,6 @@ export const endpoints = {
     list: '/v1/expression-of-need/eon-vouchers',
    }
   },
-
 
   // new:''
   // ecritures

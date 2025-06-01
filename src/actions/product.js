@@ -17,7 +17,7 @@ export function useGetProducts() {
   const url = endpoints.product.list;
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
-
+  console.log('Products Data:', data);
   const memoizedValue = useMemo(
     () => ({
       products: data?.products || [],

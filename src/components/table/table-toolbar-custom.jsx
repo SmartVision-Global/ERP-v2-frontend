@@ -21,7 +21,7 @@ import { useDateRangePicker, CustomDateRangePicker } from '../custom-date-range-
 
 export function TableToolbarCustom({
   filterOptions = [],
-  filters,
+  filters = {},
   setFilters,
   onReset,
   handleFilter,
@@ -111,110 +111,47 @@ export function TableToolbarCustom({
   return (
     <Stack direction="column" spacing={2} paddingX={4} paddingY={2}>
       <Grid container spacing={2}>
-        {filterOptions.map((item) => (
-          <Grid size={{ xs: 12, md: item?.cols ?? 3 }} key={item.id}>
-            <FormControl sx={{ flexShrink: 0, width: item?.width ?? 1 }} size="small">
-              {item.type === 'input' && (
-                <TextField
-                  fullWidth
-                  type={item.inputType}
-                  name={item.id}
-                  value={filters[item.id] || ''}
-                  onChange={(e) => getInput(e, item.type)}
-                  label={item.label}
-                  size="small"
-                />
-              )}
-              {item.type === 'select' && (
-                <TextField
-                  size="small"
-                  name={`${item.id}`}
-                  value={filters[`${item.id}`] || ''}
-                  onChange={(e) => getInput(e, item.type)}
-                  select
-                  fullWidth
-                  label={item.label}
+        {filterOptions.map((filter) => (
+          <Grid key={filter.id} item xs={12} md={filter.cols}>
+            {filter.type === 'select' ? (
+              <FormControl fullWidth size="small">
+                <InputLabel>{filter.label}</InputLabel>
+                <Select
+                  value={filters[filter.id] || ''} // Access as object property
+                  onChange={(event) => {
+                    const newValue = event.target.value;
+                    setFilters((prev) => ({
+                      ...prev,
+                      [filter.id]: newValue || undefined, // Remove if empty
+                    }));
+                  }}
+                  label={filter.label}
                 >
-                  {item.options.map((option) => (
-                    <MenuItem key={`${option.value}`} value={`${option.value}`}>
-                      {item?.serverData ? option.text : option.label}
+                  <MenuItem value="">
+                    <em>All</em>
+                  </MenuItem>
+                  {filter.options.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
                     </MenuItem>
                   ))}
-                </TextField>
-              )}
-              {item.type === 'multi-select' && (
-                <>
-                  <InputLabel htmlFor={item.id}>{item.label}</InputLabel>
-
-                  <Select
-                    multiple
-                    name={`${item.id}`}
-                    value={filters[`${item.id}`] || []}
-                    onChange={(e) => getInput(e, item.type)}
-                    input={<OutlinedInput label={item.label} />}
-                    renderValue={(ids) => renderValues(ids, item?.options, item?.serverData)}
-                    inputProps={{ id: item.id }}
-                    sx={{ textTransform: 'capitalize' }}
-                  >
-                    {item.options.map((option) => (
-                      <MenuItem key={`${option.value}`} value={`${option.value}`}>
-                        <Checkbox
-                          disableRipple
-                          size="small"
-                          checked={(filters[`${item.id}`] || []).includes(`${option.value}`)}
-                        />
-                        {item?.serverData ? option.text : option.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </>
-              )}
-              {item.type === 'date' && (
-                <DatePicker
-                  label={item.label}
-                  value={filters[item.id] ? dayjs(filters[item.id][item?.operator || 'gte']) : null}
-                  onChange={(newValue) => handleDateChange(newValue, item.id, item?.operator)}
-                  slotProps={{ textField: { fullWidth: true, size: 'small' } }}
-                />
-              )}
-              {item.type === 'date-range' && (
-                <>
-                  <Button variant="outlined" onClick={rangeCalendarPicker.onOpen}>
-                    {rangeCalendarPicker.startDate && rangeCalendarPicker.endDate
-                      ? `${fDate(rangeCalendarPicker.startDate)} - ${fDate(rangeCalendarPicker.endDate)}`
-                      : 'Date de création (Sélectionner un intervale)'}
-                  </Button>
-
-                  <CustomDateRangePicker
-                    name={item?.id}
-                    variant="calendar"
-                    open={rangeCalendarPicker.open}
-                    startDate={rangeCalendarPicker.startDate}
-                    endDate={rangeCalendarPicker.endDate}
-                    onChangeStartDate={(newValue) =>
-                      handleChangeDatePicker(
-                        item.id,
-                        newValue,
-                        rangeCalendarPicker.endDate,
-                        item?.operatorMin,
-                        item?.operatorMax
-                      )
-                    }
-                    onChangeEndDate={(newValue) =>
-                      handleChangeDatePicker(
-                        item.id,
-                        rangeCalendarPicker.startDate,
-                        newValue,
-                        item?.operatorMin,
-                        item?.operatorMax
-                      )
-                    }
-                    onClose={rangeCalendarPicker.onClose}
-                    error={rangeCalendarPicker.error}
-                  />
-                </>
-              )}
-            </FormControl>
+                </Select>
+              </FormControl>
+            ) : (
+              <TextField
+                fullWidth
+                size="small"
+                label={filter.label}
+                value={filters[filter.id] || ''} // Access as object property
+                onChange={(event) => {
+                  const newValue = event.target.value;
+                  setFilters((prev) => ({
+                    ...prev,
+                    [filter.id]: newValue || undefined, // Remove if empty
+                  }));
+                }}
+              />
+            )}
           </Grid>
         ))}
       </Grid>

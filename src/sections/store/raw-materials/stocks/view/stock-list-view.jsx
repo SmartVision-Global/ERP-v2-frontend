@@ -59,7 +59,13 @@ const HIDE_COLUMNS = { categories: false };
 const HIDE_COLUMNS_TOGGLABLE = ['actions'];
 
 const columns = [
-  { field: 'id', headerName: 'ID', width: 100, minWidth: 100, renderCell: (params) => <RenderCellId params={params} /> },
+  {
+    field: 'id',
+    headerName: 'ID',
+    width: 100,
+    minWidth: 100,
+    renderCell: (params) => <RenderCellId params={params} />,
+  },
   { field: 'code', headerName: 'Code', flex: 1, minWidth: 150 },
   { field: 'supplier_code', headerName: 'Supplier Code', flex: 1, minWidth: 120 },
   { field: 'builder_code', headerName: 'Builder Code', flex: 1, minWidth: 120 },
@@ -158,7 +164,8 @@ const columns = [
 // ----------------------------------------------------------------------
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 
-export function StockListView() {
+export function StockListView({ isSelectionDialog = false, componentsProps, onSearch }) {
+  const [searchQuery, setSearchQuery] = useState('');
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: PAGE_SIZE,
@@ -189,7 +196,7 @@ export function StockListView() {
     { id: 'supplier_code', type: 'input', label: 'Supplier Code' },
     { id: 'designation', type: 'input', label: 'Designation' },
     { id: 'status', type: 'select', options: PRODUCT_STATUS_OPTIONS, label: 'Etat' },
-    { id: 'unit_measure', type: 'select', options: measurementUnits, label: 'Unit', serverData: true },
+    { id: 'unit_measure_id', type: 'select', options: measurementUnits, label: 'Unit', serverData: true },
     { id: 'category', type: 'select', options: categories, label: 'Category', serverData: true },
     { id: 'family', type: 'select', options: families, label: 'Family', serverData: true },
     // { id: 'sub_family', type: 'select', options: subFamilies, label: 'Sub Family' },
@@ -263,8 +270,6 @@ export function StockListView() {
       console.log('error in pagination search request', error);
     }
   };
-
-  
 
   const getTogglableColumns = () =>
     columns
@@ -389,6 +394,13 @@ if (col.field === 'location') {
     doc.save('stocks.pdf');
   };
 
+  const handleSearch = (event) => {
+    const value = event.target.value;
+    setSearchQuery(value);
+    if (onSearch) {
+      onSearch(value);
+    }
+  };
   return (
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
@@ -452,36 +464,42 @@ if (col.field === 'location') {
             flexDirection: { md: 'column' },
           }}
         >
-          <TableToolbarCustom
-            filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={setEditedFilters}
-            onReset={handleReset}
-            handleFilter={handleFilter}
-            setPaginationModel={setPaginationModel}
-            paginationModel={paginationModel}
-          />
-          <Box paddingX={4} paddingY={2} sx={{}}>
-            <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
-              <TextField
-                fullWidth
-                // value={currentFilters.name}
-                // onChange={handleFilterName}
-                placeholder="Search "
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-                size="small"
+          {!isSelectionDialog && (
+            <>
+              <TableToolbarCustom
+                filterOptions={FILTERS_OPTIONS}
+                filters={editedFilters}
+                setFilters={setEditedFilters}
+                onReset={handleReset}
+                handleFilter={handleFilter}
+                setPaginationModel={setPaginationModel}
+                paginationModel={paginationModel}
               />
-            </FormControl>
-          </Box>
+              <Box paddingX={4} paddingY={2}>
+                <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
+                  <TextField
+                    fullWidth
+                    placeholder="Search "
+                    value={searchQuery}
+                    onChange={handleSearch}
+                    slotProps={{
+                      input: {
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                          </InputAdornment>
+                        ),
+                      },
+                    }}
+                    size="small"
+                  />
+                </FormControl>
+              </Box>
+            </>
+          )}
+
           <DataGrid
+            {...componentsProps}
             disableRowSelectionOnClick
             disableColumnMenu
             rows={tableData}
