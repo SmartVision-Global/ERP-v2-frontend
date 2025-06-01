@@ -247,6 +247,18 @@ const PageRhPayrollManagementPreparationNew = lazy(
 const PageRhPayrollManagementPreparationDetails = lazy(
   () => import('src/pages/dashboard/r-h/payroll-management/preparation/details')
 );
+// ============== purchase_Supply ==================
+//purchase Order
+const PagePurchaseOrder = lazy(
+  () => import('src/pages/dashboard/purchase-supply/purchase-order/list')
+);
+const PageNewPurchaseOrder = lazy(
+  () => import('src/pages/dashboard/purchase-supply/purchase-order/new')
+);
+//Processing Da
+const PageProcessingDa = lazy(
+  () => import('src/pages/dashboard/purchase-supply/processing-da/list')
+);
 
 // Account
 const AccountGeneralPage = lazy(() => import('src/pages/dashboard/user/account/general'));
@@ -530,6 +542,15 @@ export const dashboardRoutes = [
           },
         ],
       },
+      // Purchase Supply
+      {
+        path: 'purchase-supply',
+        children: [
+          { path: 'purchase-order', element: <PagePurchaseOrder />, index: true },
+          { path: 'purchase-order/new', element: <PageNewPurchaseOrder /> },
+          { path: 'processing-da', element: <PageProcessingDa /> },
+        ],
+      },
       {
         path: 'user',
         children: [
@@ -585,10 +606,19 @@ export const dashboardRoutes = [
             children: [
               { index: true, element: <SettingsIdentificationGlobalSettings /> },
               { path: 'global-settings', element: <SettingsIdentificationGlobalSettings /> },
-              { path: 'raw-materials', element: <PageSettingsIdentFamCategRpList group={1} nature={1} />},
-              { path: 'spare-parts', element: <PageSettingsIdentFamCategRpList group={2} nature={1} />},
-              { path: 'tools', element: <PageSettingsIdentFamCategRpList group={3} nature={1} />},
-              { path: 'supplies', element: <PageSettingsIdentFamCategRpList group={4} nature={1} />},
+              {
+                path: 'raw-materials',
+                element: <PageSettingsIdentFamCategRpList group={1} nature={1} />,
+              },
+              {
+                path: 'spare-parts',
+                element: <PageSettingsIdentFamCategRpList group={2} nature={1} />,
+              },
+              { path: 'tools', element: <PageSettingsIdentFamCategRpList group={3} nature={1} /> },
+              {
+                path: 'supplies',
+                element: <PageSettingsIdentFamCategRpList group={4} nature={1} />,
+              },
             ],
           },
           {

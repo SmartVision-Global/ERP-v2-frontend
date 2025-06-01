@@ -196,6 +196,16 @@ export const paths = {
         newDac: `${ROOTS.DASHBOARD}/humain-ressource/para-tax-declaration/dac/new`,
       },
     },
+    purchaseSupply: {
+      purchaseOrder: {
+        root: `${ROOTS.DASHBOARD}/purchase-supply/purchase-order`,
+        newPurchaseOrder: `${ROOTS.DASHBOARD}/purchase-supply/purchase-order/new`,
+        editPurchaseOrder: (id) => `${ROOTS.DASHBOARD}/purchase-supply/purchase-order/${id}/edit`,
+      },
+      processingDa: {
+        root: `${ROOTS.DASHBOARD}/purchase-supply/processing-da`,
+      },
+    },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
       new: `${ROOTS.DASHBOARD}/user/new`,

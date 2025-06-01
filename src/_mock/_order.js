@@ -1,12 +1,33 @@
 import { _mock } from './_mock';
 
 // ----------------------------------------------------------------------
-
 export const ORDER_STATUS_OPTIONS = [
-  { value: 'pending', label: 'Pending' },
-  { value: 'completed', label: 'Completed' },
-  { value: 'cancelled', label: 'Cancelled' },
-  { value: 'refunded', label: 'Refunded' },
+  { value: '', label: 'Selectionner' },
+  { value: 'pending', label: 'En attente' },
+  { value: 'inProgress', label: 'En cours' },
+  { value: 'processing', label: 'En traitement' },
+  { value: 'partial', label: 'Partielle' },
+  { value: 'satisfied', label: 'Satisfait' },
+  { value: 'validated', label: 'Validé' },
+  { value: 'cancelled', label: 'Annulé' },
+];
+export const TYPE_OPTIONS = [
+  { value: '', label: 'Selectionner' },
+  { value: 'mp', label: 'MP' },
+  { value: 'pr_equipement', label: 'PR/Equipement' },
+  { value: 'outillage', label: 'Outillage' },
+  { value: 'fourniture', label: 'Fourniture' },
+  { value: 'flotte', label: 'Flotte' },
+  { value: 'service', label: 'Service' },
+  { value: 'autres', label: 'Autres' },
+];
+export const PRIORITY_OPTIONS = [
+  { value: '', label: 'Selectionner' },
+  { value: 'basic', label: 'Base' },
+  { value: 'normale', label: 'Normale' },
+  { value: 'high', label: 'Haute' },
+  { value: 'urgent', label: 'Urgente' },
+  
 ];
 
 const ITEMS = Array.from({ length: 3 }, (_, index) => ({
