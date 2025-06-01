@@ -9,9 +9,28 @@ import { uploadClasses } from '../classes';
 // ----------------------------------------------------------------------
 
 export function SingleFilePreview({ file, sx, className, ...other }) {
-  const fileName = typeof file === 'string' ? file : file.name;
+  // Determine file name for display (extract from URL or use name property)
+  let fileName;
+  if (typeof file === 'string') {
+    // extract file name from URL or path
+    fileName = file.split('/').pop();
+  } else if (file && (file.name || file.url)) {
+    fileName = file.name || (typeof file.url === 'string' ? file.url.split('/').pop() : '');
+  } else {
+    fileName = '';
+  }
 
-  const previewUrl = typeof file === 'string' ? file : URL.createObjectURL(file);
+  // Determine preview URL (handle string URLs, Blob/File objects, or objects with url/preview/path)
+  let previewUrl;
+  if (typeof file === 'string') {
+    previewUrl = file;
+  } else if (file instanceof Blob) {
+    previewUrl = URL.createObjectURL(file);
+  } else if (file && (file.url || file.preview || file.path)) {
+    previewUrl = file.url || file.preview || file.path;
+  } else {
+    previewUrl = '';
+  }
 
   return (
     <PreviewRoot

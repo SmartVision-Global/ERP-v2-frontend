@@ -288,6 +288,10 @@ const PageSettingsIdentFamCategRpList = lazy(
 );
 const SettingsServiceEdit = lazy(() => import('src/pages/dashboard/settings/services/edit'));
 
+// gestion magasinage
+const PageStoreRawMaterialsStocksList = lazy(() => import('src/pages/dashboard/store/raw-materials/stocks/list'));
+const PageStoreRawMaterialsStocksNew = lazy(() => import('src/pages/dashboard/store/raw-materials/stocks/new'));
+const PageStoreRawMaterialsStocksEdit = lazy(() => import('src/pages/dashboard/store/raw-materials/stocks/edit'));
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
 function SuspenseOutlet() {
@@ -624,6 +628,21 @@ export const dashboardRoutes = [
               // { path: 'notifications', element: <AccountNotificationsPage /> },
               // { path: 'socials', element: <AccountSocialsPage /> },
               { path: 'change-password', element: <AccountChangePasswordPage /> },
+            ],
+          },
+        ],
+      },
+      {
+        path: 'store',
+        children: [
+          {
+            path: 'raw-materials',
+            children: [
+              { index: true, element: <PageStoreRawMaterialsStocksList /> },
+              { path: 'stocks', element: <PageStoreRawMaterialsStocksList /> },
+              { path: 'stocks/new', element: <PageStoreRawMaterialsStocksNew /> },
+              { path: 'stocks/:id/edit', element: <PageStoreRawMaterialsStocksEdit /> },
+
             ],
           },
         ],

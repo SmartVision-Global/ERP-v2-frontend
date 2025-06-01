@@ -14,7 +14,7 @@ export function useMultiLookups(entities = []) {
   const results = entities.map((entity) => ({
     key: entity.entity,
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    ...useGetLookups(entity.url),
+    ...useGetLookups(entity.url, entity.params),
   }));
   const dataLookups = Object.fromEntries(results.map(({ key, data }) => [key, data]));
 

@@ -132,6 +132,13 @@ export const endpoints = {
       },
     },
   },
+  // gestion magasinage
+  stores:{
+    // raw materials stocks : product_type=1, 
+    list: '/v1/inventory/products',
+  },
+
+
   // new:''
   // ecritures
   socialLoan: '/v1/hr/writings/personal_loans',

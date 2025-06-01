@@ -208,6 +208,30 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/user/${1}/edit`,
       },
     },
+    store: {
+      rawMaterials: {
+        root: `${ROOTS.DASHBOARD}/store/raw-materials`,
+        stocks: `${ROOTS.DASHBOARD}/store/raw-materials/stocks`,
+        newStock: `${ROOTS.DASHBOARD}/store/raw-materials/stocks/new`,
+        editStock: (id) => `${ROOTS.DASHBOARD}/store/raw-materials/stocks/${id}/edit`,
+      },
+      spareParts: {
+        root: `${ROOTS.DASHBOARD}/store/spare-parts`,
+        list: `${ROOTS.DASHBOARD}/store/spare-parts/list`,
+        settings: `${ROOTS.DASHBOARD}/store/spare-parts/settings`,
+      },
+      tools: `${ROOTS.DASHBOARD}/store/tools`,
+      supplies: `${ROOTS.DASHBOARD}/store/supplies`,
+    },
+    expressionOfNeeds: {
+      root: `${ROOTS.DASHBOARD}/expression-of-needs`,
+      beb: {
+        root: `${ROOTS.DASHBOARD}/expression-of-needs/beb`,
+        new: `${ROOTS.DASHBOARD}/expression-of-needs/beb/new`,
+        edit: (id) => `${ROOTS.DASHBOARD}/expression-of-needs/beb/${id}/edit`,
+      },
+      bmb: {
+    },
     settings: {
       generalSettings: {
         root: `${ROOTS.DASHBOARD}/settings/general-settings`,

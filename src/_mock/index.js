@@ -37,3 +37,5 @@ export * from './_deductions';
 export * from './_ce-mission';
 
 export * from './_relationship';
+
+export * from './stores/raw-materials/data';
