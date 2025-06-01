@@ -62,7 +62,7 @@ export async function createGeneralSettingsInfo(data) {
   /**
    * Work on server
    */
-  await axios.post(GENERAL_SETTINGS_INFO_ENDPOINT, data);
+  await axios.put(GENERAL_SETTINGS_INFO_ENDPOINT, data);
   // Optionally, you can trigger a revalidation of the SWR cache:
   // mutate(endpoints.generalSettingsInfo);
 }
