@@ -292,6 +292,10 @@ const SettingsServiceEdit = lazy(() => import('src/pages/dashboard/settings/serv
 const PageStoreRawMaterialsStocksList = lazy(() => import('src/pages/dashboard/store/raw-materials/stocks/list'));
 const PageStoreRawMaterialsStocksNew = lazy(() => import('src/pages/dashboard/store/raw-materials/stocks/new'));
 const PageStoreRawMaterialsStocksEdit = lazy(() => import('src/pages/dashboard/store/raw-materials/stocks/edit'));
+// expression de besoins
+const PageExpressionOfNeedsBebList = lazy(() => import('src/pages/dashboard/expression-of-needs/Beb/list'));
+const PageExpressionOfNeedsBebNew = lazy(() => import('src/pages/dashboard/expression-of-needs/Beb/new'));
+const PageExpressionOfNeedsBebEdit = lazy(() => import('src/pages/dashboard/expression-of-needs/Beb/edit'));
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
 function SuspenseOutlet() {
@@ -645,6 +649,15 @@ export const dashboardRoutes = [
 
             ],
           },
+        ],
+      },
+      {
+        path: 'expression-of-needs',
+        children: [
+          { index: true, element: <PageExpressionOfNeedsBebList /> },
+          { path: 'beb', element: <PageExpressionOfNeedsBebList /> },
+          { path: 'beb/new', element: <PageExpressionOfNeedsBebNew /> },
+          { path: 'beb/:id/edit', element: <PageExpressionOfNeedsBebEdit /> },
         ],
       },
     ],
