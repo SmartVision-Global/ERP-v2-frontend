@@ -52,7 +52,7 @@ const StockSchema = zod.object({
   }).optional(),
 });
 
-export function StockNewEditForm({ currentStock }) {
+export function BebNewEditForm({ currentStock }) {
   const router = useRouter();
         
   const { dataLookups, dataLoading } = useMultiLookups([

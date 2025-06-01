@@ -141,6 +141,12 @@ export const endpoints = {
     initialStorage: '/v1/inventory/initial-storages',
     exitSlip: '/v1/inventory/exit-slips',
   },
+  // expression of needs
+  expressionOfNeeds: {
+   beb: {
+    list: '/v1/expression-of-need/eon-vouchers',
+   }
+  },
 
   // new:''
   // ecritures

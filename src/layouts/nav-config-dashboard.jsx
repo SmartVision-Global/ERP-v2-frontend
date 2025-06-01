@@ -35,7 +35,8 @@ const ICONS = {
   analytics: icon('ic-analytics'),
   dashboard: icon('ic-dashboard'),
   parameter: icon('ic-parameter'),
-  store: icon('ic-store'),
+  warehouse: icon('ic-warehouse'),
+  plus: icon('ic-plus'),
 };
 
 // ----------------------------------------------------------------------
@@ -58,7 +59,7 @@ export const navData = [
       {
         title: 'Gestion magasinage',
         path: '/dashboard/store',
-        icon: ICONS.store,
+        icon: ICONS.warehouse,
         children: [
           {
             title: 'Matières premières',
@@ -86,6 +87,16 @@ export const navData = [
           //   title: 'Fournitures',
           //   path: paths.dashboard.store.supplies,
           // },
+          
+          
+        ]
+      },
+      {
+        title: 'Expression de besoins',
+        path: paths.dashboard.expressionOfNeeds.root,
+        icon: ICONS.plus,
+        children: [
+          { title: 'B.E.B', path: paths.dashboard.expressionOfNeeds.beb.root },
         ],
       },
       {
