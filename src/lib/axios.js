@@ -139,6 +139,7 @@ export const endpoints = {
     list: '/v1/inventory/products',
     storageArea: '/v1/inventory/storage-areas',
     initialStorage: '/v1/inventory/initial-storages',
+    exitSlip: '/v1/inventory/exit-slips',
   },
 
   // new:''

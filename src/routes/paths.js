@@ -220,6 +220,9 @@ export const paths = {
         editStock: (id) => `${ROOTS.DASHBOARD}/store/raw-materials/stocks/${id}/edit`,
         initialStorage: `${ROOTS.DASHBOARD}/store/raw-materials/initial-storage`,
         newInitialStorage: `${ROOTS.DASHBOARD}/store/raw-materials/initial-storage/new`,
+        exitSlip: `${ROOTS.DASHBOARD}/store/raw-materials/exit-slip`,
+        newExitSlip: `${ROOTS.DASHBOARD}/store/raw-materials/exit-slip/new`,
+        editExitSlip: (id) => `${ROOTS.DASHBOARD}/store/raw-materials/exit-slip/${id}/edit`,
       },
       spareParts: {
         root: `${ROOTS.DASHBOARD}/store/spare-parts`,

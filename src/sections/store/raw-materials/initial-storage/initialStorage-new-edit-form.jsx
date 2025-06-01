@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useFieldArray } from 'react-hook-form';
 
 import { LoadingButton } from '@mui/lab';
-import { Add, Remove, Delete, BorderAll } from '@mui/icons-material';
+import { Add, Remove, Delete } from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -31,7 +31,7 @@ import { ProductSelectionDialog } from './product-selection-dialog';
 
 // -------------------- Schema --------------------
 const ProductEntrySchema = zod.object({
-  product_id: zod.string().optional(),
+  product_id: zod.number().optional(),
   designation: zod.string().optional(),
   lot: zod.string().optional(),
   pmp: zod.coerce.number().default(0),
@@ -78,7 +78,7 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
 
   const { fields, append, remove, update } = useFieldArray({
     control,
-    name: 'items', // Changed from productEntries to items
+    name: 'items',
   });
 
   const onSubmit = handleSubmit(async (data) => {
@@ -135,7 +135,7 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
         </Grid>
         <Grid xs={2}>
           <Field.Text
-            name={`items.${index}.designation`} // Changed from productEntries to items
+            name={`items.${index}.designation`}
             label="Désignation"
             variant="outlined"
             size="small"
@@ -144,7 +144,7 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
         </Grid>
         <Grid xs={1.5}>
           <Field.Text
-            name={`items.${index}.lot`} // Changed from productEntries to items
+            name={`items.${index}.lot`}
             label="Lot"
             variant="outlined"
             size="small"
@@ -153,7 +153,7 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
         </Grid>
         <Grid xs={1.5}>
           <Field.Text
-            name={`items.${index}.pmp`} // Changed from productEntries to items
+            name={`items.${index}.pmp`}
             label="PMP"
             type="number"
             variant="outlined"
@@ -191,7 +191,7 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
         </Grid>
         <Grid xs={1.5}>
           <Field.Text
-            name={`items.${index}.quantity`} // Changed from productEntries to items
+            name={`items.${index}.quantity`}
             type="number"
             size="small"
             label="Quantité"
@@ -228,7 +228,7 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
         </Grid>
         <Grid xs={2}>
           <Field.Text
-            name={`items.${index}.observation`} // Changed from productEntries to items
+            name={`items.${index}.observation`}
             size="small"
             variant="outlined"
             fullWidth

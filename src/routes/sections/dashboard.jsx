@@ -305,6 +305,15 @@ const PageStoreInitialStorageList = lazy(
 const PageStoreInitialStorageNew = lazy(
   () => import('src/pages/dashboard/store/raw-materials/initial-storage/new')
 );
+const PageStoreExitSlipList = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/exit-slip/list')
+);
+const PageStoreExitSlipNew = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/exit-slip/new')
+);
+const PageStoreExitSlipEdit = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/exit-slip/edit')
+);
 const PageStoreRawMaterialsStocksNew = lazy(
   () => import('src/pages/dashboard/store/raw-materials/stocks/new')
 );
@@ -674,6 +683,9 @@ export const dashboardRoutes = [
               { path: 'initial-storage/new', element: <PageStoreInitialStorageNew /> },
               { path: 'stocks/new', element: <PageStoreRawMaterialsStocksNew /> },
               { path: 'stocks/:id/edit', element: <PageStoreRawMaterialsStocksEdit /> },
+              { path: 'exit-slip', element: <PageStoreExitSlipList /> },
+              { path: 'exit-slip/new', element: <PageStoreExitSlipNew /> },
+              { path: 'exit-slip/:id/edit', element: <PageStoreExitSlipEdit /> },
             ],
           },
         ],
