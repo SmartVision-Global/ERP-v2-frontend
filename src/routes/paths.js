@@ -230,8 +230,8 @@ export const paths = {
         new: `${ROOTS.DASHBOARD}/expression-of-needs/beb/new`,
         edit: (id) => `${ROOTS.DASHBOARD}/expression-of-needs/beb/${id}/edit`,
       },
-      bmb: {
     },
+     
     settings: {
       generalSettings: {
         root: `${ROOTS.DASHBOARD}/settings/general-settings`,
