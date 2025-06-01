@@ -95,26 +95,7 @@ export function LeaveAbsenceListView() {
       cols: 3,
       width: 1,
     },
-    // {
-    //   id: 'job_id',
-    //   type: 'select',
-    //   options: jobs,
-    //   label: 'Fonction',
-    //   serverData: true,
 
-    //   cols: 3,
-    //   width: 1,
-    // },
-    // {
-    //   id: 'workshop_id',
-    //   type: 'select',
-    //   options: workshops,
-    //   label: 'Atelier',
-    //   serverData: true,
-
-    //   cols: 3,
-    //   width: 1,
-    // },
     {
       id: 'from_date',
       type: 'date',
@@ -147,22 +128,6 @@ export function LeaveAbsenceListView() {
       cols: 3,
       width: 1,
     },
-    // {
-    //   id: 'exercice',
-    //   type: 'select',
-    //   options: ABS_EXERCICE_OPTIONS,
-    //   label: 'Exercice',
-    //   cols: 3,
-    //   width: 1,
-    // },
-    // {
-    //   id: 'nature',
-    //   type: 'select',
-    //   options: ABS_NATURE_OPTIONS,
-    //   label: 'Nature',
-    //   cols: 3,
-    //   width: 1,
-    // },
 
     {
       id: 'created_at',
@@ -194,7 +159,6 @@ export function LeaveAbsenceListView() {
   const [rowCount, setRowCount] = useState(leavesAbesencesCount);
 
   const [tableData, setTableData] = useState(leavesAbesences);
-  // const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState({});
 
@@ -239,11 +203,6 @@ export function LeaveAbsenceListView() {
   );
   const handlePaginationModelChange = async (newModel) => {
     try {
-      // const newEditedInput = editedFilters.filter((item) => item.value !== '');
-      // const result = newEditedInput.reduce((acc, item) => {
-      //   acc[item.field] = item.value;
-      //   return acc;
-      // }, {});
       const newData = {
         ...editedFilters,
         limit: newModel.pageSize,
@@ -281,7 +240,6 @@ export function LeaveAbsenceListView() {
     {
       field: 'id',
       headerName: 'ID',
-      //   flex: 0.5,
       flex: 1,
 
       minWidth: 100,
@@ -313,29 +271,9 @@ export function LeaveAbsenceListView() {
       renderCell: (params) => <RenderCellSite params={params} />,
     },
 
-    // {
-    //   field: 'function',
-    //   headerName: 'Fonction',
-    //   //   flex: 0.5,
-    //   flex: 1,
-    //   minWidth: 200,
-    //   hideable: false,
-    //   renderCell: (params) => <RenderCellFunction params={params} href={paths.dashboard.root} />,
-    // },
-    // {
-    //   field: 'atelier',
-    //   headerName: 'Atelier',
-    //   //   flex: 0.5,
-    //   flex: 1,
-    //   minWidth: 100,
-    //   hideable: false,
-    //   renderCell: (params) => <RenderCellAtelier params={params} href={paths.dashboard.root} />,
-    // },
-
     {
       field: 'start_date',
       headerName: 'De',
-      //   flex: 0.5,
       flex: 1,
       minWidth: 200,
       hideable: false,
@@ -344,7 +282,6 @@ export function LeaveAbsenceListView() {
     {
       field: 'end_date',
       headerName: 'Au',
-      //   flex: 0.5,
       flex: 1,
       minWidth: 200,
       hideable: false,
@@ -353,7 +290,6 @@ export function LeaveAbsenceListView() {
     {
       field: 'designation',
       headerName: 'Designation',
-      //   flex: 0.5,
       flex: 1,
       minWidth: 200,
       hideable: false,
@@ -362,7 +298,6 @@ export function LeaveAbsenceListView() {
     {
       field: 'status',
       headerName: 'Etat',
-      //   flex: 0.5,
       flex: 1,
       minWidth: 100,
       hideable: false,
@@ -371,14 +306,10 @@ export function LeaveAbsenceListView() {
     {
       field: 'valide_par',
       headerName: 'Valider Par',
-      //   flex: 0.5,
       flex: 1,
       minWidth: 200,
       hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellValideBy params={params} href={paths.dashboard.root} />
-      ),
+      renderCell: (params) => <RenderCellValideBy params={params} href={paths.dashboard.root} />,
     },
     {
       field: 'createdAt',
@@ -505,9 +436,6 @@ export function LeaveAbsenceListView() {
       onClose={confirmDialog.onFalse}
       title="Valider récupération"
       content={
-        // <>
-        //   Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
-        // </>
         <Box my={2}>
           <TextField
             value={message}
@@ -524,7 +452,6 @@ export function LeaveAbsenceListView() {
           variant="contained"
           color="info"
           onClick={async () => {
-            // handleDeleteRows();
             await validateLeaveAbesence(selectedRow, { message: 'validation' });
             confirmDialog.onFalse();
           }}
@@ -543,9 +470,6 @@ export function LeaveAbsenceListView() {
       }}
       title="Archiver"
       content={
-        // <>
-        //   Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
-        // </>
         <Box my={2}>
           <TextField
             label="Raison"
@@ -571,7 +495,6 @@ export function LeaveAbsenceListView() {
             if (!cancellationReason) {
               setError(true);
             } else {
-              // handleDeleteRows();
               await archiveLeaveAbesence(selectedRow, { cancellation_reason: cancellationReason });
               confirmDialogArchive.onFalse();
             }
@@ -591,9 +514,6 @@ export function LeaveAbsenceListView() {
       }}
       title="Annuler la validation"
       content={
-        // <>
-        //   Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
-        // </>
         <Box my={2}>
           <TextField
             label="Raison"
@@ -619,7 +539,6 @@ export function LeaveAbsenceListView() {
             if (!cancellationReason) {
               setError(true);
             } else {
-              // handleDeleteRows();
               await cancelLeaveAbesence(selectedRow, { cancellation_reason: cancellationReason });
               confirmDialogCancel.onFalse();
               setCancellationReason('');
