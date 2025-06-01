@@ -1,5 +1,5 @@
-import useSWR from 'swr';
 import { useMemo } from 'react';
+import useSWR, { mutate } from 'swr';
 
 import axios, { fetcher, endpoints } from 'src/lib/axios';
 
@@ -15,23 +15,32 @@ const INITIAL_STORAGE_ENDPOINT = endpoints.stores.initialStorage;
 
 // ----------------------------------------------------------------------
 
-export function useGetInitialStorages() {
-  const { data, isLoading, error, isValidating } = useSWR(
-    INITIAL_STORAGE_ENDPOINT,
-    fetcher,
-    swrOptions
-  );
+export function useGetInitialStorages(params) {
+  const url = params ? [INITIAL_STORAGE_ENDPOINT, { params }] : INITIAL_STORAGE_ENDPOINT;
 
-  return useMemo(
+  const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
+
+  const memoizedValue = useMemo(
     () => ({
       initialStorages: data?.data?.records || [],
+      initialStoragesCount: data?.data?.total || 0,
       initialStoragesLoading: isLoading,
       initialStoragesError: error,
       initialStoragesValidating: isValidating,
       initialStoragesEmpty: !isLoading && !isValidating && !data?.data?.records.length,
     }),
-    [data?.data?.records, error, isLoading, isValidating]
+    [data?.data?.records, data?.data?.total, error, isLoading, isValidating]
   );
+
+  return memoizedValue;
+}
+
+// New function for filtered data
+export async function getFiltredInitialStorages(params) {
+  const response = await axios.get(INITIAL_STORAGE_ENDPOINT, {
+    params,
+  });
+  return response;
 }
 
 export function useGetInitialStorage(id) {
@@ -50,11 +59,13 @@ export function useGetInitialStorage(id) {
 
 export async function createInitialStorage(data) {
   await axios.post(INITIAL_STORAGE_ENDPOINT, data);
+  mutate(INITIAL_STORAGE_ENDPOINT);
 }
 
-export async function updateInitialStorage(id, data) {
+export const updateInitialStorage = async (id, data) => {
   await axios.put(`${INITIAL_STORAGE_ENDPOINT}/${id}`, data);
-}
+  mutate(INITIAL_STORAGE_ENDPOINT);
+};
 
 export async function deleteInitialStorage(id) {
   await axios.delete(`${INITIAL_STORAGE_ENDPOINT}/${id}`);
