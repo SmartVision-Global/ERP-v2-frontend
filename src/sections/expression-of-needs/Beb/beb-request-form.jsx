@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import Grid from '@mui/material/Grid2';
-import { Box, Button, Tab, Tabs, MenuItem } from '@mui/material';
+import { Box, Button, Grid, Tab, Tabs, MenuItem } from '@mui/material';
 import { Form, Field } from 'src/components/hook-form';
 import { useMultiLookups } from 'src/actions/lookups';
 import { TYPE_OPTIONS, PRIORITY_OPTIONS } from 'src/_mock/expression-of-needs/Beb/Beb';
@@ -19,13 +18,12 @@ const bebSchema = z.object({
 });
 
 // BEB Request Form with two tabs: Informations and Produits
-export function BebNewEditForm({ initialData, onSubmit }) {
+export function BebRequestForm({ initialData, onSubmit }) {
   const [currentTab, setCurrentTab] = useState(0);
   const { dataLookups, dataLoading } = useMultiLookups([
     { entity: 'sites', url: 'settings/lookups/sites' },
   ]);
   const sites = dataLookups.sites || [];
-  
 
   const methods = useForm({
     resolver: zodResolver(bebSchema),
@@ -40,7 +38,7 @@ export function BebNewEditForm({ initialData, onSubmit }) {
     },
   });
 
-  const { handleSubmit, reset } = methods;
+  const { handleSubmit } = methods;
 
   const handleTabChange = (event, newValue) => {
     setCurrentTab(newValue);
@@ -54,14 +52,6 @@ export function BebNewEditForm({ initialData, onSubmit }) {
       onSubmit?.(data);
     }
   };
-
-  useEffect(() => {
-    if (!dataLoading && sites.length > 0) {
-      reset({
-        site_id: initialData?.site_id?.toString() || '',
-      });
-    }
-  }, [dataLoading, sites, reset]);
 
   return (
     <Form methods={methods} onSubmit={handleSubmit(handleFormSubmit)}>
@@ -78,13 +68,13 @@ export function BebNewEditForm({ initialData, onSubmit }) {
       {currentTab === 0 && (
         <Box>
           <Grid container spacing={3}>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid item xs={12} md={6}>
               <Field.Select name="nature" label="Nature" size="small">
                 <MenuItem value="demande_de_sortie">Demande de sortie</MenuItem>
               </Field.Select>
             </Grid>
 
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid item xs={12} md={6}>
               <Field.DatePicker
                 name="requested_date"
                 label="Date de besoins"
@@ -92,17 +82,16 @@ export function BebNewEditForm({ initialData, onSubmit }) {
                 slotProps={{ textField: { size: 'small' } }}
               />
             </Grid>
-           
-            <Grid size={{ xs: 12, md: 6 }}>
+
+            <Grid item xs={12} md={6}>
               <Field.Lookup
                 name="site_id"
                 label="Site"
-                data={sites}
+                data={sites.map((site) => ({ value: site.id.toString(), text: site.name }))}
               />
             </Grid>
-           
 
-            <Grid size={{ xs: 12, md: 4 }}>
+            <Grid item xs={12} md={6}>
               <Field.Select name="type" label="Type" size="small">
                 {TYPE_OPTIONS.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
@@ -112,7 +101,7 @@ export function BebNewEditForm({ initialData, onSubmit }) {
               </Field.Select>
             </Grid>
 
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid item xs={12} md={6}>
               <Field.Select name="priority" label="Priorité" size="small">
                 {PRIORITY_OPTIONS.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
@@ -122,7 +111,7 @@ export function BebNewEditForm({ initialData, onSubmit }) {
               </Field.Select>
             </Grid>
 
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid item xs={12}>
               <Field.Text
                 name="observation"
                 label="Observations"
@@ -131,7 +120,7 @@ export function BebNewEditForm({ initialData, onSubmit }) {
               />
             </Grid>
 
-            <Grid  display="flex" justifyContent="flex-end">
+            <Grid item xs={12} display="flex" justifyContent="flex-end">
               <Button type="submit" variant="contained">
                 L'ÉTAPE SUIVANTE
               </Button>
