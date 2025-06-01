@@ -27,6 +27,13 @@ import {
   TextField,
   FormControl,
   InputAdornment,
+  Chip,
+  Divider,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  Grid,
 } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
@@ -136,6 +143,7 @@ export function ExitSlipListView() {
     limit: PAGE_SIZE,
     offset: 0,
   });
+  console.log('exitSlips', exitSlips);
 
   // Helper function to transform data
   const transformExitSlipData = (data) =>
@@ -143,15 +151,34 @@ export function ExitSlipListView() {
       id: exitSlip.id,
       code: exitSlip.code,
       observation: exitSlip.observation,
-      taker: exitSlip.taker,
-      store_id: exitSlip.store?.id || exitSlip.store_id,
+      status: exitSlip.status,
+      personal_id: exitSlip.personal_id,
+      preneur: exitSlip.preneur,
+      store_id: exitSlip.store?.id,
       store_name: exitSlip.store?.designation,
-      state: exitSlip.state,
-      beb: exitSlip.beb,
-      created_at: exitSlip.created_at,
-      created_by: exitSlip.created_by,
-      validated_by: exitSlip.validated_by,
+      store_code: exitSlip.store?.code,
+      store_address: exitSlip.store?.address,
+      store_phone: exitSlip.store?.phone,
+      items_count: exitSlip.items?.length || 0,
+      items: exitSlip.items?.map((item) => ({
+        id: item.id,
+        product_id: item.product_id,
+        lot: item.lot,
+        quantity: item.quantity,
+        physical_quantity: item.physical_quantity,
+        observation: item.observation,
+        status: item.status,
+      })),
+      beb_code: exitSlip.eon_voucher?.code,
+      beb_status: exitSlip.eon_voucher?.status,
+      beb_nature: exitSlip.eon_voucher?.nature,
+      beb_type: exitSlip.eon_voucher?.type,
+      beb_validation_code: exitSlip.eon_voucher?.validation_code,
+      beb_requested_date: exitSlip.eon_voucher?.requested_date,
+      beb_priority: exitSlip.eon_voucher?.priority,
+      beb_observation: exitSlip.eon_voucher?.observation,
       validated_at: exitSlip.validated_at,
+      validated_by: exitSlip.validated_by,
     }));
 
   // Handle filter reset
@@ -235,6 +262,8 @@ export function ExitSlipListView() {
   const [selectedExitSlip, setSelectedExitSlip] = useState(null);
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
   const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [openViewDialog, setOpenViewDialog] = useState(false);
+  const [selectedExitSlipDetails, setSelectedExitSlipDetails] = useState(null);
 
   useEffect(() => {
     if (exitSlips?.length) {
@@ -267,14 +296,24 @@ export function ExitSlipListView() {
     const formData = {
       id: row.id,
       store_id: row.store_id,
-      taker: row.taker,
-      beb: row.beb,
+      beb_code: row.beb_code,
       observation: row.observation,
-      state: row.state,
+      status: row.status,
+      items: row.items,
     };
     console.log('Editing exit slip:', formData);
     setSelectedExitSlip(formData);
     setOpenEditDialog(true);
+  };
+
+  const handleView = (row) => {
+    setSelectedExitSlipDetails(row);
+    setOpenViewDialog(true);
+  };
+
+  const handleCloseView = () => {
+    setOpenViewDialog(false);
+    setSelectedExitSlipDetails(null);
   };
 
   const columns = [
@@ -293,6 +332,89 @@ export function ExitSlipListView() {
       renderCell: (params) => <RenderCellCode params={params} />,
     },
     {
+      field: 'store_name',
+      headerName: 'Magasin',
+      flex: 1,
+      minWidth: 160,
+      renderCell: (params) => (
+        <Stack spacing={0.5}>
+          <Typography variant="body2">{params.row.store_name}</Typography>
+          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+            {params.row.store_code}
+          </Typography>
+        </Stack>
+      ),
+    },
+    {
+      field: 'preneur',
+      headerName: 'Preneur',
+      flex: 1,
+      minWidth: 160,
+      renderCell: (params) => <Typography variant="body2">{params.row.preneur || '-'}</Typography>,
+    },
+    {
+      field: 'beb_code',
+      headerName: 'B.E.B',
+      flex: 1,
+      minWidth: 120,
+      renderCell: (params) => (
+        <Stack spacing={0.5}>
+          <Typography variant="body2">{params.row.beb_code}</Typography>
+          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+            {params.row.beb_validation_code}
+          </Typography>
+        </Stack>
+      ),
+    },
+    {
+      field: 'items_count',
+      headerName: 'Articles',
+      flex: 1,
+      minWidth: 100,
+      renderCell: (params) => (
+        <Typography variant="body2">
+          {params.row.items_count} article{params.row.items_count !== 1 ? 's' : ''}
+        </Typography>
+      ),
+    },
+    {
+      field: 'status',
+      headerName: 'Etat',
+      flex: 1,
+      minWidth: 120,
+      renderCell: (params) => (
+        <Chip
+          label={params.row.status === 1 ? 'Validé' : 'En attente'}
+          color={params.row.status === 1 ? 'success' : 'warning'}
+          size="small"
+        />
+      ),
+    },
+    {
+      field: 'validation',
+      headerName: 'Validé/Validé par',
+      flex: 1,
+      minWidth: 200,
+      renderCell: (params) => (
+        <Stack spacing={0.5}>
+          <Typography variant="body2">
+            {params.row.validated_at
+              ? new Date(params.row.validated_at).toLocaleDateString('fr-FR', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })
+              : '-'}
+          </Typography>
+          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+            {params.row.validated_by || '-'}
+          </Typography>
+        </Stack>
+      ),
+    },
+    {
       field: 'observation',
       headerName: 'Observation',
       flex: 1,
@@ -300,53 +422,11 @@ export function ExitSlipListView() {
       renderCell: (params) => <RenderCellObservation params={params} />,
     },
     {
-      field: 'taker',
-      headerName: 'Preneur',
-      flex: 1,
-      minWidth: 160,
-      renderCell: (params) => <RenderCellTaker params={params} />,
-    },
-    {
-      field: 'store_name',
-      headerName: 'Magasin',
-      flex: 1,
-      minWidth: 160,
-      renderCell: (params) => <RenderCellStore params={params} />,
-    },
-    {
-      field: 'state',
-      headerName: 'Etat',
-      flex: 1,
-      minWidth: 120,
-      renderCell: (params) => <RenderCellState params={params} />,
-    },
-    {
-      field: 'beb',
-      headerName: 'B.E.B',
-      flex: 1,
-      minWidth: 120,
-      renderCell: (params) => <RenderCellBEB params={params} />,
-    },
-    {
       field: 'created_at',
       headerName: 'Date de création',
       flex: 1,
       minWidth: 160,
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
-    },
-    {
-      field: 'created_by',
-      headerName: 'Créé par',
-      flex: 1,
-      minWidth: 160,
-      renderCell: (params) => <RenderCellCreatedBy params={params} />,
-    },
-    {
-      field: 'validated_by',
-      headerName: 'Validé par',
-      flex: 1,
-      minWidth: 160,
-      renderCell: (params) => <RenderCellValidatedBy params={params} />,
     },
     {
       type: 'actions',
@@ -360,6 +440,12 @@ export function ExitSlipListView() {
           label="Edit"
           onClick={() => handleEdit(params.row)}
         />,
+        <GridActionsCellItem
+          showInMenu
+          icon={<Iconify icon="solar:eye-bold" />}
+          label="View"
+          onClick={() => handleView(params.row)}
+        />,
       ],
     },
   ];
@@ -371,6 +457,195 @@ export function ExitSlipListView() {
 
   const renderConfirmDialog = () => (
     <ConfirmDialog open={confirmDialog.value} onClose={confirmDialog.onFalse} title="Delete" />
+  );
+
+  // Update the useEffect to refresh data when needed
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getFiltredExitSlips({
+          limit: paginationModel.pageSize,
+          offset: paginationModel.page * paginationModel.pageSize,
+          ...editedFilters,
+        });
+        const transformedData = transformExitSlipData(response.data?.data?.records);
+        setTableData(transformedData);
+        setRowCount(response.data?.data?.total);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [paginationModel, editedFilters, exitSlips]); // Added exitSlips as dependency
+
+  const renderViewDialog = () => (
+    <Dialog fullWidth maxWidth="md" open={openViewDialog} onClose={handleCloseView}>
+      <DialogTitle>
+        Détails du bon de sortie
+        <IconButton
+          aria-label="close"
+          onClick={handleCloseView}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+          }}
+        >
+          <Close />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent>
+        {selectedExitSlipDetails && (
+          <Stack spacing={3} sx={{ pt: 3 }}>
+            {/* Header Information */}
+            <Card>
+              <Box sx={{ p: 3 }}>
+                <Grid container spacing={3}>
+                  <Grid xs={12} md={6}>
+                    <Stack spacing={1}>
+                      <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+                        Code
+                      </Typography>
+                      <Typography variant="body1">{selectedExitSlipDetails.code}</Typography>
+                    </Stack>
+                  </Grid>
+                  <Grid xs={12} md={6}>
+                    <Stack spacing={1}>
+                      <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+                        Magasin
+                      </Typography>
+                      <Typography variant="body1">
+                        {selectedExitSlipDetails.store_name} ({selectedExitSlipDetails.store_code})
+                      </Typography>
+                    </Stack>
+                  </Grid>
+                  <Grid xs={12} md={6}>
+                    <Stack spacing={1}>
+                      <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+                        Preneur
+                      </Typography>
+                      <Typography variant="body1">
+                        {selectedExitSlipDetails.preneur || '-'}
+                      </Typography>
+                    </Stack>
+                  </Grid>
+                  <Grid xs={12} md={6}>
+                    <Stack spacing={1}>
+                      <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+                        B.E.B
+                      </Typography>
+                      <Typography variant="body1">
+                        {selectedExitSlipDetails.beb_code}
+                        {selectedExitSlipDetails.beb_validation_code && (
+                          <Typography
+                            component="span"
+                            variant="caption"
+                            sx={{ color: 'text.secondary', ml: 1 }}
+                          >
+                            ({selectedExitSlipDetails.beb_validation_code})
+                          </Typography>
+                        )}
+                      </Typography>
+                    </Stack>
+                  </Grid>
+                  <Grid xs={12}>
+                    <Stack spacing={1}>
+                      <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+                        Observation
+                      </Typography>
+                      <Typography variant="body1">
+                        {selectedExitSlipDetails.observation || '-'}
+                      </Typography>
+                    </Stack>
+                  </Grid>
+                </Grid>
+              </Box>
+            </Card>
+
+            {/* Items Table */}
+            <Card>
+              <Box sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ mb: 2 }}>
+                  Articles ({selectedExitSlipDetails.items_count})
+                </Typography>
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Code</TableCell>
+                        <TableCell>Désignation</TableCell>
+                        <TableCell>Lot</TableCell>
+                        <TableCell align="right">Quantité</TableCell>
+                        <TableCell>Observation</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {selectedExitSlipDetails.items?.map((item) => (
+                        <TableRow key={item.id}>
+                          <TableCell>{item.product_id}</TableCell>
+                          <TableCell>{item.designation}</TableCell>
+                          <TableCell>{item.lot}</TableCell>
+                          <TableCell align="right">{item.quantity}</TableCell>
+                          <TableCell>{item.observation || '-'}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Box>
+            </Card>
+
+            {/* Validation Information */}
+            <Card>
+              <Box sx={{ p: 3 }}>
+                <Stack spacing={2}>
+                  <Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+                      État
+                    </Typography>
+                    <Chip
+                      label={selectedExitSlipDetails.status === 1 ? 'Validé' : 'En attente'}
+                      color={selectedExitSlipDetails.status === 1 ? 'success' : 'warning'}
+                      size="small"
+                    />
+                  </Stack>
+                  {selectedExitSlipDetails.status === 1 && (
+                    <>
+                      <Stack direction="row" justifyContent="space-between" alignItems="center">
+                        <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+                          Validé le
+                        </Typography>
+                        <Typography variant="body2">
+                          {new Date(selectedExitSlipDetails.validated_at).toLocaleDateString(
+                            'fr-FR',
+                            {
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: '2-digit',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            }
+                          )}
+                        </Typography>
+                      </Stack>
+                      <Stack direction="row" justifyContent="space-between" alignItems="center">
+                        <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+                          Validé par
+                        </Typography>
+                        <Typography variant="body2">
+                          {selectedExitSlipDetails.validated_by}
+                        </Typography>
+                      </Stack>
+                    </>
+                  )}
+                </Stack>
+              </Box>
+            </Card>
+          </Stack>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 
   return (
@@ -493,6 +768,8 @@ export function ExitSlipListView() {
           </Box>
         </DialogContent>
       </Dialog>
+
+      {renderViewDialog()}
     </Container>
   );
 }

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useFieldArray } from 'react-hook-form';
 
+import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
 import { Add, Remove, Delete } from '@mui/icons-material';
 import {
@@ -10,7 +11,6 @@ import {
   Card,
   Divider,
   CardHeader,
-  Grid,
   MenuItem,
   Stack,
   IconButton,
@@ -34,17 +34,21 @@ import { ProductSelectionDialog } from './product-selection-dialog';
 
 // -------------------- Schema --------------------
 const ProductEntrySchema = zod.object({
-  product_id: zod.number().optional(),
-  designation: zod.string().optional(),
+  product_id: zod.number().min(1, { message: 'Produit is required!' }),
+  machine_id: zod.number().min(1, { message: 'Machine is required!' }),
+  workshop_id: zod.number().min(1, { message: 'Atelier is required!' }),
   lot: zod.string().optional(),
-  quantity: zod.coerce.number().default(0),
+  quantity: zod.coerce.number().min(0.1, { message: 'Quantité must be greater than 0' }),
+  physical_quantity: zod.coerce
+    .number()
+    .min(0, { message: 'Quantité physique must be greater than or equal to 0' }),
   observation: zod.string().optional(),
 });
 
 const ExitSlipSchema = zod.object({
   store_id: zod.number().min(1, { message: 'Magasin is required!' }),
-  taker: zod.string().min(1, { message: 'Preneur is required!' }),
-  beb: zod.string().min(1, { message: 'B.E.B is required!' }),
+  personal_id: zod.number().min(1, { message: 'Preneur is required!' }),
+  eon_voucher_id: zod.number().min(1, { message: 'B.E.B is required!' }),
   observation: zod.string().optional(),
   items: zod.array(ProductEntrySchema).min(1, { message: 'Ajoutez au moins une ligne' }),
 });
@@ -61,15 +65,17 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
     resolver: zodResolver(ExitSlipSchema),
     defaultValues: {
       store_id: currentExitSlip?.store_id || undefined,
-      taker: currentExitSlip?.taker || '',
-      beb: currentExitSlip?.beb || '',
+      personal_id: currentExitSlip?.personal_id || undefined,
+      eon_voucher_id: currentExitSlip?.eon_voucher_id || undefined,
       observation: currentExitSlip?.observation || '',
       items: currentExitSlip?.items || [
         {
-          product_id: '',
-          designation: '',
+          product_id: undefined,
+          machine_id: undefined,
+          workshop_id: undefined,
           lot: 'non-défini',
           quantity: 0,
+          physical_quantity: 0,
           observation: '',
         },
       ],
@@ -106,7 +112,32 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
     }
   });
 
-  const handleNext = () => {
+  const handleStepClick = async (step) => {
+    if (step === 1) {
+      // Validate the first step before allowing to move to the second step
+      const firstStepFields = ['store_id', 'personal_id', 'eon_voucher_id'];
+      const values = getValues();
+      const isValid = await methods.trigger(firstStepFields);
+
+      if (!isValid) {
+        toast.error('Veuillez remplir tous les champs obligatoires');
+        return;
+      }
+    }
+    setActiveStep(step);
+  };
+
+  const handleNext = async () => {
+    if (activeStep === 0) {
+      // Validate the first step before moving to the second step
+      const firstStepFields = ['store_id', 'personal_id', 'eon_voucher_id'];
+      const isValid = await methods.trigger(firstStepFields);
+
+      if (!isValid) {
+        toast.error('Veuillez remplir tous les champs obligatoires');
+        return;
+      }
+    }
     setActiveStep((prevStep) => prevStep + 1);
   };
 
@@ -118,9 +149,11 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
     if (selectedRowIndex !== null) {
       update(selectedRowIndex, {
         product_id: product.id,
-        designation: product.designation,
+        machine_id: undefined,
+        workshop_id: undefined,
         lot: 'non-défini',
         quantity: 0,
+        physical_quantity: 0,
         observation: '',
       });
     }
@@ -142,6 +175,28 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
     { value: 'beb3', label: 'B.E.B 3' },
   ];
 
+  // Mock data - replace with actual API calls
+  const machines = [
+    { id: 1, name: 'Machine 1' },
+    { id: 2, name: 'Machine 2' },
+  ];
+
+  const workshops = [
+    { id: 1, name: 'Atelier 1' },
+    { id: 2, name: 'Atelier 2' },
+  ];
+
+  const personals = [
+    { id: 1, name: 'Personnel 1' },
+    { id: 2, name: 'Personnel 2' },
+    { id: 3, name: 'Personnel 3' },
+  ];
+
+  const eonVouchers = [
+    { id: 1, code: 'BEB-001' },
+    { id: 2, code: 'BEB-002' },
+  ];
+
   const renderStepContent = (step) => {
     switch (step) {
       case 0:
@@ -156,7 +211,7 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
               ))}
             </Field.Select>
 
-            <Field.Select name="taker" label="Preneur" size="small" fullWidth>
+            <Field.Select name="personal_id" label="Preneur" size="small" fullWidth>
               <MenuItem value="">Sélectionner un preneur</MenuItem>
               {takerOptions.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
@@ -165,7 +220,7 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
               ))}
             </Field.Select>
 
-            <Field.Select name="beb" label="B.E.B" size="small" fullWidth>
+            <Field.Select name="eon_voucher_id" label="B.E.B" size="small" fullWidth>
               <MenuItem value="">Sélectionner un B.E.B</MenuItem>
               {bebOptions.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
@@ -192,10 +247,12 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
               <Button
                 onClick={() =>
                   append({
-                    product_id: '',
-                    designation: '',
+                    product_id: undefined,
+                    machine_id: undefined,
+                    workshop_id: undefined,
                     lot: 'non-défini',
                     quantity: 0,
+                    physical_quantity: 0,
                     observation: '',
                   })
                 }
@@ -226,10 +283,7 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
                   container
                   spacing={2}
                   key={field.id}
-                  alignItems="center"
                   sx={{
-                    display: 'flex',
-                    gap: 1,
                     mb: 2,
                     p: 2,
                     borderRadius: 1,
@@ -265,19 +319,39 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
                       }}
                     />
                   </Grid>
-                  <Grid xs={2}>
-                    <Field.Text
-                      name={`items.${index}.designation`}
-                      label="Désignation"
-                      variant="outlined"
+                  <Grid xs={1.5}>
+                    <Field.Select
+                      name={`items.${index}.machine_id`}
+                      label="Machine"
                       size="small"
                       fullWidth
-                      InputProps={{
-                        sx: { bgcolor: 'background.paper' },
-                      }}
-                    />
+                      sx={{ minWidth: '100%' }}
+                    >
+                      <MenuItem value={undefined}>Sélectionner une machine</MenuItem>
+                      {machines.map((machine) => (
+                        <MenuItem key={machine.id} value={machine.id}>
+                          {machine.name}
+                        </MenuItem>
+                      ))}
+                    </Field.Select>
                   </Grid>
                   <Grid xs={1.5}>
+                    <Field.Select
+                      name={`items.${index}.workshop_id`}
+                      label="Atelier"
+                      size="small"
+                      fullWidth
+                      sx={{ minWidth: '100%' }}
+                    >
+                      <MenuItem value={undefined}>Sélectionner un atelier</MenuItem>
+                      {workshops.map((workshop) => (
+                        <MenuItem key={workshop.id} value={workshop.id}>
+                          {workshop.name}
+                        </MenuItem>
+                      ))}
+                    </Field.Select>
+                  </Grid>
+                  <Grid xs={1}>
                     <Field.Text
                       name={`items.${index}.lot`}
                       label="Lot"
@@ -329,7 +403,50 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
                       }}
                     />
                   </Grid>
-                  <Grid xs={2}>
+                  <Grid xs={1.5}>
+                    <Field.Text
+                      name={`items.${index}.physical_quantity`}
+                      type="number"
+                      size="small"
+                      label="Quantité physique"
+                      fullWidth
+                      InputProps={{
+                        sx: { bgcolor: 'background.paper' },
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={() => {
+                                const formValues = getValues(`items.${index}`);
+                                update(index, {
+                                  ...formValues,
+                                  physical_quantity: (formValues.physical_quantity || 0) + 0.5,
+                                });
+                              }}
+                              size="small"
+                            >
+                              <Add fontSize="small" />
+                            </IconButton>
+                            <IconButton
+                              onClick={() => {
+                                const formValues = getValues(`items.${index}`);
+                                update(index, {
+                                  ...formValues,
+                                  physical_quantity: Math.max(
+                                    0,
+                                    (formValues.physical_quantity || 0) - 0.5
+                                  ),
+                                });
+                              }}
+                              size="small"
+                            >
+                              <Remove fontSize="small" />
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Grid>
+                  <Grid xs={1.5}>
                     <Field.Text
                       name={`items.${index}.observation`}
                       size="small"
@@ -388,10 +505,24 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
                 '& .MuiStepLabel-label': {
                   typography: 'subtitle2',
                 },
+                '& .MuiStepLabel-root': {
+                  cursor: 'pointer',
+                },
               }}
             >
-              {steps.map((label) => (
-                <Step key={label}>
+              {steps.map((label, index) => (
+                <Step
+                  key={label}
+                  onClick={() => handleStepClick(index)}
+                  sx={{
+                    cursor: 'pointer',
+                    '&:hover': {
+                      '& .MuiStepLabel-label': {
+                        color: 'primary.main',
+                      },
+                    },
+                  }}
+                >
                   <StepLabel>{label}</StepLabel>
                 </Step>
               ))}
