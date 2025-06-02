@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Grid from '@mui/material/Grid2';
-import { Box, Button, Tab, Tabs, MenuItem } from '@mui/material';
+import { Box, Button, Stepper, Step, StepLabel, MenuItem } from '@mui/material';
 import { Form, Field } from 'src/components/hook-form';
 import { useMultiLookups } from 'src/actions/lookups';
 import { PRODUCT_TYPE_OPTIONS, PRIORITY_OPTIONS } from 'src/_mock/expression-of-needs/Beb/Beb';
@@ -65,15 +65,18 @@ export function BebNewEditForm({ initialData, onSubmit }) {
 
   return (
     <Form methods={methods} onSubmit={handleSubmit(handleFormSubmit)}>
-      <Tabs
-        value={currentTab}
-        onChange={handleTabChange}
-        aria-label="BEB Request Tabs"
-        sx={{ mb: 3 }}
-      >
-        <Tab label="Informations" />
-        <Tab label="Produits" />
-      </Tabs>
+      <Stepper activeStep={currentTab} alternativeLabel sx={{ mb: 3 }}>
+        <Step key="Informations">
+          <StepLabel onClick={() => setCurrentTab(0)} style={{ cursor: 'pointer' }}>
+            Informations
+          </StepLabel>
+        </Step>
+        <Step key="Produits">
+          <StepLabel onClick={handleSubmit(handleFormSubmit)} style={{ cursor: 'pointer' }}>
+            Produits
+          </StepLabel>
+        </Step>
+      </Stepper>
 
       {currentTab === 0 && (
         <Box>
