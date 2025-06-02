@@ -57,7 +57,8 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
       store_id: undefined,
       items: [
         {
-          product_id: '',
+          product_id: undefined,
+          product_code: '',
           designation: '',
           lot: 'non-défini',
           pmp: 0,
@@ -97,6 +98,7 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
     if (selectedRowIndex !== null) {
       update(selectedRowIndex, {
         product_id: product.id,
+        product_code: product.code,
         designation: product.designation,
         lot: 'non-défini',
         pmp: 0,
@@ -119,7 +121,7 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
       >
         <Grid xs={1.5} marginLeft={2}>
           <Field.Text
-            name={`items.${index}.product_id`}
+            name={`items.${index}.product_code`}
             label="Code"
             variant="outlined"
             size="small"
@@ -130,6 +132,12 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
             }}
             InputProps={{
               readOnly: true,
+              sx: {
+                bgcolor: 'background.paper',
+                '&:hover': {
+                  bgcolor: 'background.paper',
+                },
+              },
             }}
           />
         </Grid>
@@ -140,6 +148,7 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
             variant="outlined"
             size="small"
             fullWidth
+            InputProps={{ readOnly: true }}
           />
         </Grid>
         <Grid xs={1.5}>
@@ -271,7 +280,8 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
                 <Button
                   onClick={() =>
                     append({
-                      code: '',
+                      product_id: undefined,
+                      product_code: '',
                       designation: '',
                       lot: 'non-défini',
                       pmp: 0,

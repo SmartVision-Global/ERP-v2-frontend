@@ -15,8 +15,10 @@ const EXIT_SLIP_ENDPOINT = endpoints.stores.exitSlip;
 
 // ----------------------------------------------------------------------
 
-export function useGetExitSlips(params) {
-  const url = params ? [EXIT_SLIP_ENDPOINT, { params }] : EXIT_SLIP_ENDPOINT;
+export function useGetExitSlips(params, refreshTrigger = 0) {
+  const url = params
+    ? [EXIT_SLIP_ENDPOINT, { params, refreshTrigger }]
+    : [EXIT_SLIP_ENDPOINT, { refreshTrigger }];
 
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 
@@ -29,7 +31,7 @@ export function useGetExitSlips(params) {
       exitSlipsValidating: isValidating,
       exitSlipsEmpty: !isLoading && !isValidating && !data?.data?.records.length,
     }),
-    [data?.data?.records, data?.data?.total, error, isLoading, isValidating]
+    [data?.data?.records, data?.data?.total, error, isLoading, isValidating, refreshTrigger]
   );
 
   return memoizedValue;

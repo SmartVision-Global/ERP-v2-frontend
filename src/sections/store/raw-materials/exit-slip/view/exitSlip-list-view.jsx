@@ -128,6 +128,7 @@ const FILTERS_OPTIONS = [
 export function ExitSlipListView() {
   const [searchParams, setSearchParams] = useSearchParams();
   const confirmDialog = useBoolean();
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Initialize pagination state
   const [paginationModel, setPaginationModel] = useState({
@@ -141,11 +142,14 @@ export function ExitSlipListView() {
   const [editedFilters, setEditedFilters] = useState({});
   const [isFiltering, setIsFiltering] = useState(false);
 
-  // Get initial data
-  const { exitSlips, exitSlipsLoading, exitSlipsCount } = useGetExitSlips({
-    limit: PAGE_SIZE,
-    offset: 0,
-  });
+  // Get initial data with refresh trigger
+  const { exitSlips, exitSlipsLoading, exitSlipsCount } = useGetExitSlips(
+    {
+      limit: PAGE_SIZE,
+      offset: 0,
+    },
+    refreshTrigger
+  );
 
   // Helper function to transform data
   const transformExitSlipData = (data) =>
@@ -338,6 +342,7 @@ export function ExitSlipListView() {
   const handleCloseEdit = () => {
     setOpenEditDialog(false);
     setSelectedExitSlip(null);
+    triggerRefresh();
   };
 
   const handleEdit = (row) => {
@@ -518,19 +523,19 @@ export function ExitSlipListView() {
     <ConfirmDialog open={confirmDialog.value} onClose={confirmDialog.onFalse} title="Delete" />
   );
 
-  // Update the useEffect to refresh data when needed
+  // Update the useEffect to handle data updates
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Transform filter data to match backend expectations
         const filterParams = {
           ...editedFilters,
-          personal_id: editedFilters.taker, // Map taker to personal_id for backend
-          eon_voucher_id: editedFilters.beb, // Map beb to eon_voucher_id for backend
+          personal_id: editedFilters.taker,
+          eon_voucher_id: editedFilters.beb,
           limit: paginationModel.pageSize,
           offset: paginationModel.page * paginationModel.pageSize,
         };
-        delete filterParams.taker; // Remove the original keys
+        delete filterParams.taker;
         delete filterParams.beb;
 
         const response = await getFiltredExitSlips(filterParams);
@@ -544,7 +549,12 @@ export function ExitSlipListView() {
     };
 
     fetchData();
-  }, [paginationModel, editedFilters, exitSlips]); // Added exitSlips as dependency
+  }, [paginationModel, editedFilters, refreshTrigger]);
+
+  // Add a function to trigger refresh
+  const triggerRefresh = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
 
   const renderViewDialog = () => (
     <Dialog fullWidth maxWidth="md" open={openViewDialog} onClose={handleCloseView}>
