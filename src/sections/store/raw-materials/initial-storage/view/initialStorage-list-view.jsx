@@ -37,7 +37,7 @@ import {
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetStores } from 'src/actions/store';
+import { useGetLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useGetInitialStorages, getFiltredInitialStorages } from 'src/actions/initialStorage';
 
@@ -141,6 +141,7 @@ export function InitialStorageListView() {
       quantity: storage.quantity,
       observation: storage.observation,
       store_id: storage.store?.id || storage.store_id,
+      created_at: storage.created_at,
     }));
 
   // Handle filter reset
@@ -217,8 +218,8 @@ export function InitialStorageListView() {
     handleFilter(newData);
   };
 
-  const { stores } = useGetStores();
-
+  const { data: stores } = useGetLookups('settings/lookups/stores');
+  console.log('stores', stores);
   const [filterButtonEl, setFilterButtonEl] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [selectedInitialStorage, setSelectedInitialStorage] = useState(null);
@@ -248,8 +249,8 @@ export function InitialStorageListView() {
   useEffect(() => {
     if (stores?.length) {
       FILTERS_OPTIONS[0].options = stores.map((store) => ({
-        label: store.designation,
-        value: store.id,
+        label: store.text,
+        value: store.value,
       }));
     }
   }, [stores]);
@@ -337,8 +338,8 @@ export function InitialStorageListView() {
       flex: 1,
       minWidth: 160,
       renderCell: (params) => {
-        const store = stores?.find((s) => s.id === params.value);
-        return <Typography variant="body2">{store?.designation || '-'}</Typography>;
+        const store = stores?.find((s) => s.value === params.value);
+        return <Typography variant="body2">{store?.text || '-'}</Typography>;
       },
     },
     {

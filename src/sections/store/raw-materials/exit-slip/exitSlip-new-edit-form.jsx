@@ -24,7 +24,10 @@ import {
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { useGetStores } from 'src/actions/store';
+import { useGetLookups } from 'src/actions/lookups';
+import { useGetMachines } from 'src/actions/machine';
+import { useGetPersonals } from 'src/actions/personal';
+import { useGetBebs } from 'src/actions/expression-of-needs/beb/beb';
 import { createExitSlip, updateExitSlip } from 'src/actions/exitSlip';
 
 import { toast } from 'src/components/snackbar';
@@ -56,11 +59,15 @@ const ExitSlipSchema = zod.object({
 // -------------------- Component --------------------
 export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
   const router = useRouter();
-  const { stores } = useGetStores();
+  const { data: stores } = useGetLookups('settings/lookups/stores');
+  const { data: machines } = useGetLookups('settings/lookups/machines');
+  const { data: personals } = useGetLookups('hr/lookups/personals');
+  const { data: bebs } = useGetLookups('expression-of-need/lookups/eon-vouchers');
+  const { data: workshops } = useGetLookups('settings/lookups/workshops');
   const [activeStep, setActiveStep] = useState(0);
   const [selectedRowIndex, setSelectedRowIndex] = useState(null);
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
-
+  console.log(personals);
   const methods = useForm({
     resolver: zodResolver(ExitSlipSchema),
     defaultValues: {
@@ -149,53 +156,20 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
     if (selectedRowIndex !== null) {
       update(selectedRowIndex, {
         product_id: product.id,
+        product_code: product.code,
+        designation: product.designation,
         machine_id: undefined,
         workshop_id: undefined,
         lot: 'non-défini',
         quantity: 0,
         physical_quantity: 0,
-        observation: '',
+        observation: product.observation || '',
       });
     }
     setSelectedRowIndex(null);
   };
 
   const steps = ['Informations générales', 'Articles'];
-
-  // Mock data for taker and BEB options - replace with actual data from your API
-  const takerOptions = [
-    { value: 'taker1', label: 'Preneur 1' },
-    { value: 'taker2', label: 'Preneur 2' },
-    { value: 'taker3', label: 'Preneur 3' },
-  ];
-
-  const bebOptions = [
-    { value: 'beb1', label: 'B.E.B 1' },
-    { value: 'beb2', label: 'B.E.B 2' },
-    { value: 'beb3', label: 'B.E.B 3' },
-  ];
-
-  // Mock data - replace with actual API calls
-  const machines = [
-    { id: 1, name: 'Machine 1' },
-    { id: 2, name: 'Machine 2' },
-  ];
-
-  const workshops = [
-    { id: 1, name: 'Atelier 1' },
-    { id: 2, name: 'Atelier 2' },
-  ];
-
-  const personals = [
-    { id: 1, name: 'Personnel 1' },
-    { id: 2, name: 'Personnel 2' },
-    { id: 3, name: 'Personnel 3' },
-  ];
-
-  const eonVouchers = [
-    { id: 1, code: 'BEB-001' },
-    { id: 2, code: 'BEB-002' },
-  ];
 
   const renderStepContent = (step) => {
     switch (step) {
@@ -205,26 +179,26 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
             <Field.Select name="store_id" label="Magasin" size="small" fullWidth>
               <MenuItem value={undefined}>Sélectionner un magasin</MenuItem>
               {stores?.map((store) => (
-                <MenuItem key={store.id} value={store.id}>
-                  {store.designation}
+                <MenuItem key={store.value} value={store.value}>
+                  {store.text}
                 </MenuItem>
               ))}
             </Field.Select>
 
             <Field.Select name="personal_id" label="Preneur" size="small" fullWidth>
               <MenuItem value="">Sélectionner un preneur</MenuItem>
-              {takerOptions.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
+              {personals?.map((personal) => (
+                <MenuItem key={personal.value} value={personal.value}>
+                  {personal.text}
                 </MenuItem>
               ))}
             </Field.Select>
 
             <Field.Select name="eon_voucher_id" label="B.E.B" size="small" fullWidth>
               <MenuItem value="">Sélectionner un B.E.B</MenuItem>
-              {bebOptions.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
+              {bebs?.map((beb) => (
+                <MenuItem key={beb.value} value={beb.value}>
+                  {beb.text}
                 </MenuItem>
               ))}
             </Field.Select>
@@ -297,9 +271,9 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
                     },
                   }}
                 >
-                  <Grid xs={1.5}>
+                  <Grid size={2}>
                     <Field.Text
-                      name={`items.${index}.product_id`}
+                      name={`items.${index}.product_code`}
                       label="Code"
                       variant="outlined"
                       size="small"
@@ -319,7 +293,17 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
                       }}
                     />
                   </Grid>
-                  <Grid xs={1.5}>
+                  <Grid size={2}>
+                    <Field.Text
+                      name={`items.${index}.designation`}
+                      label="Désignation"
+                      variant="outlined"
+                      size="small"
+                      fullWidth
+                      InputProps={{ readOnly: true }}
+                    />
+                  </Grid>
+                  <Grid size={2}>
                     <Field.Select
                       name={`items.${index}.machine_id`}
                       label="Machine"
@@ -328,14 +312,14 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
                       sx={{ minWidth: '100%' }}
                     >
                       <MenuItem value={undefined}>Sélectionner une machine</MenuItem>
-                      {machines.map((machine) => (
-                        <MenuItem key={machine.id} value={machine.id}>
-                          {machine.name}
+                      {machines?.map((machine) => (
+                        <MenuItem key={machine.value} value={machine.value}>
+                          {machine.text}
                         </MenuItem>
                       ))}
                     </Field.Select>
                   </Grid>
-                  <Grid xs={1.5}>
+                  <Grid size={2}>
                     <Field.Select
                       name={`items.${index}.workshop_id`}
                       label="Atelier"
@@ -345,8 +329,8 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
                     >
                       <MenuItem value={undefined}>Sélectionner un atelier</MenuItem>
                       {workshops.map((workshop) => (
-                        <MenuItem key={workshop.id} value={workshop.id}>
-                          {workshop.name}
+                        <MenuItem key={workshop.id} value={workshop.value}>
+                          {workshop.text}
                         </MenuItem>
                       ))}
                     </Field.Select>
@@ -379,7 +363,7 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
                                 const formValues = getValues(`items.${index}`);
                                 update(index, {
                                   ...formValues,
-                                  quantity: (formValues.quantity || 0) + 1,
+                                  quantity: (formValues.quantity || 0) + 0.01,
                                 });
                               }}
                               size="small"
@@ -391,7 +375,7 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
                                 const formValues = getValues(`items.${index}`);
                                 update(index, {
                                   ...formValues,
-                                  quantity: Math.max(0, (formValues.quantity || 0) - 1),
+                                  quantity: Math.max(0, (formValues.quantity || 0) - 0.01),
                                 });
                               }}
                               size="small"
@@ -419,7 +403,7 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
                                 const formValues = getValues(`items.${index}`);
                                 update(index, {
                                   ...formValues,
-                                  physical_quantity: (formValues.physical_quantity || 0) + 0.5,
+                                  physical_quantity: (formValues.physical_quantity || 0) + 0.01,
                                 });
                               }}
                               size="small"
@@ -433,7 +417,7 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
                                   ...formValues,
                                   physical_quantity: Math.max(
                                     0,
-                                    (formValues.physical_quantity || 0) - 0.5
+                                    (formValues.physical_quantity || 0) - 0.01
                                   ),
                                 });
                               }}
@@ -453,9 +437,7 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
                       variant="outlined"
                       fullWidth
                       label="Observation"
-                      InputProps={{
-                        sx: { bgcolor: 'background.paper' },
-                      }}
+                      // InputProps={{ readOnly: true }}
                     />
                   </Grid>
                   <Grid xs={1}>
@@ -498,35 +480,36 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
           />
 
           <Box sx={{ p: 3 }}>
-            <Stepper
-              activeStep={activeStep}
-              sx={{
-                mb: 5,
-                '& .MuiStepLabel-label': {
-                  typography: 'subtitle2',
-                },
-                '& .MuiStepLabel-root': {
-                  cursor: 'pointer',
-                },
-              }}
-            >
-              {steps.map((label, index) => (
-                <Step
-                  key={label}
-                  onClick={() => handleStepClick(index)}
-                  sx={{
+            <Box sx={{ maxWidth: 800, mx: 'auto', mb: 5 }}>
+              <Stepper
+                activeStep={activeStep}
+                sx={{
+                  '& .MuiStepLabel-label': {
+                    typography: 'subtitle2',
+                  },
+                  '& .MuiStepLabel-root': {
                     cursor: 'pointer',
-                    '&:hover': {
-                      '& .MuiStepLabel-label': {
-                        color: 'primary.main',
+                  },
+                }}
+              >
+                {steps.map((label, index) => (
+                  <Step
+                    key={label}
+                    onClick={() => handleStepClick(index)}
+                    sx={{
+                      cursor: 'pointer',
+                      '&:hover': {
+                        '& .MuiStepLabel-label': {
+                          color: 'primary.main',
+                        },
                       },
-                    },
-                  }}
-                >
-                  <StepLabel>{label}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
+                    }}
+                  >
+                    <StepLabel>{label}</StepLabel>
+                  </Step>
+                ))}
+              </Stepper>
+            </Box>
 
             {renderStepContent(activeStep)}
 
@@ -546,7 +529,7 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
                 variant="outlined"
                 sx={{ minWidth: 120 }}
               >
-                Retour
+                L&apos;étape précédente
               </Button>
 
               {activeStep === steps.length - 1 ? (
@@ -560,7 +543,7 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
                 </LoadingButton>
               ) : (
                 <Button variant="contained" onClick={handleNext} sx={{ minWidth: 120 }}>
-                  Suivant
+                  L&apos;étape suivante
                 </Button>
               )}
             </Box>

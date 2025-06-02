@@ -49,7 +49,7 @@ export function useGetExitSlip(id) {
     fetcher,
     swrOptions
   );
-
+  mutate(EXIT_SLIP_ENDPOINT);
   return {
     exitSlip: data?.data || null,
     exitSlipLoading: isLoading,
@@ -58,15 +58,28 @@ export function useGetExitSlip(id) {
 }
 
 export async function createExitSlip(data) {
-  await axios.post(EXIT_SLIP_ENDPOINT, data);
-  mutate(EXIT_SLIP_ENDPOINT);
+  const response = await axios.post(EXIT_SLIP_ENDPOINT, data);
+  // Mutate all exit slip queries to ensure the list is updated
+  await mutate((key) => typeof key === 'string' && key.startsWith(EXIT_SLIP_ENDPOINT), undefined, {
+    revalidate: true,
+  });
+  return response;
 }
 
 export const updateExitSlip = async (id, data) => {
-  await axios.put(`${EXIT_SLIP_ENDPOINT}/${id}`, data);
-  mutate(EXIT_SLIP_ENDPOINT);
+  const response = await axios.put(`${EXIT_SLIP_ENDPOINT}/${id}`, data);
+  // Mutate all exit slip queries to ensure the list is updated
+  await mutate((key) => typeof key === 'string' && key.startsWith(EXIT_SLIP_ENDPOINT), undefined, {
+    revalidate: true,
+  });
+  return response;
 };
 
 export async function deleteExitSlip(id) {
-  await axios.delete(`${EXIT_SLIP_ENDPOINT}/${id}`);
+  const response = await axios.delete(`${EXIT_SLIP_ENDPOINT}/${id}`);
+  // Mutate all exit slip queries to ensure the list is updated
+  await mutate((key) => typeof key === 'string' && key.startsWith(EXIT_SLIP_ENDPOINT), undefined, {
+    revalidate: true,
+  });
+  return response;
 }

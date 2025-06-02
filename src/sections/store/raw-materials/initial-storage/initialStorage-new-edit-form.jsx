@@ -21,7 +21,7 @@ import {
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { useGetStores } from 'src/actions/store';
+import { useGetLookups } from 'src/actions/lookups';
 import { createInitialStorage } from 'src/actions/initialStorage';
 
 import { toast } from 'src/components/snackbar';
@@ -47,7 +47,7 @@ const StorageAreaSchema = zod.object({
 // -------------------- Component --------------------
 export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdded, onClose }) {
   const router = useRouter();
-  const { stores } = useGetStores();
+  const { data: stores } = useGetLookups('settings/lookups/stores?type=1');
   const [selectedRowIndex, setSelectedRowIndex] = useState(null);
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
 
@@ -256,8 +256,8 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
                 <Field.Select name="store_id" label="Magasin" size="small" fullWidth>
                   <MenuItem value={undefined}>Sélectionner un magasin</MenuItem>
                   {stores?.map((store) => (
-                    <MenuItem key={store.id} value={store.id}>
-                      {store.designation}
+                    <MenuItem key={store.value} value={store.value}>
+                      {store.text}
                     </MenuItem>
                   ))}
                 </Field.Select>

@@ -39,7 +39,7 @@ import {
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useGetStores } from 'src/actions/store';
+import { useGetLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useGetExitSlips, getFiltredExitSlips } from 'src/actions/exitSlip';
 
@@ -83,17 +83,19 @@ const FILTERS_OPTIONS = [
   },
   {
     id: 'taker',
-    type: 'input',
+    type: 'select',
     label: 'Preneur',
     cols: 4,
     width: 1,
+    options: [],
   },
   {
     id: 'beb',
-    type: 'input',
+    type: 'select',
     label: 'B.E.B',
     cols: 4,
     width: 1,
+    options: [],
   },
   {
     id: 'observation',
@@ -137,13 +139,13 @@ export function ExitSlipListView() {
   const [tableData, setTableData] = useState([]);
   const [rowCount, setRowCount] = useState(0);
   const [editedFilters, setEditedFilters] = useState({});
+  const [isFiltering, setIsFiltering] = useState(false);
 
   // Get initial data
   const { exitSlips, exitSlipsLoading, exitSlipsCount } = useGetExitSlips({
     limit: PAGE_SIZE,
     offset: 0,
   });
-  console.log('exitSlips', exitSlips);
 
   // Helper function to transform data
   const transformExitSlipData = (data) =>
@@ -168,6 +170,7 @@ export function ExitSlipListView() {
         physical_quantity: item.physical_quantity,
         observation: item.observation,
         status: item.status,
+        created_at: item.created_at,
       })),
       beb_code: exitSlip.eon_voucher?.code,
       beb_status: exitSlip.eon_voucher?.status,
@@ -178,7 +181,14 @@ export function ExitSlipListView() {
       beb_priority: exitSlip.eon_voucher?.priority,
       beb_observation: exitSlip.eon_voucher?.observation,
       validated_at: exitSlip.validated_at,
-      validated_by: exitSlip.validated_by,
+      validated_by: exitSlip.validated_by || 'I/N',
+      created_at:
+        exitSlip.items && exitSlip.items.length > 0
+          ? exitSlip.items.reduce((earliest, item) => {
+              if (!earliest) return item.created_at;
+              return new Date(item.created_at) < new Date(earliest) ? item.created_at : earliest;
+            }, null)
+          : null,
     }));
 
   // Handle filter reset
@@ -206,10 +216,20 @@ export function ExitSlipListView() {
   const handleFilter = useCallback(
     async (data) => {
       try {
-        const response = await getFiltredExitSlips(data);
-        const transformedData = transformExitSlipData(response.data?.data?.records);
-        setTableData(transformedData);
+        // Transform filter data to match backend expectations
+        const filterParams = {
+          ...data,
+          personal_id: data.taker, // Map taker to personal_id for backend
+          eon_voucher_id: data.beb, // Map beb to eon_voucher_id for backend
+        };
+        delete filterParams.taker; // Remove the original keys
+        delete filterParams.beb;
+
+        const response = await getFiltredExitSlips(filterParams);
+        const transformedExitSlips = transformExitSlipData(response.data?.data?.records);
+        setTableData(transformedExitSlips);
         setRowCount(response.data?.data?.total);
+        setEditedFilters(data); // Store the original filter data
 
         // Update URL params
         const newSearchParams = new URLSearchParams();
@@ -221,6 +241,7 @@ export function ExitSlipListView() {
         setSearchParams(newSearchParams, { replace: true });
       } catch (error) {
         console.error('Error in filter submission:', error);
+        toast.error('Erreur lors du filtrage des données');
       }
     },
     [setSearchParams]
@@ -229,17 +250,25 @@ export function ExitSlipListView() {
   // Handle pagination changes
   const handlePaginationModelChange = async (newModel) => {
     try {
-      const newData = {
+      // Transform filter data to match backend expectations
+      const filterParams = {
         ...editedFilters,
+        personal_id: editedFilters.taker, // Map taker to personal_id for backend
+        eon_voucher_id: editedFilters.beb, // Map beb to eon_voucher_id for backend
         limit: newModel.pageSize,
         offset: newModel.page * newModel.pageSize,
       };
-      const response = await getFiltredExitSlips(newData);
-      const transformedData = transformExitSlipData(response.data?.data?.records);
-      setTableData(transformedData);
+      delete filterParams.taker; // Remove the original keys
+      delete filterParams.beb;
+
+      const response = await getFiltredExitSlips(filterParams);
+      const transformedExitSlips = transformExitSlipData(response.data?.data?.records);
+      setTableData(transformedExitSlips);
+      setRowCount(response.data?.data?.total || 0);
       setPaginationModel(newModel);
     } catch (error) {
       console.error('Error in pagination:', error);
+      toast.error('Erreur lors du chargement des données');
     }
   };
 
@@ -255,8 +284,9 @@ export function ExitSlipListView() {
     handleFilter(newData);
   };
 
-  const { stores } = useGetStores();
-
+  const { data: stores } = useGetLookups('settings/lookups/stores');
+  const { data: personals } = useGetLookups('hr/lookups/personals?type=1');
+  const { data: bebs } = useGetLookups('expression-of-need/lookups/eon-vouchers');
   const [filterButtonEl, setFilterButtonEl] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [selectedExitSlip, setSelectedExitSlip] = useState(null);
@@ -276,11 +306,29 @@ export function ExitSlipListView() {
   useEffect(() => {
     if (stores?.length) {
       FILTERS_OPTIONS[0].options = stores.map((store) => ({
-        label: store.designation,
-        value: store.id,
+        label: store.text,
+        value: store.value,
       }));
     }
   }, [stores]);
+
+  useEffect(() => {
+    if (personals?.length) {
+      FILTERS_OPTIONS[1].options = personals.map((personal) => ({
+        label: personal.text,
+        value: personal.value,
+      }));
+    }
+  }, [personals]);
+
+  useEffect(() => {
+    if (bebs?.length) {
+      FILTERS_OPTIONS[2].options = bebs.map((beb) => ({
+        label: beb.text,
+        value: beb.value,
+      }));
+    }
+  }, [bebs]);
 
   const handleFormClose = () => {
     setShowForm(false);
@@ -301,7 +349,6 @@ export function ExitSlipListView() {
       status: row.status,
       items: row.items,
     };
-    console.log('Editing exit slip:', formData);
     setSelectedExitSlip(formData);
     setOpenEditDialog(true);
   };
@@ -349,8 +396,14 @@ export function ExitSlipListView() {
       field: 'preneur',
       headerName: 'Preneur',
       flex: 1,
-      minWidth: 160,
-      renderCell: (params) => <Typography variant="body2">{params.row.preneur || '-'}</Typography>,
+      minWidth: 120,
+      renderCell: (params) => {
+        const preneurName =
+          personals?.find((p) => p.value === params.row.personal_id)?.text ||
+          params.row.personal_id ||
+          '-';
+        return <Typography variant="body2">{preneurName}</Typography>;
+      },
     },
     {
       field: 'beb_code',
@@ -426,7 +479,13 @@ export function ExitSlipListView() {
       headerName: 'Date de création',
       flex: 1,
       minWidth: 160,
-      renderCell: (params) => <RenderCellCreatedAt params={params} />,
+      renderCell: (params) => (
+        <Typography variant="body2">
+          {params.row.created_at
+            ? new Date(params.row.created_at).toLocaleDateString('fr-FR')
+            : '-'}
+        </Typography>
+      ),
     },
     {
       type: 'actions',
@@ -463,16 +522,24 @@ export function ExitSlipListView() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getFiltredExitSlips({
+        // Transform filter data to match backend expectations
+        const filterParams = {
+          ...editedFilters,
+          personal_id: editedFilters.taker, // Map taker to personal_id for backend
+          eon_voucher_id: editedFilters.beb, // Map beb to eon_voucher_id for backend
           limit: paginationModel.pageSize,
           offset: paginationModel.page * paginationModel.pageSize,
-          ...editedFilters,
-        });
-        const transformedData = transformExitSlipData(response.data?.data?.records);
-        setTableData(transformedData);
+        };
+        delete filterParams.taker; // Remove the original keys
+        delete filterParams.beb;
+
+        const response = await getFiltredExitSlips(filterParams);
+        const transformedExitSlips = transformExitSlipData(response.data?.data?.records);
+        setTableData(transformedExitSlips);
         setRowCount(response.data?.data?.total);
       } catch (error) {
         console.error('Error fetching data:', error);
+        toast.error('Erreur lors du chargement des données');
       }
     };
 
@@ -526,7 +593,10 @@ export function ExitSlipListView() {
                         Preneur
                       </Typography>
                       <Typography variant="body1">
-                        {selectedExitSlipDetails.preneur || '-'}
+                        {personals?.find((p) => p.value === selectedExitSlipDetails.personal_id)
+                          ?.text ||
+                          selectedExitSlipDetails.preneur ||
+                          '-'}
                       </Typography>
                     </Stack>
                   </Grid>
@@ -617,16 +687,18 @@ export function ExitSlipListView() {
                           Validé le
                         </Typography>
                         <Typography variant="body2">
-                          {new Date(selectedExitSlipDetails.validated_at).toLocaleDateString(
-                            'fr-FR',
-                            {
-                              year: 'numeric',
-                              month: '2-digit',
-                              day: '2-digit',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            }
-                          )}
+                          {selectedExitSlipDetails.validated_at
+                            ? new Date(selectedExitSlipDetails.validated_at).toLocaleDateString(
+                                'fr-FR',
+                                {
+                                  year: 'numeric',
+                                  month: '2-digit',
+                                  day: '2-digit',
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                }
+                              )
+                            : '-'}
                         </Typography>
                       </Stack>
                       <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -634,7 +706,7 @@ export function ExitSlipListView() {
                           Validé par
                         </Typography>
                         <Typography variant="body2">
-                          {selectedExitSlipDetails.validated_by}
+                          {selectedExitSlipDetails.validated_by || '-'}
                         </Typography>
                       </Stack>
                     </>
