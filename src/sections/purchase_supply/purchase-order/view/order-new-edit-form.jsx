@@ -191,7 +191,7 @@ export function PurchaseOrderNewEditForm() {
         </Field.Select>
       </Grid>
 
-      <Grid item xs={12} md={6}>
+      <Grid item xs={12}>
         <BEBFormSection />
       </Grid>
 
