@@ -66,7 +66,6 @@ export function LeaveAbsenceNewEditForm({ currentTaux }) {
       to_date: dayjs(data.to_date).format('YYYY-MM-DD HH:mm:ss'),
     };
     try {
-      // await new Promise((resolve) => setTimeout(resolve, 500));
       if (currentTaux) {
         await updateLeaveAbesence(currentTaux.id, updatedData);
       } else {

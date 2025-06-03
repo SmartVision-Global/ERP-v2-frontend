@@ -237,6 +237,10 @@ const PageRhPayrollManagementCalculationNew = lazy(
   () => import('src/pages/dashboard/r-h/payroll-management/calculation/new')
 );
 
+const PageRhPayrollManagementCalculationPayroll = lazy(
+  () => import('src/pages/dashboard/r-h/payroll-management/calculation/payroll')
+);
+
 const PageRhPayrollManagementPreparation = lazy(
   () => import('src/pages/dashboard/r-h/payroll-management/preparation/list')
 );
@@ -301,13 +305,25 @@ const PageSettingsIdentFamCategRpList = lazy(
 const SettingsServiceEdit = lazy(() => import('src/pages/dashboard/settings/services/edit'));
 
 // gestion magasinage
-const PageStoreRawMaterialsStocksList = lazy(() => import('src/pages/dashboard/store/raw-materials/stocks/list'));
-const PageStoreRawMaterialsStocksNew = lazy(() => import('src/pages/dashboard/store/raw-materials/stocks/new'));
-const PageStoreRawMaterialsStocksEdit = lazy(() => import('src/pages/dashboard/store/raw-materials/stocks/edit'));
+const PageStoreRawMaterialsStocksList = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/stocks/list')
+);
+const PageStoreRawMaterialsStocksNew = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/stocks/new')
+);
+const PageStoreRawMaterialsStocksEdit = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/stocks/edit')
+);
 // expression de besoins
-const PageExpressionOfNeedsBebList = lazy(() => import('src/pages/dashboard/expression-of-needs/Beb/list'));
-const PageExpressionOfNeedsBebNew = lazy(() => import('src/pages/dashboard/expression-of-needs/Beb/new'));
-const PageExpressionOfNeedsBebEdit = lazy(() => import('src/pages/dashboard/expression-of-needs/Beb/edit'));
+const PageExpressionOfNeedsBebList = lazy(
+  () => import('src/pages/dashboard/expression-of-needs/Beb/list')
+);
+const PageExpressionOfNeedsBebNew = lazy(
+  () => import('src/pages/dashboard/expression-of-needs/Beb/new')
+);
+const PageExpressionOfNeedsBebEdit = lazy(
+  () => import('src/pages/dashboard/expression-of-needs/Beb/edit')
+);
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
 function SuspenseOutlet() {
@@ -517,6 +533,10 @@ export const dashboardRoutes = [
                 path: 'calculation/new',
                 element: <PageRhPayrollManagementCalculationNew />,
               },
+              {
+                path: 'calculation/:id/payroll',
+                element: <PageRhPayrollManagementCalculationPayroll />,
+              },
 
               { path: 'preparation', element: <PageRhPayrollManagementPreparation /> },
               // { path: 'preparation/new', element: <ComingSoonPage /> },
@@ -676,7 +696,6 @@ export const dashboardRoutes = [
               { path: 'stocks', element: <PageStoreRawMaterialsStocksList /> },
               { path: 'stocks/new', element: <PageStoreRawMaterialsStocksNew /> },
               { path: 'stocks/:id/edit', element: <PageStoreRawMaterialsStocksEdit /> },
-
             ],
           },
         ],

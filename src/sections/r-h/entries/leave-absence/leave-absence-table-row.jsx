@@ -120,7 +120,6 @@ export function RenderCellId({ params, href }) {
             {params.row.id}
           </Link>
         }
-        // secondary={params.row.category}
         slotProps={{
           primary: { noWrap: true },
           secondary: { sx: { color: 'text.disabled' } },

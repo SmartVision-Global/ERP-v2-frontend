@@ -57,17 +57,14 @@ export const navData = [
       // { title: 'Two', path: paths.dashboard.two, icon: ICONS.ecommerce },
       // { title: 'Three', path: paths.dashboard.three, icon: ICONS.analytics },
       {
-        title:'Gestion magasinage',
+        title: 'Gestion magasinage',
         path: '/dashboard/store',
         icon: ICONS.warehouse,
         children: [
           {
             title: 'Matières premières',
             path: paths.dashboard.store.rawMaterials.root,
-            children: [
-              { title: 'Stocks', path: paths.dashboard.store.rawMaterials.stocks },
-              
-            ],
+            children: [{ title: 'Stocks', path: paths.dashboard.store.rawMaterials.stocks }],
           },
           // {
           //   title: 'Pièces de rechange',
@@ -85,17 +82,13 @@ export const navData = [
           //   title: 'Fournitures',
           //   path: paths.dashboard.store.supplies,
           // },
-          
-          
-        ]
+        ],
       },
       {
         title: 'Expression de besoins',
         path: paths.dashboard.expressionOfNeeds.root,
         icon: ICONS.plus,
-        children: [
-          { title: 'B.E.B', path: paths.dashboard.expressionOfNeeds.beb.root },
-        ],
+        children: [{ title: 'B.E.B', path: paths.dashboard.expressionOfNeeds.beb.root }],
       },
       {
         title: 'Resssources humaines',
@@ -227,12 +220,12 @@ export const navData = [
 
             children: [
               {
-                title: 'Calcul de la paie',
-                path: paths.dashboard.rh.payrollManagement.calculation,
-              },
-              {
                 title: 'Préparation paie',
                 path: paths.dashboard.rh.payrollManagement.preparation,
+              },
+              {
+                title: 'Calcul de la paie',
+                path: paths.dashboard.rh.payrollManagement.calculation,
               },
             ],
           },

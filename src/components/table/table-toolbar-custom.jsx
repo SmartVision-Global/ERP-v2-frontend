@@ -220,8 +220,13 @@ export function TableToolbarCustom({
       </Grid>
       {filterOptions.length > 0 && (
         <Stack direction="row" spacing={1}>
-          <Button variant="contained" sx={{ px: 2, py: 1 }} onClick={onSubmitFilters}>
-            Chercher
+          <Button
+            variant="contained"
+            color="secondary"
+            sx={{ px: 2, py: 1 }}
+            onClick={onSubmitFilters}
+          >
+            Filtrer
           </Button>
           {Object.keys(filters).length > 0 && (
             <Button variant="outlined" onClick={onReset}>

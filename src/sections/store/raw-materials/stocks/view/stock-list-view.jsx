@@ -3,7 +3,7 @@ import 'jspdf-autotable';
 
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
-import { useState, useEffect, forwardRef, useCallback, useMemo } from 'react';
+import { useMemo, useState, useEffect, forwardRef, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -12,7 +12,6 @@ import Menu from '@mui/material/Menu';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import { TextField, FormControl, InputAdornment } from '@mui/material';
 import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 import {
   Dialog,
@@ -41,21 +40,13 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import {
   RenderCellId,
-  RenderCellCode,
-  RenderCellSupplierCode,
-  RenderCellBuilderCode,
-  RenderCellDesignation,
-  RenderCellQuantity,
-  RenderCellStatus,
   RenderCellUnit,
-  RenderCellAlert,
-  RenderCellMin,
-  RenderCellConsumption,
-  RenderCellUnknown2,
   RenderCellFamily,
-  RenderCellSubFamilies,
+  RenderCellUnknown2,
   RenderCellCategory,
   RenderCellLocation,
+  RenderCellConsumption,
+  RenderCellSubFamilies,
   RenderCellCreatedDate,
 } from '../stock-table-row';
 

@@ -7,21 +7,23 @@ import { RouterLink } from 'src/routes/components';
 
 import { Label } from 'src/components/label';
 
+import { MONTHS } from '../preparation/month-table-row';
+
 // ----------------------------------------------------------------------
 
 export function RenderCellMonth({ params }) {
   return (
     <Label variant="soft" color="info">
-      Décembre
+      {MONTHS[params.row?.month]}
     </Label>
   );
 }
 export function RenderCellYear({ params }) {
-  return <Typography variant="body2">2024</Typography>;
+  return <Typography variant="body2">{params?.row?.year}</Typography>;
 }
 
 export function RenderCellCompany({ params }) {
-  return <Typography variant="body2">SARL EL DIOUANE IMPORT EXPORT ( Alger )</Typography>;
+  return <Typography variant="body2">{params.row?.enterprise}</Typography>;
 }
 
 export function RenderCellPersonal({ params }) {
@@ -29,15 +31,21 @@ export function RenderCellPersonal({ params }) {
 }
 
 export function RenderCellAbs({ params }) {
-  return <Typography variant="body2">1</Typography>;
+  return <Typography variant="body2">{params.row?.total_absences}</Typography>;
 }
 
 export function RenderCellOverdays({ params }) {
-  return <Typography variant="body2">75</Typography>;
+  return <Typography variant="body2">{params.row?.total_days_worked}</Typography>;
 }
 
 export function RenderCellOvertime({ params }) {
-  return <Typography variant="body2">0</Typography>;
+  return (
+    <Typography variant="body2">
+      {params.row?.total_overtime_50 +
+        params.row?.total_overtime_75 +
+        params.row?.total_overtime_100}
+    </Typography>
+  );
 }
 
 export function RenderCellPrimeCotis({ params }) {
@@ -51,7 +59,7 @@ export function RenderCellPrimeNonCotis({ params }) {
 export function RenderCellBaseSalary({ params }) {
   return (
     <Typography variant="body2" color="text.secondary">
-      18000.00
+      {params.row?.total_net_salary}
     </Typography>
   );
 }
@@ -59,7 +67,7 @@ export function RenderCellBaseSalary({ params }) {
 export function RenderCellCotisSalary({ params }) {
   return (
     <Typography variant="body2" color="text.secondary">
-      20000.00
+      {params?.row?.total_contributory_salary}
     </Typography>
   );
 }
@@ -67,7 +75,7 @@ export function RenderCellCotisSalary({ params }) {
 export function RenderCellPositionSalary({ params }) {
   return (
     <Typography variant="body2" color="text.secondary">
-      18000.00
+      {params.row?.total_post_salary}
     </Typography>
   );
 }
@@ -75,7 +83,7 @@ export function RenderCellPositionSalary({ params }) {
 export function RenderCellImposSalary({ params }) {
   return (
     <Typography variant="body2" color="text.secondary">
-      28000.00
+      {params.row?.total_taxable_wages}
     </Typography>
   );
 }
@@ -83,13 +91,13 @@ export function RenderCellImposSalary({ params }) {
 export function RenderCellIrg({ params }) {
   return (
     <Typography variant="body2" color="text.secondary">
-      25000.00
+      {params.row.total_tax}
     </Typography>
   );
 }
 
 export function RenderCellNet({ params }) {
-  return <Typography variant="body2">18000.00</Typography>;
+  return <Typography variant="body2">{params.row?.total_net_salary}</Typography>;
 }
 
 export function RenderCellId({ params, href }) {

@@ -133,11 +133,10 @@ export const endpoints = {
     },
   },
   // gestion magasinage
-  stores:{
-    // raw materials stocks : product_type=1, 
+  stores: {
+    // raw materials stocks : product_type=1,
     list: '/v1/inventory/products',
   },
-
 
   // new:''
   // ecritures
@@ -153,8 +152,11 @@ export const endpoints = {
   endContract: '/v1/hr/treatment/personal_end_services',
   // payroll
   payrollMonth: '/v1/hr/payroll/preparation/payroll_months',
+  payrollMonthCalculation: '/v1/hr/payroll/calculation/payrolls',
+
   payrollMonthPersonalAttached: (id) => `/v1/hr/payroll/preparation/month/${id}/payrolls/attached`,
   payrollMonthPersonalUnAttached: (id) =>
     `/v1/hr/payroll/preparation/month/${id}/payrolls/unattached`,
   payrolls: '/v1/hr/payroll/preparation/payrolls',
+  calculatePayroll: (id) => `/v1/hr/payroll/calculation/payrolls/${id}/calculate`,
 };
