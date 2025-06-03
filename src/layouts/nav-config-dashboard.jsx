@@ -213,12 +213,12 @@ export const navData = [
 
             children: [
               {
-                title: 'Calcul de la paie',
-                path: paths.dashboard.rh.payrollManagement.calculation,
-              },
-              {
                 title: 'Préparation paie',
                 path: paths.dashboard.rh.payrollManagement.preparation,
+              },
+              {
+                title: 'Calcul de la paie',
+                path: paths.dashboard.rh.payrollManagement.calculation,
               },
             ],
           },

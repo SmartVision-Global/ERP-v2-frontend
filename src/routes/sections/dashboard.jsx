@@ -237,6 +237,10 @@ const PageRhPayrollManagementCalculationNew = lazy(
   () => import('src/pages/dashboard/r-h/payroll-management/calculation/new')
 );
 
+const PageRhPayrollManagementCalculationPayroll = lazy(
+  () => import('src/pages/dashboard/r-h/payroll-management/calculation/payroll')
+);
+
 const PageRhPayrollManagementPreparation = lazy(
   () => import('src/pages/dashboard/r-h/payroll-management/preparation/list')
 );
@@ -289,9 +293,15 @@ const PageSettingsIdentFamCategRpList = lazy(
 const SettingsServiceEdit = lazy(() => import('src/pages/dashboard/settings/services/edit'));
 
 // gestion magasinage
-const PageStoreRawMaterialsStocksList = lazy(() => import('src/pages/dashboard/store/raw-materials/stocks/list'));
-const PageStoreRawMaterialsStocksNew = lazy(() => import('src/pages/dashboard/store/raw-materials/stocks/new'));
-const PageStoreRawMaterialsStocksEdit = lazy(() => import('src/pages/dashboard/store/raw-materials/stocks/edit'));
+const PageStoreRawMaterialsStocksList = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/stocks/list')
+);
+const PageStoreRawMaterialsStocksNew = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/stocks/new')
+);
+const PageStoreRawMaterialsStocksEdit = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/stocks/edit')
+);
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
 function SuspenseOutlet() {
@@ -501,6 +511,10 @@ export const dashboardRoutes = [
                 path: 'calculation/new',
                 element: <PageRhPayrollManagementCalculationNew />,
               },
+              {
+                path: 'calculation/:id/payroll',
+                element: <PageRhPayrollManagementCalculationPayroll />,
+              },
 
               { path: 'preparation', element: <PageRhPayrollManagementPreparation /> },
               // { path: 'preparation/new', element: <ComingSoonPage /> },
@@ -581,10 +595,19 @@ export const dashboardRoutes = [
             children: [
               { index: true, element: <SettingsIdentificationGlobalSettings /> },
               { path: 'global-settings', element: <SettingsIdentificationGlobalSettings /> },
-              { path: 'raw-materials', element: <PageSettingsIdentFamCategRpList group={1} nature={1} />},
-              { path: 'spare-parts', element: <PageSettingsIdentFamCategRpList group={2} nature={1} />},
-              { path: 'tools', element: <PageSettingsIdentFamCategRpList group={3} nature={1} />},
-              { path: 'supplies', element: <PageSettingsIdentFamCategRpList group={4} nature={1} />},
+              {
+                path: 'raw-materials',
+                element: <PageSettingsIdentFamCategRpList group={1} nature={1} />,
+              },
+              {
+                path: 'spare-parts',
+                element: <PageSettingsIdentFamCategRpList group={2} nature={1} />,
+              },
+              { path: 'tools', element: <PageSettingsIdentFamCategRpList group={3} nature={1} /> },
+              {
+                path: 'supplies',
+                element: <PageSettingsIdentFamCategRpList group={4} nature={1} />,
+              },
             ],
           },
           {
@@ -642,7 +665,6 @@ export const dashboardRoutes = [
               { path: 'stocks', element: <PageStoreRawMaterialsStocksList /> },
               { path: 'stocks/new', element: <PageStoreRawMaterialsStocksNew /> },
               { path: 'stocks/:id/edit', element: <PageStoreRawMaterialsStocksEdit /> },
-
             ],
           },
         ],

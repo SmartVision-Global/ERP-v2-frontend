@@ -14,8 +14,9 @@ import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { MONTHS } from 'src/_mock';
-import { useGetProducts } from 'src/actions/product';
+import { CONFIG } from 'src/global-config';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { useGetCalculationPayrollMonths } from 'src/actions/payroll-month';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -67,12 +68,18 @@ const FILTERS_OPTIONS = [
   },
 ];
 
+const PAGE_SIZE = CONFIG.pagination.pageSize;
+
 export function CalculationListView() {
   const confirmDialog = useBoolean();
 
-  const { products, productsLoading } = useGetProducts();
+  const { payrollMonthsCalculation, payrollMonthsCalculationLoading } =
+    useGetCalculationPayrollMonths({
+      limit: PAGE_SIZE,
+      offset: 0,
+    });
 
-  const [tableData, setTableData] = useState(products);
+  const [tableData, setTableData] = useState(payrollMonthsCalculation);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState({});
@@ -80,10 +87,10 @@ export function CalculationListView() {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (products.length) {
-      setTableData(products);
+    if (payrollMonthsCalculation.length) {
+      setTableData(payrollMonthsCalculation);
     }
-  }, [products]);
+  }, [payrollMonthsCalculation]);
   const handleReset = () => {
     setEditedFilters({});
   };
@@ -239,6 +246,26 @@ export function CalculationListView() {
       hideable: false,
       renderCell: (params) => <RenderCellNet params={params} href={paths.dashboard.root} />,
     },
+    {
+      type: 'actions',
+      field: 'actions',
+      headerName: ' ',
+      align: 'right',
+      headerAlign: 'right',
+      width: 80,
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      getActions: (params) => [
+        <GridActionsLinkItem
+          showInMenu
+          icon={<Iconify icon="eva:person-done-fill" />}
+          label="Calule paie"
+          // href={paths.dashboard.product.details(params.row.id)}
+          href={paths.dashboard.rh.payrollManagement.payroll(params.row.payroll_month_id)}
+        />,
+      ],
+    },
   ];
 
   const getTogglableColumns = () =>
@@ -328,13 +355,14 @@ export function CalculationListView() {
             </FormControl>
           </Box>
           <DataGrid
-            checkboxSelection
+            // checkboxSelection
             disableRowSelectionOnClick
             disableColumnMenu
             rows={dataFiltered}
             columns={columns}
-            loading={productsLoading}
+            loading={payrollMonthsCalculationLoading}
             getRowHeight={() => 'auto'}
+            getRowId={(row) => row.payroll_month_id}
             pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
             initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
             onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
