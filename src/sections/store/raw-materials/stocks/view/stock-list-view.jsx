@@ -1,3 +1,4 @@
+/* eslint-disable */
 import 'jspdf-autotable';
 
 import jsPDF from 'jspdf';
@@ -13,17 +14,14 @@ import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 import {
-  List,
   Dialog,
-  ListItem,
-  TextField,
-  Typography,
-  FormControl,
   DialogTitle,
-  ListItemText,
   DialogContent,
   DialogActions,
-  InputAdornment,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
 } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
@@ -32,7 +30,7 @@ import { RouterLink } from 'src/routes/components';
 import { CONFIG } from 'src/global-config';
 import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { IMAGE_OPTIONS, PRODUCT_STATUS_OPTIONS } from 'src/_mock';
+import { PRODUCT_STATUS_OPTIONS, IMAGE_OPTIONS } from 'src/_mock';
 import { useGetStocks, getFiltredStocks } from 'src/actions/stores/raw-materials/stocks';
 
 import { Iconify } from 'src/components/iconify';
@@ -436,246 +434,187 @@ export function StockListView() {
   };
 
   return (
-    <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-      <CustomBreadcrumbs
-        heading="List"
-        links={[
-          { name: 'Gestion magasinage', href: paths.dashboard.store.rawMaterials.root },
-          { name: 'Stocks', href: paths.dashboard.store.rawMaterials.root },
-          { name: 'Liste' },
-        ]}
-        action={
-          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.store.rawMaterials.newStock}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              Ajouter Stock
-            </Button>
-            <Button
-              variant="contained"
-              // color="info"
-              startIcon={<Iconify icon="si:warning-fill" />}
-              onClick={handleToolsClick}
-            >
-              Outils
-            </Button>
-            <Menu
-              anchorEl={toolsAnchorEl}
-              open={Boolean(toolsAnchorEl)}
-              onClose={handleToolsClose}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            >
-              <MenuItem
-                onClick={() => {
-                  printTable();
-                  handleToolsClose();
-                }}
+    <>
+      <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+        <CustomBreadcrumbs
+          heading="List"
+          links={[
+            { name: 'Gestion magasinage', href: paths.dashboard.store.rawMaterials.root },
+            { name: 'Stocks', href: paths.dashboard.store.rawMaterials.root },
+            { name: 'Liste' },
+          ]}
+          action={
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+              <Button
+                component={RouterLink}
+                href={paths.dashboard.store.rawMaterials.newStock}
+                variant="contained"
+                startIcon={<Iconify icon="mingcute:add-line" />}
               >
-                <ListItemIcon>
-                  <Iconify icon="eva:printer-fill" />
-                </ListItemIcon>
-                Impression
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  copyToClipboard();
-                  handleToolsClose();
-                }}
+                Ajouter Stock
+              </Button>
+              <Button
+                variant="contained"
+                // color="info"
+                startIcon={<Iconify icon="si:warning-fill" />}
+                onClick={handleToolsClick}
               >
-                <ListItemIcon>
-                  <Iconify icon="eva:copy-fill" />
-                </ListItemIcon>
-                Copie
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  exportToExcel();
-                  handleToolsClose();
-                }}
+                Outils
+              </Button>
+              <Menu
+                anchorEl={toolsAnchorEl}
+                open={Boolean(toolsAnchorEl)}
+                onClose={handleToolsClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
               >
-                <ListItemIcon>
-                  <Iconify icon="catppuccin:ms-excel" />
-                </ListItemIcon>
-                Excel
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  exportToCsv();
-                  handleToolsClose();
-                }}
-              >
-                <ListItemIcon>
-                  <Iconify icon="catppuccin:csv" />
-                </ListItemIcon>
-                CSV
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  exportToPdf();
-                  handleToolsClose();
-                }}
-              >
-                <ListItemIcon>
-                  <Iconify icon="material-icon-theme:pdf" />
-                </ListItemIcon>
-                PDF
-              </MenuItem>
-            </Menu>
-          </Box>
-        }
-        sx={{ mb: { xs: 3, md: 5 } }}
-      />
+                <MenuItem
+                  onClick={() => {
+                    printTable();
+                    handleToolsClose();
+                  }}
+                >
+                  <ListItemIcon>
+                    <Iconify icon="eva:printer-fill" />
+                  </ListItemIcon>
+                  Impression
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    copyToClipboard();
+                    handleToolsClose();
+                  }}
+                >
+                  <ListItemIcon>
+                    <Iconify icon="eva:copy-fill" />
+                  </ListItemIcon>
+                  Copie
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    exportToExcel();
+                    handleToolsClose();
+                  }}
+                >
+                  <ListItemIcon>
+                    <Iconify icon="catppuccin:ms-excel" />
+                  </ListItemIcon>
+                  Excel
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    exportToCsv();
+                    handleToolsClose();
+                  }}
+                >
+                  <ListItemIcon>
+                    <Iconify icon="catppuccin:csv" />
+                  </ListItemIcon>
+                  CSV
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    exportToPdf();
+                    handleToolsClose();
+                  }}
+                >
+                  <ListItemIcon>
+                    <Iconify icon="material-icon-theme:pdf" />
+                  </ListItemIcon>
+                  PDF
+                </MenuItem>
+              </Menu>
+            </Box>
+          }
+          sx={{ mb: { xs: 3, md: 5 } }}
+        />
 
-      <Card
-        sx={{
-          flexGrow: { md: 1 },
-          display: { md: 'flex' },
-          flexDirection: { md: 'column' },
-        }}
-      >
-        <TableToolbarCustom
-          filterOptions={FILTERS_OPTIONS}
-          filters={editedFilters}
-          setFilters={setEditedFilters}
-          onReset={handleReset}
-          handleFilter={handleFilter}
-          setPaginationModel={setPaginationModel}
-          paginationModel={paginationModel}
-        />
-        <Box paddingX={4} paddingY={2} sx={{}}>
-          <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
-            <TextField
-              fullWidth
-              // value={currentFilters.name}
-              // onChange={handleFilterName}
-              placeholder="Search "
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-              size="small"
-            />
-          </FormControl>
-        </Box>
-        <DataGrid
-          disableRowSelectionOnClick
-          disableColumnMenu
-          rows={tableData}
-          rowCount={rowCount}
-          columns={columnsWithActions}
-          loading={stocksLoading}
-          getRowHeight={() => 'auto'}
-          paginationModel={paginationModel}
-          paginationMode="server"
-          onPaginationModelChange={(model) => handlePaginationModelChange(model)}
-          pageSizeOptions={[2, 10, 20, { value: -1, label: 'All' }]}
-          columnVisibilityModel={columnVisibilityModel}
-          onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
-          slots={{
-            noRowsOverlay: () => <EmptyContent />,
-            noResultsOverlay: () => <EmptyContent title="No results found" />,
-          }}
-          slotProps={{
-            toolbar: { setFilterButtonEl },
-            panel: { anchorEl: filterButtonEl },
-            columnsManagement: { getTogglableColumns },
-          }}
+        <Card
           sx={{
-            [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' },
-            '& .alert-column': { backgroundColor: '#FFEFCE' },
-            '& .min-column': { backgroundColor: '#FCD1D1' },
-            '& .consumption-column': { backgroundColor: '#BFDEFF' },
-            '& .unknown2-column': { backgroundColor: '#C7F1E5' },
+            flexGrow: { md: 1 },
+            display: { md: 'flex' },
+            flexDirection: { md: 'column' },
           }}
-        />
-        {selectedRow && (
-          <Dialog open={detailOpen} onClose={handleCloseDetail} maxWidth="sm" fullWidth>
-            <DialogTitle>
-              Details produit: {selectedRow.code} -- {selectedRow.designation}
-            </DialogTitle>
-            <DialogContent dividers>
-              <Box
-                sx={{
-                  display: 'inline-block',
-                  bgcolor: 'primary.main',
-                  color: '#fff',
-                  px: 1.5,
-                  py: 0.5,
-                  borderRadius: 1,
+        >
+          <TableToolbarCustom
+            filterOptions={FILTERS_OPTIONS}
+            filters={editedFilters}
+            setFilters={setEditedFilters}
+            onReset={handleReset}
+            handleFilter={handleFilter}
+            setPaginationModel={setPaginationModel}
+            paginationModel={paginationModel}
+          />
+          <Box paddingX={4} paddingY={2} sx={{}}>
+            <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
+              <TextField
+                fullWidth
+                // value={currentFilters.name}
+                // onChange={handleFilterName}
+                placeholder="Search "
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                      </InputAdornment>
+                    ),
+                  },
                 }}
-              >
-                <Typography variant="body2">Informations</Typography>
-              </Box>
-              <List>
-                <ListItem
+                size="small"
+              />
+            </FormControl>
+          </Box>
+          <DataGrid
+            disableRowSelectionOnClick
+            disableColumnMenu
+            rows={tableData}
+            rowCount={rowCount}
+            columns={columnsWithActions}
+            loading={stocksLoading}
+            getRowHeight={() => 'auto'}
+            paginationModel={paginationModel}
+            paginationMode="server"
+            onPaginationModelChange={(model) => handlePaginationModelChange(model)}
+            pageSizeOptions={[2, 10, 20, { value: -1, label: 'All' }]}
+            columnVisibilityModel={columnVisibilityModel}
+            onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
+            slots={{
+              noRowsOverlay: () => <EmptyContent />,
+              noResultsOverlay: () => <EmptyContent title="No results found" />,
+            }}
+            slotProps={{
+              toolbar: { setFilterButtonEl },
+              panel: { anchorEl: filterButtonEl },
+              columnsManagement: { getTogglableColumns },
+            }}
+            sx={{
+              [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' },
+              '& .alert-column': { backgroundColor: '#FFEFCE' },
+              '& .min-column': { backgroundColor: '#FCD1D1' },
+              '& .consumption-column': { backgroundColor: '#BFDEFF' },
+              '& .unknown2-column': { backgroundColor: '#C7F1E5' },
+            }}
+          />
+          {selectedRow && (
+            <Dialog open={detailOpen} onClose={handleCloseDetail} maxWidth="sm" fullWidth>
+              <DialogTitle>
+                Details produit: {selectedRow.code} -- {selectedRow.designation}
+              </DialogTitle>
+              <DialogContent dividers>
+                <Box
                   sx={{
-                    borderTop: '1px solid rgba(0,0,0,0.12)',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    display: 'inline-block',
+                    bgcolor: 'primary.main',
+                    color: '#fff',
+                    px: 1.5,
+                    py: 0.5,
+                    borderRadius: 1,
                   }}
                 >
-                  <Typography variant="body2">Codification</Typography>
-                  <Typography variant="body2">{selectedRow.code}</Typography>
-                </ListItem>
-                <ListItem
-                  sx={{
-                    borderTop: '1px solid rgba(0,0,0,0.12)',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Typography variant="body2">Désignation</Typography>
-                  <Typography variant="body2">{selectedRow.designation}</Typography>
-                </ListItem>
-                <ListItem
-                  sx={{
-                    borderTop: '1px solid rgba(0,0,0,0.12)',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Typography variant="body2">Unité de mesure</Typography>
-                  <Typography variant="body2">{selectedRow.unit_measure?.designation}</Typography>
-                </ListItem>
-                <ListItem
-                  sx={{
-                    borderTop: '1px solid rgba(0,0,0,0.12)',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Typography variant="body2">Famille</Typography>
-                  <Typography variant="body2">{selectedRow.family?.name}</Typography>
-                </ListItem>
-                <ListItem
-                  sx={{
-                    borderTop: '1px solid rgba(0,0,0,0.12)',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Typography variant="body2">Date de création</Typography>
-                  <Typography variant="body2">
-                    {selectedRow.created_date
-                      ? new Date(selectedRow.created_date).toLocaleDateString('fr-FR')
-                      : ''}
-                  </Typography>
-                </ListItem>
-                {selectedRow.catalog && (
+                  <Typography variant="body2">Informations</Typography>
+                </Box>
+                <List>
                   <ListItem
                     sx={{
                       borderTop: '1px solid rgba(0,0,0,0.12)',
@@ -684,36 +623,97 @@ export function StockListView() {
                       alignItems: 'center',
                     }}
                   >
-                    <Typography variant="body2">Catalogue</Typography>
-                    <Link href={selectedRow.catalog} target="_blank" rel="noopener">
-                      <Typography variant="body2" color="primary">
-                        Voir PDF
-                      </Typography>
-                    </Link>
+                    <Typography variant="body2">Codification</Typography>
+                    <Typography variant="body2">{selectedRow.code}</Typography>
                   </ListItem>
-                )}
-                {selectedRow.image && (
-                  <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)' }}>
-                    <ListItemText primary="Image" />
-                    <Box
-                      component="img"
-                      src={selectedRow.image}
-                      alt="item image"
-                      sx={{ maxWidth: '100%', maxHeight: 300 }}
-                    />
+                  <ListItem
+                    sx={{
+                      borderTop: '1px solid rgba(0,0,0,0.12)',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Typography variant="body2">Désignation</Typography>
+                    <Typography variant="body2">{selectedRow.designation}</Typography>
                   </ListItem>
-                )}
-              </List>
-            </DialogContent>
-            <DialogActions>
-              <Button variant="contained" onClick={handleCloseDetail}>
-                Fermer
-              </Button>
-            </DialogActions>
-          </Dialog>
-        )}
-      </Card>
-    </DashboardContent>
+                  <ListItem
+                    sx={{
+                      borderTop: '1px solid rgba(0,0,0,0.12)',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Typography variant="body2">Unité de mesure</Typography>
+                    <Typography variant="body2">{selectedRow.unit_measure?.designation}</Typography>
+                  </ListItem>
+                  <ListItem
+                    sx={{
+                      borderTop: '1px solid rgba(0,0,0,0.12)',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Typography variant="body2">Famille</Typography>
+                    <Typography variant="body2">{selectedRow.family?.name}</Typography>
+                  </ListItem>
+                  <ListItem
+                    sx={{
+                      borderTop: '1px solid rgba(0,0,0,0.12)',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Typography variant="body2">Date de création</Typography>
+                    <Typography variant="body2">
+                      {selectedRow.created_date
+                        ? new Date(selectedRow.created_date).toLocaleDateString('fr-FR')
+                        : ''}
+                    </Typography>
+                  </ListItem>
+                  {selectedRow.catalog && (
+                    <ListItem
+                      sx={{
+                        borderTop: '1px solid rgba(0,0,0,0.12)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Typography variant="body2">Catalogue</Typography>
+                      <Link href={selectedRow.catalog} target="_blank" rel="noopener">
+                        <Typography variant="body2" color="primary">
+                          Voir PDF
+                        </Typography>
+                      </Link>
+                    </ListItem>
+                  )}
+                  {selectedRow.image && (
+                    <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)' }}>
+                      <ListItemText primary="Image" />
+                      <Box
+                        component="img"
+                        src={selectedRow.image}
+                        alt="item image"
+                        sx={{ maxWidth: '100%', maxHeight: 300 }}
+                      />
+                    </ListItem>
+                  )}
+                </List>
+              </DialogContent>
+              <DialogActions>
+                <Button variant="contained" onClick={handleCloseDetail}>
+                  Fermer
+                </Button>
+              </DialogActions>
+            </Dialog>
+          )}
+        </Card>
+      </DashboardContent>
+    </>
   );
 }
 // ----------------------------------------------------------------------

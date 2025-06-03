@@ -251,6 +251,18 @@ const PageRhPayrollManagementPreparationNew = lazy(
 const PageRhPayrollManagementPreparationDetails = lazy(
   () => import('src/pages/dashboard/r-h/payroll-management/preparation/details')
 );
+// ============== purchase_Supply ==================
+//purchase Order
+const PagePurchaseOrder = lazy(
+  () => import('src/pages/dashboard/purchase-supply/purchase-order/list')
+);
+const PageNewPurchaseOrder = lazy(
+  () => import('src/pages/dashboard/purchase-supply/purchase-order/new')
+);
+//Processing Da
+const PageProcessingDa = lazy(
+  () => import('src/pages/dashboard/purchase-supply/processing-da/list')
+);
 
 // Account
 const AccountGeneralPage = lazy(() => import('src/pages/dashboard/user/account/general'));
@@ -301,6 +313,16 @@ const PageStoreRawMaterialsStocksNew = lazy(
 );
 const PageStoreRawMaterialsStocksEdit = lazy(
   () => import('src/pages/dashboard/store/raw-materials/stocks/edit')
+);
+// expression de besoins
+const PageExpressionOfNeedsBebList = lazy(
+  () => import('src/pages/dashboard/expression-of-needs/Beb/list')
+);
+const PageExpressionOfNeedsBebNew = lazy(
+  () => import('src/pages/dashboard/expression-of-needs/Beb/new')
+);
+const PageExpressionOfNeedsBebEdit = lazy(
+  () => import('src/pages/dashboard/expression-of-needs/Beb/edit')
 );
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
@@ -540,6 +562,15 @@ export const dashboardRoutes = [
           },
         ],
       },
+      // Purchase Supply
+      {
+        path: 'purchase-supply',
+        children: [
+          { path: 'purchase-order', element: <PagePurchaseOrder />, index: true },
+          { path: 'purchase-order/new', element: <PageNewPurchaseOrder /> },
+          { path: 'processing-da', element: <PageProcessingDa /> },
+        ],
+      },
       {
         path: 'user',
         children: [
@@ -667,6 +698,15 @@ export const dashboardRoutes = [
               { path: 'stocks/:id/edit', element: <PageStoreRawMaterialsStocksEdit /> },
             ],
           },
+        ],
+      },
+      {
+        path: 'expression-of-needs',
+        children: [
+          { index: true, element: <PageExpressionOfNeedsBebList /> },
+          { path: 'beb', element: <PageExpressionOfNeedsBebList /> },
+          { path: 'beb/new', element: <PageExpressionOfNeedsBebNew /> },
+          { path: 'beb/:id/edit', element: <PageExpressionOfNeedsBebEdit /> },
         ],
       },
     ],
