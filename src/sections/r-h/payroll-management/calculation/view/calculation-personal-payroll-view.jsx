@@ -165,6 +165,7 @@ export function CalculationPersonalPayrollView({ month }) {
       setPayroll(response.data?.data);
       setPersonal(row.personal);
       setCalculateLoading(false);
+      setValue('elements', []);
     } catch (error) {
       setCalculateLoading(false);
 
@@ -278,8 +279,13 @@ export function CalculationPersonalPayrollView({ month }) {
         switch (params.row.status) {
           case 1:
             action = (
-              <Tooltip title="Calculer">
-                <IconButton onClick={() => handleCalculatePayroll(params.row)}>
+              <Tooltip title="Calculer" enterDelay={100}>
+                <IconButton
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleCalculatePayroll(params.row);
+                  }}
+                >
                   {/* <Iconify icon="eva:person-done-fill" sx={{ color: 'success.main' }} /> */}
                   <Iconify icon="eva:plus-square-outline" sx={{ color: 'info.main' }} />
                 </IconButton>
@@ -288,8 +294,13 @@ export function CalculationPersonalPayrollView({ month }) {
             break;
           case 2:
             action = (
-              <Tooltip title="Details">
-                <IconButton onClick={() => handleCalculatePayroll(params.row)}>
+              <Tooltip title="Details" enterDelay={100}>
+                <IconButton
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleCalculatePayroll(params.row);
+                  }}
+                >
                   {/* <Iconify icon="eva:person-done-fill" sx={{ color: 'success.main' }} /> */}
                   <Iconify icon="material-symbols:person-check" sx={{ color: 'success.main' }} />
                 </IconButton>
