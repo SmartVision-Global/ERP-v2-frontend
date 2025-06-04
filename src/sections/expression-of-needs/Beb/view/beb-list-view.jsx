@@ -13,7 +13,7 @@ import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { TextField, FormControl, InputAdornment } from '@mui/material';
 import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
-import { Dialog, DialogTitle, DialogContent, DialogActions, List, ListItem, ListItemText, Typography } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -32,6 +32,7 @@ import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
+import BebProductsList from '../BebProductsList';
 import {
   RenderCellId,
   RenderCellSite,
@@ -45,6 +46,7 @@ import {
   RenderCellStatus,
   RenderCellCreatedDate,
 } from '../beb-table-row';
+
 
 // ----------------------------------------------------------------------
 
@@ -236,8 +238,8 @@ export function BebListView() {
             />,
             <GridActionsCellItem
               showInMenu
-              icon={<Iconify icon="eva:eye-fill" />}
-              label="Consulter"
+              icon={<Iconify icon="humbleicons:view-list" />}
+              label="liste des produits"
               onClick={() => handleOpenDetail(params.row)}
             />,
           ],
@@ -455,47 +457,9 @@ if (col.field === 'location') {
           />
           {selectedRow && (
             <Dialog open={detailOpen} onClose={handleCloseDetail} maxWidth="sm" fullWidth>
-              <DialogTitle>Details produit: {selectedRow.code} -- {selectedRow.designation}</DialogTitle>
+              <DialogTitle>liste des produits</DialogTitle>
               <DialogContent dividers>
-                <Box sx={{ display: 'inline-block', bgcolor: 'primary.main', color: '#fff', px: 1.5, py: 0.5, borderRadius: 1}}>
-                  <Typography variant="body2">Informations</Typography>
-                </Box>
-                <List>
-                  <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="body2">Codification</Typography>
-                    <Typography variant="body2">{selectedRow.code}</Typography>
-                  </ListItem>
-                  <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="body2">Désignation</Typography>
-                    <Typography variant="body2">{selectedRow.designation}</Typography>
-                  </ListItem>
-                  <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="body2">Unité de mesure</Typography>
-                    <Typography variant="body2">{selectedRow.unit_measure?.designation}</Typography>
-                  </ListItem>
-                  <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="body2">Famille</Typography>
-                    <Typography variant="body2">{selectedRow.family?.name}</Typography>
-                  </ListItem>
-                  <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="body2">Date de création</Typography>
-                    <Typography variant="body2">{selectedRow.created_date ? new Date(selectedRow.created_date).toLocaleDateString('fr-FR') : ''}</Typography>
-                  </ListItem>
-                  {selectedRow.catalog && (
-                    <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Typography variant="body2">Catalogue</Typography>
-                      <Link href={selectedRow.catalog} target="_blank" rel="noopener">
-                        <Typography variant="body2" color="primary">Voir PDF</Typography>
-                      </Link>
-                    </ListItem>
-                  )}
-                  {selectedRow.image && (
-                    <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)' }}>
-                      <ListItemText primary="Image" />
-                      <Box component="img" src={selectedRow.image} alt="item image" sx={{ maxWidth: '100%', maxHeight: 300 }} />
-                    </ListItem>
-                  )}
-                </List>
+                <BebProductsList id={selectedRow.id} />
               </DialogContent>
               <DialogActions>
                 <Button variant="contained" onClick={handleCloseDetail}>Fermer</Button>
