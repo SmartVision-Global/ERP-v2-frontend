@@ -33,15 +33,11 @@ export function CalculationSalaryGridTableBody({
   const [elementId, setElementId] = useState();
   const confirmDialog = useBoolean();
 
-  // const cotis_impos = fields.filter((item) => item.contributory_imposable === 1);
-  // const no_cotis_impos = fields.filter((item) => item.contributory_imposable === 2);
-  // const no_cotis_no_impos = fields.filter((item) => item.contributory_imposable === 3);
   const combinedElements = [
     ...payroll.elements.map((el) => ({ ...el, source: 'server' })),
     ...fields.map((el, idx) => ({ ...el, source: 'form', formIndex: idx })),
   ];
   const newElements = sortElements(combinedElements);
-  console.log('nnnnnnnnn', newElements);
 
   const handleCalculatePayroll = async (id, newItem) => {
     const newAddElement = {
@@ -132,21 +128,14 @@ export function CalculationSalaryGridTableBody({
             </TableCell>
             <TableCell>
               {element.source === 'form' ? (
-                0 // <TextField {...register(`elements.${element.formIndex}.amount`)} size="small" />
+                0
               ) : (
                 <Typography variant="body2" fontWeight={500}>
                   {fNumber(element.amount)}
                 </Typography>
               )}
-
-              {/* <Typography variant="body2" fontWeight={500}>
-              {fNumber(element.amount)}
-            </Typography> */}
             </TableCell>
             <TableCell>
-              {/* <Typography variant="body2" fontWeight={500}>
-              0
-            </Typography> */}
               {element.source === 'form' ? (
                 <TextField
                   {...register(`elements.${element.formIndex}.percent`)}
@@ -174,20 +163,10 @@ export function CalculationSalaryGridTableBody({
             </TableCell>
             <TableCell>
               <Typography variant="body2" fontWeight={500}>
-                {/* {element.tax} */}0
+                0
               </Typography>
-              {/* {element.source === 'form' ? (
-              <TextField {...register(`elements.${element.formIndex}.percent`)} size="small" />
-            ) : (
-              <Typography variant="body2" fontWeight={500}>
-                {fNumber(element.tax)}
-              </Typography>
-            )} */}
             </TableCell>
             <TableCell>
-              {/* <Typography variant="body2" fontWeight={500}>
-              {fNumber(element.salary_base)}
-            </Typography> */}
               {element.source === 'form' ? (
                 <TextField
                   type="number"
@@ -235,13 +214,11 @@ export function CalculationSalaryGridTableBody({
                   <TableCell>
                     <Tooltip title="Retirer">
                       <IconButton
-                        // onClick={() => handleRemoveElement(element.deduction_compensation_id)}
                         onClick={() => {
                           setElementId(element.deduction_compensation_id);
                           confirmDialog.onTrue();
                         }}
                       >
-                        {/* <Iconify icon="eva:person-done-fill" sx={{ color: 'success.main' }} /> */}
                         <Iconify icon="eva:trash-2-fill" sx={{ color: 'error.main' }} />
                       </IconButton>
                     </Tooltip>
@@ -251,283 +228,13 @@ export function CalculationSalaryGridTableBody({
             )}
           </TableRow>
         ))}
-        {/* <TableRow>
-        <TableCell>
-          <Typography>0</Typography>
-        </TableCell>
-
-        <TableCell>
-          <Typography>Salaire de Base</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>30</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>39,256.00</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>0</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>0</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>39,256.00</Typography>
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell>
-          <Typography>3</Typography>
-        </TableCell>
-
-        <TableCell>
-          <Typography>Indemnité d&apos;expérience professionnelle</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>30</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>392.50</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>0</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>0</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>39,642.50</Typography>
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell>
-          <Typography>1</Typography>
-        </TableCell>
-
-        <TableCell>
-          <Typography> Prime de rendement individuel</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>30</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>15,857.00</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>0</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>0</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography> 55,499.50</Typography>
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell>
-          <Typography>0</Typography>
-        </TableCell>
-
-        <TableCell>
-          <Typography>SALAIRE DE POSTE</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>30</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>55,499.50</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>0</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>0</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>55,499.50</Typography>
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell>
-          <Typography>0</Typography>
-        </TableCell>
-
-        <TableCell>
-          <Typography>9 % SÉCURITÉ SOCIALE</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>30</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>55,499.50</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>0</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>4,994.95</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>50,504.54</Typography>
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell>
-          <Typography>30</Typography>
-        </TableCell>
-
-        <TableCell>
-          <Typography>Panier</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>30</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>7,700.00</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>0</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>0</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>58,204.54</Typography>
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell>
-          <Typography>31</Typography>
-        </TableCell>
-
-        <TableCell>
-          <Typography>Transport</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>30</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>4,400.00</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>0</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>0</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>62,604.54</Typography>
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell>
-          <Typography>0</Typography>
-        </TableCell>
-
-        <TableCell>
-          <Typography>SALAIRE IMPOSABLE</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>30</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>62,604.54</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>0</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>0</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>62,604.54</Typography>
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell>
-          <Typography>16</Typography>
-        </TableCell>
-
-        <TableCell>
-          <Typography>IRG MENSUEL</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>30</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>53,402.40</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>0</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>9,202.15</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>53,402.40</Typography>
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell>
-          <Typography>16</Typography>
-        </TableCell>
-
-        <TableCell>
-          <Typography>SALAIRE NET</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>30</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>53,402.40</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>0</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>0</Typography>
-        </TableCell>
-        <TableCell>
-          <Typography>53,402.40</Typography>
-        </TableCell>
-      </TableRow> */}
       </TableBody>
       {confirmDialog.value && elementId && renderConfirmDialog()}
     </>
   );
 }
 
-// const sortElements = (elements,new) => {
-//   // const serverElements = payroll.elements;
-
-//   // Find last index with same contributory_imposable
-//   const allElements = [...serverElements, ...newElements];
-//   const lastIndex = [...allElements]
-//     .map((el, index) => ({ value: el.contributory_imposable, index }))
-//     .filter((item) => item.value === newElement.contributory_imposable)
-//     .map((item) => item.index)
-//     .pop();
-
-//   // Compute the insert position within newElements
-//   const serverLength = serverElements.length;
-//   const relativeIndex = lastIndex >= serverLength ? lastIndex - serverLength + 1 : 0;
-
-//   const updated = [
-//     ...newElements.slice(0, relativeIndex),
-//     newElement,
-//     ...newElements.slice(relativeIndex),
-//   ];
-
-//   setNewElements(updated);
-// };
-
 const sortElements = (combinedElements) => {
-  // const sortedCombined = combinedElements.sort((a, b) => {
-  //   if (a.contributory_imposable === b.contributory_imposable) return 0;
-  //   return a.contributory_imposable - b.contributory_imposable;
-  // });
-  // return sortedCombined;
-
   // Step 1: Group by contributory_imposable
   const groups = {};
   for (const el of combinedElements) {

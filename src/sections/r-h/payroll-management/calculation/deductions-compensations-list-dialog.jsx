@@ -73,7 +73,6 @@ export function DeductionsCompensationsListDialog({
   };
 
   const [searchAddress, setSearchAddress] = useState('');
-  // const [selectedRowIds, setSelectedRowIds] = useState([]);
 
   const dataFiltered = applyFilter({ inputData: deductionsCompensations, query: searchAddress });
 
@@ -98,7 +97,6 @@ export function DeductionsCompensationsListDialog({
   const CONTRIBUTORY_IMPOSABLE = {
     1: 'COTISABLE - IMPOSABLE',
     2: 'NON COTISABLE - IMPOSABLE',
-
     3: 'NON COTISABLE - NON IMPOSABLE',
     4: 'AUTRE',
   };
@@ -216,11 +214,6 @@ export function DeductionsCompensationsListDialog({
           noRowsOverlay: () => <EmptyContent />,
           noResultsOverlay: () => <EmptyContent title="No results found" />,
         }}
-        // slotProps={{
-        //   toolbar: { setFilterButtonEl },
-        //   panel: { anchorEl: filterButtonEl },
-        //   columnsManagement: { getTogglableColumns },
-        // }}
         sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
       />
     </Scrollbar>
@@ -288,14 +281,6 @@ export const GridActionsLinkItem = forwardRef((props, ref) => {
     <MenuItem ref={ref} sx={sx} onClick={onClick}>
       {icon && <ListItemIcon>{icon}</ListItemIcon>}
       <Typography variant="body2">{label}</Typography>
-      {/* <Link
-          underline="none"
-          color="inherit"
-          sx={{ width: 1, display: 'flex', alignItems: 'center' }}
-        >
-          {icon && <ListItemIcon>{icon}</ListItemIcon>}
-          {label}
-        </Link> */}
     </MenuItem>
   );
 });
