@@ -25,6 +25,15 @@ import { SearchNotFound } from 'src/components/search-not-found';
 
 const HIDE_COLUMNS = { category: false };
 const PAGE_SIZE = CONFIG.pagination.pageSize;
+
+const CONTRIBUTORY_IMPOSABLE_COLORS = {
+  1: 'primary',
+  2: 'secondary',
+
+  3: 'info',
+  4: 'warning',
+};
+
 export function DeductionsCompensationsListDialog({
   open,
   action,
@@ -91,6 +100,7 @@ export function DeductionsCompensationsListDialog({
     2: 'NON COTISABLE - IMPOSABLE',
 
     3: 'NON COTISABLE - NON IMPOSABLE',
+    4: 'AUTRE',
   };
   const columns = [
     {
@@ -162,7 +172,10 @@ export function DeductionsCompensationsListDialog({
       minWidth: 250,
       hideable: false,
       renderCell: (params) => (
-        <Label variant="soft" color="info">
+        <Label
+          variant="soft"
+          color={CONTRIBUTORY_IMPOSABLE_COLORS[params.row.contributory_imposable]}
+        >
           {CONTRIBUTORY_IMPOSABLE[params.row.contributory_imposable]}
         </Label>
       ),

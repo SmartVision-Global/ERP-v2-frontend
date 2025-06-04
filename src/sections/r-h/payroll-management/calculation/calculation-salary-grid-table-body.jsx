@@ -149,8 +149,6 @@ export function CalculationSalaryGridTableBody({
                 {...register(`elements.${element.formIndex}.amount`)}
                 size="small"
                 onChange={(e) => {
-                  // eslint-disable-next-line no-debugger
-                  debugger;
                   const newAmount = parseFloat(e.target.value);
                   if (isNaN(newAmount)) return;
 

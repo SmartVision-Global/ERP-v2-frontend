@@ -126,7 +126,7 @@ export function CalculationPersonalPayrollView({ month }) {
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
-  const { register, control, handleSubmit, setValue } = useForm({
+  const { register, control, setValue } = useForm({
     defaultValues: {
       elements: [
         // {
