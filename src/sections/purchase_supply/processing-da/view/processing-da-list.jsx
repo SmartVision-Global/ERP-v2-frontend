@@ -1,3 +1,6 @@
+/* eslint-disable*/
+import jsPDF from 'jspdf';
+import * as XLSX from 'xlsx';
 import { useBoolean } from 'minimal-shared/hooks';
 import { useState, useEffect, forwardRef, useCallback } from 'react';
 
@@ -19,6 +22,7 @@ import { DashboardContent } from 'src/layouts/dashboard';
 import { ORDER_STATUS_OPTIONS, TYPE_OPTIONS_ORDER, PRIORITY_OPTIONS } from 'src/_mock';
 import { useGetPersonals, validatePersonal, getFiltredPersonals } from 'src/actions/personal';
 
+import UtilsButton from 'src/components/custom-buttons/utils-button';
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
@@ -283,7 +287,83 @@ export function ProcessingDaList() {
     columns
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
+  const exportToCsv = () => {
+    const header = columns.map((col) => col.headerName).join(',');
+    const rows = tableData.map((row) =>
+      columns
+        .map((col) => {
+          let value = row[col.field];
+          if (col.field === 'status') value = row.status?.name;
+          if (col.field === 'type') value = row.type?.name;
+          if (col.field === 'beb') value = row.beb?.designation;
+          if (col.field === 'site') value = row.site?.name;
+          if (col.field === 'priority') value = row.priority?.name;
+          if (col.field === 'temp') value = row.temp?.name;
+          if (col.field === 'observation') value = row.observation?.description;
+          if (col.field === 'createdBy') value = row.created_by?.fullname;
+          if (col.field === 'treatedBy') value = row.treated_by?.fullname;
+          if (col.field === 'date') value = new Date(row.created_at).toLocaleDateString();
 
+          return value ?? '';
+        })
+        .join(',')
+    );
+    const csvContent = [header, ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', 'processing_da.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const exportToExcel = () => {
+    const exportData = tableData.map((row) =>
+      columns.reduce((acc, col) => {
+        let value = row[col.field];
+        if (col.field === 'status') value = row.status?.name;
+        if (col.field === 'type') value = row.type?.name;
+        if (col.field === 'beb') value = row.beb?.designation;
+        if (col.field === 'site') value = row.site?.name;
+        if (col.field === 'priority') value = row.priority?.name;
+        if (col.field === 'temp') value = row.temp?.name;
+        if (col.field === 'observation') value = row.observation?.description;
+        if (col.field === 'createdBy') value = row.created_by?.fullname;
+        if (col.field === 'treatedBy') value = row.treated_by?.fullname;
+        if (col.field === 'date') value = new Date(row.created_at).toLocaleDateString();
+        acc[col.headerName] = value ?? '';
+        return acc;
+      }, {})
+    );
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Traitement des demandes d'achat");
+    XLSX.writeFile(wb, 'processing_da.xlsx');
+  };
+
+  const exportToPdf = () => {
+    const doc = new jsPDF();
+    const header = columns.map((col) => col.headerName);
+    const rows = tableData.map((row) =>
+      columns.map((col) => {
+        let value = row[col.field];
+        if (col.field === 'status') value = row.status?.name;
+        if (col.field === 'type') value = row.type?.name;
+        if (col.field === 'beb') value = row.beb?.designation;
+        if (col.field === 'site') value = row.site?.name;
+        if (col.field === 'priority') value = row.priority?.name;
+        if (col.field === 'temp') value = row.temp?.name;
+        if (col.field === 'observation') value = row.observation?.description;
+        if (col.field === 'createdBy') value = row.created_by?.fullname;
+        if (col.field === 'treatedBy') value = row.treated_by?.fullname;
+        if (col.field === 'date') value = new Date(row.created_at).toLocaleDateString();
+        return value ?? '';
+      })
+    );
+    doc.autoTable({ head: [header], body: rows });
+    doc.save('processing_da.pdf');
+  };
   return (
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
@@ -296,7 +376,31 @@ export function ProcessingDaList() {
             },
             { name: 'Liste', href: paths.dashboard.purchaseSupply.processingDa.root },
           ]}
-          action={() => {}}
+          action={
+            <Box sx={{ gap: 1, display: 'flex' }}>
+              <Button
+                variant="outlined"
+                
+                startIcon={<Iconify icon="mingcute:list-check-3-fill" />}
+                onClick={() => {}}
+              >
+                Suivis Traitement Des Demandes D'achat
+              </Button>
+              <Button
+                component={RouterLink}
+                href={paths.dashboard.purchaseSupply.purchaseOrder.newPurchaseOrder}
+                variant="contained"
+                startIcon={<Iconify icon="mingcute:add-line" />}
+              >
+                Demande d&#39;achats
+              </Button>
+              <UtilsButton
+                exportToCsv={exportToCsv}
+                exportToExcel={exportToExcel}
+                exportToPdf={exportToPdf}
+              />
+            </Box>
+          }
           sx={{ mb: { xs: 3, md: 5 } }}
         />
 
