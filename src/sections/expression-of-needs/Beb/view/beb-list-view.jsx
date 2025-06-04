@@ -20,12 +20,12 @@ import { RouterLink } from 'src/routes/components';
 
 import { CONFIG } from 'src/global-config';
 import { useMultiLookups } from 'src/actions/lookups';
-import { DashboardContent } from 'src/layouts/dashboard';
 import {
   PRODUCT_STATUS_OPTIONS,
-  IMAGE_OPTIONS,
 } from 'src/_mock';
+import { DashboardContent } from 'src/layouts/dashboard';
 import { useGetBebs, getFiltredBeb } from 'src/actions/expression-of-needs/beb/beb';
+import { PRODUCT_TYPE_OPTIONS, BEB_NATURE_OPTIONS, PRIORITY_OPTIONS } from 'src/_mock/expression-of-needs/Beb/Beb';
 
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
@@ -117,26 +117,25 @@ export function BebListView() {
     { entity: 'measurementUnits', url: 'settings/lookups/measurement-units' },
     { entity: 'categories', url: 'settings/lookups/categories', params: { group: 1 } },
     { entity: 'families', url: 'settings/lookups/families', params: { group: 1 } },
-    { entity: 'stores', url: 'settings/lookups/stores' },
+    { entity: 'sites', url: 'settings/lookups/sites' },
   ]);
 
   const measurementUnits = dataLookups.measurementUnits || [];
   const categories = dataLookups.categories || [];
   const families = dataLookups.families || [];
   // const subFamilies = families.length > 0 ? families.find((f) => f?.id.toString() === selectedParent)?.children || [] : [];
-  const stores = dataLookups.stores || [];
+  const sites = dataLookups.sites || [];
 
   const FILTERS_OPTIONS = [
-    { id: 'store', type: 'select', options: stores, label: 'Magasin', serverData: true },
     { id: 'code', type: 'input', label: 'Code' },
     { id: 'supplier_code', type: 'input', label: 'Supplier Code' },
     { id: 'designation', type: 'input', label: 'Designation' },
     { id: 'status', type: 'select', options: PRODUCT_STATUS_OPTIONS, label: 'Etat' },
-    { id: 'unit_measure', type: 'select', options: measurementUnits, label: 'Unit', serverData: true },
-    { id: 'category', type: 'select', options: categories, label: 'Category', serverData: true },
-    { id: 'family', type: 'select', options: families, label: 'Family', serverData: true },
+    { id: 'site', type: 'select', options: sites, label: 'Site', serverData: true },
+    { id: 'type', type: 'select', options: PRODUCT_TYPE_OPTIONS, label: 'Type' },
+    {id:'nature', type:'select', options:BEB_NATURE_OPTIONS, label:'Nature'},
     // { id: 'sub_family', type: 'select', options: subFamilies, label: 'Sub Family' },
-    { id: 'image', type: 'select', options: IMAGE_OPTIONS, label: 'Image' },
+    {id:'priority', type:'select', options:PRIORITY_OPTIONS, label:'Priorité'},
     
     {
       id: 'created_date_start',
@@ -456,7 +455,7 @@ if (col.field === 'location') {
             }}
           />
           {selectedRow && (
-            <Dialog open={detailOpen} onClose={handleCloseDetail} maxWidth="sm" fullWidth>
+            <Dialog open={detailOpen} onClose={handleCloseDetail} maxWidth="md" fullWidth>
               <DialogTitle>liste des produits</DialogTitle>
               <DialogContent dividers>
                 <BebProductsList id={selectedRow.id} />

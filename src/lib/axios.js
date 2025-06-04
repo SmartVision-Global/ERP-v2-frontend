@@ -144,6 +144,7 @@ export const endpoints = {
   expressionOfNeeds: {
    beb: {
     list: '/v1/expression-of-need/eon-vouchers',
+    items: (id) => `/v1/expression-of-need/eon-vouchers/${id}/items`,
    }
   },
 

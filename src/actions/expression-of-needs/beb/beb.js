@@ -15,7 +15,8 @@ const swrOptions = {
 };
 
 const ENDPOINT = endpoints.expressionOfNeeds.beb.list;
-
+// Dynamic endpoint for fetching items of a BEB (eon-voucher)
+const ENDPOINT_ITEMS = (id) => `${ENDPOINT}/${id}/items`;
 
 // ----------------------------------------------------------------------
 
@@ -64,6 +65,31 @@ export function useGetBeb(id) {
     [data?.data, error, isLoading, isValidating]
   );
 
+  return memoizedValue;
+}
+
+// ----------------------------------------------------------------------
+
+/**
+ * Hook to fetch items for a given BEB (eon-voucher)
+ * @param {string|number} id - ID of the eon-voucher
+ * @param {{ limit: number, offset: number }} params - pagination parameters
+ */
+export function useGetBebItems(id, params) {
+  const url = id ? ENDPOINT_ITEMS(id) : null;
+  const swrKey = id ? [url, { params }] : null;
+  
+  const { data, isLoading, error, isValidating } = useSWR(swrKey, fetcher, swrOptions);
+  const memoizedValue = useMemo(
+    () => ({
+      items: data?.data || [],
+      itemsCount: data?.data?.total || 0,
+      itemsLoading: isLoading,
+      itemsError: error,
+      itemsValidating: isValidating,
+    }),
+    [data?.data, data?.data?.total, error, isLoading, isValidating]
+  );
   return memoizedValue;
 }
 
