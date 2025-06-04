@@ -86,17 +86,13 @@ export const navData = [
           //   title: 'Fournitures',
           //   path: paths.dashboard.store.supplies,
           // },
-          
-          
-        ]
+        ],
       },
       {
         title: 'Expression de besoins',
         path: paths.dashboard.expressionOfNeeds.root,
         icon: ICONS.plus,
-        children: [
-          { title: 'B.E.B', path: paths.dashboard.expressionOfNeeds.beb.root },
-        ],
+        children: [{ title: 'B.E.B', path: paths.dashboard.expressionOfNeeds.beb.root }],
       },
       {
         title: 'Resssources humaines',
@@ -228,12 +224,12 @@ export const navData = [
 
             children: [
               {
-                title: 'Calcul de la paie',
-                path: paths.dashboard.rh.payrollManagement.calculation,
-              },
-              {
                 title: 'Préparation paie',
                 path: paths.dashboard.rh.payrollManagement.preparation,
+              },
+              {
+                title: 'Calcul de la paie',
+                path: paths.dashboard.rh.payrollManagement.calculation,
               },
             ],
           },

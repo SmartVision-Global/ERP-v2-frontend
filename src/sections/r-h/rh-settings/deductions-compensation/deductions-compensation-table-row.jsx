@@ -18,6 +18,15 @@ const CONTRIBUTORY_IMPOSABLE = {
   2: 'NON COTISABLE - IMPOSABLE',
 
   3: 'NON COTISABLE - NON IMPOSABLE',
+  4: 'AUTRE',
+};
+
+const CONTRIBUTORY_IMPOSABLE_COLORS = {
+  1: 'primary',
+  2: 'secondary',
+
+  3: 'info',
+  4: 'warning',
 };
 
 const PERIODIC = {
@@ -84,7 +93,7 @@ export function RenderCellDelete({ params }) {
 
 export function RenderCellCategory({ params }) {
   return (
-    <Label variant="soft" color="primary">
+    <Label variant="soft" color={CONTRIBUTORY_IMPOSABLE_COLORS[params.row.contributory_imposable]}>
       {CONTRIBUTORY_IMPOSABLE[params.row.contributory_imposable]}
     </Label>
   );

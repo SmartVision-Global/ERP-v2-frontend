@@ -11,7 +11,7 @@ export const ORDER_STATUS_OPTIONS = [
   { value: 'validated', label: 'Validé' },
   { value: 'cancelled', label: 'Annulé' },
 ];
-export const TYPE_OPTIONS = [
+export const TYPE_OPTIONS_ORDER = [
   { value: '', label: 'Selectionner' },
   { value: 'mp', label: 'MP' },
   { value: 'pr_equipement', label: 'PR/Equipement' },

@@ -1,53 +1,25 @@
 /* eslint-disable */
 import { useState } from 'react';
 import { useBoolean } from 'minimal-shared/hooks';
-import { useFieldArray, useFormContext } from 'react-hook-form';
+import { useFormContext, Controller } from 'react-hook-form';
 
 import { BEBListDialog } from './beb-list-dialog';
 
-import {
-  Box,
-  Stack,
-  Table,
-  Button,
-  Divider,
-  TableBody,
-  IconButton,
-  Typography,
-  TableRow,
-  TableCell,
-  TextField,
-  Alert,
-} from '@mui/material';
+import { Box, Stack, Button, Typography, TextField, Alert, IconButton } from '@mui/material';
 
 import { Iconify } from 'src/components/iconify';
-import { Scrollbar } from 'src/components/scrollbar';
-import { TableHeadCustom } from 'src/components/table';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import BEBTableRow from './BEBTableRow';
-
-const TABLE_HEAD = [
-  { id: 'date', label: 'Date' },
-  { id: 'code', label: 'Code' },
-  { id: 'applicant', label: 'Demandeur' },
-  { id: 'service', label: 'Service' },
-  { id: 'observation', label: 'Observation' },
-  { id: 'actions', label: '' },
-];
+import { Field } from 'src/components/hook-form';
 
 export function BEBNewEditForm() {
   const [openBEBDialog, setOpenBEBDialog] = useState(false);
   const [error, setError] = useState('');
   const confirmDialog = useBoolean();
-  const deleteDialog = useBoolean();
-  const [itemToDelete, setItemToDelete] = useState(null);
 
-  const { control } = useFormContext();
-  const { fields, append, remove, update } = useFieldArray({
-    control,
-    name: 'beb_items',
-    keyName: 'reactHookFormId',
-  });
+  const { control, watch, setValue } = useFormContext();
+
+  // Watch the selected BEB value
+  const selectedBEB = watch('selectedBEB');
 
   // Event handlers
   const handleOpenBEBDialog = () => {
@@ -61,64 +33,18 @@ export function BEBNewEditForm() {
 
   const handleSelectBEB = (beb) => {
     try {
-      const itemExists = fields.some((field) => field.id === beb.id);
-
-      if (!itemExists) {
-        const newBEBItem = {
-          ...beb,
-          date: new Date().toISOString().split('T')[0],
-          code: beb.code || '',
-          applicant: '',
-          service: '',
-          observation: '',
-        };
-
-        append(newBEBItem);
-        handleCloseProductDialog();
-        setError('');
-      } else {
-        confirmDialog.onTrue();
-      }
-    } catch (err) {
-      console.error('Error adding product:', err);
-      setError("Erreur lors de l'ajout du produit");
-    }
-  };
-
-  const handleDeleteRow = (index) => {
-    setItemToDelete(index);
-    deleteDialog.onTrue();
-  };
-
-  const confirmDelete = () => {
-    if (itemToDelete !== null) {
-      remove(itemToDelete);
-      setItemToDelete(null);
-    }
-    deleteDialog.onFalse();
-  };
-
-  const handleUpdateRow = (index, newData) => {
-    try {
-      update(index, newData);
+      // Set the selected BEB in the form
+      setValue('selectedBEB', beb);
+      handleCloseProductDialog();
       setError('');
     } catch (err) {
-      console.error('Error updating row:', err);
-      setError('Erreur lors de la mise à jour');
+      console.error('Error selecting BEB:', err);
+      setError('Erreur lors de la sélection du BEB');
     }
   };
 
-  const handleAddNewRow = () => {
-    const newBEBItem = {
-      id: Date.now(), // Simple ID generation
-      date: new Date().toISOString().split('T')[0],
-      code: '',
-      applicant: '',
-      service: '',
-      observation: '',
-    };
-
-    append(newBEBItem);
+  const handleClearSelection = () => {
+    setValue('selectedBEB', null);
   };
 
   return (
@@ -135,20 +61,10 @@ export function BEBNewEditForm() {
           }}
         >
           <Typography variant="h6" gutterBottom>
-            Liste BEB
+            Sélection BEB
           </Typography>
 
-          <Stack direction="row" spacing={2}>
-            <Button
-              size="small"
-              color="primary"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-              onClick={handleAddNewRow}
-              variant="outlined"
-            >
-              Nouvelle ligne
-            </Button>
-
+          <Stack direction="row" spacing={1}>
             <Button
               size="small"
               color="info"
@@ -158,6 +74,18 @@ export function BEBNewEditForm() {
             >
               Sélectionner BEB
             </Button>
+
+            {selectedBEB && (
+              <Button
+                size="small"
+                color="error"
+                startIcon={<Iconify icon="mdi:close" />}
+                onClick={handleClearSelection}
+                variant="outlined"
+              >
+                Effacer
+              </Button>
+            )}
           </Stack>
         </Box>
 
@@ -168,47 +96,61 @@ export function BEBNewEditForm() {
           </Alert>
         )}
 
-        {/* Table Section */}
-        <Scrollbar>
-          <Table size="small" sx={{ minWidth: 800 }}>
-            <TableHeadCustom headCells={TABLE_HEAD} />
+        {/* Selected BEB Display */}
+        <Box>
+          <Field.Text
+            name="selectedBEB"
+            label="BEB Sélectionné"
+            value={
+              selectedBEB
+                ? `${selectedBEB.code} - ${selectedBEB.name || selectedBEB.applicant || ''}`
+                : ''
+            }
+            InputProps={{
+              readOnly: true,
+              endAdornment: selectedBEB && (
+                <IconButton size="small" onClick={handleClearSelection} sx={{ mr: 1 }}>
+                  <Iconify icon="mdi:close" />
+                </IconButton>
+              ),
+            }}
+            placeholder="Aucun BEB sélectionné"
+          />
+        </Box>
 
-            <TableBody>
-              {fields.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={TABLE_HEAD.length} align="center" sx={{ py: 3 }}>
-                    <Typography variant="body2" color="text.secondary">
-                      Aucun élément BEB ajouté
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                fields.map((row, index) => (
-                  <BEBTableRow
-                    key={row.reactHookFormId || row.id}
-                    row={row}
-                    index={index}
-                    onDeleteRow={() => handleDeleteRow(index)}
-                    onUpdateRow={handleUpdateRow}
-                  />
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </Scrollbar>
-
-        {/* Summary */}
-        {fields.length > 0 && (
+        {/* Additional BEB Details (if needed) */}
+        {selectedBEB && (
           <Box sx={{ p: 2, bgcolor: 'background.neutral', borderRadius: 1 }}>
-            <Typography variant="body2" color="text.secondary">
-              Total: {fields.length} élément{fields.length > 1 ? 's' : ''} BEB
+            <Typography variant="subtitle2" gutterBottom>
+              Détails du BEB sélectionné:
             </Typography>
+            <Stack spacing={1}>
+              {selectedBEB.code && (
+                <Typography variant="body2">
+                  <strong>Code:</strong> {selectedBEB.code}
+                </Typography>
+              )}
+              {selectedBEB.name && (
+                <Typography variant="body2">
+                  <strong>Nom:</strong> {selectedBEB.name}
+                </Typography>
+              )}
+              {selectedBEB.applicant && (
+                <Typography variant="body2">
+                  <strong>Demandeur:</strong> {selectedBEB.applicant}
+                </Typography>
+              )}
+              {selectedBEB.service && (
+                <Typography variant="body2">
+                  <strong>Service:</strong> {selectedBEB.service}
+                </Typography>
+              )}
+            </Stack>
           </Box>
         )}
       </Stack>
 
-      <Divider sx={{ my: 3, borderStyle: 'dashed' }} />
-
+      {/* BEB Selection Dialog */}
       {openBEBDialog && (
         <BEBListDialog
           title="Sélectionner un BEB"
@@ -224,33 +166,6 @@ export function BEBNewEditForm() {
           type="beb"
         />
       )}
-
-      {/* Confirmation Dialogs */}
-      <ConfirmDialog
-        open={confirmDialog.value}
-        onClose={confirmDialog.onFalse}
-        title="Produit déjà ajouté"
-        content="Ce produit est déjà présent dans la liste BEB."
-        action={
-          <Button variant="outlined" onClick={confirmDialog.onFalse}>
-            Fermer
-          </Button>
-        }
-      />
-
-      <ConfirmDialog
-        open={deleteDialog.value}
-        onClose={deleteDialog.onFalse}
-        title="Confirmer la suppression"
-        content="Êtes-vous sûr de vouloir supprimer cet élément BEB ?"
-        action={
-          <Stack marginX={2}>
-            <Button variant="contained" color="error" onClick={confirmDelete}>
-              Supprimer
-            </Button>
-          </Stack>
-        }
-      />
     </Box>
   );
 }

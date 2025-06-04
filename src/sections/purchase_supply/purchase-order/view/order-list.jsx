@@ -1,3 +1,6 @@
+/* eslint-disable */
+import jsPDF from 'jspdf';
+import * as XLSX from 'xlsx';
 import { useBoolean } from 'minimal-shared/hooks';
 import { useState, useEffect, forwardRef, useCallback } from 'react';
 
@@ -16,7 +19,7 @@ import { RouterLink } from 'src/routes/components';
 import { CONFIG } from 'src/global-config';
 import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { ORDER_STATUS_OPTIONS, TYPE_OPTIONS, PRIORITY_OPTIONS } from 'src/_mock';
+import { ORDER_STATUS_OPTIONS, TYPE_OPTIONS_ORDER, PRIORITY_OPTIONS } from 'src/_mock';
 import { useGetPersonals, validatePersonal, getFiltredPersonals } from 'src/actions/personal';
 
 import { Iconify } from 'src/components/iconify';
@@ -37,6 +40,7 @@ import {
   RenderCellBEB,
   RenderCellPriority,
 } from '../order-table-row';
+import UtilsButton from 'src/components/custom-buttons/utils-button';
 
 // ----------------------------------------------------------------------
 
@@ -72,7 +76,7 @@ export function OrderPurchaseList() {
     {
       id: 'type',
       type: 'select',
-      options: TYPE_OPTIONS,
+      options: TYPE_OPTIONS_ORDER,
       label: 'Type',
     },
     { id: 'priority', type: 'select', options: PRIORITY_OPTIONS, label: 'Priorité' },
@@ -139,7 +143,74 @@ export function OrderPurchaseList() {
       console.log('error in pagination search request', error);
     }
   };
+  const exportToCsv = () => {
+    const header = columns.map((col) => col.headerName).join(',');
+    const rows = tableData.map((row) =>
+      columns
+        .map((col) => {
+          let value = row[col.field];
+          if (col.field === 'status') value = row.status?.name;
+          if (col.field === 'type') value = row.type?.name;
+          if (col.field === 'beb') value = row.beb?.designation;
+          if (col.field === 'site') value = row.site?.name;
+          if (col.field === 'priority') value = row.priority?.name;
+          if (col.field === 'temp') value = row.temp?.name;
+          if (col.field === 'date') value = new Date(row.created_at).toLocaleDateString();
 
+          return value ?? '';
+        })
+        .join(',')
+    );
+    const csvContent = [header, ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', 'order.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const exportToExcel = () => {
+    const exportData = tableData.map((row) =>
+      columns.reduce((acc, col) => {
+        let value = row[col.field];
+        if (col.field === 'status') value = row.status?.name;
+        if (col.field === 'type') value = row.type?.name;
+        if (col.field === 'beb') value = row.beb?.designation;
+        if (col.field === 'site') value = row.site?.name;
+        if (col.field === 'priority') value = row.priority?.name;
+        if (col.field === 'temp') value = row.temp?.name;
+        if (col.field === 'date') value = new Date(row.created_at).toLocaleDateString();
+        acc[col.headerName] = value ?? '';
+        return acc;
+      }, {})
+    );
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Demande d'achat");
+    XLSX.writeFile(wb, 'Demande_da.xlsx');
+  };
+
+  const exportToPdf = () => {
+    const doc = new jsPDF();
+    const header = columns.map((col) => col.headerName);
+    const rows = tableData.map((row) =>
+      columns.map((col) => {
+        let value = row[col.field];
+        if (col.field === 'status') value = row.status?.name;
+        if (col.field === 'type') value = row.type?.name;
+        if (col.field === 'beb') value = row.beb?.designation;
+        if (col.field === 'site') value = row.site?.name;
+        if (col.field === 'priority') value = row.priority?.name;
+        if (col.field === 'temp') value = row.temp?.name;
+        if (col.field === 'date') value = new Date(row.created_at).toLocaleDateString();
+        return value ?? '';
+      })
+    );
+    doc.autoTable({ head: [header], body: rows });
+    doc.save('Demande_da.pdf');
+  };
   const renderConfirmValidationDialog = () => (
     <ConfirmDialog
       open={confirmDialog.value}
@@ -266,14 +337,21 @@ export function OrderPurchaseList() {
             { name: 'Liste', href: paths.dashboard.purchaseSupply.purchaseOrder.root },
           ]}
           action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.purchaseSupply.purchaseOrder.newPurchaseOrder}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              Demande d&#39;achats
-            </Button>
+            <Box sx={{ gap: 1, display: 'flex' }}>
+              <Button
+                component={RouterLink}
+                href={paths.dashboard.purchaseSupply.purchaseOrder.newPurchaseOrder}
+                variant="contained"
+                startIcon={<Iconify icon="mingcute:add-line" />}
+              >
+                Demande d&#39;achats
+              </Button>
+              <UtilsButton
+                exportToCsv={exportToCsv}
+                exportToExcel={exportToExcel}
+                exportToPdf={exportToPdf}
+              />
+            </Box>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
         />

@@ -182,6 +182,8 @@ export const paths = {
 
         calculation: `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/calculation`,
         newCalculation: `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/calculation/new`,
+        payroll: (id) =>
+          `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/calculation/${id}/payroll`,
 
         preparation: `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/preparation`,
         newPreparation: `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/preparation/new`,
@@ -246,8 +248,9 @@ export const paths = {
         new: `${ROOTS.DASHBOARD}/expression-of-needs/beb/new`,
         edit: (id) => `${ROOTS.DASHBOARD}/expression-of-needs/beb/${id}/edit`,
       },
+      bmb: {},
     },
-     
+
     settings: {
       generalSettings: {
         root: `${ROOTS.DASHBOARD}/settings/general-settings`,
