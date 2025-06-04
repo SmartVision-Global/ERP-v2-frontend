@@ -1,3 +1,4 @@
+import { useBoolean } from 'minimal-shared/hooks';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { useState, useEffect, forwardRef, useCallback } from 'react';
 
@@ -5,6 +6,7 @@ import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Grid from '@mui/material/Grid2';
+import { LoadingButton } from '@mui/lab';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { DataGrid, gridClasses } from '@mui/x-data-grid';
@@ -30,7 +32,7 @@ import { CONFIG } from 'src/global-config';
 import { useGetLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { getFiltredPersonals } from 'src/actions/personal';
-import { createPersonalPayroll } from 'src/actions/payroll-calculation';
+import { createPersonalPayroll, validationPersonalPayroll } from 'src/actions/payroll-calculation';
 import {
   deletePersonalPayroll,
   getFiltredAttachedPersonals,
@@ -41,6 +43,7 @@ import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
 import { EmptyContent } from 'src/components/empty-content';
+import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { TableHeadCustom, TableToolbarCustom } from 'src/components/table';
 
@@ -101,6 +104,9 @@ export function CalculationPersonalPayrollView({ month }) {
       width: 1,
     },
   ];
+
+  const confirmDialog = useBoolean();
+
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: PAGE_SIZE,
@@ -116,9 +122,8 @@ export function CalculationPersonalPayrollView({ month }) {
     limit: PAGE_SIZE,
     offset: 0,
   });
-
+  const [validationLoading, setValidationLoading] = useState(false);
   const [rowCount, setRowCount] = useState(payrollMonthsAttachedPersonalsCount);
-
   const [tableData, setTableData] = useState(payrollMonthsAttachedPersonals);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState({});
@@ -273,14 +278,34 @@ export function CalculationPersonalPayrollView({ month }) {
       minWidth: 160,
       hideable: false,
       align: 'center',
-      renderCell: (params) => (
-        <Tooltip title="Calculer">
-          <IconButton onClick={() => handleCalculatePayroll(params.row.id)}>
-            {/* <Iconify icon="eva:person-done-fill" sx={{ color: 'success.main' }} /> */}
-            <Iconify icon="eva:plus-square-outline" sx={{ color: 'success.main' }} />
-          </IconButton>
-        </Tooltip>
-      ),
+      renderCell: (params) => {
+        let action = null;
+        switch (params.row.status) {
+          case 1:
+            action = (
+              <Tooltip title="Calculer">
+                <IconButton onClick={() => handleCalculatePayroll(params.row.id)}>
+                  {/* <Iconify icon="eva:person-done-fill" sx={{ color: 'success.main' }} /> */}
+                  <Iconify icon="eva:plus-square-outline" sx={{ color: 'info.main' }} />
+                </IconButton>
+              </Tooltip>
+            );
+            break;
+          case 2:
+            action = (
+              <Tooltip title="Details">
+                <IconButton onClick={() => handleCalculatePayroll(params.row.id)}>
+                  {/* <Iconify icon="eva:person-done-fill" sx={{ color: 'success.main' }} /> */}
+                  <Iconify icon="material-symbols:person-check" sx={{ color: 'success.main' }} />
+                </IconButton>
+              </Tooltip>
+            );
+            break;
+          default:
+            break;
+        }
+        return action;
+      },
     },
   ];
 
@@ -290,8 +315,13 @@ export function CalculationPersonalPayrollView({ month }) {
   const handleCloseProductDialog = () => {
     setOpenProductDialog(false);
   };
-  const handleSelectElement = (product) => {
-    const itemExists = fields.some((field) => field.id === product.id);
+  const handleSelectElement = (product, elements) => {
+    console.log('product', product);
+    console.log('fields', fields);
+
+    const itemExists =
+      fields.some((field) => field.id === product.id) ||
+      elements.some((field) => field.deduction_compensation_id === product.id);
     if (!itemExists) {
       const newProduct = {
         ...product,
@@ -301,10 +331,62 @@ export function CalculationPersonalPayrollView({ month }) {
       append(newProduct);
       // handleCloseProductDialog();
     } else {
-      // confirmDialog.onTrue();
+      confirmDialog.onTrue();
     }
   };
-  console.log('ffffff', fields);
+
+  const handleValidatePayroll = async (payrollId, monthId) => {
+    try {
+      setValidationLoading(true);
+      const response = await validationPersonalPayroll(
+        payrollId,
+        monthId,
+        {
+          validate: true,
+        },
+        {
+          limit: PAGE_SIZE,
+          offset: 0,
+        }
+      );
+      setPayroll(response.data?.data);
+      setValidationLoading(false);
+    } catch (error) {
+      setValidationLoading(false);
+
+      console.log(error);
+      showError(error);
+    } finally {
+      setValidationLoading(false);
+    }
+  };
+
+  const handleInValidatePayroll = async (payrollId, monthId) => {
+    try {
+      setValidationLoading(true);
+
+      const response = await validationPersonalPayroll(
+        payrollId,
+        monthId,
+        {
+          validate: false,
+        },
+        {
+          limit: PAGE_SIZE,
+          offset: 0,
+        }
+      );
+      setPayroll(response.data?.data);
+      setValidationLoading(false);
+    } catch (error) {
+      setValidationLoading(false);
+
+      console.log(error);
+      showError(error);
+    } finally {
+      setValidationLoading(false);
+    }
+  };
 
   const getTogglableColumns = () =>
     columns
@@ -409,20 +491,45 @@ export function CalculationPersonalPayrollView({ month }) {
                 <Divider />
 
                 <Box sx={{ position: 'relative', mt: 2, p: 2 }}>
-                  <Stack direction="row" spacing={1} mb={4}>
-                    <Button startIcon={<Iconify width={24} icon="mingcute:profile-fill" />}>
+                  {payroll && (
+                    <Stack direction="row" spacing={1} mb={4}>
+                      {/* <Button startIcon={<Iconify width={24} icon="mingcute:profile-fill" />}>
                       Profile
-                    </Button>
-                    <Button
-                      startIcon={<Iconify width={24} icon="mdi:add-bold" />}
-                      onClick={handleOpenProductDialog}
-                    >
-                      Ajouter élément
-                    </Button>
-                    <Button startIcon={<Iconify width={24} icon="ic:twotone-check" />}>
-                      Valider
-                    </Button>
-                  </Stack>
+                    </Button> */}
+                      {payroll && payroll.status === 1 && (
+                        <Button
+                          startIcon={<Iconify width={24} icon="mdi:add-bold" />}
+                          onClick={handleOpenProductDialog}
+                        >
+                          Ajouter élément
+                        </Button>
+                      )}
+                      {payroll && payroll.status === 1 ? (
+                        <LoadingButton
+                          loading={validationLoading}
+                          startIcon={<Iconify width={24} icon="ic:twotone-check" />}
+                          onClick={() =>
+                            handleValidatePayroll(payroll.id, payroll.payroll_month_id)
+                          }
+                        >
+                          Valider
+                        </LoadingButton>
+                      ) : (
+                        <LoadingButton
+                          loading={validationLoading}
+                          color="error"
+                          startIcon={
+                            <Iconify width={24} icon="iwwa:delete" sx={{ color: 'error.main' }} />
+                          }
+                          onClick={() =>
+                            handleInValidatePayroll(payroll.id, payroll.payroll_month_id)
+                          }
+                        >
+                          Invalider
+                        </LoadingButton>
+                      )}
+                    </Stack>
+                  )}
                   <Scrollbar>
                     <Table size="small">
                       <TableHeadCustom headCells={TABLE_HEAD} />
@@ -445,25 +552,36 @@ export function CalculationPersonalPayrollView({ month }) {
           </Grid>
         </Stack>
       </DashboardContent>
-      <DeductionsCompensationsListDialog
-        title="Liste des indemnités / retenues"
-        open={openProductDialog}
-        onClose={handleCloseProductDialog}
-        // selected={(selectedId) => invoiceFrom?.id === selectedId}
-        selected={() => false}
-        onSelect={(address) => handleSelectElement(address)}
-        action={
-          <IconButton
-            size="small"
-            // startIcon={<Iconify icon="mdi:close" />}
-            // sx={{ alignSelf: 'flex-end' }}
-            onClick={handleCloseProductDialog}
-          >
-            <Iconify icon="mdi:close" />
-          </IconButton>
-        }
-        type="3"
-      />
+
+      {openProductDialog && payroll && (
+        <DeductionsCompensationsListDialog
+          title="Liste des indemnités / retenues"
+          open={openProductDialog}
+          onClose={handleCloseProductDialog}
+          // selected={(selectedId) => invoiceFrom?.id === selectedId}
+          selected={() => false}
+          onSelect={(address) => handleSelectElement(address, payroll.elements)}
+          action={
+            <IconButton
+              size="small"
+              // startIcon={<Iconify icon="mdi:close" />}
+              // sx={{ alignSelf: 'flex-end' }}
+              onClick={handleCloseProductDialog}
+            >
+              <Iconify icon="mdi:close" />
+            </IconButton>
+          }
+          type="3"
+        />
+      )}
+
+      {confirmDialog.value && (
+        <ConfirmDialog
+          open={confirmDialog.value}
+          onClose={confirmDialog.onFalse}
+          content={<>Vous ne pouvez pas ajouter cet element deux fois</>}
+        />
+      )}
     </>
   );
 }

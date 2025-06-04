@@ -231,7 +231,7 @@ export function CalculationSalaryGridTableBody({
               </TableCell>
             ) : (
               <>
-                {element.is_deletable && (
+                {payroll?.status === 1 && element.is_deletable && (
                   <TableCell>
                     <Tooltip title="Retirer">
                       <IconButton
