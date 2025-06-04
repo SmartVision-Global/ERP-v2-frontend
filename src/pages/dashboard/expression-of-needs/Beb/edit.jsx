@@ -5,7 +5,7 @@ import { useParams } from 'src/routes/hooks';
 import { CONFIG } from 'src/global-config';
 import { useGetStock } from 'src/actions/stores/raw-materials/stocks';
 
-import { StockEditView } from 'src/sections/store/raw-materials/stocks/view';
+import { BebEditView } from 'src/sections/expression-of-needs/Beb/view/beb-edit-view';
 
 // ----------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ const metadata = { title: `Modifier Stock | Dashboard - ${CONFIG.appName}` };
 export default function Page() {
   const { id = '' } = useParams();
 
-  const { stock } = useGetStock(id);
+  const { beb } = useGetStock(id);
   
 
   return (
@@ -23,7 +23,7 @@ export default function Page() {
         <title> {metadata.title}</title>
       </Helmet>
 
-      <StockEditView stock={stock} />
+      <BebEditView beb={beb} />
     </>
   );
 }
