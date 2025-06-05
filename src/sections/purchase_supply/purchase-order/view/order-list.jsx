@@ -20,7 +20,7 @@ import { CONFIG } from 'src/global-config';
 import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { ORDER_STATUS_OPTIONS, TYPE_OPTIONS_ORDER, PRIORITY_OPTIONS } from 'src/_mock';
-import { useGetPersonals, validatePersonal, getFiltredPersonals } from 'src/actions/personal';
+import { useGetPurchaseOrders, getFiltredPurchaseOrders } from 'src/actions/purchase-supply/purchase-order/order';
 
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
@@ -39,6 +39,7 @@ import {
   RenderCellType,
   RenderCellBEB,
   RenderCellPriority,
+  RenderCellCode,
 } from '../order-table-row';
 import UtilsButton from 'src/components/custom-buttons/utils-button';
 
@@ -58,8 +59,8 @@ export function OrderPurchaseList() {
     pageSize: PAGE_SIZE,
   });
   const [selectedRow, setSelectedRow] = useState('');
-  const { personals, personalsLoading, personalsCount } = useGetPersonals({ limit: 2, offset: 0 });
-  console.log('personals', personals);
+  const { purchaseOrders, purchaseOrdersLoading, purchaseOrdersCount } = useGetPurchaseOrders({ limit: PAGE_SIZE, offset: 0 });
+  console.log('purchaseOrders', purchaseOrders);
   const [rowCount, setRowCount] = useState(0);
 
   const { dataLookups } = useMultiLookups([{ entity: 'sites', url: 'settings/lookups/sites' }]);
@@ -93,15 +94,13 @@ export function OrderPurchaseList() {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (personals.length) {
-      setTableData(personals);
-      setRowCount(personalsCount);
-    }
-  }, [personals, personalsCount]);
+    setTableData(purchaseOrders);
+    setRowCount(purchaseOrdersCount);
+  }, [purchaseOrders, purchaseOrdersCount]);
 
   const handleReset = useCallback(async () => {
     try {
-      const response = await getFiltredPersonals({
+      const response = await getFiltredPurchaseOrders({
         limit: PAGE_SIZE,
         offset: 0,
       });
@@ -120,9 +119,9 @@ export function OrderPurchaseList() {
   const handleFilter = useCallback(
     async (data) => {
       try {
-        // const response = await getFiltredOrder(data);
-        // setTableData(response.data?.data?.records);
-        // setRowCount(response.data?.data?.total);
+        const response = await getFiltredPurchaseOrders(data);
+        setTableData(response.data?.data?.records);
+        setRowCount(response.data?.data?.total);
       } catch (error) {
         console.log('Error in search filters tasks', error);
       }
@@ -239,88 +238,16 @@ export function OrderPurchaseList() {
   );
 
   const columns = [
-    {
-      field: 'id',
-      headerName: 'ID',
-      flex: 1,
-      minWidth: 100,
-      hideable: false,
-      renderCell: (params) => <RenderCellId params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'date',
-      headerName: 'Date',
-      flex: 1,
-      minWidth: 260,
-      hideable: false,
-      renderCell: (params) => <RenderCellCreatedAt params={params} />,
-    },
-    {
-      field: 'temp',
-      headerName: 'Temp',
-      flex: 1,
-      minWidth: 260,
-      renderCell: (params) => <RenderCellTemp params={params} />,
-    },
-    {
-      field: 'status',
-      headerName: 'Etat',
-      width: 110,
-      renderCell: (params) => <RenderCellStatus params={params} />,
-    },
-    {
-      field: 'type',
-      headerName: 'Type',
-      flex: 1,
-      minWidth: 200,
-      renderCell: (params) => <RenderCellType params={params} />,
-    },
-    {
-      field: 'beb',
-      headerName: 'B.E.B',
-      minWidth: 110,
-      renderCell: (params) => <RenderCellBEB params={params} />,
-    },
-    {
-      field: 'site',
-      headerName: 'Site',
-      minWidth: 120,
-      renderCell: (params) => <RenderCellSite params={params} />,
-    },
-    // Declaration
-    {
-      field: 'priority',
-      headerName: 'Prioritè',
-      minWidth: 260,
-      renderCell: (params) => <RenderCellPriority params={params} />,
-    },
-
-    {
-      type: 'actions',
-      field: 'actions',
-      headerName: ' ',
-      align: 'right',
-      headerAlign: 'right',
-      width: 80,
-      sortable: false,
-      filterable: false,
-      disableColumnMenu: true,
-      getActions: (params) => [
-        <GridActionsClickItem
-          showInMenu
-          icon={<Iconify icon="eva:checkmark-fill" />}
-          label="Valider"
-          onClick={() => handleOpenValidateConfirmDialog(params.row.id)}
-          // href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
-        />,
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:pen-bold" />}
-          label="Modifier"
-          href={paths.dashboard.purchaseSupply.purchaseOrder.editPurchaseOrder(params.row.id)}
-        />,
-      ],
-    },
+    { field: 'id', headerName: 'ID', flex: 1, minWidth: 100, renderCell: (params) => <RenderCellId params={params} /> },
+    { field: 'code', headerName: 'Code', flex: 1, minWidth: 150 },
+    { field: 'created_time', headerName: 'Temps', flex: 1, minWidth: 150 },
+    { field: 'status', headerName: 'Etat', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellStatus params={params} /> },
+    { field: 'type', headerName: 'Type', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellType params={params} /> },
+    { field: 'eon_voucher', headerName: 'B.E.B', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellCode params={params} /> },
+    { field: 'site', headerName: 'Site', flex: 1, minWidth: 150, renderCell: (params) => <RenderCellSite params={params} /> },
+    { field: 'priority', headerName: 'Priorité', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellPriority params={params} /> },
+    { field: 'observations', headerName: 'Observations', flex: 1, minWidth: 200 },
+    { field: 'created_at', headerName: 'Date de création', flex: 1, minWidth: 150, renderCell: (params) => <RenderCellCreatedAt params={params} /> },
   ];
 
   const getTogglableColumns = () =>
@@ -396,11 +323,10 @@ export function OrderPurchaseList() {
           <DataGrid
             disableRowSelectionOnClick
             disableColumnMenu
-            // NOTE: the data is not loaded yet
-            rows={[]}
+            rows={tableData}
             rowCount={rowCount}
             columns={columns}
-            loading={personalsLoading}
+            loading={purchaseOrdersLoading}
             getRowHeight={() => 'auto'}
             paginationModel={paginationModel}
             paginationMode="server"

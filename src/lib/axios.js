@@ -147,6 +147,12 @@ export const endpoints = {
     items: (id) => `/v1/expression-of-need/eon-vouchers/${id}/items`,
    }
   },
+  purchaseSupply: {
+    purchaseOrder: {
+      list: '/v1/purchases/purchase-requests',
+      items: (id) => `/v1/purchases/purchase-requests/${id}/items`,
+    },
+  },
 
   // new:''
   // ecritures
