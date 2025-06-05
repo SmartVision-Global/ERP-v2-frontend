@@ -1,28 +1,32 @@
+import { useBoolean } from 'minimal-shared/hooks';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { useState, useEffect, forwardRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Grid from '@mui/material/Grid2';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
+import { LoadingButton } from '@mui/lab';
 import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import {
   Stack,
   Table,
   Button,
+  Avatar,
   Tooltip,
   Divider,
+  TableRow,
   TextField,
+  TableCell,
   IconButton,
   CardHeader,
+  Typography,
   FormControl,
+  ListItemText,
   InputAdornment,
+  CircularProgress,
 } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
-import { RouterLink } from 'src/routes/components';
 
 import { showError } from 'src/utils/toast-error';
 
@@ -30,17 +34,16 @@ import { CONFIG } from 'src/global-config';
 import { useGetLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { getFiltredPersonals } from 'src/actions/personal';
-import { createPersonalPayroll } from 'src/actions/payroll-calculation';
+import { createPersonalPayroll, validationPersonalPayroll } from 'src/actions/payroll-calculation';
 import {
-  deletePersonalPayroll,
   getFiltredAttachedPersonals,
   useGetPayrollMonthsPersonalAttached,
 } from 'src/actions/payroll-month-personal';
 
-import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
 import { EmptyContent } from 'src/components/empty-content';
+import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { TableHeadCustom, TableToolbarCustom } from 'src/components/table';
 
@@ -84,7 +87,7 @@ export function CalculationPersonalPayrollView({ month }) {
       type: 'select',
       options: sites,
       serverData: true,
-      label: 'Personel',
+      label: 'Site',
       cols: 6,
       width: 1,
     },
@@ -101,12 +104,16 @@ export function CalculationPersonalPayrollView({ month }) {
       width: 1,
     },
   ];
+
+  const confirmDialog = useBoolean();
+
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: PAGE_SIZE,
   });
 
   const [payroll, setPayroll] = useState(null);
+  const [personal, setPersonal] = useState(null);
 
   const {
     payrollMonthsAttachedPersonals,
@@ -117,13 +124,13 @@ export function CalculationPersonalPayrollView({ month }) {
     offset: 0,
   });
 
+  const [validationLoading, setValidationLoading] = useState(false);
   const [rowCount, setRowCount] = useState(payrollMonthsAttachedPersonalsCount);
-
   const [tableData, setTableData] = useState(payrollMonthsAttachedPersonals);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState({});
   const [openProductDialog, setOpenProductDialog] = useState(false);
-
+  const [calculateLoading, setCalculateLoading] = useState(false);
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   const { register, control, setValue } = useForm({
@@ -147,32 +154,28 @@ export function CalculationPersonalPayrollView({ month }) {
     keyName: 'reactHookFormId',
   });
 
-  const handleDeleteRow = useCallback(
-    async (id) => {
-      try {
-        await deletePersonalPayroll(id, month.id, { limit: PAGE_SIZE, offset: 0 });
-        toast.success('Delete success!');
-      } catch (error) {
-        showError(error);
-      }
-    },
-    [month?.id]
-  );
-  const handleCalculatePayroll = async (id) => {
+  const handleCalculatePayroll = async (row) => {
     const dataPayroll = {
       additional_elements: [],
       removed_elements: [],
     };
     try {
-      const response = await createPersonalPayroll(id, dataPayroll);
+      setCalculateLoading(true);
+      const response = await createPersonalPayroll(row.id, dataPayroll);
       setPayroll(response.data?.data);
-      console.log('respo', response);
+      setPersonal(row.personal);
+      setCalculateLoading(false);
+      setValue('elements', []);
     } catch (error) {
-      console.log(error);
+      setCalculateLoading(false);
 
+      console.log(error);
       showError(error);
+    } finally {
+      setCalculateLoading(false);
     }
   };
+
   useEffect(() => {
     if (payrollMonthsAttachedPersonals) {
       setTableData(payrollMonthsAttachedPersonals);
@@ -212,6 +215,7 @@ export function CalculationPersonalPayrollView({ month }) {
 
     [month?.id]
   );
+
   const handlePaginationModelChange = async (newModel) => {
     try {
       const newData = {
@@ -235,8 +239,6 @@ export function CalculationPersonalPayrollView({ month }) {
       headerName: 'Nom -Prénom',
       flex: 1,
       minWidth: 220,
-
-      // minWidth: 160,
       hideable: false,
       renderCell: (params) => <RenderCellUser params={params} />,
     },
@@ -245,7 +247,6 @@ export function CalculationPersonalPayrollView({ month }) {
       headerName: 'Paie',
       flex: 1,
       minWidth: 100,
-
       hideable: false,
       renderCell: (params) => <RenderCellValidation params={params} />,
     },
@@ -273,14 +274,44 @@ export function CalculationPersonalPayrollView({ month }) {
       minWidth: 160,
       hideable: false,
       align: 'center',
-      renderCell: (params) => (
-        <Tooltip title="Calculer">
-          <IconButton onClick={() => handleCalculatePayroll(params.row.id)}>
-            {/* <Iconify icon="eva:person-done-fill" sx={{ color: 'success.main' }} /> */}
-            <Iconify icon="eva:plus-square-outline" sx={{ color: 'success.main' }} />
-          </IconButton>
-        </Tooltip>
-      ),
+      renderCell: (params) => {
+        let action = null;
+        switch (params.row.status) {
+          case 1:
+            action = (
+              <Tooltip title="Calculer" enterDelay={100}>
+                <IconButton
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleCalculatePayroll(params.row);
+                  }}
+                >
+                  {/* <Iconify icon="eva:person-done-fill" sx={{ color: 'success.main' }} /> */}
+                  <Iconify icon="eva:plus-square-outline" sx={{ color: 'info.main' }} />
+                </IconButton>
+              </Tooltip>
+            );
+            break;
+          case 2:
+            action = (
+              <Tooltip title="Details" enterDelay={100}>
+                <IconButton
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleCalculatePayroll(params.row);
+                  }}
+                >
+                  {/* <Iconify icon="eva:person-done-fill" sx={{ color: 'success.main' }} /> */}
+                  <Iconify icon="material-symbols:person-check" sx={{ color: 'success.main' }} />
+                </IconButton>
+              </Tooltip>
+            );
+            break;
+          default:
+            break;
+        }
+        return action;
+      },
     },
   ];
 
@@ -290,8 +321,11 @@ export function CalculationPersonalPayrollView({ month }) {
   const handleCloseProductDialog = () => {
     setOpenProductDialog(false);
   };
-  const handleSelectElement = (product) => {
-    const itemExists = fields.some((field) => field.id === product.id);
+  const handleSelectElement = (product, elements) => {
+    const itemExists =
+      fields.some((field) => field.id === product.id) ||
+      elements.some((field) => field.deduction_compensation_id === product.id);
+
     if (!itemExists) {
       const newProduct = {
         ...product,
@@ -299,12 +333,62 @@ export function CalculationPersonalPayrollView({ month }) {
         amount: 0,
       };
       append(newProduct);
-      // handleCloseProductDialog();
     } else {
-      // confirmDialog.onTrue();
+      confirmDialog.onTrue();
     }
   };
-  console.log('ffffff', fields);
+
+  const handleValidatePayroll = async (payrollId, monthId) => {
+    try {
+      setValidationLoading(true);
+      const response = await validationPersonalPayroll(
+        payrollId,
+        monthId,
+        {
+          validate: true,
+        },
+        {
+          limit: PAGE_SIZE,
+          offset: paginationModel.page * PAGE_SIZE,
+        }
+      );
+      setPayroll(response.data?.data);
+      setValidationLoading(false);
+    } catch (error) {
+      setValidationLoading(false);
+      console.log(error);
+      showError(error);
+    } finally {
+      setValidationLoading(false);
+    }
+  };
+
+  const handleInValidatePayroll = async (payrollId, monthId) => {
+    try {
+      setValidationLoading(true);
+
+      const response = await validationPersonalPayroll(
+        payrollId,
+        monthId,
+        {
+          validate: false,
+        },
+        {
+          limit: PAGE_SIZE,
+          offset: paginationModel.page * PAGE_SIZE,
+        }
+      );
+      setPayroll(response.data?.data);
+      setValidationLoading(false);
+    } catch (error) {
+      setValidationLoading(false);
+
+      console.log(error);
+      showError(error);
+    } finally {
+      setValidationLoading(false);
+    }
+  };
 
   const getTogglableColumns = () =>
     columns
@@ -321,16 +405,6 @@ export function CalculationPersonalPayrollView({ month }) {
             { name: 'Calcule paie', href: paths.dashboard.rh.payrollManagement.calculation },
             { name: MONTHS[month?.month] },
           ]}
-          // action={
-          //   <Button
-          //     component={RouterLink}
-          //     href={paths.dashboard.rh.payrollManagement.newPreparation}
-          //     variant="contained"
-          //     startIcon={<Iconify icon="mingcute:add-line" />}
-          //   >
-          //     Ajouter Mois
-          //   </Button>
-          // }
           sx={{ mb: { xs: 3, md: 5 } }}
         />
         <Stack spacing={3} sx={{ p: 3 }}>
@@ -404,102 +478,148 @@ export function CalculationPersonalPayrollView({ month }) {
               </Card>
             </Grid>
             <Grid size={{ xs: 12, md: 7 }}>
-              <Card>
-                <CardHeader title="Grille de salaire" sx={{ mb: 3 }} />
-                <Divider />
-
-                <Box sx={{ position: 'relative', mt: 2, p: 2 }}>
-                  <Stack direction="row" spacing={1} mb={4}>
-                    <Button startIcon={<Iconify width={24} icon="mingcute:profile-fill" />}>
-                      Profile
-                    </Button>
-                    <Button
-                      startIcon={<Iconify width={24} icon="mdi:add-bold" />}
-                      onClick={handleOpenProductDialog}
+              <Typography variant="subtitle1" mb={1}>
+                Information de la persononne
+              </Typography>
+              <Stack direction="column" spacing={2}>
+                {payroll && personal && (
+                  <Card sx={{ p: 2 }}>
+                    <Box
+                      sx={{
+                        py: 0,
+                        gap: 1,
+                        width: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
                     >
-                      Ajouter élément
-                    </Button>
-                    <Button startIcon={<Iconify width={24} icon="ic:twotone-check" />}>
-                      Valider
-                    </Button>
-                  </Stack>
-                  <Scrollbar>
-                    <Table size="small">
-                      <TableHeadCustom headCells={TABLE_HEAD} />
-                      {payroll && (
-                        <CalculationSalaryGridTableBody
-                          payroll={payroll}
-                          fields={fields}
-                          register={register}
-                          remove={remove}
-                          update={update}
-                          setValue={setValue}
-                          setPayroll={setPayroll}
-                        />
-                      )}
-                    </Table>
-                  </Scrollbar>
-                </Box>
-              </Card>
+                      <Avatar
+                        alt={personal?.name}
+                        src={personal?.photo?.url}
+                        variant="rounded"
+                        sx={{ width: 34, height: 34, borderRadius: '50%' }}
+                      />
+
+                      <ListItemText
+                        primary={<Typography fontSize={12}>{personal?.name}</Typography>}
+                        secondary={personal?.job}
+                        slotProps={{
+                          primary: { noWrap: true },
+                          secondary: { sx: { color: 'text.disabled', fontSize: 10 } },
+                        }}
+                      />
+                    </Box>
+                  </Card>
+                )}
+                <Card>
+                  <CardHeader title="Grille de salaire" sx={{ mb: 2 }} />
+                  <Divider />
+
+                  <Box sx={{ position: 'relative', mt: 2, p: 2 }}>
+                    {payroll && (
+                      <Stack direction="row" spacing={1} mb={2}>
+                        {/* <Button startIcon={<Iconify width={24} icon="mingcute:profile-fill" />}>
+                      Profile
+                    </Button> */}
+                        {payroll && payroll.status === 1 && (
+                          <Button
+                            startIcon={<Iconify width={24} icon="mdi:add-bold" />}
+                            onClick={handleOpenProductDialog}
+                          >
+                            Ajouter élément
+                          </Button>
+                        )}
+                        {payroll && payroll.status === 1 ? (
+                          <LoadingButton
+                            loading={validationLoading}
+                            startIcon={<Iconify width={24} icon="ic:twotone-check" />}
+                            onClick={() =>
+                              handleValidatePayroll(payroll.id, payroll.payroll_month_id)
+                            }
+                          >
+                            Valider
+                          </LoadingButton>
+                        ) : (
+                          <LoadingButton
+                            loading={validationLoading}
+                            color="error"
+                            startIcon={
+                              <Iconify width={24} icon="iwwa:delete" sx={{ color: 'error.main' }} />
+                            }
+                            onClick={() =>
+                              handleInValidatePayroll(payroll.id, payroll.payroll_month_id)
+                            }
+                          >
+                            Invalider
+                          </LoadingButton>
+                        )}
+                      </Stack>
+                    )}
+                    <Scrollbar>
+                      <Table size="small">
+                        <TableHeadCustom headCells={TABLE_HEAD} />
+                        {payroll && !calculateLoading && (
+                          <CalculationSalaryGridTableBody
+                            payroll={payroll}
+                            fields={fields}
+                            register={register}
+                            remove={remove}
+                            update={update}
+                            setValue={setValue}
+                            setPayroll={setPayroll}
+                          />
+                        )}
+                        {calculateLoading && (
+                          <TableRow>
+                            <TableCell colSpan={12}>
+                              <Box
+                                sx={{
+                                  display: 'flex',
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                  height: 200,
+                                  width: '100%',
+                                }}
+                              >
+                                <CircularProgress />
+                              </Box>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </Table>
+                    </Scrollbar>
+                  </Box>
+                </Card>
+              </Stack>
             </Grid>
           </Grid>
         </Stack>
       </DashboardContent>
-      <DeductionsCompensationsListDialog
-        title="Liste des indemnités / retenues"
-        open={openProductDialog}
-        onClose={handleCloseProductDialog}
-        // selected={(selectedId) => invoiceFrom?.id === selectedId}
-        selected={() => false}
-        onSelect={(address) => handleSelectElement(address)}
-        action={
-          <IconButton
-            size="small"
-            // startIcon={<Iconify icon="mdi:close" />}
-            // sx={{ alignSelf: 'flex-end' }}
-            onClick={handleCloseProductDialog}
-          >
-            <Iconify icon="mdi:close" />
-          </IconButton>
-        }
-        type="3"
-      />
+
+      {openProductDialog && payroll && (
+        <DeductionsCompensationsListDialog
+          title="Liste des indemnités / retenues"
+          open={openProductDialog}
+          onClose={handleCloseProductDialog}
+          selected={() => false}
+          onSelect={(address) => handleSelectElement(address, payroll?.elements)}
+          action={
+            <IconButton size="small" onClick={handleCloseProductDialog}>
+              <Iconify icon="mdi:close" />
+            </IconButton>
+          }
+        />
+      )}
+
+      {confirmDialog.value && (
+        <ConfirmDialog
+          open={confirmDialog.value}
+          onClose={confirmDialog.onFalse}
+          content={<>Vous ne pouvez pas ajouter cet element deux fois</>}
+        />
+      )}
     </>
   );
 }
 
 // ----------------------------------------------------------------------
-
-// ----------------------------------------------------------------------
-
-export const GridActionsLinkItem = forwardRef((props, ref) => {
-  const { href, label, icon, sx } = props;
-
-  return (
-    <MenuItem ref={ref} sx={sx}>
-      <Link
-        component={RouterLink}
-        href={href}
-        underline="none"
-        color="inherit"
-        sx={{ width: 1, display: 'flex', alignItems: 'center' }}
-      >
-        {icon && <ListItemIcon>{icon}</ListItemIcon>}
-        {label}
-      </Link>
-    </MenuItem>
-  );
-});
-
-// ----------------------------------------------------------------------
-
-export const GridActionsClickItem = forwardRef((props, ref) => {
-  const { onClick, label, icon, sx } = props;
-
-  return (
-    <MenuItem ref={ref} sx={sx} onClick={onClick}>
-      {icon && <ListItemIcon>{icon}</ListItemIcon>}
-      {label}
-    </MenuItem>
-  );
-});

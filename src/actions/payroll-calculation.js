@@ -1,5 +1,5 @@
-import useSWR from 'swr';
 import { useMemo } from 'react';
+import useSWR, { mutate } from 'swr';
 
 // import { fetcher, endpoints } from 'src/lib/axios';
 import axios, { fetcher, endpoints } from 'src/lib/axios';
@@ -44,4 +44,16 @@ export async function createPersonalPayroll(payroll_id, data) {
   const response = await axios.post(endpoints.calculatePayroll(payroll_id), data);
   return response;
   //   mutate(endpoints.site);
+}
+
+export async function validationPersonalPayroll(payroll_id, monthId, data, params) {
+  /**
+   * Work on server
+   */
+  // const data = { directionData };
+  const response = await axios.post(endpoints.validationPayroll(payroll_id), data);
+  mutate(endpoints.payrollMonthPersonalAttached(monthId));
+  mutate([endpoints.payrollMonthPersonalAttached(monthId), { params }]);
+
+  return response;
 }
