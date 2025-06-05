@@ -8,6 +8,8 @@ import { RouterLink } from 'src/routes/components';
 import { fCurrency } from 'src/utils/format-number';
 import { fDate, fTime } from 'src/utils/format-time';
 
+import { PRODUCT_TYPE_OPTIONS, STATUS_OPTIONS, PRIORITY_OPTIONS, BEB_NATURE_OPTIONS } from 'src/_mock/expression-of-needs/Beb/Beb';
+
 import { Label } from 'src/components/label';
 
 const STATUS = {
@@ -61,14 +63,11 @@ export function RenderCellTemp({ params }) {
   );
 }
 export function RenderCellStatus({ params }) {
-  return (
-    <Label
-      variant="soft"
-      color={params.row.status === 1 ? 'info' : params.row.status === 2 ? 'success' : 'error'}
-    >
-      {STATUS[params.row.status]}
-    </Label>
-  );
+  // Adjust label color logic as needed
+  const status = STATUS_OPTIONS.find(option => option.value === params.row.status);
+  const color = status ? status.color : 'default';
+  const label = status ? status.label : 'N/I';
+  return <Label variant="soft" color={color}>{label}</Label>;
 }
 export function RenderCellBEB({ params }) {
   return fCurrency(params.row.beb);
@@ -76,18 +75,21 @@ export function RenderCellBEB({ params }) {
 export function RenderCellSite({ params }) {
   return <Typography fontSize={14}>{params.row.site?.name}</Typography>;
 }
-export function RenderCellPriority({ params }) {
-  return (
-    <Label variant="soft" color="default">
-      {params.row.priority}
-    </Label>
-  );
-}
+
 export function RenderCellType({ params }) {
-  return (
-    <Label variant="soft" color="default">
-      {/* {params.row.publish} */}
-      {ORDER_TYPE[params.row.type]}
-    </Label>
-  );
+  const type = PRODUCT_TYPE_OPTIONS.find(option => option.value == params.row.type);
+  const color = type ? type.color : 'default';
+  const label = type ? type.label : 'N/I';
+  return <Label variant="soft" color={color}>{label}</Label>;
+}
+
+export function RenderCellCode({params}){
+  return <Typography fontSize={14}>{params.row.eon_voucher?.code}</Typography>;
+}
+
+export function RenderCellPriority({ params }) {
+  const priority = PRIORITY_OPTIONS.find(option => option.value == params.row.priority);
+  const color = priority ? priority.color : 'default';
+  const label = priority ? priority.label : 'N/I';
+  return <Label variant="soft" color={color}>{label}</Label>;
 }

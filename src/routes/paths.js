@@ -1,5 +1,7 @@
 // ----------------------------------------------------------------------
 
+import { initial } from 'es-toolkit';
+
 const ROOTS = {
   AUTH: '/auth',
   DASHBOARD: '/dashboard',
@@ -224,8 +226,12 @@ export const paths = {
       rawMaterials: {
         root: `${ROOTS.DASHBOARD}/store/raw-materials`,
         stocks: `${ROOTS.DASHBOARD}/store/raw-materials/stocks`,
+        storageArea: `${ROOTS.DASHBOARD}/store/raw-materials/storage-area`,
+        newStorageArea: `${ROOTS.DASHBOARD}/store/raw-materials/storage-area/new`,
         newStock: `${ROOTS.DASHBOARD}/store/raw-materials/stocks/new`,
         editStock: (id) => `${ROOTS.DASHBOARD}/store/raw-materials/stocks/${id}/edit`,
+        initialStorage: `${ROOTS.DASHBOARD}/store/raw-materials/initial-storage`,
+        newInitialStorage: `${ROOTS.DASHBOARD}/store/raw-materials/initial-storage/new`,
       },
       spareParts: {
         root: `${ROOTS.DASHBOARD}/store/spare-parts`,

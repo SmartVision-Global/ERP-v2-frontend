@@ -22,6 +22,9 @@ import {
   ListItem,
   ListItemText,
   Typography,
+  FormControl,
+  TextField,
+  InputAdornment
 } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
@@ -184,7 +187,8 @@ const columns = [
 // ----------------------------------------------------------------------
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 
-export function StockListView() {
+export function StockListView({ isSelectionDialog = false, componentsProps, onSearch }) {
+  const [searchQuery, setSearchQuery] = useState('');
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: PAGE_SIZE,
@@ -192,15 +196,11 @@ export function StockListView() {
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [toolsAnchorEl, setToolsAnchorEl] = useState(null);
-  const { stocks, stocksLoading, stocksCount } = useGetStocks({
-    limit: paginationModel.pageSize,
-    offset: paginationModel.page,
-  });
+  const { stocks, stocksLoading, stocksCount } = useGetStocks({ limit: paginationModel.pageSize, offset: 0 });
   const [rowCount, setRowCount] = useState(stocksCount);
   const [tableData, setTableData] = useState(stocks);
 
   const { dataLookups } = useMultiLookups([
-    { entity: 'personalsLookup', url: 'hr/lookups/personals' },
     { entity: 'measurementUnits', url: 'settings/lookups/measurement-units' },
     { entity: 'categories', url: 'settings/lookups/categories', params: { group: 1 } },
     { entity: 'families', url: 'settings/lookups/families', params: { group: 1 } },
@@ -219,13 +219,7 @@ export function StockListView() {
     { id: 'supplier_code', type: 'input', label: 'Supplier Code' },
     { id: 'designation', type: 'input', label: 'Designation' },
     { id: 'status', type: 'select', options: PRODUCT_STATUS_OPTIONS, label: 'Etat' },
-    {
-      id: 'unit_measure',
-      type: 'select',
-      options: measurementUnits,
-      label: 'Unit',
-      serverData: true,
-    },
+    { id: 'unit_measure_id', type: 'select', options: measurementUnits, label: 'Unit', serverData: true },
     { id: 'category', type: 'select', options: categories, label: 'Category', serverData: true },
     { id: 'family', type: 'select', options: families, label: 'Family', serverData: true },
     // { id: 'sub_family', type: 'select', options: subFamilies, label: 'Sub Family' },
@@ -289,7 +283,7 @@ export function StockListView() {
       const newData = {
         ...editedFilters,
         limit: newModel.pageSize,
-        offset: newModel.page,
+        offset: newModel.page * newModel.pageSize,
       };
       const response = await getFiltredStocks(newData);
       setTableData(response.data?.data?.records);
@@ -433,6 +427,13 @@ export function StockListView() {
     doc.save('stocks.pdf');
   };
 
+  const handleSearch = (event) => {
+    const value = event.target.value;
+    setSearchQuery(value);
+    if (onSearch) {
+      onSearch(value);
+    }
+  };
   return (
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
@@ -536,36 +537,42 @@ export function StockListView() {
             flexDirection: { md: 'column' },
           }}
         >
-          <TableToolbarCustom
-            filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={setEditedFilters}
-            onReset={handleReset}
-            handleFilter={handleFilter}
-            setPaginationModel={setPaginationModel}
-            paginationModel={paginationModel}
-          />
-          <Box paddingX={4} paddingY={2} sx={{}}>
-            <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
-              <TextField
-                fullWidth
-                // value={currentFilters.name}
-                // onChange={handleFilterName}
-                placeholder="Search "
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-                size="small"
+          {!isSelectionDialog && (
+            <>
+              <TableToolbarCustom
+                filterOptions={FILTERS_OPTIONS}
+                filters={editedFilters}
+                setFilters={setEditedFilters}
+                onReset={handleReset}
+                handleFilter={handleFilter}
+                setPaginationModel={setPaginationModel}
+                paginationModel={paginationModel}
               />
-            </FormControl>
-          </Box>
+              <Box paddingX={4} paddingY={2}>
+                <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
+                  <TextField
+                    fullWidth
+                    placeholder="Search "
+                    value={searchQuery}
+                    onChange={handleSearch}
+                    slotProps={{
+                      input: {
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                          </InputAdornment>
+                        ),
+                      },
+                    }}
+                    size="small"
+                  />
+                </FormControl>
+              </Box>
+            </>
+          )}
+
           <DataGrid
+            {...componentsProps}
             disableRowSelectionOnClick
             disableColumnMenu
             rows={tableData}

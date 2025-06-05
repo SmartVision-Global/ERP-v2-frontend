@@ -2,11 +2,11 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
-import { BebCreateView } from 'src/sections/expression-of-needs/Beb/view';
+import { StorageAreaListView } from 'src/sections/store/raw-materials/storage-area/view/storageArea-list-view';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Ajouter Bon d'expression des besoins | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `Lieu de stockage | Dashboard - ${CONFIG.appName}` };
 
 export default function Page() {
   return (
@@ -15,7 +15,7 @@ export default function Page() {
         <title> {metadata.title}</title>
       </Helmet>
 
-      <BebCreateView />
+      <StorageAreaListView />
     </>
   );
 }

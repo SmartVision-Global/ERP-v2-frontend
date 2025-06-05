@@ -14,12 +14,13 @@ const swrOptions = {
   revalidateOnReconnect: enableServer || false,
 };
 
-const ENDPOINT = endpoints.stores.list;
-
+const ENDPOINT = endpoints.purchaseSupply.purchaseOrder.list;
+// Dynamic endpoint for fetching items of a BEB (eon-voucher)
+const ENDPOINT_ITEMS = (id) => `${ENDPOINT}/${id}/items`;
 
 // ----------------------------------------------------------------------
 
-export function useGetStocks(params) {
+export function useGetPurchaseOrders(params) {
   // Use params to request paginated/filter data
   const key = params
     ? [ENDPOINT, { params }]
@@ -28,13 +29,13 @@ export function useGetStocks(params) {
 
   const memoizedValue = useMemo(
     () => ({
-      stocks: data?.data?.records || [],
-      stocksCount: data?.data?.total || 0,
+      purchaseOrders: data?.data?.records || [],
+      purchaseOrdersCount: data?.data?.total || 0,
 
-      stocksLoading: isLoading,
-      stocksError: error,
-      stocksValidating: isValidating,
-      stocksEmpty: !isLoading && !isValidating && !data?.data?.records.length,
+      purchaseOrdersLoading: isLoading,
+      purchaseOrdersError: error,
+      purchaseOrdersValidating: isValidating,
+      purchaseOrdersEmpty: !isLoading && !isValidating && !data?.data?.records.length,
     }),
     [data?.data?.records, data?.data?.total, error, isLoading, isValidating]
   );
@@ -42,28 +43,53 @@ export function useGetStocks(params) {
   return memoizedValue;
 }
 
-export async function getFiltredStocks(params) {
+export async function getFiltredPurchaseOrders(params) {
   const response = await axios.get(`${ENDPOINT}`, {
     params,
   });
   return response;
 }
 
-export function useGetStock(id) {
-  const url = id ? `${endpoints.stores.list}/${id}` : '';
+export function useGetPurchaseOrder(id) {
+  const url = id ? `${ENDPOINT}/${id}` : '';
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({
-      stock: data?.data,
-      stockLoading: isLoading,
-      stockError: error,
-      stockValidating: isValidating,
-      stockEmpty: !isLoading && !isValidating && !data?.data,
+      purchaseOrder: data?.data,
+      purchaseOrderLoading: isLoading,
+      purchaseOrderError: error,
+      purchaseOrderValidating: isValidating,
+      purchaseOrderEmpty: !isLoading && !isValidating && !data?.data,
     }),
     [data?.data, error, isLoading, isValidating]
   );
 
+  return memoizedValue;
+}
+
+// ----------------------------------------------------------------------
+
+/**
+ * Hook to fetch items for a given BEB (eon-voucher)
+ * @param {string|number} id - ID of the eon-voucher
+ * @param {{ limit: number, offset: number }} params - pagination parameters
+ */
+export function useGetPurchaseOrderItems(id, params) {
+  const url = id ? ENDPOINT_ITEMS(id) : null;
+  const swrKey = id ? [url, { params }] : null;
+  
+  const { data, isLoading, error, isValidating } = useSWR(swrKey, fetcher, swrOptions);
+  const memoizedValue = useMemo(
+    () => ({
+      items: data?.data || [],
+      itemsCount: data?.data?.total || 0,
+      itemsLoading: isLoading,
+      itemsError: error,
+      itemsValidating: isValidating,
+    }),
+    [data?.data, data?.data?.total, error, isLoading, isValidating]
+  );
   return memoizedValue;
 }
 
@@ -85,7 +111,7 @@ export async function createEntity(entityType, data) {
   
   try {
     await axios.post(endpoint, data);
-    mutate(endpoints.stores.list);
+    mutate(ENDPOINT);
   } catch (error) {
     console.error(`Error creating ${entityType}:`, error);
     throw error;
@@ -109,7 +135,7 @@ export async function updateEntity(entityType, id, data) {
   
   try {
     await axios.patch(`${endpoint}/${id}`, data);
-    mutate(endpoints.stores.list);
+    mutate(ENDPOINT);
   } catch (error) {
     console.error(`Error updating ${entityType}:`, error);
     throw error;

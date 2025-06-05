@@ -158,6 +158,9 @@ export const customConfig = {
   },
   settings: {
     'import/resolver': {
+      node: {
+        extensions: ['.js', '.jsx', '.json'],
+      },
       alias: {
         map: [['src', './src']],
         extensions: ['.js', '.jsx', '.json'],
@@ -169,6 +172,7 @@ export const customConfig = {
     ...importRules(),
     ...unusedImportsRules(),
     ...sortImportsRules(),
+    'import/no-unresolved': ['error', { ignore: ['^date-fns', '^date-fns/locale'] }],
   },
 };
 

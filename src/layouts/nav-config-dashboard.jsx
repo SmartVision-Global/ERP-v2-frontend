@@ -64,7 +64,11 @@ export const navData = [
           {
             title: 'Matières premières',
             path: paths.dashboard.store.rawMaterials.root,
-            children: [{ title: 'Stocks', path: paths.dashboard.store.rawMaterials.stocks }],
+            children: [
+              { title: 'Stocks', path: paths.dashboard.store.rawMaterials.stocks },
+              { title: 'Lieu de stockage', path: paths.dashboard.store.rawMaterials.storageArea },
+              { title: 'Entrée de stock', path: paths.dashboard.store.rawMaterials.initialStorage },
+            ],
           },
           // {
           //   title: 'Pièces de rechange',

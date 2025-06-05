@@ -12,7 +12,7 @@ import { useRouter } from 'src/routes/hooks';
 
 import { uploadMedia } from 'src/actions/media';
 import { useMultiLookups } from 'src/actions/lookups';
-import { TYPE_OPTIONS } from 'src/_mock/stores/raw-materials/data';
+import { DATA_TYPE_OPTIONS } from 'src/_mock/stores/raw-materials/data';
 import { useGetFamilies } from 'src/actions/settings/identification/raw-materials';
 import { createEntity, updateEntity } from 'src/actions/stores/raw-materials/stocks';
 
@@ -86,7 +86,7 @@ export function StockNewEditForm({ currentStock }) {
     min: '',
     alert: '',
     consumption: '',
-    type: TYPE_OPTIONS[0]?.value || '',
+    type: DATA_TYPE_OPTIONS[0]?.value || '',
     image: '',
     catalog: '',
     dimensions: dimensionDefs.map((d) => ({ id: Number(d.value), value: 0 })),
@@ -161,7 +161,7 @@ export function StockNewEditForm({ currentStock }) {
         min: currentStock?.min || '',
         alert: currentStock?.alert || '',
         consumption: currentStock?.consumption || '',
-        type: currentStock?.type.toString() || TYPE_OPTIONS[0]?.value || '',
+        type: currentStock?.type.toString() || DATA_TYPE_OPTIONS[0]?.value || '',
         image: currentStock?.image || '',
         catalog: currentStock?.catalog || '',
         dimensions: currentStock?.dimensions?.length
@@ -355,7 +355,7 @@ export function StockNewEditForm({ currentStock }) {
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="type" label="Type" size="small">
-              {TYPE_OPTIONS.map((option) => (
+              {DATA_TYPE_OPTIONS.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
                 </MenuItem>
