@@ -47,6 +47,8 @@ export function BEBNewEditForm() {
     setValue('selectedBEB', null);
   };
 
+  console.log('selectedBEB',selectedBEB);
+
   return (
     <Box sx={{ p: 2 }}>
       <Stack spacing={3}>
@@ -103,7 +105,7 @@ export function BEBNewEditForm() {
             label="BEB Sélectionné"
             value={
               selectedBEB
-                ? `${selectedBEB.code} - ${selectedBEB.name || selectedBEB.applicant || ''}`
+                ? `${selectedBEB.code} - ${selectedBEB.created_by?.full_name || ''}`
                 : ''
             }
             InputProps={{
@@ -130,19 +132,24 @@ export function BEBNewEditForm() {
                   <strong>Code:</strong> {selectedBEB.code}
                 </Typography>
               )}
-              {selectedBEB.name && (
+              {selectedBEB.created_by?.full_name && (
                 <Typography variant="body2">
-                  <strong>Nom:</strong> {selectedBEB.name}
-                </Typography>
-              )}
-              {selectedBEB.applicant && (
-                <Typography variant="body2">
-                  <strong>Demandeur:</strong> {selectedBEB.applicant}
+                  <strong>Demandeur:</strong> {selectedBEB.created_by?.full_name}
                 </Typography>
               )}
               {selectedBEB.service && (
                 <Typography variant="body2">
-                  <strong>Service:</strong> {selectedBEB.service}
+                  <strong>Service:</strong> {selectedBEB.service?.name}
+                </Typography>
+              )}
+              {selectedBEB.site?.name && (
+                <Typography variant="body2">
+                  <strong>Site:</strong> {selectedBEB.site?.name}
+                </Typography>
+              )}
+              {selectedBEB.observation && (
+                <Typography variant="body2">
+                  <strong>Observation:</strong> {selectedBEB.observation}
                 </Typography>
               )}
             </Stack>

@@ -10,7 +10,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import { Tooltip, MenuItem, IconButton, ListItemIcon, Chip } from '@mui/material';
 
 // Import your BEB data hook (you'll need to create this)
-// import { useGetBEBItems } from 'src/actions/beb';
+import { useGetBebs } from 'src/actions/expression-of-needs/beb/beb';
 
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
@@ -22,40 +22,7 @@ import { SearchNotFound } from 'src/components/search-not-found';
 
 const HIDE_COLUMNS = { category: false };
 
-// Sample BEB data - Replace with your actual data source
-const SAMPLE_BEB_DATA = [
-  {
-    id: 1,
-    date: '2024-01-15',
-    code: 'BEB001',
-    applicant: 'Ahmed Benali',
-    service: 'Comptabilité',
-    observation: 'Demande urgente pour matériel bureau',
-    status: 'pending',
-    priority: 'high',
-  },
-  {
-    id: 2,
-    date: '2024-01-14',
-    code: 'BEB002',
-    applicant: 'Fatima Zahra',
-    service: 'RH',
-    observation: 'Équipement informatique',
-    status: 'approved',
-    priority: 'medium',
-  },
-  {
-    id: 3,
-    date: '2024-01-13',
-    code: 'BEB003',
-    applicant: 'Mohamed Cherif',
-    service: 'Production',
-    observation: 'Outils de production spécialisés',
-    status: 'rejected',
-    priority: 'low',
-  },
-  // Add more sample data as needed
-];
+// Removed sample static data; switching to API-driven BEB list
 
 export function BEBListDialog({
   open,
@@ -66,11 +33,8 @@ export function BEBListDialog({
   title = 'Sélection BEB',
   type,
 }) {
-  // Replace this with your actual BEB data hook
-  // const { bebItems, bebItemsLoading } = useGetBEBItems(type);
-  const bebItems = SAMPLE_BEB_DATA;
-  const bebItemsLoading = false;
-
+  const { bebs: bebItems, bebsLoading: bebItemsLoading } = useGetBebs({ limit: 1000, offset: 0 });
+  console.log('bebItems',bebItems);
   const [searchBEB, setSearchBEB] = useState('');
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
@@ -106,7 +70,14 @@ export function BEBListDialog({
 
   const columns = [
     {
-      field: 'date',
+      field: 'id',
+      headerName: 'ID',
+      flex: 1,
+      minWidth: 100,
+      hideable: false,
+    },
+    {
+      field: 'requested_date',
       headerName: 'Date',
       flex: 1,
       minWidth: 120,
@@ -114,7 +85,7 @@ export function BEBListDialog({
       renderCell: (params) => (
         <Box>
           <Typography variant="body2">
-            {new Date(params.row.date).toLocaleDateString('fr-FR')}
+            {new Date(params.row.requested_date).toLocaleDateString('fr-FR')}
           </Typography>
         </Box>
       ),
@@ -134,14 +105,14 @@ export function BEBListDialog({
       ),
     },
     {
-      field: 'applicant',
+      field: 'created_by',
       headerName: 'Demandeur',
       flex: 1,
       minWidth: 160,
       hideable: false,
       renderCell: (params) => (
         <Box>
-          <Typography variant="body2">{params.row?.applicant}</Typography>
+          <Typography variant="body2">{params.row?.created_by?.full_name}</Typography>
         </Box>
       ),
     },
@@ -149,11 +120,25 @@ export function BEBListDialog({
       field: 'service',
       headerName: 'Service',
       flex: 1,
-      minWidth: 140,
+      minWidth: 200,
       hideable: false,
       renderCell: (params) => (
         <Box>
-          <Chip label={params.row?.service} size="small" variant="outlined" color="primary" />
+          {params.row?.service?.name && (
+            <Chip label={params.row?.service?.name} size="small" variant="outlined" color="primary" />
+          )}
+        </Box>
+      ),
+    },
+    {
+      field: 'site',
+      headerName: 'Site',
+      flex: 1,
+      minWidth: 120,
+      hideable: false,
+      renderCell: (params) => (
+        <Box>
+          <Chip label={params.row?.site?.name} size="small" variant="outlined" color="primary" />
         </Box>
       ),
     },
@@ -181,38 +166,8 @@ export function BEBListDialog({
         </Box>
       ),
     },
-    {
-      field: 'status',
-      headerName: 'Statut',
-      flex: 1,
-      minWidth: 120,
-      hideable: false,
-      renderCell: (params) => {
-        const status = params.row?.status;
-        const statusConfig = STATUS_CONFIG[status] || STATUS_CONFIG.draft;
-        return (
-          <Label variant="soft" color={statusConfig.color}>
-            {statusConfig.label}
-          </Label>
-        );
-      },
-    },
-    {
-      field: 'priority',
-      headerName: 'Priorité',
-      flex: 1,
-      minWidth: 100,
-      hideable: false,
-      renderCell: (params) => {
-        const priority = params.row?.priority;
-        const priorityConfig = PRIORITY_CONFIG[priority] || PRIORITY_CONFIG.low;
-        return (
-          <Label variant="soft" color={priorityConfig.color}>
-            {priorityConfig.label}
-          </Label>
-        );
-      },
-    },
+    
+    
     {
       field: 'actions',
       headerName: 'Actions',
