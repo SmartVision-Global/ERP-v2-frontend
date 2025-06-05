@@ -59,6 +59,7 @@ export function OrderPurchaseList() {
   });
   const [selectedRow, setSelectedRow] = useState('');
   const { personals, personalsLoading, personalsCount } = useGetPersonals({ limit: 2, offset: 0 });
+  console.log('personals', personals);
   const [rowCount, setRowCount] = useState(0);
 
   const { dataLookups } = useMultiLookups([{ entity: 'sites', url: 'settings/lookups/sites' }]);

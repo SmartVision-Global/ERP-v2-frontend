@@ -165,10 +165,10 @@ export function BebListView() {
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
 
-  const handleOpenDetail = (row) => {
+  const handleOpenDetail = useCallback((row) => {
     setSelectedRow(row);
     setDetailOpen(true);
-  };
+  }, []);
 
   const handleCloseDetail = () => {
     setDetailOpen(false);
@@ -282,53 +282,55 @@ if (col.field === 'location') {
     doc.autoTable({ head: [header], body: rows });
     doc.save('stocks.pdf');
   };
-  const columns = [
-    { field: 'id', headerName: 'ID', width: 100, minWidth: 100, renderCell: (params) => <RenderCellId params={params} /> },
-    { field: 'code', headerName: 'Code', flex: 1, minWidth: 150 },
-    { field: 'requested_date', headerName: 'Date de besoins', flex: 1, minWidth: 150, renderCell: (params) => <RenderCellRequestedDate params={params} />},
-    { field: 'time', headerName: 'Temps', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellTime params={params} />},
-    { field: 'created_by', headerName: 'Demandeur', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellCreatedBy params={params} />},
-    { field: 'status', headerName: 'Statut', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellStatus params={params} />},
-    { field: 'type', headerName: 'Type', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellType params={params} />},
-    { field: 'site', headerName: 'Site', flex: 1.5, minWidth: 120 , renderCell: (params) => <RenderCellSite params={params} />},
-    { field: 'service', headerName: 'Structure', width: 100, minWidth: 100, renderCell: (params) => <RenderCellService params={params} />},
-    { field: 'observation', headerName: 'Observations', flex: 1, minWidth: 120 },
-    { field: 'nature', headerName: 'Nature', width: 100, minWidth: 100, renderCell: (params) => <RenderCellNature params={params} />},
-    { field: 'priority', headerName: 'Priorité', width: 100, minWidth: 100, renderCell: (params) => <RenderCellPriority params={params} />},
-    
-    {
-      field: 'created_date',
-      headerName: 'Created Date',
-      flex: 1,
-      minWidth: 150,
-      renderCell: (params) => <RenderCellCreatedDate params={params} />,
-    },
-    {
-      type: 'actions',
-      field: 'actions',
-      headerName: ' ',
-      align: 'right',
-      headerAlign: 'right',
-      width: 80,
-      sortable: false,
-      filterable: false,
-      disableColumnMenu: true,
-      getActions: (params) => [
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:pen-bold" />}
-          label="Modifier"
-          href={paths.dashboard.expressionOfNeeds.beb.edit(params.row.id)}
-        />,
-        <GridActionsCellItem
-                showInMenu
-                icon={<Iconify icon="humbleicons:view-list" />}
-                label="liste des produits"
-                onClick={() => handleOpenDetail(params.row)}
-              />,
-      ],
-    },
-  ];
+  const columns = useMemo(() => 
+     [
+      { field: 'id', headerName: 'ID', width: 100, minWidth: 100, renderCell: (params) => <RenderCellId params={params} /> },
+      { field: 'code', headerName: 'Code', flex: 1, minWidth: 150 },
+      { field: 'requested_date', headerName: 'Date de besoins', flex: 1, minWidth: 150, renderCell: (params) => <RenderCellRequestedDate params={params} />},
+      { field: 'time', headerName: 'Temps', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellTime params={params} />},
+      { field: 'created_by', headerName: 'Demandeur', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellCreatedBy params={params} />},
+      { field: 'status', headerName: 'Statut', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellStatus params={params} />},
+      { field: 'type', headerName: 'Type', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellType params={params} />},
+      { field: 'site', headerName: 'Site', flex: 1.5, minWidth: 120 , renderCell: (params) => <RenderCellSite params={params} />},
+      { field: 'service', headerName: 'Structure', width: 100, minWidth: 100, renderCell: (params) => <RenderCellService params={params} />},
+      { field: 'observation', headerName: 'Observations', flex: 1, minWidth: 120 },
+      { field: 'nature', headerName: 'Nature', width: 100, minWidth: 100, renderCell: (params) => <RenderCellNature params={params} />},
+      { field: 'priority', headerName: 'Priorité', width: 100, minWidth: 100, renderCell: (params) => <RenderCellPriority params={params} />},
+      
+      {
+        field: 'created_date',
+        headerName: 'Created Date',
+        flex: 1,
+        minWidth: 150,
+        renderCell: (params) => <RenderCellCreatedDate params={params} />,
+      },
+      {
+        type: 'actions',
+        field: 'actions',
+        headerName: ' ',
+        align: 'right',
+        headerAlign: 'right',
+        width: 80,
+        sortable: false,
+        filterable: false,
+        disableColumnMenu: true,
+        getActions: (params) => [
+          <GridActionsLinkItem
+            showInMenu
+            icon={<Iconify icon="solar:pen-bold" />}
+            label="Modifier"
+            href={paths.dashboard.expressionOfNeeds.beb.edit(params.row.id)}
+          />,
+          <GridActionsCellItem
+                    showInMenu
+                    icon={<Iconify icon="humbleicons:view-list" />}
+                    label="liste des produits"
+                    onClick={() => handleOpenDetail(params.row)}
+                  />,
+        ],
+      },
+    ]
+  , [handleOpenDetail]);
 
   return (
     <>
