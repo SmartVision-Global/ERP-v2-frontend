@@ -48,16 +48,36 @@ export default function BebProductsList({ id }) {
       },
     },
     { field: 'code', headerName: 'Code', flex: 1, minWidth: 120 },
-    { field: 'supplier_code', headerName: 'Code Fournisseur', flex: 1, minWidth: 120, renderCell: (params) => {
+    { field: 'supplier_code', headerName: 'Code Fournisseur', width: 110, renderHeader: () => (
+      <div
+        style={{ whiteSpace: 'normal', lineHeight: 1.2, textAlign: 'center', fontWeight: 'bold' }}
+      >
+        Code
+        <br />
+        Fournisseur
+      </div>
+    ),renderCell: (params) => {
       const product = params.row.product;
-      return <Typography fontSize={12}>{product?.supplier_code}</Typography>;
+      
+      return <Typography fontSize={12} >{product?.supplier_code}</Typography>;
     } },
-    { field: 'quantity', headerName: 'Quantité Demandée', type: 'number', width: 150 },
+    { field: 'quantity', headerName: 'Quantité Demandée', width: 110, renderHeader: () => (
+      <div
+        style={{ whiteSpace: 'normal', lineHeight: 1.2, textAlign: 'center', fontWeight: 'bold' }}
+      >
+        Quantité
+        <br />
+        Demandée
+      </div>
+    ),renderCell: (params) => {
+      const quantity = params.row.quantity;
+      return <Typography fontSize={12}>{quantity}</Typography>;
+    } },
     {
       field: 'workshop_id',
       headerName: 'Atelier',
       flex: 1,
-      minWidth: 120,
+      minWidth: 100,
       renderCell: (params) => {
         const workshop = params.row.workshop;
         return <Typography fontSize={12}>{workshop?.name}</Typography>;
@@ -67,14 +87,20 @@ export default function BebProductsList({ id }) {
       field: 'machine_id',
       headerName: 'Machine',
       flex: 1,
-      minWidth: 120,
+      minWidth: 100,
       renderCell: (params) => {
         const machine = params.row.machine;
         return <Typography fontSize={12}>{machine?.name}</Typography>;
       },
     },
-    { field: 'observation', headerName: 'Observation', flex: 1, minWidth: 150 },
-    { field: 'motif', headerName: 'Motif', flex: 1, minWidth: 150 },
+    { field: 'observation', headerName: 'Observation', flex: 1, minWidth: 100, renderCell: (params) => {
+      const observation = params.row.observation;
+      return <Typography fontSize={12}>{observation}</Typography>;
+    } },
+    { field: 'motif', headerName: 'Motif', flex: 1, minWidth: 100, renderCell: (params) => {
+      const motif = params.row.motif;
+      return <Typography fontSize={12}>{motif}</Typography>;
+    } },
   ];
 
   return (
@@ -89,6 +115,12 @@ export default function BebProductsList({ id }) {
         onPaginationModelChange={(model) => setPaginationModel(model)}
         pageSizeOptions={[5, 10, 20]}
         disableColumnMenu
+        sx={{
+          '& .MuiDataGrid-cell': {
+            display: 'flex',
+            alignItems: 'center',
+          },
+        }}
       />
       {previewImage && (
         <Modal open onClose={() => setPreviewImage(null)}>

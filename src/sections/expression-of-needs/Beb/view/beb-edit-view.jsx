@@ -16,12 +16,12 @@ export function BebEditView({ beb }) {
         backHref={paths.dashboard.rh.personal.root}
         links={[
           { name: 'Expression des besoins', href: paths.dashboard.expressionOfNeeds.beb.root },
-          { name: beb?.name },
+          { name: beb?.code },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      {beb && <BebNewEditForm currentBeb={beb} />}
+      {beb && <BebNewEditForm initialData={beb} />}
     </DashboardContent>
   );
 }

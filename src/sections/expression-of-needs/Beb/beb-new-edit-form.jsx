@@ -12,7 +12,7 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useMultiLookups } from 'src/actions/lookups';
 import { useGetStocks } from 'src/actions/stores/raw-materials/stocks';
-import { createEntity } from 'src/actions/expression-of-needs/beb/beb';
+import { createEntity, updateEntity } from 'src/actions/expression-of-needs/beb/beb';
 import { BEB_NATURE_OPTIONS, PRODUCT_TYPE_OPTIONS, PRIORITY_OPTIONS } from 'src/_mock/expression-of-needs/Beb/Beb';
 
 import { toast } from 'src/components/snackbar';
@@ -45,7 +45,8 @@ const bebSchema = z.object({
 });
 
 // BEB Request Form with two tabs: Informations and Produits
-export function BebNewEditForm({ initialData, onSubmit }) {
+export function BebNewEditForm({ initialData }) {
+  console.log('initialData', initialData);
   const router = useRouter();
   const [currentTab, setCurrentTab] = useState(0);
   const { dataLookups, dataLoading } = useMultiLookups([
@@ -66,7 +67,7 @@ export function BebNewEditForm({ initialData, onSubmit }) {
   const handleSelectProduct = (row) => {
     const idx = openModalIndex;
     console.log('handleSelectProduct', row);
-    setValue(`items.${idx}.product_id`, row.id.toString());
+    setValue(`items.${idx}.product_id`, row.product.id.toString());
     setValue(`items.${idx}.code`, row.code);
     setValue(`items.${idx}.designation`, row.designation);
     setValue(`items.${idx}.unit_measure`, row.unit_measure || { designation: '' });
@@ -98,17 +99,17 @@ export function BebNewEditForm({ initialData, onSubmit }) {
   const methods = useForm({
     resolver: zodResolver(bebSchema),
     defaultValues: {
-      nature: initialData?.nature || BEB_NATURE_OPTIONS[0]?.value || '',
+      nature: initialData?.nature?.toString() || BEB_NATURE_OPTIONS[0]?.value || '',
       requested_date: initialData?.requested_date?.split('T')[0] || '',
-      site_id: initialData?.site_id?.toString() || '',
-      personal_id: initialData?.personal_id?.toString() || '',
+      site_id: initialData?.site?.id?.toString() || '',
+      personal_id: initialData?.personal?.toString() || '',
       type: initialData?.type?.toString() || PRODUCT_TYPE_OPTIONS[0]?.value?.toString() || '',
       priority:
         initialData?.priority?.toString() || PRIORITY_OPTIONS[0]?.value?.toString() || '',
       observation: initialData?.observation || '',
       details: initialData?.details || '',
       items: initialData?.items
-        ? Object.values(initialData.items).map((item) => ({
+        ? initialData.items.map((item) => ({
             product_id: item.product_id?.toString() || '',
             code: item.code || '',
             supplier_code: item.supplier_code || '',
@@ -118,7 +119,7 @@ export function BebNewEditForm({ initialData, onSubmit }) {
             workshop_id: item.workshop_id?.toString() || '',
             machine_id: item.machine_id?.toString() || '',
             observation: item.observation || '',
-            unit_measure: item.unit_measure || { designation: '' },
+            unit_measure: item.measure_unit || { designation: '' },
             motif: item.motif || '',
           }))
         : [],
@@ -139,14 +140,34 @@ export function BebNewEditForm({ initialData, onSubmit }) {
 
   // Move to next tab or submit at the last tab
   const handleFormSubmit = async (data) => {
-    // strip time from requested_date
     if (data.requested_date) data.requested_date = data.requested_date.split('T')[0];
     if (currentTab === 0) {
       setCurrentTab(1);
     } else {
       try {
-        await createEntity('beb', data);
-        toast.success('BEB created');
+        // transform items to backend format
+        const payload = {
+          ...data,
+          items: data.items.map((item) => ({
+            product_id: item.product_id,
+            code: item.code,
+            designation: item.designation,
+            quantity: Number(item.quantity),
+            observation: item.observation,
+            // measure_unit: item.unit_measure,
+            motif: item.motif,
+            machine_id: Number(item.machine_id),
+            workshop_id: Number(item.workshop_id),
+          })),
+        };
+        console.log('payload', payload);
+        if (initialData?.id) {
+          await updateEntity('beb', initialData.id, payload);
+          toast.success('BEB updated');
+        } else {
+          await createEntity('beb', payload);
+          toast.success('BEB created');
+        }
         router.push(paths.dashboard.expressionOfNeeds.beb.root);
       } catch (error) {
         toast.error(error?.message || 'Creation failed');
@@ -155,13 +176,34 @@ export function BebNewEditForm({ initialData, onSubmit }) {
   };
 
   useEffect(() => {
-    if (!dataLoading && sites.length > 0 && personals.length > 0) {
+    if (initialData && !dataLoading && sites.length > 0 && personals.length > 0) {
       reset({
-        site_id: initialData?.site_id?.toString() || '',
-        personal_id: initialData?.personal_id?.toString() || '',
+        nature: initialData.nature?.toString() || BEB_NATURE_OPTIONS[0]?.value || '',
+        requested_date: initialData.requested_date?.split('T')[0] || '',
+        site_id: initialData.site?.id?.toString() || '',
+        personal_id: initialData.personal?.toString() || '',
+        type: initialData.type?.toString() || PRODUCT_TYPE_OPTIONS[0]?.value?.toString() || '',
+        priority: initialData.priority?.toString() || PRIORITY_OPTIONS[0]?.value?.toString() || '',
+        observation: initialData.observation || '',
+        details: initialData.details || '',
+        items: initialData.items
+          ? initialData.items.map((item) => ({
+              product_id: item.product_id?.toString() || '',
+              code: item.code || '',
+              supplier_code: item.supplier_code || '',
+              designation: item.designation || '',
+              current_quantity: item.current_quantity?.toString() || '',
+              quantity: item.quantity?.toString() || '',
+              workshop_id: item.workshop_id?.toString() || '',
+              machine_id: item.machine_id?.toString() || '',
+              observation: item.observation || '',
+              unit_measure: item.measure_unit || { designation: '' },
+              motif: item.motif || '',
+            }))
+          : [],
       });
     }
-  }, [dataLoading, sites, personals, reset]);
+  }, [initialData, dataLoading, sites, personals, reset]);
 
   return (
     <Form methods={methods} onSubmit={handleSubmit(handleFormSubmit)}>

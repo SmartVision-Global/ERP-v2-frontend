@@ -54,47 +54,7 @@ const HIDE_COLUMNS = { categories: false };
 
 const HIDE_COLUMNS_TOGGLABLE = ['actions'];
 
-const columns = [
-  { field: 'id', headerName: 'ID', width: 100, minWidth: 100, renderCell: (params) => <RenderCellId params={params} /> },
-  { field: 'code', headerName: 'Code', flex: 1, minWidth: 150 },
-  { field: 'requested_date', headerName: 'Date de besoins', flex: 1, minWidth: 150, renderCell: (params) => <RenderCellRequestedDate params={params} />},
-  { field: 'time', headerName: 'Temps', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellTime params={params} />},
-  { field: 'created_by', headerName: 'Demandeur', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellCreatedBy params={params} />},
-  { field: 'status', headerName: 'Statut', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellStatus params={params} />},
-  { field: 'type', headerName: 'Type', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellType params={params} />},
-  { field: 'site', headerName: 'Site', flex: 1.5, minWidth: 120 , renderCell: (params) => <RenderCellSite params={params} />},
-  { field: 'service', headerName: 'Structure', width: 100, minWidth: 100, renderCell: (params) => <RenderCellService params={params} />},
-  { field: 'observation', headerName: 'Observations', flex: 1, minWidth: 120 },
-  { field: 'nature', headerName: 'Nature', width: 100, minWidth: 100, renderCell: (params) => <RenderCellNature params={params} />},
-  { field: 'priority', headerName: 'Priorité', width: 100, minWidth: 100, renderCell: (params) => <RenderCellPriority params={params} />},
-  
-  {
-    field: 'created_date',
-    headerName: 'Created Date',
-    flex: 1,
-    minWidth: 150,
-    renderCell: (params) => <RenderCellCreatedDate params={params} />,
-  },
-  {
-    type: 'actions',
-    field: 'actions',
-    headerName: ' ',
-    align: 'right',
-    headerAlign: 'right',
-    width: 80,
-    sortable: false,
-    filterable: false,
-    disableColumnMenu: true,
-    getActions: (params) => [
-      <GridActionsLinkItem
-        showInMenu
-        icon={<Iconify icon="solar:pen-bold" />}
-        label="Modifier"
-        href={paths.dashboard.store.rawMaterials.editStock(params.row.id)}
-      />,
-    ],
-  },
-];
+
 
 
 
@@ -114,16 +74,9 @@ export function BebListView() {
   const [tableData, setTableData] = useState(bebs);
 
   const { dataLookups } = useMultiLookups([
-    { entity: 'measurementUnits', url: 'settings/lookups/measurement-units' },
-    { entity: 'categories', url: 'settings/lookups/categories', params: { group: 1 } },
-    { entity: 'families', url: 'settings/lookups/families', params: { group: 1 } },
     { entity: 'sites', url: 'settings/lookups/sites' },
   ]);
 
-  const measurementUnits = dataLookups.measurementUnits || [];
-  const categories = dataLookups.categories || [];
-  const families = dataLookups.families || [];
-  // const subFamilies = families.length > 0 ? families.find((f) => f?.id.toString() === selectedParent)?.children || [] : [];
   const sites = dataLookups.sites || [];
 
   const FILTERS_OPTIONS = [
@@ -134,7 +87,6 @@ export function BebListView() {
     { id: 'site', type: 'select', options: sites, label: 'Site', serverData: true },
     { id: 'type', type: 'select', options: PRODUCT_TYPE_OPTIONS, label: 'Type' },
     {id:'nature', type:'select', options:BEB_NATURE_OPTIONS, label:'Nature'},
-    // { id: 'sub_family', type: 'select', options: subFamilies, label: 'Sub Family' },
     {id:'priority', type:'select', options:PRIORITY_OPTIONS, label:'Priorité'},
     
     {
@@ -223,31 +175,31 @@ export function BebListView() {
     setSelectedRow(null);
   };
 
-  const columnsWithActions = useMemo(() =>
-    columns.map((col) => {
-      if (col.field === 'actions') {
-        return {
-          ...col,
-          getActions: (params) => [
-            <GridActionsLinkItem
-              showInMenu
-              icon={<Iconify icon="solar:pen-bold" />}
-              label="Modifier"
-              href={paths.dashboard.store.rawMaterials.editStock(params.row.id)}
-            />,
-            <GridActionsCellItem
-              showInMenu
-              icon={<Iconify icon="humbleicons:view-list" />}
-              label="liste des produits"
-              onClick={() => handleOpenDetail(params.row)}
-            />,
-          ],
-        };
-      }
-      return col;
-    }),
-  [handleOpenDetail]
-  );
+  // const columnsWithActions = useMemo(() =>
+  //   columns.map((col) => {
+  //     if (col.field === 'actions') {
+  //       return {
+  //         ...col,
+  //         getActions: (params) => [
+  //           <GridActionsLinkItem
+  //             showInMenu
+  //             icon={<Iconify icon="solar:pen-bold" />}
+  //             label="Modifier"
+  //             href={paths.dashboard.expressionOfNeeds.beb.edit(params.row.id)}
+  //           />,
+  //           <GridActionsCellItem
+  //             showInMenu
+  //             icon={<Iconify icon="humbleicons:view-list" />}
+  //             label="liste des produits"
+  //             onClick={() => handleOpenDetail(params.row)}
+  //           />,
+  //         ],
+  //       };
+  //     }
+  //     return col;
+  //   }),
+  // [handleOpenDetail]
+  // );
 
   const handleToolsClick = (event) => {
     setToolsAnchorEl(event.currentTarget);
@@ -330,6 +282,53 @@ if (col.field === 'location') {
     doc.autoTable({ head: [header], body: rows });
     doc.save('stocks.pdf');
   };
+  const columns = [
+    { field: 'id', headerName: 'ID', width: 100, minWidth: 100, renderCell: (params) => <RenderCellId params={params} /> },
+    { field: 'code', headerName: 'Code', flex: 1, minWidth: 150 },
+    { field: 'requested_date', headerName: 'Date de besoins', flex: 1, minWidth: 150, renderCell: (params) => <RenderCellRequestedDate params={params} />},
+    { field: 'time', headerName: 'Temps', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellTime params={params} />},
+    { field: 'created_by', headerName: 'Demandeur', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellCreatedBy params={params} />},
+    { field: 'status', headerName: 'Statut', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellStatus params={params} />},
+    { field: 'type', headerName: 'Type', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellType params={params} />},
+    { field: 'site', headerName: 'Site', flex: 1.5, minWidth: 120 , renderCell: (params) => <RenderCellSite params={params} />},
+    { field: 'service', headerName: 'Structure', width: 100, minWidth: 100, renderCell: (params) => <RenderCellService params={params} />},
+    { field: 'observation', headerName: 'Observations', flex: 1, minWidth: 120 },
+    { field: 'nature', headerName: 'Nature', width: 100, minWidth: 100, renderCell: (params) => <RenderCellNature params={params} />},
+    { field: 'priority', headerName: 'Priorité', width: 100, minWidth: 100, renderCell: (params) => <RenderCellPriority params={params} />},
+    
+    {
+      field: 'created_date',
+      headerName: 'Created Date',
+      flex: 1,
+      minWidth: 150,
+      renderCell: (params) => <RenderCellCreatedDate params={params} />,
+    },
+    {
+      type: 'actions',
+      field: 'actions',
+      headerName: ' ',
+      align: 'right',
+      headerAlign: 'right',
+      width: 80,
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      getActions: (params) => [
+        <GridActionsLinkItem
+          showInMenu
+          icon={<Iconify icon="solar:pen-bold" />}
+          label="Modifier"
+          href={paths.dashboard.expressionOfNeeds.beb.edit(params.row.id)}
+        />,
+        <GridActionsCellItem
+                showInMenu
+                icon={<Iconify icon="humbleicons:view-list" />}
+                label="liste des produits"
+                onClick={() => handleOpenDetail(params.row)}
+              />,
+      ],
+    },
+  ];
 
   return (
     <>
@@ -428,7 +427,7 @@ if (col.field === 'location') {
             disableColumnMenu
             rows={tableData}
             rowCount={rowCount}
-            columns={columnsWithActions}
+            columns={columns}
             loading={bebsLoading}
             getRowHeight={() => 'auto'}
             paginationModel={paginationModel}
