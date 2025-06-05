@@ -67,12 +67,12 @@ export function BebNewEditForm({ initialData }) {
   const handleSelectProduct = (row) => {
     const idx = openModalIndex;
     console.log('handleSelectProduct', row);
-    setValue(`items.${idx}.product_id`, row.product.id.toString());
+    setValue(`items.${idx}.product_id`, row.id.toString());
     setValue(`items.${idx}.code`, row.code);
     setValue(`items.${idx}.designation`, row.designation);
     setValue(`items.${idx}.unit_measure`, row.unit_measure || { designation: '' });
     setValue(`items.${idx}.supplier_code`, row.supplier_code);
-    setValue(`items.${idx}.current_quantity`, row.quantity);
+    setValue(`items.${idx}.current_quantity`, row.quantity || 0);
     setOpenModalIndex(null);
   };
   // Columns for product selection grid
