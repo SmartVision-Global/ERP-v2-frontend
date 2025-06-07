@@ -140,12 +140,13 @@ export const endpoints = {
     storageArea: '/v1/inventory/storage-areas',
     initialStorage: '/v1/inventory/initial-storages',
     exitSlip: '/v1/inventory/exit-slips',
+    integrations: '/v1/inventory/integration-requests',
   },
   // expression of needs
   expressionOfNeeds: {
-   beb: {
-    list: '/v1/expression-of-need/eon-vouchers',
-   }
+    beb: {
+      list: '/v1/expression-of-need/eon-vouchers',
+    },
   },
 
   // new:''

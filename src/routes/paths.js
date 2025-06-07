@@ -223,6 +223,9 @@ export const paths = {
         exitSlip: `${ROOTS.DASHBOARD}/store/raw-materials/exit-slip`,
         newExitSlip: `${ROOTS.DASHBOARD}/store/raw-materials/exit-slip/new`,
         editExitSlip: (id) => `${ROOTS.DASHBOARD}/store/raw-materials/exit-slip/${id}/edit`,
+        integrations: `${ROOTS.DASHBOARD}/store/raw-materials/integrations`,
+        newIntegration: `${ROOTS.DASHBOARD}/store/raw-materials/integrations/new`,
+        editIntegration: (id) => `${ROOTS.DASHBOARD}/store/raw-materials/integrations/${id}/edit`,
       },
       spareParts: {
         root: `${ROOTS.DASHBOARD}/store/spare-parts`,
@@ -240,7 +243,7 @@ export const paths = {
         edit: (id) => `${ROOTS.DASHBOARD}/expression-of-needs/beb/${id}/edit`,
       },
     },
-     
+
     settings: {
       generalSettings: {
         root: `${ROOTS.DASHBOARD}/settings/general-settings`,

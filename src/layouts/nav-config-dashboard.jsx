@@ -69,6 +69,7 @@ export const navData = [
               { title: 'Lieu de stockage', path: paths.dashboard.store.rawMaterials.storageArea },
               { title: 'Entrée de stock', path: paths.dashboard.store.rawMaterials.initialStorage },
               { title: 'Bon de sortie', path: paths.dashboard.store.rawMaterials.exitSlip },
+              { title: 'Intégrations', path: paths.dashboard.store.rawMaterials.integrations },
             ],
           },
           // {
@@ -87,17 +88,13 @@ export const navData = [
           //   title: 'Fournitures',
           //   path: paths.dashboard.store.supplies,
           // },
-          
-          
-        ]
+        ],
       },
       {
         title: 'Expression de besoins',
         path: paths.dashboard.expressionOfNeeds.root,
         icon: ICONS.plus,
-        children: [
-          { title: 'B.E.B', path: paths.dashboard.expressionOfNeeds.beb.root },
-        ],
+        children: [{ title: 'B.E.B', path: paths.dashboard.expressionOfNeeds.beb.root }],
       },
       {
         title: 'Resssources humaines',

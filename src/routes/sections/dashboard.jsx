@@ -332,6 +332,16 @@ const PageStoreExitSlipEdit = lazy(
   () => import('src/pages/dashboard/store/raw-materials/exit-slip/edit')
 );
 
+const PageStoreIntegrationList = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/integration/list')
+);
+const PageStoreIntegrationNew = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/integration/new')
+);
+const PageStoreIntegrationEdit = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/integration/edit')
+);
+
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
 function SuspenseOutlet() {
@@ -698,6 +708,9 @@ export const dashboardRoutes = [
               { path: 'exit-slip', element: <PageStoreExitSlipList /> },
               { path: 'exit-slip/new', element: <PageStoreExitSlipNew /> },
               { path: 'exit-slip/:id/edit', element: <PageStoreExitSlipEdit /> },
+              { path: 'integrations', element: <PageStoreIntegrationList /> },
+              { path: 'integrations/new', element: <PageStoreIntegrationNew /> },
+              { path: 'integrations/:id/edit', element: <PageStoreIntegrationEdit /> },
             ],
           },
         ],
