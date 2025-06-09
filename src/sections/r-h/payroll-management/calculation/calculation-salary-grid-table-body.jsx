@@ -38,6 +38,7 @@ export function CalculationSalaryGridTableBody({
     ...fields.map((el, idx) => ({ ...el, source: 'form', formIndex: idx })),
   ];
   const newElements = sortElements(combinedElements);
+  console.log('fields', fields);
 
   const handleCalculatePayroll = async (id, newItem) => {
     const newAddElement = {

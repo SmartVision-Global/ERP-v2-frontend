@@ -131,6 +131,8 @@ export function CalculationPersonalPayrollView({ month }) {
   const [editedFilters, setEditedFilters] = useState({});
   const [openProductDialog, setOpenProductDialog] = useState(false);
   const [calculateLoading, setCalculateLoading] = useState(false);
+  const [validateElementsLoading, setValidateElementsLoading] = useState(false);
+
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   const { register, control, setValue } = useForm({
@@ -333,6 +335,7 @@ export function CalculationPersonalPayrollView({ month }) {
         amount: 0,
       };
       append(newProduct);
+      handleCloseProductDialog();
     } else {
       confirmDialog.onTrue();
     }
@@ -360,6 +363,34 @@ export function CalculationPersonalPayrollView({ month }) {
       showError(error);
     } finally {
       setValidationLoading(false);
+    }
+  };
+
+  const handleValidateAllElements = async () => {
+    setValidateElementsLoading(true);
+    const newElements = fields.map((ele) => ({
+      deduction_compensation_id: ele.id,
+      percentage_amount: ele.percent,
+      amount: ele.amount,
+    }));
+
+    const dataPayroll = {
+      additional_elements: newElements,
+      removed_elements: [],
+    };
+    try {
+      const response = await createPersonalPayroll(payroll.id, dataPayroll);
+      setPayroll(response.data?.data);
+      setValue('elements', []);
+      setValidateElementsLoading(false);
+
+      console.log('respo', response);
+    } catch (error) {
+      console.log(error);
+      showError(error);
+      setValidateElementsLoading(false);
+    } finally {
+      setValidateElementsLoading(false);
     }
   };
 
@@ -517,40 +548,60 @@ export function CalculationPersonalPayrollView({ month }) {
 
                   <Box sx={{ position: 'relative', mt: 2, p: 2 }}>
                     {payroll && (
-                      <Stack direction="row" spacing={1} mb={2}>
-                        {/* <Button startIcon={<Iconify width={24} icon="mingcute:profile-fill" />}>
+                      <Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        spacing={1}
+                        mb={2}
+                      >
+                        <Stack direction="row" spacing={1}>
+                          {/* <Button startIcon={<Iconify width={24} icon="mingcute:profile-fill" />}>
                       Profile
                     </Button> */}
-                        {payroll && payroll.status === 1 && (
-                          <Button
-                            startIcon={<Iconify width={24} icon="mdi:add-bold" />}
-                            onClick={handleOpenProductDialog}
-                          >
-                            Ajouter élément
-                          </Button>
-                        )}
-                        {payroll && payroll.status === 1 ? (
+                          {payroll && payroll.status === 1 && (
+                            <Button
+                              startIcon={<Iconify width={24} icon="mdi:add-bold" />}
+                              onClick={handleOpenProductDialog}
+                            >
+                              Ajouter élément
+                            </Button>
+                          )}
+                          {payroll && payroll.status === 1 ? (
+                            <LoadingButton
+                              loading={validationLoading}
+                              startIcon={<Iconify width={24} icon="ic:twotone-check" />}
+                              onClick={() =>
+                                handleValidatePayroll(payroll.id, payroll.payroll_month_id)
+                              }
+                            >
+                              Valider
+                            </LoadingButton>
+                          ) : (
+                            <LoadingButton
+                              loading={validationLoading}
+                              color="error"
+                              startIcon={
+                                <Iconify
+                                  width={20}
+                                  icon="iwwa:delete"
+                                  sx={{ color: 'error.main' }}
+                                />
+                              }
+                              onClick={() =>
+                                handleInValidatePayroll(payroll.id, payroll.payroll_month_id)
+                              }
+                            >
+                              Annuler la validation
+                            </LoadingButton>
+                          )}
+                        </Stack>
+                        {fields.length > 0 && (
                           <LoadingButton
-                            loading={validationLoading}
-                            startIcon={<Iconify width={24} icon="ic:twotone-check" />}
-                            onClick={() =>
-                              handleValidatePayroll(payroll.id, payroll.payroll_month_id)
-                            }
+                            loading={validateElementsLoading}
+                            onClick={handleValidateAllElements}
                           >
-                            Valider
-                          </LoadingButton>
-                        ) : (
-                          <LoadingButton
-                            loading={validationLoading}
-                            color="error"
-                            startIcon={
-                              <Iconify width={24} icon="iwwa:delete" sx={{ color: 'error.main' }} />
-                            }
-                            onClick={() =>
-                              handleInValidatePayroll(payroll.id, payroll.payroll_month_id)
-                            }
-                          >
-                            Invalider
+                            Valider Tous les elements
                           </LoadingButton>
                         )}
                       </Stack>
