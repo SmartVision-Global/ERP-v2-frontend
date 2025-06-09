@@ -55,7 +55,7 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import IntegrationExportButton from '../integration-export-button';
-import { IntegrationNewEditForm } from '../integration-new-edit-form';
+import { TransferSlipNewEditForm } from '../transferSlip-new-edit-form';
 import {
   RenderCellCode,
   RenderCellObservation,
@@ -66,7 +66,7 @@ import {
   RenderCellCreatedAt,
   RenderCellCreatedBy,
   RenderCellValidatedBy,
-} from '../integration-table-row';
+} from '../transferSlip-table-row';
 
 // ----------------------------------------------------------------------
 
@@ -144,7 +144,7 @@ const FILTERS_OPTIONS = [
   },
 ];
 
-export function IntegrationListView() {
+export function TransferSlipListView() {
   const [searchParams, setSearchParams] = useSearchParams();
   const confirmDialog = useBoolean();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -759,18 +759,18 @@ export function IntegrationListView() {
     <Container maxWidth={false}>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <CustomBreadcrumbs
-          heading="Liste des intégrations"
+          heading="Liste des bons de transfert"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Matières premières', href: paths.dashboard.root },
-            { name: 'Intégrations' },
+            { name: 'Bons de transfert' },
           ]}
           action={
             <Box sx={{ display: 'flex', gap: 1 }}>
               <IntegrationExportButton data={tableData} />
               <Button
                 component={RouterLink}
-                href={paths.dashboard.store.rawMaterials.newIntegration}
+                href={paths.dashboard.store.rawMaterials.newTransferSlip}
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >
@@ -850,7 +850,7 @@ export function IntegrationListView() {
 
       <Dialog fullWidth maxWidth="lg" open={openEditDialog} onClose={handleCloseEdit}>
         <DialogTitle>
-          Modifier l&apos;intégration
+          Modifier le bon de transfert
           <IconButton
             aria-label="close"
             onClick={handleCloseEdit}
@@ -866,7 +866,7 @@ export function IntegrationListView() {
         <DialogContent>
           <Box sx={{ pt: 3 }}>
             {selectedIntegration && (
-              <IntegrationNewEditForm
+              <TransferSlipNewEditForm
                 currentIntegration={selectedIntegration}
                 onClose={handleCloseEdit}
                 isEdit

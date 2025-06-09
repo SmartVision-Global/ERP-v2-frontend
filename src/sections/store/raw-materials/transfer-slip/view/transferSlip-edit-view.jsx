@@ -6,10 +6,10 @@ import { useGetIntegration } from 'src/actions/integration';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { IntegrationNewEditForm } from '../integration-new-edit-form';
+import { TransferSlipNewEditForm } from '../transferSlip-new-edit-form';
 // ----------------------------------------------------------------------
 
-export function IntegrationEditView({ id }) {
+export function TransferSlipEditView({ id }) {
   const { integration, integrationLoading } = useGetIntegration(id);
   console.log('integration', integration);
 
@@ -20,16 +20,16 @@ export function IntegrationEditView({ id }) {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Modifier l'intégration"
+        heading="Modifier le bon de transfert"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Intégrations', href: paths.dashboard.store.rawMaterials.integration },
-          { name: "Modifier l'intégration" },
+          { name: 'Bons de transfert', href: paths.dashboard.store.rawMaterials.transferSlip },
+          { name: 'Modifier le bon de transfert' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <IntegrationNewEditForm currentIntegration={integration} isEdit />
+      <TransferSlipNewEditForm currentIntegration={integration} isEdit />
     </DashboardContent>
   );
 }

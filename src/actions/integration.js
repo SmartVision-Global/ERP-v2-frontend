@@ -81,3 +81,8 @@ export const updateIntegration = async (id, data) => {
   );
   return response;
 };
+
+export async function getIntegrationItems(id) {
+  const response = await axios.get(`${INTEGRATION_ENDPOINT}/${id}/items`);
+  return response;
+}

@@ -70,6 +70,10 @@ export const navData = [
               { title: 'Entrée de stock', path: paths.dashboard.store.rawMaterials.initialStorage },
               { title: 'Bon de sortie', path: paths.dashboard.store.rawMaterials.exitSlip },
               { title: 'Intégrations', path: paths.dashboard.store.rawMaterials.integrations },
+              {
+                title: 'Bons de transfert',
+                path: paths.dashboard.store.rawMaterials.transferSlip,
+              },
             ],
           },
           // {

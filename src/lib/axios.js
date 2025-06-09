@@ -141,6 +141,7 @@ export const endpoints = {
     initialStorage: '/v1/inventory/initial-storages',
     exitSlip: '/v1/inventory/exit-slips',
     integrations: '/v1/inventory/integration-requests',
+    transferSlips: '/v1/inventory/transfer-slips',
   },
   // expression of needs
   expressionOfNeeds: {

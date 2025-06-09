@@ -47,7 +47,7 @@ const ProductEntrySchema = zod.object({
   motif: zod.number().optional(),
 });
 
-const IntegrationSchema = zod.object({
+const TransferSlipSchema = zod.object({
   type: zod.number().min(1, { message: 'Nature is required!' }),
   store_id: zod.number().min(1, { message: 'Magasin is required!' }),
   exit_slip_id: zod.number().optional(),
@@ -57,7 +57,7 @@ const IntegrationSchema = zod.object({
 });
 
 // -------------------- Component --------------------
-export function IntegrationNewEditForm({ currentIntegration, onClose, isEdit }) {
+export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit }) {
   const router = useRouter();
   const { data: stores } = useGetLookups('settings/lookups/stores?store_type=1&type=1');
   const { data: machines } = useGetLookups('settings/lookups/machines?type=1');
@@ -72,7 +72,7 @@ export function IntegrationNewEditForm({ currentIntegration, onClose, isEdit }) 
   const [isSupplierMode, setIsSupplierMode] = useState(false);
   // console.log(personals);
   const methods = useForm({
-    resolver: zodResolver(IntegrationSchema),
+    resolver: zodResolver(TransferSlipSchema),
     defaultValues: {
       type: currentIntegration?.type || 1,
       store_id: currentIntegration?.store_id || undefined,

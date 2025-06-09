@@ -226,6 +226,9 @@ export const paths = {
         integrations: `${ROOTS.DASHBOARD}/store/raw-materials/integrations`,
         newIntegration: `${ROOTS.DASHBOARD}/store/raw-materials/integrations/new`,
         editIntegration: (id) => `${ROOTS.DASHBOARD}/store/raw-materials/integrations/${id}/edit`,
+        transferSlip: `${ROOTS.DASHBOARD}/store/raw-materials/transfer-slip`,
+        newTransferSlip: `${ROOTS.DASHBOARD}/store/raw-materials/transfer-slip/new`,
+        editTransferSlip: (id) => `${ROOTS.DASHBOARD}/store/raw-materials/transfer-slip/${id}/edit`,
       },
       spareParts: {
         root: `${ROOTS.DASHBOARD}/store/spare-parts`,
