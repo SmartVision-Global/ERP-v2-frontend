@@ -14,6 +14,11 @@ export const STATUS_OPTIONS = [
     { label: 'Validé', value: 2, color: 'success' },
     { label: 'Annulé', value: 3, color: 'error' },
 ];  
+export const TWO_STATUS_OPTIONS = [
+    { label: 'En cours', value: 1, color: 'warning'},
+    { label: 'Validé', value: 2, color: 'success' },
+   
+];  
 
 
 export const PRODUCT_TYPE_OPTIONS = [

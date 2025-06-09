@@ -259,6 +259,9 @@ const PagePurchaseOrder = lazy(
 const PageNewPurchaseOrder = lazy(
   () => import('src/pages/dashboard/purchase-supply/purchase-order/new')
 );
+const PagePurchaseOrderEdit = lazy(
+  () => import('src/pages/dashboard/purchase-supply/purchase-order/edit')
+);
 //Processing Da
 const PageProcessingDa = lazy(
   () => import('src/pages/dashboard/purchase-supply/processing-da/list')
@@ -578,6 +581,7 @@ export const dashboardRoutes = [
         children: [
           { path: 'purchase-order', element: <PagePurchaseOrder />, index: true },
           { path: 'purchase-order/new', element: <PageNewPurchaseOrder /> },
+          { path: 'purchase-order/:id/edit', element: <PagePurchaseOrderEdit /> },
           { path: 'processing-da', element: <PageProcessingDa /> },
         ],
       },

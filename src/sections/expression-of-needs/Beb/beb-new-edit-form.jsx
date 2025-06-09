@@ -303,22 +303,25 @@ export function BebNewEditForm({ initialData }) {
         <Box>
           <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 3 }}>
             <Typography variant="subtitle2">Produits</Typography>
-            <IconButton color="primary" onClick={() => appendItem({
-              product_id: '',
-              code: '',
-              supplier_code: '',
-              designation: '',
-              current_quantity: '',
-              quantity: '',
-              workshop_id: '',
-              machine_id: '',
-              observation: '',
-              unit_measure: { designation: '' },
-              motif: ''
-            })}>
+            <IconButton color="primary" onClick={() => {
+              appendItem({
+                product_id: '',
+                code: '',
+                supplier_code: '',
+                designation: '',
+                current_quantity: '',
+                quantity: '',
+                workshop_id: '',
+                machine_id: '',
+                observation: '',
+                unit_measure: { designation: '' },
+                motif: ''
+              });
+              setOpenModalIndex(itemFields.length);
+            }}>
               <Iconify icon="eva:plus-fill" />
             </IconButton>
-      </Stack>
+          </Stack>
           <Box sx={{ mt: 2 }}>
             {itemFields.map((field, index) => (
               <Box key={field.fieldKey} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 2, mb: 2 }}>

@@ -10,8 +10,8 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import { DataGrid, gridClasses } from '@mui/x-data-grid';
-import { TextField, FormControl, InputAdornment } from '@mui/material';
+import { DataGrid, GridActionsCellItem, gridClasses } from '@mui/x-data-grid';
+import { TextField, FormControl, InputAdornment, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -42,6 +42,7 @@ import {
   RenderCellCode,
 } from '../order-table-row';
 import UtilsButton from 'src/components/custom-buttons/utils-button';
+import OrderProductsList from './OrderProductsList';
 
 // ----------------------------------------------------------------------
 
@@ -92,6 +93,9 @@ export function OrderPurchaseList() {
   const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
+
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [selectedOrderForProducts, setSelectedOrderForProducts] = useState(null);
 
   useEffect(() => {
     setTableData(purchaseOrders);
@@ -248,12 +252,47 @@ export function OrderPurchaseList() {
     { field: 'priority', headerName: 'Priorité', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellPriority params={params} /> },
     { field: 'observations', headerName: 'Observations', flex: 1, minWidth: 200 },
     { field: 'created_at', headerName: 'Date de création', flex: 1, minWidth: 150, renderCell: (params) => <RenderCellCreatedAt params={params} /> },
+    {
+      type: 'actions',
+      field: 'actions',
+      headerName: ' ',
+      align: 'right',
+      headerAlign: 'right',
+      width: 80,
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      getActions: (params) => [
+        <GridActionsLinkItem
+          showInMenu
+          icon={<Iconify icon="solar:pen-bold" />}
+          label="Modifier"
+          href={paths.dashboard.purchaseSupply.purchaseOrder.editPurchaseOrder(params.row.id)}
+        />,
+        <GridActionsCellItem
+                  showInMenu
+                  icon={<Iconify icon="humbleicons:view-list" />}
+                  label="liste des produits"
+                  onClick={() => handleOpenDetail(params.row)}
+                />,
+      ],
+    },
   ];
 
   const getTogglableColumns = () =>
     columns
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
+
+  const handleOpenDetail = useCallback((row) => {
+    setSelectedOrderForProducts(row);
+    setDetailOpen(true);
+  }, []);
+
+  const handleCloseDetail = () => {
+    setDetailOpen(false);
+    setSelectedOrderForProducts(null);
+  };
 
   return (
     <>
@@ -347,6 +386,17 @@ export function OrderPurchaseList() {
           />
         </Card>
       </DashboardContent>
+      {selectedOrderForProducts && (
+        <Dialog open={detailOpen} onClose={handleCloseDetail} maxWidth="xl" fullWidth>
+          <DialogTitle>liste des produits</DialogTitle>
+          <DialogContent dividers>
+            <OrderProductsList id={selectedOrderForProducts.id} />
+          </DialogContent>
+          <DialogActions>
+            <Button variant="contained" onClick={handleCloseDetail}>Fermer</Button>
+          </DialogActions>
+        </Dialog>
+      )}
       {renderConfirmValidationDialog()}
     </>
   );

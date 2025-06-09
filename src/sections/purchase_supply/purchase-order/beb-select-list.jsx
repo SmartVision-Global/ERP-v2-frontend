@@ -11,7 +11,7 @@ import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { Field } from 'src/components/hook-form';
 
-export function BEBNewEditForm() {
+export function BebSelectList() {
   const [openBEBDialog, setOpenBEBDialog] = useState(false);
   const [error, setError] = useState('');
   const confirmDialog = useBoolean();
@@ -35,6 +35,8 @@ export function BEBNewEditForm() {
     try {
       // Set the selected BEB in the form
       setValue('selectedBEB', beb);
+      // Also set the order's eon_voucher_id
+      setValue('eon_voucher_id', beb.id.toString());
       handleCloseProductDialog();
       setError('');
     } catch (err) {
@@ -44,10 +46,11 @@ export function BEBNewEditForm() {
   };
 
   const handleClearSelection = () => {
+    // Clear BEB selection and eon_voucher_id
     setValue('selectedBEB', null);
+    setValue('eon_voucher_id', '');
   };
 
-  console.log('selectedBEB',selectedBEB);
 
   return (
     <Box sx={{ p: 2 }}>

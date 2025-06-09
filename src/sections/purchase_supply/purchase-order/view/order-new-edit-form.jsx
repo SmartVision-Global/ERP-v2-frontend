@@ -1,373 +1,402 @@
-/* eslint-disable */
 import { z } from 'zod';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm, useFieldArray } from 'react-hook-form';
 
-import { FormProvider, useForm, useFieldArray } from 'react-hook-form';
-import {
-  Box,
-  Button,
-  Step,
-  StepLabel,
-  Stepper,
-  Typography,
-  Grid,
-  CircularProgress,
-  MenuItem,
-  Stack,
-  Alert,
-} from '@mui/material';
+import Grid from '@mui/material/Grid2';
+import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
+import { Box, Button, Stepper, Step, StepLabel, MenuItem, IconButton, Typography, Stack, Modal, TextField, InputAdornment } from '@mui/material';
 
-import { Form, Field } from 'src/components/hook-form';
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
 
 import { useMultiLookups } from 'src/actions/lookups';
-import { PRIORITY_OPTIONS, TYPE_OPTIONS_ORDER } from 'src/_mock';
+import { useGetStocks } from 'src/actions/stores/raw-materials/stocks';
+import { createEntity, updateEntity } from 'src/actions/purchase-supply/purchase-order/order';
+import { BEB_NATURE_OPTIONS, PRODUCT_TYPE_OPTIONS, PRIORITY_OPTIONS, TWO_STATUS_OPTIONS } from 'src/_mock/expression-of-needs/Beb/Beb';
 
-import { BEBNewEditForm } from '../beb-new-edit-form';
-import { showError } from 'src/utils/toast-error';
+import { toast } from 'src/components/snackbar';
+import { Iconify } from 'src/components/iconify';
+import { Form, Field } from 'src/components/hook-form';
 
-// Configuration constants
-const STEPS = ['Informations', 'Produits'];
+import { BebSelectList } from '../beb-select-list';
 
-// --- MODIFICATION START: productSchema ---
-const productSchema = z.object({
-  codeFournisseur: z.string().min(1, 'Le Code Fournisseur est requis'),
-  designation: z.string().min(1, 'La Désignation est requise'),
-  qteActuelle: z.coerce // Using coerce for better handling of empty number inputs
-    .number({ invalid_type_error: 'La quantité actuelle doit être un nombre' })
-    .min(0, 'La quantité actuelle ne peut être négative')
-    .optional(), // Assuming current quantity might not always be entered or known
-  qteAAcheter: z.coerce // Using coerce
-    .number({ invalid_type_error: 'La quantité à acheter doit être un nombre' })
-    .min(1, 'La quantité à acheter doit être au moins de 1'),
+// Validation schema for the order's first tab
+const orderSchema = z.object({
+  eon_voucher_id: z.string().optional(),
+  status_id: z.string().nonempty({ message: 'Le statut est requis' }),
+  site_id: z.string().nonempty({ message: 'Site is required' }),
+  personal_id: z.string().nonempty({ message: 'Personnel is required' }),
+  type: z.string().nonempty({ message: 'Type is required' }),
+  priority: z.string().nonempty({ message: 'Priorité is required' }),
   observation: z.string().optional(),
+  items: z.array(z.object({
+    product_id: z.string().nonempty({ message: 'Produit est requis' }),
+    purchased_quantity: z.number({ coerce: true }).min(1, { message: 'Quantité est requise' }),
+    designation: z.string().optional(),
+    supplier_code: z.string().optional(),
+    current_quantity: z.number({ coerce: true }).optional(),
+    observation: z.string().optional(),
+    code: z.string().optional(),
+    unit_measure: z.any().optional(),
+  })).optional(),
 });
-// --- MODIFICATION END: productSchema ---
 
-const formSchema = z.object({
-  site: z.string().min(1, 'Le site est requis !'),
-  type: z.string().min(1, 'Le type est requis !'),
-  priority: z.string().min(1, 'La priorité est requise !'),
-  designation: z.string().min(1, 'La désignation est requise !'),
-  products: z.array(productSchema).min(1, 'Au moins un produit est requis.'),
-});
-
-const DEFAULT_VALUES = {
-  site: '',
-  type: '',
-  priority: '',
-  designation: '',
-  products: [
-    {
-      codeFournisseur: '',
-      designation: '',
-      qteActuelle: 0,
-      qteAAcheter: 1,
-      observation: '',
-    },
-  ],
-};
-
-export function PurchaseOrderNewEditForm() {
-  const [activeStep, setActiveStep] = useState(0);
-  const [submitError, setSubmitError] = useState('');
-
-  // Data fetching
-  const { dataLookups, isLoading } = useMultiLookups([
+// BEB Request Form with two tabs: Informations and Produits
+export function PurchaseOrderNewEditForm({ initialData }) {
+  console.log('initialData', initialData);
+  const router = useRouter();
+  const [currentTab, setCurrentTab] = useState(0);
+  const { dataLookups, dataLoading } = useMultiLookups([
+    { entity: 'persons', url: 'hr/lookups/personals' },
     { entity: 'sites', url: 'settings/lookups/sites' },
-    // If 'Code Fournisseur' or 'Designation' for products become lookups, add them here
-    // e.g., { entity: 'allProducts', url: 'catalogue/products' }
   ]);
+  const personals = dataLookups.persons || [];
+  const sites = dataLookups.sites || [];
+  
+  // Product selection filters and data
+  const [filterParams, setFilterParams] = useState({ code: '', supplier_code: '', builder_code: '', designation: '' });
+  const { stocks: productOptions, stocksLoading: productsLoading } = useGetStocks(filterParams);
+  // Handler to select product into form
+  const handleSelectProduct = (row) => {
+    const idx = openModalIndex;
+    console.log('handleSelectProduct', row);
+    setValue(`items.${idx}.product_id`, row.id.toString());
+    setValue(`items.${idx}.code`, row.code);
+    setValue(`items.${idx}.designation`, row.designation);
+    setValue(`items.${idx}.unit_measure`, row.unit_measure || { designation: '' });
+    setValue(`items.${idx}.supplier_code`, row.supplier_code);
+    setValue(`items.${idx}.current_quantity`, row.quantity || 0);
+    setOpenModalIndex(null);
+  };
+  // Columns for product selection grid
+  const productColumns = [
+    { field: 'id', headerName: 'ID', width: 70 },
+    { field: 'code', headerName: 'Code', flex: 1, minWidth: 150 },
+    { field: 'supplier_code', headerName: 'Supplier Code', flex: 1, minWidth: 150 },
+    { field: 'builder_code', headerName: 'Builder Code', flex: 1, minWidth: 150 },
+    { field: 'designation', headerName: 'Designation', flex: 1.5, minWidth: 150 },
+    { field: 'quantity', headerName: 'Quantity', type: 'number', width: 100 },
+    {
+      field: 'actions', type: 'actions', headerName: '', width: 80,
+      getActions: (params) => [
+        <GridActionsCellItem
+          icon={<Iconify icon="eva:plus-fill" />}
+          label="Add"
+          onClick={() => handleSelectProduct(params.row)}
+          color="primary"
+        />
+      ],
+    },
+  ];
 
-  // Form setup
   const methods = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: DEFAULT_VALUES,
-    mode: 'onChange',
+    resolver: zodResolver(orderSchema),
+    defaultValues: {
+      eon_voucher_id: initialData?.eon_voucher_id?.toString() || '',
+      site_id: initialData?.site?.id?.toString() || '',
+      personal_id: initialData?.personal?.toString() || '',
+      type: initialData?.type?.toString() || PRODUCT_TYPE_OPTIONS[0]?.value?.toString() || '',
+      priority:
+        initialData?.priority?.toString() || PRIORITY_OPTIONS[0]?.value?.toString() || '',
+      status_id: initialData?.status_id?.toString() || '',
+      observation: initialData?.observation || '',
+      items: initialData?.items
+        ? initialData.items.map((item) => ({
+            product_id: item.product_id?.toString() || '',
+            code: item.code || '',
+            supplier_code: item.supplier_code || '',
+            designation: item.designation || '',
+            current_quantity: item.current_quantity?.toString() || '',
+            purchased_quantity: item.purchased_quantity?.toString() || '',
+            observation: item.observation || '',
+            unit_measure: item.unit_measure || { designation: '' },
+          }))
+        : [],
+    },
   });
 
-  const {
-    setError,
-    reset,
+  const { handleSubmit, reset, control, register, setValue, watch } = methods;
+  const { fields: itemFields, append: appendItem, remove: removeItem } = useFieldArray({
     control,
-    handleSubmit,
-    trigger,
-    formState: { isSubmitting, errors },
-  } = methods;
-
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'products',
+    name: 'items',
+    keyName: 'fieldKey',
   });
+  const [openModalIndex, setOpenModalIndex] = useState(null);
 
+  const handleTabChange = (event, newValue) => {
+    setCurrentTab(newValue);
+  };
+
+  // Move to next tab or submit at the last tab
   const handleFormSubmit = async (data) => {
-    try {
-      setSubmitError('');
-      console.log('Form Data:', data);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      alert("Commande d'achat soumise avec succès !");
-      reset();
-      setActiveStep(0);
-    } catch (error) {
-      showError(error, setError); // showError should handle displaying the error
-      // setSubmitError(error.message || 'An unexpected error occurred.'); // Example usage if needed
+    console.log('data', data);
+    if (currentTab === 0) {
+      setCurrentTab(1);
+    } else {
+      if (data.requested_date) data.requested_date = data.requested_date.split('T')[0];
+      try {
+        // transform items to backend format
+        const payload = {
+          ...data,
+          items: data.items.map((item) => ({
+            product_id: item.product_id,
+            code: item.code,
+            designation: item.designation,
+            purchased_quantity: Number(item.purchased_quantity),
+            observation: item.observation,
+          })),
+        };
+        console.log('payload', payload);
+        if (initialData?.id) {
+          await updateEntity('purchase_order', initialData.id, payload);
+          toast.success('Order updated');
+        } else {
+          await createEntity('purchase_order', payload);
+          toast.success('Order created');
+        }
+        router.push(paths.dashboard.purchaseSupply.purchaseOrder.root);
+      } catch (error) {
+        toast.error(error?.message || 'Creation failed');
+      }
     }
   };
 
-  const handleNext = async () => {
-    let fieldsToValidate = [];
-
-    switch (activeStep) {
-      case 0:
-        fieldsToValidate = ['site', 'type', 'priority', 'designation'];
-        break;
-      case 1:
-        fieldsToValidate = ['products'];
-        break;
-      default:
-        break;
+  useEffect(() => {
+    if (initialData && !dataLoading && sites.length > 0 && personals.length > 0) {
+      reset({
+        eon_voucher_id: initialData.eon_voucher_id?.toString() || '',
+        site_id: initialData.site?.id?.toString() || '',
+        personal_id: initialData.personal?.toString() || '',
+        type: initialData.type?.toString() || PRODUCT_TYPE_OPTIONS[0]?.value?.toString() || '',
+        priority: initialData.priority?.toString() || PRIORITY_OPTIONS[0]?.value?.toString() || '',
+        status_id: initialData.status_id?.toString() || TWO_STATUS_OPTIONS[0]?.value?.toString() || '',
+        observation: initialData.observation || '',
+        items: initialData.items
+          ? initialData.items.map((item) => ({
+              product_id: item.product_id?.toString() || '',
+              code: item.code || '',
+              supplier_code: item.supplier_code || '',
+              designation: item.designation || '',
+              current_quantity: item.current_quantity?.toString() || '',
+              purchased_quantity: item.purchased_quantity?.toString() || '',
+              observation: item.observation || '',
+              unit_measure: item.unit_measure || { designation: '' },
+            }))
+          : [],
+      });
     }
-
-    const isValid = fieldsToValidate.length === 0 || (await trigger(fieldsToValidate));
-
-    if (isValid) {
-      setActiveStep((prev) => prev + 1);
-    }
-  };
-
-  const handleBack = () => {
-    setActiveStep((prev) => prev - 1);
-  };
-
-  const addProduct = () => {
-    append({
-      codeFournisseur: '',
-      designation: '',
-      qteActuelle: 0,
-      qteAAcheter: 1,
-      observation: '',
-    });
-  };
-  // --- MODIFICATION END: addProduct ---
-
-  const removeProduct = (index) => {
-    if (fields.length > 1) {
-      remove(index);
-    }
-  };
-
-  // Render methods
-  const renderInformationsStep = () => (
-    <Grid container spacing={3} sx={{ mt: 2 }}>
-      <Grid item xs={12} md={6}>
-        <Field.Lookup
-          name="site"
-          label="Site"
-          data={dataLookups?.sites || []}
-          loading={isLoading}
-        />
-      </Grid>
-
-      <Grid item xs={12} md={6}>
-        <Field.Select name="type" label="Type" size="small">
-          {TYPE_OPTIONS_ORDER?.map((type) => (
-            <MenuItem key={type.value} value={type.value}>
-              {type.label}
-            </MenuItem>
-          ))}
-        </Field.Select>
-      </Grid>
-
-      <Grid item xs={12} md={6}>
-        <Field.Select name="priority" label="Priorité" size="small">
-          {PRIORITY_OPTIONS?.map((priority) => (
-            <MenuItem key={priority.value} value={priority.value}>
-              {priority.label}
-            </MenuItem>
-          ))}
-        </Field.Select>
-      </Grid>
-
-      <Grid item xs={12}>
-        <BEBFormSection />
-      </Grid>
-
-      <Grid item xs={12}>
-        <Field.Text
-          name="designation"
-          label="Observations Générales"
-          multiline
-          rows={3}
-          fullWidth
-        />
-      </Grid>
-    </Grid>
-  );
-
-  const renderProductsStep = () => (
-    <Box sx={{ mt: 2 }}>
-      <Typography variant="subtitle1" gutterBottom>
-        Liste des produits
-      </Typography>
-
-      {fields.map((item, index) => (
-        <Grid container spacing={2} key={item.id} sx={{ mb: 2, alignItems: 'flex-start' }}>
-          <Grid item xs={12} sm={6} md={2}>
-            <Field.Text
-              name={`products.${index}.codeFournisseur`}
-              label="Code Fournisseur"
-              // If this should be a lookup:
-              // component={Field.Lookup}
-              // data={dataLookups?.allProducts || []} (example)
-              // loading={isLoading}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <Field.Text name={`products.${index}.designation`} label="Désignation Produit" />
-          </Grid>
-
-          <Grid item xs={12} sm={4} md={2}>
-            <Field.Text
-              name={`products.${index}.qteActuelle`}
-              label="Qte actuelle"
-              type="number"
-              InputProps={{ inputProps: { min: 0 } }}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={4} md={2}>
-            <Field.Text
-              name={`products.${index}.qteAAcheter`}
-              label="Qte à acheter"
-              type="number"
-              InputProps={{ inputProps: { min: 1 } }}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={3} md={2}>
-            <Field.Text name={`products.${index}.observation`} label="Observation Produit" />
-          </Grid>
-
-          <Grid
-            item
-            xs={12}
-            sm={1}
-            md={1}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              pt: { xs: 1, sm: 3.5 },
-            }}
-          >
-            {fields.length > 1 && (
-              <Button
-                color="error"
-                variant="outlined"
-                size="small"
-                onClick={() => removeProduct(index)}
-                disabled={isSubmitting}
-              >
-                ×
-              </Button>
-            )}
-          </Grid>
-        </Grid>
-      ))}
-
-      <Button variant="outlined" onClick={addProduct} disabled={isSubmitting} sx={{ mt: 2 }}>
-        Ajouter un produit
-      </Button>
-
-      {errors.products && !Array.isArray(errors.products) && errors.products.message && (
-        <Typography color="error" variant="caption" sx={{ display: 'block', mt: 1 }}>
-          {errors.products.message}
-        </Typography>
-      )}
-    </Box>
-  );
-
-  const renderStepContent = () => {
-    switch (activeStep) {
-      case 0:
-        return renderInformationsStep();
-      case 1:
-        return renderProductsStep();
-      default:
-        return null;
-    }
-  };
-
-  const getStepTitle = () => {
-    const titles = ["Information globale sur la demande d'achat", 'Liste des produits demandés'];
-    return titles[activeStep] || '';
-  };
-
-  const isLastStep = activeStep === STEPS.length - 1;
+  }, [initialData, dataLoading, sites, personals, reset]);
 
   return (
-    <FormProvider {...methods}>
-      <Box sx={{ width: '100%', p: { xs: 2, md: 4 } }}>
-        {/* Stepper */}
-        <Stepper activeStep={activeStep} alternativeLabel>
-          {STEPS.map((label) => (
-            <Step key={label}>
-              <StepLabel>{label}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
+    <Form methods={methods} onSubmit={handleSubmit(handleFormSubmit, (errors) => {
+      const flattenErrors = (obj) =>
+        Object.values(obj || {}).reduce((acc, val) => {
+          if (val?.message) acc.push(val.message);
+          else if (val != null && typeof val === 'object') acc.push(...flattenErrors(val));
+          return acc;
+        }, []);
+      const messages = flattenErrors(errors);
+      messages.forEach((msg) => toast.error(msg));
+    })}>
+      <input type="hidden" {...register('eon_voucher_id')} />
+      <Stepper activeStep={currentTab} alternativeLabel sx={{ mb: 3 }}>
+        <Step key="Informations">
+          <StepLabel onClick={() => setCurrentTab(0)} style={{ cursor: 'pointer' }}>
+            Informations
+          </StepLabel>
+        </Step>
+        <Step key="Produits">
+          <StepLabel onClick={() => setCurrentTab(1)} style={{ cursor: 'pointer' }}>
+            Produits
+          </StepLabel>
+        </Step>
+      </Stepper>
 
-        <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>
-          {getStepTitle()}
-        </Typography>
+      {currentTab === 0 && (
+       
+        <Box>
+        <Typography variant="h6" sx={{ mb: 2 }}>Information globale sur la demande d&apos;achat</Typography>
+        <Grid container spacing={3}>
+      
+          
+          <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Lookup name="site_id" label="Site" data={sites} />
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Select name="type" label="Type" size="small">
+                {PRODUCT_TYPE_OPTIONS.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Field.Select>
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Select name="priority" label="Priorité" size="small">
+                {PRIORITY_OPTIONS.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Field.Select>
+          </Grid>
 
-        {submitError && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {submitError}
-          </Alert>
-        )}
+          <Grid size={{ xs: 12 }}>
+            <BebSelectList />
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Lookup name="personal_id" label="Personnel" data={personals} />
+          </Grid>
+          
+          <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Select name="status_id" label="Statut" size="small">
+                {TWO_STATUS_OPTIONS.map((opt) => (
+                  <MenuItem key={opt.value} value={`${opt.value}`}>{opt.label}</MenuItem>
+                ))}
+              </Field.Select>
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Text
+                name="observation"
+                label="Observations"
+                multiline
+                rows={3}
+              />
+            </Grid>
 
-        {renderStepContent()}
+            <Grid size={{ xs: 12, md: 12 }} display="flex" justifyContent="flex-end">
+              <Button type="submit" variant="contained">
+                ÉTAPE SUIVANTE
+              </Button>
+            </Grid>
+          </Grid>
+          </Box>
+       
+      )}
 
-        <Box
-          sx={{
-            mt: 4,
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          {activeStep > 0 ? (
-            <Button variant="outlined" onClick={handleBack} disabled={isSubmitting}>
-              Étape précédente
+      {currentTab === 1 && (
+        <Box>
+          <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 3 }}>
+            <Typography variant="subtitle2">Produits</Typography>
+            <IconButton color="primary" onClick={() => {
+              appendItem({
+                product_id: '',
+                code: '',
+                supplier_code: '',
+                designation: '',
+                current_quantity: '',
+                purchased_quantity: '',
+                observation: '',
+                unit_measure: { designation: '' },
+              });
+              setOpenModalIndex(itemFields.length);
+            }}>
+              <Iconify icon="eva:plus-fill" />
+            </IconButton>
+      </Stack>
+          <Box sx={{ mt: 2 }}>
+            {itemFields.map((field, index) => (
+              <Box key={field.fieldKey} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 2, mb: 2 }}>
+                {/* First row: Code, Code Fournisseur, Désignation, Quantité actuelle */}
+                <Grid container spacing={2}>
+                  <Grid size={{ xs: 12, md: 3 }}>
+                    <Field.Text
+                      name={`items.${index}.code`}
+                      label="Code"
+                      InputProps={{ readOnly: true }}
+                      onClick={() => setOpenModalIndex(index)}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 3 }}>
+                    <Field.Text
+                      name={`items.${index}.supplier_code`}
+                      label="Code Fournisseur"
+                      InputProps={{ readOnly: true }}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 3 }}>
+                    <Field.Text
+                      name={`items.${index}.designation`}
+                      label="Désignation"
+                      InputProps={{ readOnly: true }}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 3 }}>
+                    <Field.Number
+                      name={`items.${index}.current_quantity`}
+                      label="Quantité actuelle"
+                      InputProps={{ readOnly: true }}
+                    />
+                  </Grid>
+                </Grid>
+                {/* Second row: Quantité A acheter and Observation */}
+                <Grid container spacing={2} sx={{ mt: 2 }}>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Field.Number name={`items.${index}.purchased_quantity`} label="Quantité à acheter" />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Field.Text name={`items.${index}.observation`} label="Observation" multiline rows={2} />
+                  </Grid>
+                </Grid>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                  <IconButton color="error" onClick={() => removeItem(index)}>
+                    <Iconify icon="eva:trash-2-outline" />
+                  </IconButton>
+                </Box>
+              </Box>
+            ))}
+          </Box>
+          <Modal open={openModalIndex !== null} onClose={() => setOpenModalIndex(null)}>
+            <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: 'background.paper', p: 3, width: '80%', maxHeight: '80%', overflow: 'auto' }}>
+              <Typography variant="h6" mb={2}>Sélectionner un produit</Typography>
+              <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                <TextField
+                  label="Code"
+                  size="small"
+                  value={filterParams.code}
+                  onChange={(e) => setFilterParams((prev) => ({ ...prev, code: e.target.value }))}
+                />
+                <TextField
+                  label="Supplier Code"
+                  size="small"
+                  value={filterParams.supplier_code}
+                  onChange={(e) => setFilterParams((prev) => ({ ...prev, supplier_code: e.target.value }))}
+                />
+                <TextField
+                  label="Builder Code"
+                  size="small"
+                  value={filterParams.builder_code}
+                  onChange={(e) => setFilterParams((prev) => ({ ...prev, builder_code: e.target.value }))}
+                />
+                <TextField
+                  label="Designation"
+                  size="small"
+                  value={filterParams.designation}
+                  onChange={(e) => setFilterParams((prev) => ({ ...prev, designation: e.target.value }))}
+                />
+              </Box>
+              <DataGrid
+                autoHeight
+                rows={productOptions}
+                columns={productColumns}
+                loading={productsLoading}
+                pageSizeOptions={[5, 10]}
+                pageSize={5}
+                disableColumnMenu
+              />
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                <Button onClick={() => setOpenModalIndex(null)}>Annuler</Button>
+              </Box>
+            </Box>
+          </Modal>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+            <Button type="submit" variant="contained">
+              VALIDER
             </Button>
-          ) : (
-            <div />
-          )}
-
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={isLastStep ? handleSubmit(handleFormSubmit) : handleNext}
-            disabled={isSubmitting}
-            startIcon={
-              isSubmitting && isLastStep ? <CircularProgress size={20} color="inherit" /> : null
-            }
-          >
-            {isLastStep ? 'Valider' : 'Étape suivante'}
-          </Button>
+          </Box>
         </Box>
-      </Box>
-    </FormProvider>
+      )}
+    </Form>
   );
 }
-
-const BEBFormSection = () => (
-  <Stack spacing={2}>
-    <BEBNewEditForm />
-  </Stack>
-);
