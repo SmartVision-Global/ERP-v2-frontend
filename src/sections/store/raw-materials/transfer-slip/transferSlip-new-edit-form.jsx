@@ -1,5 +1,5 @@
 import { z as zod } from 'zod';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useFieldArray } from 'react-hook-form';
 
@@ -25,8 +25,7 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useGetLookups } from 'src/actions/lookups';
-import { useGetExitSlips } from 'src/actions/exitSlip';
-import { createIntegration, updateIntegration } from 'src/actions/integration';
+import { createTransferSlip, updateTransferSlip } from 'src/actions/transferSlip';
 
 import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
@@ -36,23 +35,16 @@ import { ProductSelectionDialog } from './product-selection-dialog';
 // -------------------- Schema --------------------
 const ProductEntrySchema = zod.object({
   product_id: zod.number().min(1, { message: 'Produit is required!' }),
-  machine_id: zod.number().min(1, { message: 'Machine is required!' }),
-  workshop_id: zod.number().min(1, { message: 'Atelier is required!' }),
   lot: zod.string().optional(),
   quantity: zod.coerce.number().min(0.1, { message: 'Quantité must be greater than 0' }),
-  // physical_quantity: zod.coerce
-  //   .number()
-  //   .min(0, { message: 'Quantité physique must be greater than or equal to 0' }),
   observation: zod.string().optional(),
-  motif: zod.number().optional(),
 });
 
 const TransferSlipSchema = zod.object({
-  type: zod.number().min(1, { message: 'Nature is required!' }),
-  store_id: zod.number().min(1, { message: 'Magasin is required!' }),
-  exit_slip_id: zod.number().optional(),
+  type: zod.number().min(1, { message: 'Produit is required!' }),
+  store_id: zod.number().min(1, { message: 'Magasin source is required!' }),
+  store_to_id: zod.number().min(1, { message: 'Magasin destination is required!' }),
   observation: zod.string().optional(),
-  integrated_by: zod.number().min(1, { message: 'Intégré par is required!' }),
   items: zod.array(ProductEntrySchema).min(1, { message: 'Ajoutez au moins une ligne' }),
 });
 
@@ -60,69 +52,67 @@ const TransferSlipSchema = zod.object({
 export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit }) {
   const router = useRouter();
   const { data: stores } = useGetLookups('settings/lookups/stores?store_type=1&type=1');
-  const { data: machines } = useGetLookups('settings/lookups/machines?type=1');
-  const { data: personals } = useGetLookups('hr/lookups/personals?type=1');
-  const { data: bebs } = useGetLookups('expression-of-need/lookups/eon-vouchers?type=1');
-  const { data: workshops } = useGetLookups('settings/lookups/workshops?type=1');
-  const { data: exitSlips } = useGetLookups('inventory/lookups/exit-slips?type=1');
-  const { data: motifs } = useGetLookups('settings/lookups/return-patterns?type=1');
+
   const [activeStep, setActiveStep] = useState(0);
   const [selectedRowIndex, setSelectedRowIndex] = useState(null);
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
   const [isSupplierMode, setIsSupplierMode] = useState(false);
-  // console.log(personals);
   const methods = useForm({
     resolver: zodResolver(TransferSlipSchema),
     defaultValues: {
-      type: currentIntegration?.type || 1,
+      type: currentIntegration?.type || undefined,
       store_id: currentIntegration?.store_id || undefined,
-      exit_slip_id: currentIntegration?.exit_slip_id || undefined,
+      store_to_id: currentIntegration?.store_to_id || undefined,
       observation: currentIntegration?.observation || '',
-      integrated_by: currentIntegration?.integrated_by || undefined,
       items: currentIntegration?.items?.map((item) => ({
         id: item.id,
         product_id: item.product_id || undefined,
         product_code: item.product_code || '',
         designation: item.designation || '',
         supplier_code: item.supplier_code || '',
-        machine_id: item.machine_id ? Number(item.machine_id) : undefined,
-        workshop_id: item.workshop_id ? Number(item.workshop_id) : undefined,
         lot: item.lot || 'non-défini',
         quantity: item.quantity ? Number(item.quantity) : 0,
-        motif: item.motif ? Number(item.motif) : undefined,
         observation: item.observation || '',
       })) || [
         {
           product_id: undefined,
-          machine_id: undefined,
-          workshop_id: undefined,
           lot: 'non-défini',
           quantity: 0,
-          motif: undefined,
           observation: '',
         },
       ],
     },
   });
+  const products = [
+    { value: 1, text: 'Matiere premier' },
+    { value: 2, text: 'Semi-fini' },
+    { value: 3, text: 'Semi-fini panneau technique' },
+  ];
 
   const {
     control,
     handleSubmit,
-    watch,
     getValues,
     formState: { isSubmitting },
+    watch,
   } = methods;
-
-  // Add console logs to debug the data
-  console.log('Current Integration:', currentIntegration);
-  console.log('Form Values:', getValues());
-
-  const isStatusValidated = currentIntegration?.status === 1;
 
   const { fields, append, remove, update } = useFieldArray({
     control,
     name: 'items',
   });
+
+  const selectedSource = watch('store_id');
+
+  // Filter destination stores to exclude the selected source
+  const destinationStores = stores?.filter((store) => store.value !== selectedSource);
+
+  // Optionally, reset destination if it matches the source
+  useEffect(() => {
+    if (getValues('store_to_id') === selectedSource) {
+      methods.setValue('store_to_id', undefined);
+    }
+  }, [selectedSource]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -130,24 +120,24 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
       const payload = {
         type: data.type,
         store_id: data.store_id,
+        store_to_id: data.store_to_id,
         observation: data.observation,
-        integrated_by: data.integrated_by,
         items: data.items.map((item) => ({
-          ...item,
-          id: item.id || undefined, // Include id only if it exists
+          product_id: item.product_id,
+          lot: item.lot || 'non-défini',
+          quantity: Number(item.quantity),
+          observation: item.observation || '',
         })),
       };
-      if (data.type === 2) {
-        payload.exit_slip_id = data.exit_slip_id;
-      }
+
       if (isEdit) {
-        await updateIntegration(currentIntegration.id, payload);
-        toast.success('Intégration modifiée avec succès!');
+        await updateTransferSlip(currentIntegration.id, payload);
+        toast.success('Bon de transfert modifié avec succès!');
       } else {
-        await createIntegration(payload);
-        toast.success('Intégration créée avec succès!');
+        await createTransferSlip(payload);
+        toast.success('Bon de transfert créé avec succès!');
       }
-      router.push(paths.dashboard.store.rawMaterials.integrations);
+      router.push(paths.dashboard.store.rawMaterials.transferSlip);
       onClose?.();
     } catch (error) {
       console.error(error);
@@ -158,7 +148,7 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
   const handleStepClick = async (step) => {
     if (step === 1) {
       // Validate the first step before allowing to move to the second step
-      const firstStepFields = ['store_id', 'integrated_by'];
+      const firstStepFields = ['store_id', 'store_to_id'];
       const values = getValues();
       const isValid = await methods.trigger(firstStepFields);
 
@@ -173,7 +163,7 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
   const handleNext = async () => {
     if (activeStep === 0) {
       // Validate the first step before moving to the second step
-      const firstStepFields = ['store_id', 'integrated_by'];
+      const firstStepFields = ['store_id', 'store_to_id'];
       const isValid = await methods.trigger(firstStepFields);
 
       if (!isValid) {
@@ -202,11 +192,10 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
           product_id: product.id,
           product_code: product.code,
           designation: product.designation,
-          machine_id: undefined,
-          workshop_id: undefined,
+          supplier_code: product.supplier_code || '',
           lot: 'non-défini',
           quantity: 0,
-          observation: product.observation || '',
+          observation: '',
         });
       }
     }
@@ -221,21 +210,16 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
       case 0:
         return (
           <Stack spacing={3} sx={{ maxWidth: 600, mx: 'auto', width: 1 }}>
-            <Field.Select name="type" label="Nature" size="small" fullWidth>
-              <MenuItem value={1}>Intégration</MenuItem>
-              <MenuItem value={2}>Réintégration</MenuItem>
-            </Field.Select>
-
-            <Field.Select name="integrated_by" label="Intégré par" size="small" fullWidth>
-              <MenuItem value={undefined}>Sélectionner</MenuItem>
-              {personals?.map((personal) => (
-                <MenuItem key={personal.value} value={personal.value}>
-                  {personal.text}
+            <Field.Select name="type" label="Produit" size="small" fullWidth>
+              <MenuItem value={undefined}>Sélectionner un produit</MenuItem>
+              {products?.map((product) => (
+                <MenuItem key={product.value} value={product.value}>
+                  {product.text}
                 </MenuItem>
               ))}
             </Field.Select>
 
-            <Field.Select name="store_id" label="Magasin" size="small" fullWidth>
+            <Field.Select name="store_id" label="Magasin source" size="small" fullWidth>
               <MenuItem value={undefined}>Sélectionner un magasin</MenuItem>
               {stores?.map((store) => (
                 <MenuItem key={store.value} value={store.value}>
@@ -244,16 +228,14 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
               ))}
             </Field.Select>
 
-            {watch('type') === 2 && (
-              <Field.Select name="exit_slip_id" label="Bon de sortie" size="small" fullWidth>
-                <MenuItem value={undefined}>Sélectionner un bon de sortie</MenuItem>
-                {exitSlips?.map((slip) => (
-                  <MenuItem key={slip.value} value={slip.value}>
-                    {slip.text}
-                  </MenuItem>
-                ))}
-              </Field.Select>
-            )}
+            <Field.Select name="store_to_id" label="Magasin destination" size="small" fullWidth>
+              <MenuItem value={undefined}>Sélectionner un magasin</MenuItem>
+              {destinationStores?.map((store) => (
+                <MenuItem key={store.value} value={store.value}>
+                  {store.text}
+                </MenuItem>
+              ))}
+            </Field.Select>
 
             <Field.Text
               name="observation"
@@ -274,12 +256,8 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
                 onClick={() =>
                   append({
                     product_id: undefined,
-                    machine_id: undefined,
-                    workshop_id: undefined,
                     lot: 'non-défini',
                     quantity: 0,
-                    motif: '',
-                    supplier_code: '',
                     observation: '',
                   })
                 }
@@ -350,16 +328,6 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
                   </Grid>
                   <Grid xs={2}>
                     <Field.Text
-                      name={`items.${index}.designation`}
-                      label="Désignation"
-                      variant="outlined"
-                      size="small"
-                      fullWidth
-                      InputProps={{ readOnly: true }}
-                    />
-                  </Grid>
-                  <Grid xs={2}>
-                    <Field.Text
                       name={`items.${index}.supplier_code`}
                       label="Code Fournisseur"
                       variant="outlined"
@@ -383,39 +351,15 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
                       }}
                     />
                   </Grid>
-                  <Grid size={1.5}>
-                    <Field.Select
-                      name={`items.${index}.machine_id`}
-                      label="Machine"
+                  <Grid xs={3}>
+                    <Field.Text
+                      name={`items.${index}.designation`}
+                      label="Désignation"
+                      variant="outlined"
                       size="small"
                       fullWidth
-                      disabled={isEdit}
-                      sx={{ minWidth: '100%' }}
-                    >
-                      <MenuItem value={undefined}>Sélectionner une machine</MenuItem>
-                      {machines?.map((machine) => (
-                        <MenuItem key={machine.value} value={machine.value}>
-                          {machine.text}
-                        </MenuItem>
-                      ))}
-                    </Field.Select>
-                  </Grid>
-                  <Grid size={1.5}>
-                    <Field.Select
-                      name={`items.${index}.workshop_id`}
-                      label="Atelier"
-                      size="small"
-                      fullWidth
-                      disabled={isEdit}
-                      sx={{ minWidth: '100%' }}
-                    >
-                      <MenuItem value={undefined}>Sélectionner un atelier</MenuItem>
-                      {workshops.map((workshop) => (
-                        <MenuItem key={workshop.id} value={workshop.value}>
-                          {workshop.text}
-                        </MenuItem>
-                      ))}
-                    </Field.Select>
+                      InputProps={{ readOnly: true }}
+                    />
                   </Grid>
                   <Grid xs={1}>
                     <Field.Text
@@ -424,7 +368,6 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
                       variant="outlined"
                       size="small"
                       fullWidth
-                      disabled={isEdit}
                       InputProps={{
                         sx: { bgcolor: 'background.paper' },
                       }}
@@ -435,7 +378,7 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
                       name={`items.${index}.quantity`}
                       type="number"
                       size="small"
-                      label="Quantité intégrée"
+                      label="Quantité"
                       fullWidth
                       InputProps={{
                         sx: { bgcolor: 'background.paper' },
@@ -450,7 +393,6 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
                                 });
                               }}
                               size="small"
-                              disabled={isEdit}
                             >
                               <Add fontSize="small" />
                             </IconButton>
@@ -463,7 +405,6 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
                                 });
                               }}
                               size="small"
-                              disabled={isEdit}
                             >
                               <Remove fontSize="small" />
                             </IconButton>
@@ -471,21 +412,6 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
                         ),
                       }}
                     />
-                  </Grid>
-                  <Grid size={1.5}>
-                    <Field.Select
-                      name={`items.${index}.motif`}
-                      label="Motif"
-                      size="small"
-                      fullWidth
-                    >
-                      <MenuItem value={undefined}>Sélectionner un motif</MenuItem>
-                      {motifs?.map((motif) => (
-                        <MenuItem key={motif.value} value={motif.value}>
-                          {motif.text}
-                        </MenuItem>
-                      ))}
-                    </Field.Select>
                   </Grid>
                   <Grid xs={1.5}>
                     <Field.Text
@@ -528,7 +454,7 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
       <Form methods={methods} onSubmit={onSubmit}>
         <Card>
           <CardHeader
-            title={isEdit ? "Modifier l'intégration" : 'Ajouter une intégration'}
+            title={isEdit ? 'Modifier le bon de transfert' : 'Ajouter un bon de transfert'}
             sx={{
               borderBottom: '1px solid',
               borderColor: 'divider',

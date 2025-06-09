@@ -9,7 +9,7 @@ import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function IntegrationExportButton({ data }) {
+export default function TransferSlipExportButton({ data }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const loading = useBoolean();
 

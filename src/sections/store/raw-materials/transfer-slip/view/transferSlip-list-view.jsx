@@ -42,10 +42,10 @@ import { RouterLink } from 'src/routes/components';
 import { useGetLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
 import {
-  useGetIntegrations,
-  getFiltredIntegrations,
-  getIntegrationItems,
-} from 'src/actions/integration';
+  useGetTransferSlips,
+  getFiltredTransferSlips,
+  getTransferSlipItems,
+} from 'src/actions/transferSlip';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -54,7 +54,7 @@ import { EmptyContent } from 'src/components/empty-content';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import IntegrationExportButton from '../integration-export-button';
+import TransferSlipExportButton from '../transferSlip-export-button';
 import { TransferSlipNewEditForm } from '../transferSlip-new-edit-form';
 import {
   RenderCellCode,
@@ -80,23 +80,15 @@ const FILTERS_OPTIONS = [
   {
     id: 'store_id',
     type: 'select',
-    label: 'Magasin',
+    label: 'Magasin source',
     cols: 4,
     width: 1,
     options: [],
   },
   {
-    id: 'created_by',
+    id: 'store_to_id',
     type: 'select',
-    label: 'Preneur',
-    cols: 4,
-    width: 1,
-    options: [],
-  },
-  {
-    id: 'exit_slip_id',
-    type: 'select',
-    label: 'B.E.B',
+    label: 'Magasin destination',
     cols: 4,
     width: 1,
     options: [],
@@ -116,23 +108,14 @@ const FILTERS_OPTIONS = [
     width: 1,
   },
   {
-    id: 'treated_by',
-    type: 'select',
-    label: 'Cloturée par',
-    cols: 4,
-    width: 1,
-    options: [],
-  },
-  {
     id: 'status',
     type: 'select',
     label: 'Etat',
     cols: 4,
     width: 1,
     options: [
-      { label: 'En attente', value: 'pending' },
-      { label: 'Validé', value: 'validated' },
-      { label: 'Rejeté', value: 'rejected' },
+      { label: 'En attente', value: 0 },
+      { label: 'Validé', value: 1 },
     ],
   },
   {
@@ -164,56 +147,45 @@ export function TransferSlipListView() {
   const { data: bebs } = useGetLookups('expression-of-need/lookups/eon-vouchers');
   const [filterButtonEl, setFilterButtonEl] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [selectedIntegration, setSelectedIntegration] = useState(null);
+  const [selectedTransferSlip, setSelectedTransferSlip] = useState(null);
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openViewDialog, setOpenViewDialog] = useState(false);
-  const [selectedIntegrationDetails, setSelectedIntegrationDetails] = useState(null);
-  const [integrationItems, setIntegrationItems] = useState([]);
+  const [selectedTransferSlipDetails, setSelectedTransferSlipDetails] = useState(null);
+  const [transferSlipItems, setTransferSlipItems] = useState([]);
   const [itemsLoading, setItemsLoading] = useState(false);
 
   // Get initial data with refresh trigger
-  const { integrations, integrationsLoading, integrationsCount } = useGetIntegrations(
+  const { transferSlips, transferSlipsLoading, transferSlipsCount } = useGetTransferSlips(
     {
       limit: PAGE_SIZE,
       offset: 0,
     },
     refreshTrigger
   );
-  console.log(integrations);
+
   const transformIntegrationData = (data) =>
-    data.map((integration) => ({
-      id: integration.id,
-      code: integration.code,
-      type: integration.type,
-      reintegre_par: integration.integrated_by,
-      preneur: integration.exit_slip?.personal_id || integration.preneur,
-      personal_id: integration.exit_slip?.personal_id || integration.preneur,
-      bon_de_sortie: integration.exit_slip?.code,
-      magasin: integration.store?.designation,
-      store_id: integration.store?.id,
-      store_name: integration.store?.designation,
-      store_code: integration.store?.code,
-      etat: integration.status,
-      observation: integration.observation,
-      date_de_creation: integration.created_at,
-      cree_par: integration.created_by?.full_name || integration.created_by?.id,
-      valide_par: integration.validated_by,
-      items: integration.items,
-      beb_code: integration.eon_voucher?.code,
-      beb_status: integration.eon_voucher?.status,
-      beb_nature: integration.eon_voucher?.nature,
-      beb_type: integration.eon_voucher?.type,
-      beb_validation_code: integration.eon_voucher?.validation_code,
-      beb_requested_date: integration.eon_voucher?.requested_date,
-      beb_priority: integration.eon_voucher?.priority,
-      beb_observation: integration.eon_voucher?.observation,
-      validated_at: integration.validated_at,
+    data.map((transferSlip) => ({
+      id: transferSlip.id,
+      code: transferSlip.code,
+      type: transferSlip.type,
+      status: transferSlip.status,
+      store: transferSlip.store?.designation,
+      store_id: transferSlip.store?.id,
+      store_code: transferSlip.store?.code,
+      store_to: transferSlip.store_to?.designation,
+      store_to_id: transferSlip.store_to?.id,
+      store_to_code: transferSlip.store_to?.code,
+      observation: transferSlip.observation,
+      product_type: transferSlip.product_type,
+      date_de_creation: transferSlip.created_at,
+      validation_date: transferSlip.validation_date,
+      items: transferSlip.items,
     }));
 
   const handleReset = useCallback(async () => {
     try {
-      const response = await getFiltredIntegrations({
+      const response = await getFiltredTransferSlips({
         limit: PAGE_SIZE,
         offset: 0,
       });
@@ -245,9 +217,9 @@ export function TransferSlipListView() {
         }
         delete filterParams.created_at;
 
-        const response = await getFiltredIntegrations(filterParams);
-        const transformedIntegrations = transformIntegrationData(response.data?.data?.records);
-        setTableData(transformedIntegrations);
+        const response = await getFiltredTransferSlips(filterParams);
+        const transformedTransferSlips = transformIntegrationData(response.data?.data?.records);
+        setTableData(transformedTransferSlips);
         setRowCount(response.data?.data?.total);
         setEditedFilters(data);
 
@@ -287,9 +259,9 @@ export function TransferSlipListView() {
       }
       delete pageFilterParams.created_at;
 
-      const pageResponse = await getFiltredIntegrations(pageFilterParams);
-      const transformedIntegrations = transformIntegrationData(pageResponse.data?.data?.records);
-      setTableData(transformedIntegrations);
+      const pageResponse = await getFiltredTransferSlips(pageFilterParams);
+      const transformedTransferSlips = transformIntegrationData(pageResponse.data?.data?.records);
+      setTableData(transformedTransferSlips);
       setRowCount(pageResponse.data?.data?.total || 0);
       setPaginationModel(newModel);
     } catch (error) {
@@ -299,12 +271,12 @@ export function TransferSlipListView() {
   };
 
   useEffect(() => {
-    if (integrations?.length) {
-      const transformedData = transformIntegrationData(integrations);
+    if (transferSlips?.length) {
+      const transformedData = transformIntegrationData(transferSlips);
       setTableData(transformedData);
-      setRowCount(integrationsCount);
+      setRowCount(transferSlipsCount);
     }
-  }, [integrations, integrationsCount]);
+  }, [transferSlips, transferSlipsCount]);
 
   useEffect(() => {
     if (stores?.length) {
@@ -312,42 +284,22 @@ export function TransferSlipListView() {
         label: store.text,
         value: store.value,
       }));
+      // Also set options for destination store
+      FILTERS_OPTIONS[1].options = stores.map((store) => ({
+        label: store.text,
+        value: store.value,
+      }));
     }
   }, [stores]);
 
-  useEffect(() => {
-    if (personals?.length) {
-      FILTERS_OPTIONS[1].options = personals.map((personal) => ({
-        label: personal.text,
-        value: personal.value,
-      }));
-      // Also set options for 'treated_by' (Cloturée par) to the same list
-      FILTERS_OPTIONS.find((opt) => opt.id === 'treated_by').options = personals.map(
-        (personal) => ({
-          label: personal.text,
-          value: personal.value,
-        })
-      );
-    }
-  }, [personals]);
-
-  useEffect(() => {
-    if (bebs?.length) {
-      FILTERS_OPTIONS[2].options = bebs.map((beb) => ({
-        label: beb.text,
-        value: beb.value,
-      }));
-    }
-  }, [bebs]);
-
   const handleFormClose = () => {
     setShowForm(false);
-    setSelectedIntegration(null);
+    setSelectedTransferSlip(null);
   };
 
   const handleCloseEdit = () => {
     setOpenEditDialog(false);
-    setSelectedIntegration(null);
+    setSelectedTransferSlip(null);
     triggerRefresh();
   };
 
@@ -374,19 +326,19 @@ export function TransferSlipListView() {
         observation: item.observation,
       })),
     };
-    setSelectedIntegration(formData);
+    setSelectedTransferSlip(formData);
     setOpenEditDialog(true);
   };
 
   const handleView = async (row) => {
-    setSelectedIntegrationDetails(row);
+    setSelectedTransferSlipDetails(row);
     setOpenViewDialog(true);
     setItemsLoading(true);
     try {
-      const response = await getIntegrationItems(row.id);
-      setIntegrationItems(response.data.data);
+      const response = await getTransferSlipItems(row.id);
+      setTransferSlipItems(response.data.data);
     } catch (error) {
-      console.error('Error fetching integration items:', error);
+      console.error('Error fetching transfer slip items:', error);
       toast.error('Erreur lors du chargement des articles');
     } finally {
       setItemsLoading(false);
@@ -395,8 +347,8 @@ export function TransferSlipListView() {
 
   const handleCloseView = () => {
     setOpenViewDialog(false);
-    setSelectedIntegrationDetails(null);
-    setIntegrationItems([]);
+    setSelectedTransferSlipDetails(null);
+    setTransferSlipItems([]);
   };
 
   const columns = [
@@ -421,54 +373,18 @@ export function TransferSlipListView() {
       minWidth: 100,
       renderCell: (params) => {
         let label = params.row.type;
-        if (params.row.type === 1) label = 'Intégration';
-        else if (params.row.type === 2) label = 'Réintégration';
+        if (params.row.type === 1) label = 'Transfert';
         return <Typography variant="body2">{label}</Typography>;
       },
     },
     {
-      field: 'reintegre_par',
-      headerName: 'Réintégré par',
-      flex: 1,
-      minWidth: 150,
-      renderCell: (params) => {
-        const personal = personals?.find((p) => p.value === params.row.reintegre_par);
-        return (
-          <Typography variant="body2">
-            {personal?.text || params.row.reintegre_par || '-'}
-          </Typography>
-        );
-      },
-    },
-    {
-      field: 'preneur',
-      headerName: 'Preneur',
-      flex: 1,
-      minWidth: 120,
-      renderCell: (params) => {
-        const personal = personals?.find((p) => p.value === params.row.personal_id);
-        return (
-          <Typography variant="body2">{personal?.text || params.row.preneur || '-'}</Typography>
-        );
-      },
-    },
-    {
-      field: 'bon_de_sortie',
-      headerName: 'Bon de sortie',
-      flex: 1,
-      minWidth: 120,
-      renderCell: (params) => (
-        <Typography variant="body2">{params.row.bon_de_sortie || '-'}</Typography>
-      ),
-    },
-    {
-      field: 'store_name',
-      headerName: 'Magasin',
+      field: 'store',
+      headerName: 'Magasin source',
       flex: 1,
       minWidth: 160,
       renderCell: (params) => (
         <Stack spacing={0.5}>
-          <Typography variant="body2">{params.row.store_name}</Typography>
+          <Typography variant="body2">{params.row.store}</Typography>
           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
             {params.row.store_code}
           </Typography>
@@ -476,14 +392,28 @@ export function TransferSlipListView() {
       ),
     },
     {
-      field: 'etat',
+      field: 'store_to',
+      headerName: 'Magasin destination',
+      flex: 1,
+      minWidth: 160,
+      renderCell: (params) => (
+        <Stack spacing={0.5}>
+          <Typography variant="body2">{params.row.store_to}</Typography>
+          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+            {params.row.store_to_code}
+          </Typography>
+        </Stack>
+      ),
+    },
+    {
+      field: 'status',
       headerName: 'Etat',
       flex: 1,
       minWidth: 120,
       renderCell: (params) => (
         <Chip
-          label={params.row.etat === 1 ? 'Validé' : 'En attente'}
-          color={params.row.etat === 1 ? 'success' : 'warning'}
+          label={params.row.status === 1 ? 'Validé' : 'En attente'}
+          color={params.row.status === 1 ? 'success' : 'warning'}
           size="small"
         />
       ),
@@ -509,19 +439,16 @@ export function TransferSlipListView() {
       ),
     },
     {
-      field: 'cree_par',
-      headerName: 'Créé par',
+      field: 'validation_date',
+      headerName: 'Date de validation',
       flex: 1,
-      minWidth: 120,
-      renderCell: (params) => <Typography variant="body2">{params.row.cree_par || '-'}</Typography>,
-    },
-    {
-      field: 'valide_par',
-      headerName: 'Validé par',
-      flex: 1,
-      minWidth: 150,
+      minWidth: 160,
       renderCell: (params) => (
-        <Typography variant="body2">{params.row.valide_par || '-'}</Typography>
+        <Typography variant="body2">
+          {params.row.validation_date
+            ? new Date(params.row.validation_date).toLocaleDateString('fr-FR')
+            : '-'}
+        </Typography>
       ),
     },
     {
@@ -532,7 +459,7 @@ export function TransferSlipListView() {
       getActions: (params) => {
         const actions = [];
 
-        if (params.row.etat === 1) {
+        if (params.row.status === 1) {
           actions.push(
             <GridActionsCellItem
               showInMenu
@@ -574,7 +501,7 @@ export function TransferSlipListView() {
   const renderViewDialog = () => (
     <Dialog fullWidth maxWidth="lg" open={openViewDialog} onClose={handleCloseView}>
       <DialogTitle>
-        Détails de l&apos;intégration
+        Détails du bon de transfert
         <IconButton
           aria-label="close"
           onClick={handleCloseView}
@@ -588,7 +515,7 @@ export function TransferSlipListView() {
         </IconButton>
       </DialogTitle>
       <DialogContent>
-        {selectedIntegrationDetails && (
+        {selectedTransferSlipDetails && (
           <Stack spacing={3} sx={{ pt: 3 }}>
             {/* Header Information */}
             <Card>
@@ -599,28 +526,7 @@ export function TransferSlipListView() {
                       <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
                         Code
                       </Typography>
-                      <Typography variant="body1">{selectedIntegrationDetails.code}</Typography>
-                    </Stack>
-                  </Grid>
-                  <Grid xs={12} md={6} sx={{ padding: 2 }}>
-                    <Stack spacing={1}>
-                      <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
-                        Magasin
-                      </Typography>
-                      <Typography variant="body1">{selectedIntegrationDetails.magasin}</Typography>
-                    </Stack>
-                  </Grid>
-                  <Grid xs={12} md={6} sx={{ padding: 2 }}>
-                    <Stack spacing={1}>
-                      <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
-                        Preneur
-                      </Typography>
-                      <Typography variant="body1">
-                        {personals?.find((p) => p.value === selectedIntegrationDetails.preneur)
-                          ?.text ||
-                          selectedIntegrationDetails.preneur ||
-                          '-'}
-                      </Typography>
+                      <Typography variant="body1">{selectedTransferSlipDetails.code}</Typography>
                     </Stack>
                   </Grid>
                   <Grid xs={12} md={6} sx={{ padding: 2 }}>
@@ -629,7 +535,31 @@ export function TransferSlipListView() {
                         Type
                       </Typography>
                       <Typography variant="body1">
-                        {selectedIntegrationDetails.type === 1 ? 'Intégration' : 'Réintégration'}
+                        {selectedTransferSlipDetails.type === 1 ? 'Transfert' : '-'}
+                      </Typography>
+                    </Stack>
+                  </Grid>
+                  <Grid xs={12} md={6} sx={{ padding: 2 }}>
+                    <Stack spacing={1}>
+                      <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+                        Magasin source
+                      </Typography>
+                      <Typography variant="body1">{selectedTransferSlipDetails.store}</Typography>
+                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                        {selectedTransferSlipDetails.store_code}
+                      </Typography>
+                    </Stack>
+                  </Grid>
+                  <Grid xs={12} md={6} sx={{ padding: 2 }}>
+                    <Stack spacing={1}>
+                      <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+                        Magasin destination
+                      </Typography>
+                      <Typography variant="body1">
+                        {selectedTransferSlipDetails.store_to}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                        {selectedTransferSlipDetails.store_to_code}
                       </Typography>
                     </Stack>
                   </Grid>
@@ -639,7 +569,7 @@ export function TransferSlipListView() {
                         Observation
                       </Typography>
                       <Typography variant="body1">
-                        {selectedIntegrationDetails.observation || '-'}
+                        {selectedTransferSlipDetails.observation || '-'}
                       </Typography>
                     </Stack>
                   </Grid>
@@ -651,7 +581,7 @@ export function TransferSlipListView() {
             <Card>
               <Box sx={{ p: 3 }}>
                 <Typography variant="h6" sx={{ mb: 2 }}>
-                  Articles ({integrationItems.length})
+                  Articles ({transferSlipItems.length})
                 </Typography>
                 {itemsLoading ? (
                   <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
@@ -672,7 +602,7 @@ export function TransferSlipListView() {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {integrationItems.map((item) => (
+                        {transferSlipItems.map((item) => (
                           <TableRow key={item.id}>
                             <TableCell>{item.product?.code || '-'}</TableCell>
                             <TableCell>{item.product?.designation || '-'}</TableCell>
@@ -699,21 +629,21 @@ export function TransferSlipListView() {
                       État
                     </Typography>
                     <Chip
-                      label={selectedIntegrationDetails.etat === 1 ? 'Validé' : 'En attente'}
-                      color={selectedIntegrationDetails.etat === 1 ? 'success' : 'warning'}
+                      label={selectedTransferSlipDetails.status === 1 ? 'Validé' : 'En attente'}
+                      color={selectedTransferSlipDetails.status === 1 ? 'success' : 'warning'}
                       size="small"
                     />
                   </Stack>
-                  {selectedIntegrationDetails.etat === 1 && (
+                  {selectedTransferSlipDetails.status === 1 && (
                     <>
                       <Stack direction="row" justifyContent="space-between" alignItems="center">
                         <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
                           Validé le
                         </Typography>
                         <Typography variant="body2">
-                          {selectedIntegrationDetails.date_de_creation
+                          {selectedTransferSlipDetails.validation_date
                             ? new Date(
-                                selectedIntegrationDetails.date_de_creation
+                                selectedTransferSlipDetails.validation_date
                               ).toLocaleDateString('fr-FR', {
                                 year: 'numeric',
                                 month: '2-digit',
@@ -722,14 +652,6 @@ export function TransferSlipListView() {
                                 minute: '2-digit',
                               })
                             : '-'}
-                        </Typography>
-                      </Stack>
-                      <Stack direction="row" justifyContent="space-between" alignItems="center">
-                        <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
-                          Validé par
-                        </Typography>
-                        <Typography variant="body2">
-                          {selectedIntegrationDetails.valide_par || '-'}
                         </Typography>
                       </Stack>
                     </>
@@ -767,7 +689,7 @@ export function TransferSlipListView() {
           ]}
           action={
             <Box sx={{ display: 'flex', gap: 1 }}>
-              <IntegrationExportButton data={tableData} />
+              <TransferSlipExportButton data={tableData} />
               <Button
                 component={RouterLink}
                 href={paths.dashboard.store.rawMaterials.newTransferSlip}
@@ -822,7 +744,7 @@ export function TransferSlipListView() {
             disableRowSelectionOnClick
             rows={tableData}
             columns={columns}
-            loading={integrationsLoading}
+            loading={transferSlipsLoading}
             getRowHeight={() => 'auto'}
             rowCount={rowCount}
             paginationModel={paginationModel}
@@ -865,9 +787,9 @@ export function TransferSlipListView() {
         </DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 3 }}>
-            {selectedIntegration && (
+            {selectedTransferSlip && (
               <TransferSlipNewEditForm
-                currentIntegration={selectedIntegration}
+                currentIntegration={selectedTransferSlip}
                 onClose={handleCloseEdit}
                 isEdit
               />
