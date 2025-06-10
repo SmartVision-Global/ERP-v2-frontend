@@ -68,8 +68,6 @@ export function calculateIRG(salary) {
 
 // Function to perform salary calculation
 export function salaryCalculation(salary, deductionCompensations) {
-  // eslint-disable-next-line no-debugger
-  debugger;
   let sumContributor = 0;
   let sumTaxable = 0;
   let sumNoConNoTax = 0;
