@@ -94,7 +94,7 @@ export function NoCotisNoImposTableRow({ row, selected, onDeleteRow, index, upda
                   const newItem = {
                     ...fields[index],
                     percent: newPercent,
-                    amount: calculatedAmount,
+                    amount: calculatedAmount.toFixed(2),
                   };
                   let newFields = fields;
                   newFields[index] = newItem;
@@ -156,7 +156,7 @@ export function NoCotisNoImposTableRow({ row, selected, onDeleteRow, index, upda
                   //   });
                   const newItem = {
                     ...fields[index],
-                    percent: calculatedPercent,
+                    percent: calculatedPercent.toFixed(2),
                     amount: newAmount,
                   };
                   let newFields = fields;
