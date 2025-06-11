@@ -56,8 +56,6 @@ export function NoCotisImposNewEditForm() {
   };
   const handleDeleteRow = useCallback(
     (index) => {
-      // eslint-disable-next-line no-debugger
-      debugger;
       remove(index);
       const filteredItems = fields.filter((_, idx) => idx !== index);
       const deductionsCompensations = [

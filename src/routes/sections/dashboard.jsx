@@ -17,7 +17,11 @@ const IndexPage = lazy(() => import('src/pages/dashboard/one'));
 const PageRhList = lazy(() => import('src/pages/dashboard/r-h/personal/actif/list'));
 const PageRhDocumentsList = lazy(() => import('src/pages/dashboard/r-h/personal/documents/list'));
 const PageRhBloqueList = lazy(() => import('src/pages/dashboard/r-h/personal/block/list'));
-const PageRhDasList = lazy(() => import('src/pages/dashboard/r-h/personal/das/list'));
+const PageRhDasList = lazy(() => import('src/pages/dashboard/r-h/para-tax-declaration/das/list'));
+const PageRhDasDetails = lazy(
+  () => import('src/pages/dashboard/r-h/para-tax-declaration/das/details')
+);
+
 const PageRhPersonalNew = lazy(() => import('src/pages/dashboard/r-h/personal/actif/new'));
 const PageRhPersonalEdit = lazy(() => import('src/pages/dashboard/r-h/personal/actif/edit'));
 
@@ -315,9 +319,15 @@ const PageStoreRawMaterialsStocksEdit = lazy(
   () => import('src/pages/dashboard/store/raw-materials/stocks/edit')
 );
 // expression de besoins
-const PageExpressionOfNeedsBebList = lazy(() => import('src/pages/dashboard/expression-of-needs/Beb/list'));
-const PageExpressionOfNeedsBebNew = lazy(() => import('src/pages/dashboard/expression-of-needs/Beb/new'));
-const PageExpressionOfNeedsBebEdit = lazy(() => import('src/pages/dashboard/expression-of-needs/Beb/edit'));
+const PageExpressionOfNeedsBebList = lazy(
+  () => import('src/pages/dashboard/expression-of-needs/Beb/list')
+);
+const PageExpressionOfNeedsBebNew = lazy(
+  () => import('src/pages/dashboard/expression-of-needs/Beb/new')
+);
+const PageExpressionOfNeedsBebEdit = lazy(
+  () => import('src/pages/dashboard/expression-of-needs/Beb/edit')
+);
 
 const PageStoreStorageEreaList = lazy(
   () => import('src/pages/dashboard/store/raw-materials/storage-area/list')
@@ -332,7 +342,6 @@ const PageStoreInitialStorageList = lazy(
 const PageStoreInitialStorageNew = lazy(
   () => import('src/pages/dashboard/store/raw-materials/initial-storage/new')
 );
-
 
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
@@ -371,8 +380,8 @@ export const dashboardRoutes = [
             children: [
               { element: <PageRhList />, index: true },
               { path: 'documents', element: <PageRhDocumentsList /> },
-              { path: 'bloc', element: <PageRhBloqueList /> },
-              { path: 'das', element: <PageRhDasList /> },
+              // { path: 'bloc', element: <PageRhBloqueList /> },
+              // { path: 'das', element: <PageRhDasList /> },
               { path: 'new', element: <PageRhPersonalNew /> },
               { path: 'documents/new', element: <PageRhDocumentPersonalNew /> },
               { path: ':id/edit', element: <PageRhPersonalEdit /> },
@@ -560,7 +569,9 @@ export const dashboardRoutes = [
           {
             path: 'para-tax-declaration',
             children: [
-              { path: 'das', element: <ComingSoonPage />, index: true },
+              { path: 'das', element: <PageRhDasList />, index: true },
+              { path: 'das/details/:id/:year', element: <PageRhDasDetails />, index: true },
+
               {
                 path: 'das/new',
                 element: <ComingSoonPage />,

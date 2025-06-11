@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { initial } from 'es-toolkit';
 
 import { CONFIG } from 'src/global-config';
 
@@ -142,10 +141,10 @@ export const endpoints = {
   },
   // expression of needs
   expressionOfNeeds: {
-   beb: {
-    list: '/v1/expression-of-need/eon-vouchers',
-    items: (id) => `/v1/expression-of-need/eon-vouchers/${id}/items`,
-   }
+    beb: {
+      list: '/v1/expression-of-need/eon-vouchers',
+      items: (id) => `/v1/expression-of-need/eon-vouchers/${id}/items`,
+    },
   },
   purchaseSupply: {
     purchaseOrder: {
@@ -176,4 +175,9 @@ export const endpoints = {
   payrolls: '/v1/hr/payroll/preparation/payrolls',
   calculatePayroll: (id) => `/v1/hr/payroll/calculation/payrolls/${id}/calculate`,
   validationPayroll: (id) => `/v1/hr/payroll/calculation/payrolls/${id}/validation`,
+
+  // para-tax-declaration
+
+  das: '/v1/hr/parafiscal_declaration/das',
+  dasDetails: '/v1/hr/parafiscal_declaration/das/details',
 };

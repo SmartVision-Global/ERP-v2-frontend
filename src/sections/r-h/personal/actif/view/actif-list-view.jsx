@@ -603,6 +603,7 @@ export function ActifListView() {
           <DataGrid
             disableRowSelectionOnClick
             disableColumnMenu
+            disableColumnSorting
             rows={tableData}
             rowCount={rowCount}
             columns={columns}

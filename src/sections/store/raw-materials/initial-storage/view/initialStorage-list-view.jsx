@@ -1,37 +1,26 @@
-import { mutate } from 'swr';
 import { useBoolean } from 'minimal-shared/hooks';
 import { useSearchParams } from 'react-router-dom';
 import { useState, useEffect, forwardRef, useCallback } from 'react';
 
 import Link from '@mui/material/Link';
-import { Close, Add, Remove } from '@mui/icons-material';
+import { Add, Close, Remove } from '@mui/icons-material';
 import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Stack,
-  Typography,
-} from '@mui/material';
-import {
-  TextField,
-  FormControl,
-  InputAdornment,
-  Container,
-  CircularProgress,
-  IconButton,
-} from '@mui/material';
 import {
   Box,
   Card,
-  Table,
+  Stack,
+  Dialog,
   Button,
-  Tooltip,
   MenuItem,
-  TableBody,
-  TableContainer,
+  TextField,
+  Container,
+  Typography,
+  IconButton,
+  DialogTitle,
+  FormControl,
   ListItemIcon,
+  DialogContent,
+  InputAdornment,
 } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
@@ -50,14 +39,6 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import StorageAreaExportButton from '../initialStorage-export-button';
 import { InitialStorageNewEditForm } from '../initialStorage-new-edit-form';
-import {
-  RenderCellId,
-  RenderCellSite,
-  RenderCellEntrepot,
-  RenderCellMagasin,
-  RenderCellObservation,
-  RenderCellCreatedAt,
-} from '../initialStorage-table-row';
 
 // ----------------------------------------------------------------------
 
