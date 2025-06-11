@@ -56,11 +56,13 @@ export function NoCotisImposNewEditForm() {
   };
   const handleDeleteRow = useCallback(
     (index) => {
+      // eslint-disable-next-line no-debugger
+      debugger;
       remove(index);
       const filteredItems = fields.filter((_, idx) => idx !== index);
       const deductionsCompensations = [
         ...values.cotis_impos_items,
-        filteredItems,
+        ...filteredItems,
         // ...values.cotis_no_impos_items,
         // ...filteredItems,
         ...values.no_cotis_no_impos_items,
