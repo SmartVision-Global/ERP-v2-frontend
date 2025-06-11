@@ -49,12 +49,15 @@ export const NewProductSchema = zod
     birth_date: schemaHelper.date({ message: { required: 'Veuillez remplir ce champ' } }),
     location_fr: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
     location_ar: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
-    gender: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    gender: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
     blood_group: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
     nationality_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
 
     phone: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
-    national_service_situation: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    national_service_situation: zod
+      .string()
+      .min(1, { message: 'Veuillez remplir ce champ' })
+      .or(zod.number()),
     email: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
     social_security_number: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
     adressFr: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
@@ -62,10 +65,10 @@ export const NewProductSchema = zod
 
     national_number: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
     act_of_birth_number: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
-    image: schemaHelper.file().optional(),
-    certificate: schemaHelper.file().optional(),
-    photo: zod.string().optional(),
-    employment_certificate: zod.string().optional(),
+    image: schemaHelper.file().optional().nullable(),
+    certificate: schemaHelper.file().optional().nullable(),
+    photo: zod.string().optional().nullable(),
+    employment_certificate: zod.string().optional().nullable(),
     father_firstname_fr: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
     father_firstname_ar: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
     mother_firstname_fr: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
@@ -74,7 +77,10 @@ export const NewProductSchema = zod
     mother_lastname_ar: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
 
     // Informations Familiales
-    family_situation: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    family_situation: zod
+      .string()
+      .min(1, { message: 'Veuillez remplir ce champ' })
+      .or(zod.number()),
     children: zod.number({ coerce: true }).optional().nullable(),
     minor_children: zod.number({ coerce: true }).optional().nullable(),
     spouse_fullname_fr: zod.string().optional(),
@@ -107,13 +113,16 @@ export const NewProductSchema = zod
 
     salary_grid_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
     salary_supplemental: zod.number().optional(),
-    job_regime: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    job_regime: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
     agency_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
     allowed_overtime: zod.boolean(),
     allowed_exit_voucher: zod.boolean(),
     pea_exist: zod.boolean(),
     rate_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
-    payroll_calculation: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    payroll_calculation: zod
+      .string()
+      .min(1, { message: 'Veuillez remplir ce champ' })
+      .or(zod.number()),
     days_per_month: schemaHelper.nullableInput(
       zod
         .number({ coerce: true })
@@ -134,7 +143,7 @@ export const NewProductSchema = zod
     service_start: schemaHelper.date({ message: { required: 'Veuillez remplir ce champ' } }),
 
     // Informations de la contra
-    contract_type: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    contract_type: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
     from_date: schemaHelper.date({ message: { required: 'Veuillez remplir ce champ' } }),
     to_date: schemaHelper.date().optional().nullable(),
     contract_probation: schemaHelper.nullableInput(
@@ -143,7 +152,7 @@ export const NewProductSchema = zod
         message: 'Veuillez remplir ce champ',
       }
     ),
-    payment_type: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    payment_type: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
     rib: zod.string().optional().nullable(),
     bank_id: zod.string().optional().nullable(),
   })
