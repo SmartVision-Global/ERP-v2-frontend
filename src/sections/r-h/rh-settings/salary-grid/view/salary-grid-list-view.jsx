@@ -203,7 +203,6 @@ export function SalaryGridListView() {
       headerName: 'Salaire de base',
       flex: 1,
       minWidth: 160,
-
       renderCell: (params) => <RenderCellBaseSalary params={params} />,
     },
     {
