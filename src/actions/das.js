@@ -67,3 +67,10 @@ export async function getFiltredDasDetails(params) {
   });
   return response;
 }
+
+export async function getDocumentsDasDetails(params) {
+  const response = await axios.get(`${endpoints.dasDetailsDownload}`, {
+    params,
+  });
+  return response;
+}

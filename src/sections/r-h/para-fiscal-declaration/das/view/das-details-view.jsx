@@ -1,23 +1,19 @@
-import { useState, useEffect, forwardRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
+import { LoadingButton } from '@mui/lab';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import { TextField, FormControl, InputAdornment } from '@mui/material';
-import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 
 import { paths } from 'src/routes/paths';
 import { useParams } from 'src/routes/hooks';
-import { RouterLink } from 'src/routes/components';
 
 import { CONFIG } from 'src/global-config';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetDasDetails, getFiltredDasDetails } from 'src/actions/das';
+import { useGetDasDetails, getFiltredDasDetails, getDocumentsDasDetails } from 'src/actions/das';
 import { DAS_DENOM_OPTIONS, DAS_YEAR_REF_OPTIONS, DAS_DECLARATION_TYPE_OPTIONS } from 'src/_mock';
 
-import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
@@ -150,16 +146,13 @@ export function DasDetailsView() {
     }
   };
 
-  const handleDeleteRow = useCallback(
-    (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-
-      toast.success('Delete success!');
-
-      setTableData(deleteRow);
-    },
-    [tableData]
-  );
+  const handleDownloadDocuments = async () => {
+    await getDocumentsDasDetails({
+      enterprise_id,
+      year,
+      with_details: false,
+    });
+  };
 
   const columns = [
     { field: 'category', headerName: 'Category', filterable: false },
@@ -308,41 +301,6 @@ export function DasDetailsView() {
 
       renderCell: (params) => <RenderCellPersonalEndService params={params} />,
     },
-
-    {
-      type: 'actions',
-      field: 'actions',
-      headerName: ' ',
-      align: 'right',
-      headerAlign: 'right',
-      width: 80,
-      sortable: false,
-      filterable: false,
-      disableColumnMenu: true,
-      getActions: (params) => [
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
-          label="View"
-          // href={paths.dashboard.product.details(params.row.id)}
-          href={paths.dashboard.root}
-        />,
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:pen-bold" />}
-          label="Edit"
-          // href={paths.dashboard.product.edit(params.row.id)}
-          href={paths.dashboard.root}
-        />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-          label="Delete"
-          onClick={() => handleDeleteRow(params.row.id)}
-          sx={{ color: 'error.main' }}
-        />,
-      ],
-    },
   ];
 
   const getTogglableColumns = () =>
@@ -380,6 +338,17 @@ export function DasDetailsView() {
           setPaginationModel={setPaginationModel}
           paginationModel={paginationModel}
         />
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'end',
+            mr: 2,
+          }}
+        >
+          <LoadingButton color="secondary" variant="outlined" onClick={handleDownloadDocuments}>
+            Download
+          </LoadingButton>
+        </Box>
         <Box paddingX={4} paddingY={2} sx={{}}>
           <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
             <TextField
@@ -434,24 +403,5 @@ export function DasDetailsView() {
 }
 
 // ----------------------------------------------------------------------
-
-export const GridActionsLinkItem = forwardRef((props, ref) => {
-  const { href, label, icon, sx } = props;
-
-  return (
-    <MenuItem ref={ref} sx={sx}>
-      <Link
-        component={RouterLink}
-        href={href}
-        underline="none"
-        color="inherit"
-        sx={{ width: 1, display: 'flex', alignItems: 'center' }}
-      >
-        {icon && <ListItemIcon>{icon}</ListItemIcon>}
-        {label}
-      </Link>
-    </MenuItem>
-  );
-});
 
 // ----------------------------------------------------------------------
