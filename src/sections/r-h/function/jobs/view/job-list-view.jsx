@@ -98,7 +98,7 @@ export function JobListView() {
     pageSize: PAGE_SIZE,
   });
 
-  const { jobs, jobsLoading, jobsCount } = useGetJobs({ limit: 2, offset: 0 });
+  const { jobs, jobsLoading, jobsCount } = useGetJobs({ limit: PAGE_SIZE, offset: 0 });
   const [rowCount, setRowCount] = useState(jobsCount);
 
   const [tableData, setTableData] = useState(jobs);
