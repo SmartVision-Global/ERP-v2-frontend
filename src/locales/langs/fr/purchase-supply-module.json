@@ -1,0 +1,10 @@
+{
+    "purchase-supply-module": {
+        "purchase-order": {
+            "new": {
+                "title": "Nouvelle commande",
+                "description": "Créez une nouvelle commande"
+            }
+        }
+    }
+}
