@@ -68,15 +68,19 @@ export function calculateIRG(salary) {
 
 // Function to perform salary calculation
 export function salaryCalculation(salary, deductionCompensations) {
+  // eslint-disable-next-line no-debugger
+  debugger;
   let sumContributor = 0;
   let sumTaxable = 0;
   let sumNoConNoTax = 0;
 
   deductionCompensations.forEach((deductionCompensation) => {
+    // eslint-disable-next-line no-debugger
+    debugger;
     const typeValue =
       deductionCompensation.type === DeductionCompensationType.COMPENSATION ? 1 : -1;
-    const amount = salary * (deductionCompensation.percent / 100);
-
+    // const amount = salary * (deductionCompensation.percent / 100);
+    const amount = deductionCompensation.amount;
     switch (deductionCompensation.contributory_imposable) {
       case TaxableContributor.CONTRIBUTABLE_TAXABLE:
         sumContributor += typeValue * amount;
