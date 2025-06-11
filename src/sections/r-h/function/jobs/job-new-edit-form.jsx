@@ -23,7 +23,7 @@ export const NewProductSchema = zod.object({
   designation: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
   site_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
   salary_category_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
-  salary_grids: zod.string().or(zod.number()),
+  salary_grids: zod.array(zod.string().or(zod.number())),
   job_employee_quota: schemaHelper.nullableInput(
     zod
       .number({ coerce: true })
@@ -91,13 +91,14 @@ export function JobNewEditForm({ currentProduct }) {
   const jobs = dataLookups.jobs;
   const dutiesResponsibilities = dataLookups.dutiesResponsibilities;
   const careerKnowledges = dataLookups.careerKnowledges;
+  console.log('salaryGrids', salaryGrids);
 
   const defaultValues = {
     name: '',
     designation: '',
     site_id: '',
     salary_category_id: '',
-    salary_grids: '',
+    salary_grids: [],
     job_employee_quota: 0,
     protective_clothing: 'no',
     have_premium: 'no',
@@ -122,7 +123,7 @@ export function JobNewEditForm({ currentProduct }) {
       designation: currentProduct?.designation,
       site_id: currentProduct?.site_id ? currentProduct?.site_id.toString() : '',
       salary_category_id: currentProduct?.salary_category_id?.toString() || '',
-      salary_grids: currentProduct?.salary_grids,
+      salary_grids: currentProduct?.salary_grids || [],
       job_employee_quota: currentProduct?.job_employee_quota || 0,
       protective_clothing: currentProduct?.protective_clothing ? 'yes' : 'no',
       have_premium: currentProduct?.have_premium ? 'yes' : 'no',
@@ -242,7 +243,15 @@ export function JobNewEditForm({ currentProduct }) {
         </Stack>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="salary_grids" label="Net à payer" data={salaryGrids} />
+            <Field.LookupMultiSelect
+              name="salary_grids"
+              label="Net à payer"
+              options={salaryGrids}
+              // <FormLabel htmlFor={labelId} {...slotProps?.inputLabel}>
+              slotProps={{
+                inputLabel: { shrink: true },
+              }}
+            />
 
             {/* <Field.Select name="salary_grids" label="Net à payer" size="small">
               {USER_STATUS_OPTIONS.map((status) => (
