@@ -1,5 +1,3 @@
-import { calculateIRG2025 } from './utils3';
-
 // Constants
 export const SOCIAL_SECURITY_RATE = 0.09;
 const IRG_EXEMPTION_THRESHOLD = 30000;
@@ -98,9 +96,11 @@ export function salaryCalculation(salary, deductionCompensations) {
   const socialSecurityRetenue = salaryWithSumContributor * SOCIAL_SECURITY_RATE;
   const postSalaryMinSSRetunue = salaryWithSumContributor - socialSecurityRetenue;
   const salaryWithTax = postSalaryMinSSRetunue + sumTaxable;
-  const taxableWages = salaryWithTax - (salaryWithTax % 10);
+  // const taxableWages = salaryWithTax - (salaryWithTax % 10);
+  const taxableWages = salaryWithTax;
 
-  const retenueIRG = calculateIRG2025(taxableWages, false);
+  const retenueIRG = calculateIRG(taxableWages, false);
+  console.log('vvvvvvvvv', 30840);
 
   const netSalary = taxableWages - retenueIRG;
   const netPaySalary = netSalary + sumNoConNoTax;

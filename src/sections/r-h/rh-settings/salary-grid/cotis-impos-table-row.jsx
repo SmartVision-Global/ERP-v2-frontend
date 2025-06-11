@@ -170,7 +170,8 @@ export function CotisImposTableRow({
                     values.salary > 0 ? (newAmount * 100) / values.salary : 0;
                   update(index, {
                     ...fields[index],
-                    percent: calculatedPercent.toFixed(2),
+                    // percent: calculatedPercent.toFixed(2),
+                    percent: parseFloat(calculatedPercent.toFixed(2)),
                     amount: newAmount,
                   });
                   const deductionsCompensations = [
