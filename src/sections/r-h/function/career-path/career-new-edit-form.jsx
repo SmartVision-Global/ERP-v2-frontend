@@ -17,10 +17,10 @@ import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 
 export const NewProductSchema = zod.object({
-  type: zod.string().min(1, { message: 'Name is required!' }),
-  libFr: zod.string().min(1, { message: 'Name is required!' }),
-  libAr: zod.string().min(1, { message: 'Name is required!' }),
-  libEn: zod.string().min(1, { message: 'Name is required!' }),
+  type: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
+  libFr: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  libAr: zod.string().optional().nullable(),
+  libEn: zod.string().optional().nullable(),
   specialty_exist: zod.boolean(),
   diploma_required: zod.boolean(),
   specialtyFr: zod.string().optional(),

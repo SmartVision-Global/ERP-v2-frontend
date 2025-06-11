@@ -59,7 +59,7 @@ export function TaskRespListView() {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   const { dutiesResponsibilities, dutiesResponsibilitiesLoading, dutiesResponsibilitiesCount } =
-    useGetDutiesResponsibilities({ limit: 2, offset: 0 });
+    useGetDutiesResponsibilities({ limit: PAGE_SIZE, offset: 0 });
 
   const [tableData, setTableData] = useState(dutiesResponsibilities);
   const [rowCount, setRowCount] = useState(dutiesResponsibilitiesCount);

@@ -1,5 +1,5 @@
-import useSWR from 'swr';
 import { useMemo } from 'react';
+import useSWR, { mutate } from 'swr';
 
 // import { fetcher, endpoints } from 'src/lib/axios';
 import axios, { fetcher, endpoints } from 'src/lib/axios';
@@ -32,7 +32,7 @@ export function useGetCareerKnowledges(params) {
       careerKnowledgesValidating: isValidating,
       careerKnowledgesEmpty: !isLoading && !isValidating && !data?.data?.records.length,
     }),
-    [data?.data?.records, error, isLoading, isValidating]
+    [data?.data?.records, data?.data?.total, error, isLoading, isValidating]
   );
 
   return memoizedValue;
@@ -70,7 +70,7 @@ export async function createCareerKnowledge(data) {
    */
   // const data = { directionData };
   await axios.post(ENDPOINT, data);
-  //   mutate(endpoints.site);
+  mutate(ENDPOINT);
 }
 
 export async function updateCareerKnowledge(id, data) {
@@ -79,5 +79,5 @@ export async function updateCareerKnowledge(id, data) {
    */
   // const data = { directionData };
   await axios.patch(`${ENDPOINT}/${id}`, data);
-  //   mutate(endpoints.site);
+  mutate(ENDPOINT);
 }

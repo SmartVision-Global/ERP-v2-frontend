@@ -17,7 +17,7 @@ import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 
 export const NewProductSchema = zod.object({
-  type: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  type: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
   label_french: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
   label_arabic: zod.string().optional().nullable(),
   label_english: zod.string().optional().nullable(),
@@ -115,7 +115,7 @@ export function TaskNewEditForm({ currentProduct }) {
       }}
     >
       <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
-        {!currentProduct ? 'Create' : 'Save changes'}
+        {!currentProduct ? 'Ajouter' : 'Enregistrer'}
       </LoadingButton>
     </Box>
   );

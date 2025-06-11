@@ -76,7 +76,7 @@ export function CareerListView() {
     pageSize: PAGE_SIZE,
   });
   const { careerKnowledges, careerKnowledgesLoading, careerKnowledgesCount } =
-    useGetCareerKnowledges({ limit: 2, offset: 0 });
+    useGetCareerKnowledges({ limit: PAGE_SIZE, offset: 0 });
   const [rowCount, setRowCount] = useState(careerKnowledgesCount);
 
   const [tableData, setTableData] = useState(careerKnowledges);
