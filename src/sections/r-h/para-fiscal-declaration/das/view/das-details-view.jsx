@@ -167,7 +167,7 @@ export function DasDetailsView() {
       field: 'id',
       headerName: 'N° Employeur',
       flex: 0.5,
-      minWidth: 150,
+      minWidth: 120,
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
@@ -185,41 +185,41 @@ export function DasDetailsView() {
     {
       field: 'personal_ssn',
       headerName: 'N° Immatriculation + Clé',
-      minWidth: 120,
+      minWidth: 140,
 
       renderCell: (params) => <RenderCellPersonalSSN params={params} />,
     },
     {
       field: 'personal_name',
       headerName: 'Nom-Prénom',
-      minWidth: 240,
+      minWidth: 120,
 
       renderCell: (params) => <RenderCellPersonalName params={params} />,
     },
     {
       field: 'personal_birth_date',
       headerName: 'Date de naissance',
-      minWidth: 240,
+      minWidth: 140,
       renderCell: (params) => <RenderCellPersonalBirthDate params={params} />,
     },
     {
       field: 'w1_total',
       headerName: 'Durée de travail Trimstre 1',
-      minWidth: 240,
+      minWidth: 200,
 
       renderCell: (params) => <RenderCellW1Total params={params} />,
     },
     {
       field: 'j1',
       headerName: 'Unité de mesure de la durée de travail Trimstre 1',
-      minWidth: 240,
+      minWidth: 110,
 
       renderCell: (params) => <RenderCellJ1 params={params} />,
     },
     {
       field: 'q1_total',
       headerName: 'Montant Total Trimstre 1',
-      minWidth: 210,
+      minWidth: 200,
 
       renderCell: (params) => <RenderCellQ1Total params={params} />,
     },
@@ -227,14 +227,14 @@ export function DasDetailsView() {
     {
       field: 'w2_total',
       headerName: 'Durée de travail Trimstre 2',
-      minWidth: 240,
+      minWidth: 200,
 
       renderCell: (params) => <RenderCellW2Total params={params} />,
     },
     {
       field: 'j2',
       headerName: 'Unité de mesure de la durée de travail Trimstre 2',
-      minWidth: 240,
+      minWidth: 110,
 
       renderCell: (params) => <RenderCellJ2 params={params} />,
     },
@@ -242,41 +242,41 @@ export function DasDetailsView() {
     {
       field: 'q2_total',
       headerName: 'Montant Total Trimstre 2',
-      minWidth: 210,
+      minWidth: 200,
 
       renderCell: (params) => <RenderCellQ2Total params={params} />,
     },
     {
       field: 'w3_total',
       headerName: 'Durée de travail Trimstre 3',
-      minWidth: 240,
+      minWidth: 200,
 
       renderCell: (params) => <RenderCellW3Total params={params} />,
     },
     {
       field: 'j3',
       headerName: 'Unité de mesure de la durée de travail Trimstre 3',
-      minWidth: 240,
+      minWidth: 110,
 
       renderCell: (params) => <RenderCellJ3 params={params} />,
     },
     {
       field: 'q3_total',
       headerName: 'Montant Total Trimstre 3',
-      minWidth: 210,
+      minWidth: 200,
       renderCell: (params) => <RenderCellQ3Total params={params} />,
     },
     {
       field: 'w4_total',
       headerName: 'Durée de travail Trimstre 4',
-      minWidth: 240,
+      minWidth: 200,
 
       renderCell: (params) => <RenderCellW4Total params={params} />,
     },
     {
       field: 'j4',
       headerName: 'Unité de mesure de la durée de travail Trimstre 4',
-      minWidth: 240,
+      minWidth: 110,
 
       renderCell: (params) => <RenderCellJ4 params={params} />,
     },
@@ -297,14 +297,14 @@ export function DasDetailsView() {
     {
       field: 'service_start',
       headerName: 'Date Entrée',
-      minWidth: 230,
+      minWidth: 120,
 
       renderCell: (params) => <RenderCellPersonalStartService params={params} />,
     },
     {
       field: 'service_end',
       headerName: 'Date Sortie',
-      minWidth: 230,
+      minWidth: 120,
 
       renderCell: (params) => <RenderCellPersonalEndService params={params} />,
     },
