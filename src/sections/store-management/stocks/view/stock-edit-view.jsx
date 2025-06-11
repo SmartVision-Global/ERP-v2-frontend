@@ -28,12 +28,12 @@ export function StockEditView({ stock, product_type }) {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading={`Modifier : ${stock?.designation}`}
+        heading={`Modifier : ${stock?.code}`}
         backHref={pathConfig.root}
         links={[
           { name: 'Gestion magasinage', href: pathConfig.root },
           { name: breadcrumbName, href: pathConfig.root },
-          { name: stock?.designation },
+          { name: stock?.code },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
