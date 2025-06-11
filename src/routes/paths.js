@@ -222,6 +222,17 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/user/${1}/edit`,
       },
     },
+    storeManagement: {
+      root: `${ROOTS.DASHBOARD}/store-management`,
+      rawMaterial: {
+        root: `${ROOTS.DASHBOARD}/store-management/raw-material`,
+        stocks: `${ROOTS.DASHBOARD}/store-management/raw-material`,
+        newStock: `${ROOTS.DASHBOARD}/store-management/raw-material/new`,
+        editStock: (id) => `${ROOTS.DASHBOARD}/store-management/raw-material/${id}/edit`,
+        // storageArea: `${ROOTS.DASHBOARD}/store-management/raw-material/storage-area`,
+        // initialStorage: `${ROOTS.DASHBOARD}/store-management/raw-material/initial-storage`,
+      },
+    },
     store: {
       rawMaterials: {
         root: `${ROOTS.DASHBOARD}/store/raw-materials`,

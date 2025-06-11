@@ -317,6 +317,19 @@ const PageStoreRawMaterialsStocksNew = lazy(
 const PageStoreRawMaterialsStocksEdit = lazy(
   () => import('src/pages/dashboard/store/raw-materials/stocks/edit')
 );
+
+// store management
+// stocks
+const PageStoreManagementStocksList = lazy(
+  () => import('src/pages/dashboard/store-management/stocks/list')
+);
+const PageStoreManagementStocksNew = lazy(
+  () => import('src/pages/dashboard/store-management/stocks/new')
+);
+const PageStoreManagementStocksEdit = lazy(
+  () => import('src/pages/dashboard/store-management/stocks/edit')
+);
+
 // expression de besoins
 const PageExpressionOfNeedsBebList = lazy(() => import('src/pages/dashboard/expression-of-needs/Beb/list'));
 const PageExpressionOfNeedsBebNew = lazy(() => import('src/pages/dashboard/expression-of-needs/Beb/new'));
@@ -701,19 +714,34 @@ export const dashboardRoutes = [
         ],
       },
       {
+        path: 'store-management',
+        children: [
+          {
+            path: 'raw-material',
+
+            children: [
+              { index: true, element: <PageStoreManagementStocksList product_type={1} /> },
+              // { path: 'stocks', element: <PageStoreRawMaterialsStocksList /> },
+              { path: 'new', element: <PageStoreManagementStocksNew product_type={1} /> },
+              { path: ':id/edit', element: <PageStoreManagementStocksEdit product_type={1} /> },
+            ],
+          },
+        ],
+      },
+      {
         path: 'store',
         children: [
           {
             path: 'raw-materials',
             children: [
               { index: true, element: <PageStoreRawMaterialsStocksList /> },
-              { path: 'stocks', element: <PageStoreRawMaterialsStocksList /> },
+              // { path: 'stocks', element: <PageStoreRawMaterialsStocksList /> },
               { path: 'storage-area', element: <PageStoreStorageEreaList /> },
               { path: 'storage-area/new', element: <PageStoreStorageAreaNew /> },
               { path: 'initial-storage', element: <PageStoreInitialStorageList /> },
               { path: 'initial-storage/new', element: <PageStoreInitialStorageNew /> },
-              { path: 'stocks/new', element: <PageStoreRawMaterialsStocksNew /> },
-              { path: 'stocks/:id/edit', element: <PageStoreRawMaterialsStocksEdit /> },
+              // { path: 'stocks/new', element: <PageStoreRawMaterialsStocksNew /> },
+              // { path: 'stocks/:id/edit', element: <PageStoreRawMaterialsStocksEdit /> },
             ],
           },
         ],
