@@ -1,0 +1,133 @@
+{
+
+        "views": {
+            "stocks": "Stocks",
+            "raw_materials": "Matières Premières",
+            "list": "Liste",
+            "add_stock": "Ajouter stock",
+            "store_management": "Gestion magasinage",
+            "edit_stock": "Modifier : {{code}}"
+        },
+        "headers": {
+            "id": "ID",
+            "code": "Code",
+            "supplier_code": "Code fournisseur",
+            "builder_code": "Code constructeur",
+            "designation": "Désignation",
+            "quantity": "Quantité",
+            "status": "Statut",
+            "unit": "Unité",
+            "alert_quantity": "Quantité Alerte",
+            "min": "Min",
+            "daily_consumption": "Consommation journalière prévisionnelle",
+            "consumption_day": "Journée de consommation prévisionnelle",
+            "family": "Famille",
+            "sub_family": "Sous familles",
+            "category": "Catégorie",
+            "location": "Emplacement",
+            "created_date": "Date de création",
+            "actions": " "
+        },
+        "actions": {
+            "add_stock": "Ajouter Stock",
+            "tools": "Outils",
+            "edit": "Modifier",
+            "view": "Consulter",
+            "print": "Impression",
+            "copy": "Copie",
+            "excel": "Excel",
+            "csv": "CSV",
+            "pdf": "PDF",
+            "close": "Fermer"
+        },
+        "filters": {
+            "search_placeholder": "Rechercher...",
+            "store": "Magasin",
+            "code": "Code",
+            "supplier_code": "Code fournisseur",
+            "designation": "Désignation",
+            "status": "Etat",
+            "unit": "Unité",
+            "category": "Catégorie",
+            "family": "Famille",
+            "image": "Image",
+            "creation_date": "Date de création"
+        },
+        "dialog": {
+            "product_details": "Détails produit: {{code}} -- {{designation}}",
+            "information": "Informations",
+            "codification": "Codification",
+            "designation": "Désignation",
+            "unit_of_measure": "Unité de mesure",
+            "family": "Famille",
+            "creation_date": "Date de création",
+            "catalog": "Catalogue",
+            "view_pdf": "Voir PDF",
+            "image": "Image"
+        },
+        "messages":{
+            "no_results": "Aucun résultat trouvé"
+        },
+        "form": {
+            "validations": {
+                "builder_code_required": "Code constructeur est requis",
+                "supplier_code_required": "Code fournisseur est requis",
+                "family_required": "Famille est requise",
+                "workshop_required": "Atelier est requis",
+                "category_required": "Catégorie est requise",
+                "unit_measure_required": "Unité de mesure est requise",
+                "appellation_required": "Appellation est requise",
+                "designation_required": "Désignation est requise",
+                "weight_required": "Poids est requis",
+                "min_quantity_required": "Quantité Min est requise",
+                "alert_quantity_required": "Quantité Alerte est requise",
+                "daily_consumption_required": "Consommation journalière prévisionnelle est requise",
+                "type_required": "Type est requis",
+                "location_required": "Emplacement est requis",
+                "douan_required": "Douane est requise",
+                "position_required": "Position est requise"
+            },
+            "messages": {
+                "stock_updated": "Stock mis à jour",
+                "stock_created": "Stock créé",
+                "operation_failed": "L'opération a échoué"
+            },
+            "sections": {
+                "details": "Détails",
+                "properties": "Propriétés",
+                "dimensions": "Dimensions",
+                "conditioning": "Conditionnement",
+                "storage": "Stockage",
+                "fees": "Frais"
+            },
+            "labels": {
+                "builder_code": "Code constructeur",
+                "supplier_code": "Code fournisseur",
+                "parent_family": "Famille parente",
+                "family": "Famille",
+                "workshop": "Atelier",
+                "category": "Catégorie",
+                "unit_of_measure": "Unité de mesure",
+                "appellation": "Appellation",
+                "designation": "Désignation",
+                "weight": "Poids",
+                "quantity_min": "Quantité Min",
+                "quantity_alert": "Quantité Alerte",
+                "daily_consumption_forecast": "Consommation journalière prévisionnelle",
+                "type": "Type",
+                "image": "Image",
+                "catalog": "Catalogue",
+                "upload_files": "Télécharger des fichiers",
+                "storage_area": "Zone de stockage",
+                "location": "Emplacement",
+                "add_storage": "Ajouter",
+                "douan": "Douane",
+                "position": "Position"
+            },
+            "actions": {
+                "save_changes": "Enregistrer les modifications",
+                "create_stock": "Créer le stock"
+            }
+        }
+    
+} 
