@@ -216,17 +216,7 @@ export function PromotionDemotionListView() {
       minWidth: 250,
       renderCell: (params) => <RenderCellGridSalary params={params} />,
     },
-    // {
-    //   field: 'work_rithme',
-    //   headerName: 'Régime de travail',
-    //   flex: 1,
-    //   minWidth: 160,
-    //   hideable: false,
-    //   renderCell: (params) => (
-    //     // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-    //     <RenderCellWorkRithme params={params} href={paths.dashboard.root} />
-    //   ),
-    // },
+
     {
       field: 'observations',
       headerName: 'Observations',
@@ -273,7 +263,7 @@ export function PromotionDemotionListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => {
-        if (params.row.status === '1') {
+        if (params.row.status === 1) {
           return [
             <GridActionsClickItem
               showInMenu
