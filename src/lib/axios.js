@@ -180,5 +180,5 @@ export const endpoints = {
 
   das: '/v1/hr/parafiscal_declaration/das',
   dasDetails: '/v1/hr/parafiscal_declaration/das/details',
-  dasDetailsDownload: '/v1/hr/parafiscal_declaration/das/details/download',
+  dasDetailsDownload: '/v1/hr/parafiscal_declaration/das/download',
 };

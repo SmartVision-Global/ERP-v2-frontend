@@ -83,13 +83,14 @@ export async function updatePermanency(id, data) {
   //   mutate(endpoints.site);
 }
 
-export async function validatePermanency(id, data) {
+export async function validatePermanency(id, data, params) {
   /**
    * Work on server
    */
   // const data = { directionData };
   await axios.post(`${ENDPOINT}/${id}/validate`, data);
-  mutate(ENDPOINT);
+  // mutate(ENDPOINT);
+  mutate([ENDPOINT, { params }]);
 }
 
 export async function archivePermanency(id, data) {

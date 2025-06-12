@@ -147,11 +147,35 @@ export function DasDetailsView() {
   };
 
   const handleDownloadDocuments = async () => {
-    await getDocumentsDasDetails({
+    const response = await getDocumentsDasDetails({
       enterprise_id,
       year,
-      with_details: false,
+      with_details: 0,
     });
+    const blob = new Blob([response.data], {
+      type: response.headers['content-type'],
+    });
+
+    // Extract filename from headers (optional but recommended)
+    const contentDisposition = response.headers['content-disposition'];
+    let fileName = 'downloaded-file';
+
+    if (contentDisposition) {
+      const match = contentDisposition.match(/filename="?(.+)"?/);
+      if (match?.[1]) {
+        fileName = decodeURIComponent(match[1]);
+      }
+    }
+
+    // Create a temporary download link
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    a.click();
+
+    // Cleanup
+    window.URL.revokeObjectURL(url);
   };
 
   const columns = [
