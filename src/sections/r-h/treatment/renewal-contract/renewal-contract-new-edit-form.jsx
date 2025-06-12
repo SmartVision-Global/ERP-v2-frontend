@@ -21,9 +21,9 @@ import { FieldContainer } from 'src/components/form-validation-view';
 
 export const NewTauxCnasSchema = zod
   .object({
-    personal_id: zod.string().min(1, { message: 'Category is required!' }).or(zod.number()),
-    contract_type: zod.string().min(1, { message: 'Category is required!' }),
-    from_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
+    personal_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
+    contract_type: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
+    from_date: schemaHelper.date({ message: { required: 'Veuillez remplir ce champ' } }),
     to_date: schemaHelper.date().nullable(),
     job_updated: zod.boolean(),
     job_id: zod.string().optional().or(zod.number()),
@@ -46,9 +46,10 @@ export const NewTauxCnasSchema = zod
         message: 'Veuillez remplir ce champ',
       }
     ),
+    // contract_probation: zod.number().optional().nullable(),
   })
   .superRefine((data, ctx) => {
-    if (data.contract_type === '1' || data.contract_type === '3') {
+    if (String(data.contract_type) === '1' || String(data.contract_type) === '3') {
       if (!data.to_date) {
         ctx.addIssue({
           code: zod.ZodIssueCode.custom,
@@ -113,7 +114,7 @@ export function RenewalContractNewEditForm({ currentTaux }) {
     salary_grid_id: '',
     salary_supplemental: 0,
     observation: '',
-    contract_probation: 0,
+    contract_probation: null,
   };
 
   const methods = useForm({
