@@ -440,7 +440,11 @@ export function SocialLoanListView() {
           color="info"
           onClick={async () => {
             // handleDeleteRows();
-            await validateSocialLoan(selectedRow, { message: 'validation' });
+            await validateSocialLoan(
+              selectedRow,
+              { message: 'validation' },
+              { limit: PAGE_SIZE, offset: PAGE_SIZE * paginationModel.page }
+            );
             confirmDialog.onFalse();
           }}
         >
