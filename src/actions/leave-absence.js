@@ -83,13 +83,14 @@ export async function updateLeaveAbesence(id, data) {
   //   mutate(endpoints.site);
 }
 
-export async function validateLeaveAbesence(id, data) {
+export async function validateLeaveAbesence(id, data, params) {
   /**
    * Work on server
    */
   // const data = { directionData };
   await axios.post(`${ENDPOINT}/${id}/validate`, data);
-  mutate(ENDPOINT);
+  // mutate(ENDPOINT);
+  mutate([ENDPOINT, { params }]);
 }
 
 export async function archiveLeaveAbesence(id, data) {
