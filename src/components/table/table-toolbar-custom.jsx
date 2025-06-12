@@ -17,6 +17,7 @@ import {
 
 import { fDate } from 'src/utils/format-time';
 
+import { Iconify } from '../iconify';
 import { useDateRangePicker, CustomDateRangePicker } from '../custom-date-range-picker';
 
 export function TableToolbarCustom({
@@ -221,6 +222,7 @@ export function TableToolbarCustom({
       {filterOptions.length > 0 && (
         <Stack direction="row" spacing={1}>
           <Button
+            startIcon={<Iconify icon="ri:filter-line" />}
             variant="contained"
             color="secondary"
             sx={{ px: 2, py: 1 }}
@@ -229,7 +231,11 @@ export function TableToolbarCustom({
             Filtrer
           </Button>
           {Object.keys(filters).length > 0 && (
-            <Button variant="outlined" onClick={onReset}>
+            <Button
+              startIcon={<Iconify icon="carbon:filter-reset" />}
+              variant="outlined"
+              onClick={onReset}
+            >
               Réinitialiser
             </Button>
           )}

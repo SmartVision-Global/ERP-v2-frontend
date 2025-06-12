@@ -386,6 +386,7 @@ export function DasDetailsView() {
           }}
         >
           <LoadingButton
+            startIcon={<Iconify icon="eva:download-fill" />}
             loading={isDownloading}
             color="secondary"
             variant="outlined"
@@ -394,6 +395,7 @@ export function DasDetailsView() {
             Télécharger
           </LoadingButton>
           <LoadingButton
+            startIcon={<Iconify icon="eva:download-fill" />}
             loading={isDownloading}
             color="secondary"
             variant="outlined"
