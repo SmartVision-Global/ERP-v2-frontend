@@ -1,6 +1,5 @@
 import { mutate } from 'swr';
 import { useBoolean } from 'minimal-shared/hooks';
-import { useSearchParams } from 'react-router-dom';
 import { useState, useEffect, forwardRef, useCallback } from 'react';
 
 import Link from '@mui/material/Link';
@@ -125,7 +124,6 @@ const FILTERS_OPTIONS = [
 ];
 
 export function ExitSlipListView() {
-  const [searchParams, setSearchParams] = useSearchParams();
   const confirmDialog = useBoolean();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -209,46 +207,33 @@ export function ExitSlipListView() {
       const transformedData = transformExitSlipData(response.data?.data?.records);
       setTableData(transformedData);
       setRowCount(response.data?.data?.total);
-      setSearchParams({}, { replace: true });
     } catch (error) {
       console.error('Error resetting filters:', error);
     }
-  }, [setSearchParams]);
+  }, []);
 
   // Handle filter submission
-  const handleFilter = useCallback(
-    async (data) => {
-      try {
-        // Transform filter data to match backend expectations
-        const filterParams = {
-          ...data,
-          personal_id: data.taker, // Map taker to personal_id for backend
-          eon_voucher_id: data.beb, // Map beb to eon_voucher_id for backend
-        };
-        delete filterParams.taker; // Remove the original keys
-        delete filterParams.beb;
+  const handleFilter = useCallback(async (data) => {
+    try {
+      // Transform filter data to match backend expectations
+      const filterParams = {
+        ...data,
+        personal_id: data.taker, // Map taker to personal_id for backend
+        eon_voucher_id: data.beb, // Map beb to eon_voucher_id for backend
+      };
+      delete filterParams.taker; // Remove the original keys
+      delete filterParams.beb;
 
-        const response = await getFiltredExitSlips(filterParams);
-        const transformedExitSlips = transformExitSlipData(response.data?.data?.records);
-        setTableData(transformedExitSlips);
-        setRowCount(response.data?.data?.total);
-        setEditedFilters(data); // Store the original filter data
-
-        // Update URL params
-        const newSearchParams = new URLSearchParams();
-        Object.entries(data).forEach(([key, value]) => {
-          if (value !== null && value !== '' && value !== undefined) {
-            newSearchParams.set(key, value.toString());
-          }
-        });
-        setSearchParams(newSearchParams, { replace: true });
-      } catch (error) {
-        console.error('Error in filter submission:', error);
-        toast.error('Erreur lors du filtrage des données');
-      }
-    },
-    [setSearchParams]
-  );
+      const response = await getFiltredExitSlips(filterParams);
+      const transformedExitSlips = transformExitSlipData(response.data?.data?.records);
+      setTableData(transformedExitSlips);
+      setRowCount(response.data?.data?.total);
+      setEditedFilters(data); // Store the original filter data
+    } catch (error) {
+      console.error('Error in filter submission:', error);
+      toast.error('Erreur lors du filtrage des données');
+    }
+  }, []);
 
   // Handle pagination changes
   const handlePaginationModelChange = async (newModel) => {
@@ -744,7 +729,7 @@ export function ExitSlipListView() {
               <ExitSlipExportButton data={tableData} />
               <Button
                 component={RouterLink}
-                href={paths.dashboard.store.rawMaterials.newExitSlip}
+                href={paths.dashboard.storeManagement.rawMaterial.newExitSlip}
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >

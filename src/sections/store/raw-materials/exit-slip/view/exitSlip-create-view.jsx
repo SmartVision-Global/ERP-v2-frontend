@@ -15,7 +15,7 @@ export function ExitSlipCreateView() {
         heading="Ajouter un bon de sortie"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Bons de sortie', href: paths.dashboard.store.rawMaterials.exitSlip },
+          { name: 'Bons de sortie', href: paths.dashboard.storeManagement.rawMaterial.exitSlips },
           { name: 'Ajouter un bon de sortie' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

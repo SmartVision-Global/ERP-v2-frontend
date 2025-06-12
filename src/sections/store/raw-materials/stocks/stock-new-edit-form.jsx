@@ -5,7 +5,17 @@ import { useForm, useFieldArray } from 'react-hook-form';
 
 import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Stack, Divider, CardHeader, MenuItem, Typography, CircularProgress, IconButton } from '@mui/material';
+import {
+  Box,
+  Card,
+  Stack,
+  Divider,
+  CardHeader,
+  MenuItem,
+  Typography,
+  CircularProgress,
+  IconButton,
+} from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -21,43 +31,55 @@ import { Iconify } from 'src/components/iconify';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
 // Validation schema for stocks
-const StockSchema = zod.object({
-  builder_code: zod.string().min(1, { message: 'Code constructeur is required' }),
-  supplier_code: zod.string().min(1, { message: 'Code fournisseur is required' }),
-  family_id: zod.string().min(1, { message: 'Famille is required' }),
-  workshop_id: zod.string().min(1, { message: 'Atelier is required' }),
-  category_id: zod.string().min(1, { message: 'Catégorie is required' }),
-  unit_measure_id: zod.string().min(1, { message: 'Unité de mesure is required' }),
-  appellation: zod.string().min(1, { message: 'Appellation is required' }),
-  designation: zod.string().min(1, { message: 'Designation is required' }),
-  weight: zod.number({ coerce: true }).min(1, { message: 'Poids is required' }),
-  min: zod.number({ coerce: true }).min(1, { message: 'Quantité Min is required' }),
-  alert: zod.number({ coerce: true }).min(1, { message: 'Quantité Alerte is required' }),
-  consumption: zod.number({ coerce: true }).min(1, { message: 'Consommation journalière prévisionnelle is required' }),
-  type: zod.string().min(1, { message: 'Type is required' }),
-  image: schemaHelper.file().optional(),
-  catalog: schemaHelper.file().optional(),
-}).extend({
-  dimensions: zod.array(zod.object({ id: zod.number(), value: zod.number({ coerce: true }) })).optional(),
-  conditionings: zod.array(zod.object({ id: zod.number(), value: zod.number({ coerce: true }) })).optional(),
-  storage_areas: zod.array(
-    zod.object({
-      storage_area_id: zod.number({ coerce: true }),
-      location: zod.string().min(1, { message: 'Location is required' })
-    })
-  ).optional(),
-  fees: zod.object({
-    douan: zod.number({ coerce: true }).min(1, { message: 'Douan is required' }),
-    position: zod.string().min(1, { message: 'Position is required' })
-  }).optional(),
-});
+const StockSchema = zod
+  .object({
+    builder_code: zod.string().min(1, { message: 'Code constructeur is required' }),
+    supplier_code: zod.string().min(1, { message: 'Code fournisseur is required' }),
+    family_id: zod.string().min(1, { message: 'Famille is required' }),
+    workshop_id: zod.string().min(1, { message: 'Atelier is required' }),
+    category_id: zod.string().min(1, { message: 'Catégorie is required' }),
+    unit_measure_id: zod.string().min(1, { message: 'Unité de mesure is required' }),
+    appellation: zod.string().min(1, { message: 'Appellation is required' }),
+    designation: zod.string().min(1, { message: 'Designation is required' }),
+    weight: zod.number({ coerce: true }).min(1, { message: 'Poids is required' }),
+    min: zod.number({ coerce: true }).min(1, { message: 'Quantité Min is required' }),
+    alert: zod.number({ coerce: true }).min(1, { message: 'Quantité Alerte is required' }),
+    consumption: zod
+      .number({ coerce: true })
+      .min(1, { message: 'Consommation journalière prévisionnelle is required' }),
+    type: zod.string().min(1, { message: 'Type is required' }),
+    image: schemaHelper.file().optional(),
+    catalog: schemaHelper.file().optional(),
+  })
+  .extend({
+    dimensions: zod
+      .array(zod.object({ id: zod.number(), value: zod.number({ coerce: true }) }))
+      .optional(),
+    conditionings: zod
+      .array(zod.object({ id: zod.number(), value: zod.number({ coerce: true }) }))
+      .optional(),
+    storage_areas: zod
+      .array(
+        zod.object({
+          storage_area_id: zod.number({ coerce: true }),
+          location: zod.string().min(1, { message: 'Location is required' }),
+        })
+      )
+      .optional(),
+    fees: zod
+      .object({
+        douan: zod.number({ coerce: true }).min(1, { message: 'Douan is required' }),
+        position: zod.string().min(1, { message: 'Position is required' }),
+      })
+      .optional(),
+  });
 
 export function StockNewEditForm({ currentStock }) {
   const router = useRouter();
-        
+
   const { dataLookups, dataLoading } = useMultiLookups([
     { entity: 'workshops', url: 'settings/lookups/workshops' },
-    { entity: 'categories', url: 'settings/lookups/categories', params: { group: 1 }},
+    { entity: 'categories', url: 'settings/lookups/categories', params: { group: 1 } },
     { entity: 'units', url: 'settings/lookups/measurement-units' },
     { entity: 'dimensions', url: 'settings/lookups/dimensions' },
     { entity: 'conditionings', url: 'settings/lookups/conditionings' },
@@ -130,14 +152,27 @@ export function StockNewEditForm({ currentStock }) {
   } = methods;
 
   // Inline field arrays for sections
-  const { fields: dimensionFields } = useFieldArray({ control, name: 'dimensions', keyName: 'fieldKey' });
-  const { fields: conditioningFields } = useFieldArray({ control, name: 'conditionings', keyName: 'fieldKey' });
-  const { fields: storageAreaFields, append: appendStorageArea, remove: removeStorageArea } = useFieldArray({ control, name: 'storage_areas', keyName: 'fieldKey' });
+  const { fields: dimensionFields } = useFieldArray({
+    control,
+    name: 'dimensions',
+    keyName: 'fieldKey',
+  });
+  const { fields: conditioningFields } = useFieldArray({
+    control,
+    name: 'conditionings',
+    keyName: 'fieldKey',
+  });
+  const {
+    fields: storageAreaFields,
+    append: appendStorageArea,
+    remove: removeStorageArea,
+  } = useFieldArray({ control, name: 'storage_areas', keyName: 'fieldKey' });
 
   // parent-child family select logic
   const selectedParent = watch('family_parent_id');
   const parentOptions = parentFamilies.map((f) => ({ value: f.id.toString(), text: f.name }));
-  const childOptions = parentFamilies.find((f) => f.id.toString() === selectedParent)?.children || [];
+  const childOptions =
+    parentFamilies.find((f) => f.id.toString() === selectedParent)?.children || [];
   const childOptionsData = childOptions.map((c) => ({ value: c.id.toString(), text: c.name }));
   // clear child selection when parent changes
   useEffect(() => {
@@ -171,7 +206,10 @@ export function StockNewEditForm({ currentStock }) {
           ? currentStock.conditionings.map((c) => ({ id: c.id, value: c.value }))
           : conditionDefs.map((d) => ({ id: Number(d.value), value: 0 })),
         storage_areas: currentStock?.storage_areas?.length
-          ? currentStock.storage_areas.map((sa) => ({ storage_area_id: sa.storage_area_id, location: sa.location }))
+          ? currentStock.storage_areas.map((sa) => ({
+              storage_area_id: sa.storage_area_id,
+              location: sa.location,
+            }))
           : [],
         fees: currentStock?.fees || { douan: '', position: '' },
       });
@@ -222,16 +260,16 @@ export function StockNewEditForm({ currentStock }) {
     console.log('data onSubmit', data);
     try {
       if (currentStock) {
-        await updateEntity('stocks', currentStock.id, {...data, product_type: 1});
+        await updateEntity('stocks', currentStock.id, { ...data, product_type: 1 });
       } else {
-        await createEntity('stocks', {...data, product_type: 1});
+        await createEntity('stocks', { ...data, product_type: 1 });
       }
       toast.success(currentStock ? 'Stock updated' : 'Stock created');
-      router.push(paths.dashboard.store.rawMaterials.stocks);
+      router.push(paths.dashboard.storeManagement.rawMaterial.stocks);
     } catch (error) {
       console.error(error);
       toast.error(error?.message || 'Operation failed');
-    } 
+    }
   });
 
   const renderDetails = () => (
@@ -313,7 +351,7 @@ export function StockNewEditForm({ currentStock }) {
           {conditioningFields.map((field, index) => {
             const def = conditionDefs.find((d) => Number(d.value) === field.id) || {};
             const label = def.text || def.name || `Conditioning ${field.id}`;
-            
+
             return (
               <Grid key={field.fieldKey} size={{ xs: 12, md: 4 }}>
                 <Field.Number name={`conditionings.${index}.value`} label={label} />
@@ -324,7 +362,10 @@ export function StockNewEditForm({ currentStock }) {
         {/* Storage Areas Section */}
         <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 3 }}>
           <Typography variant="subtitle2">Storage Areas</Typography>
-          <IconButton color="primary" onClick={() => appendStorageArea({ storage_area_id: '', location: '' })}>
+          <IconButton
+            color="primary"
+            onClick={() => appendStorageArea({ storage_area_id: '', location: '' })}
+          >
             <Iconify icon="eva:plus-fill" />
           </IconButton>
         </Stack>
@@ -339,10 +380,7 @@ export function StockNewEditForm({ currentStock }) {
                 />
               </Grid>
               <Grid size={{ xs: 12, md: 5 }}>
-                <Field.Text
-                  name={`storage_areas.${index}.location`}
-                  label="Location"
-                />
+                <Field.Text name={`storage_areas.${index}.location`} label="Location" />
               </Grid>
               <Grid size={{ xs: 12, md: 1 }}>
                 <IconButton color="error" onClick={() => removeStorageArea(index)}>
@@ -363,13 +401,10 @@ export function StockNewEditForm({ currentStock }) {
             </Field.Select>
           </Grid>
           <Grid size={{ xs: 12, md: 4 }}>
-            <Field.Number
-              name="consumption"
-              label="Consommation journalière prévisionnelle"
-            />
+            <Field.Number name="consumption" label="Consommation journalière prévisionnelle" />
           </Grid>
         </Grid>
-        
+
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
             <Stack spacing={1.5}>
@@ -409,7 +444,7 @@ export function StockNewEditForm({ currentStock }) {
   return (
     <Form methods={methods} onSubmit={onSubmit}>
       <Stack spacing={5} sx={{ mx: 'auto', maxWidth: { xs: 720, xl: 1080 } }}>
-        {(dataLoading || familiesLoading) ? (
+        {dataLoading || familiesLoading ? (
           <CircularProgress />
         ) : (
           <>
@@ -417,7 +452,6 @@ export function StockNewEditForm({ currentStock }) {
             {renderActions()}
           </>
         )}
-         
       </Stack>
     </Form>
   );

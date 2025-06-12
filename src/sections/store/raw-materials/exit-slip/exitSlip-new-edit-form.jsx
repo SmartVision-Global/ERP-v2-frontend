@@ -116,7 +116,7 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
       // Mutate the data before navigation
       await mutate('exitSlips');
 
-      router.push(paths.dashboard.store.rawMaterials.exitSlip);
+      router.push(paths.dashboard.storeManagement.rawMaterial.exitSlips);
       onClose?.();
     } catch (error) {
       console.error(error);

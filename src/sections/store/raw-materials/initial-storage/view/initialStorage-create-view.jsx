@@ -15,7 +15,10 @@ export function InitialStorageCreateView() {
         heading="Ajouter une entrée de stock"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Entrées de stock', href: paths.dashboard.store.rawMaterials.initialStorage },
+          {
+            name: 'Entrées de stock',
+            href: paths.dashboard.storeManagement.rawMaterial.initialStorage,
+          },
           { name: 'Ajouter une entrée de stock' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

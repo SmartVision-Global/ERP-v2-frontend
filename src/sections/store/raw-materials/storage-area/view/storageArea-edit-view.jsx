@@ -1,5 +1,3 @@
-import { useParams } from 'next/navigation';
-
 import { paths } from 'src/routes/paths';
 
 import { DashboardContent } from 'src/layouts/dashboard';
@@ -12,9 +10,8 @@ import { StorageAreaNewEditForm } from '../storageArea-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-export function StorageAreaEditView() {
-  const params = useParams();
-  const { storageArea, isLoading } = useGetStorageArea(params.id);
+export function StorageAreaEditView({ id }) {
+  const { storageArea, isLoading } = useGetStorageArea(id);
 
   if (isLoading) {
     return <LoadingScreen />;
@@ -26,7 +23,10 @@ export function StorageAreaEditView() {
         heading="Modifier un lieu de stockage"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Lieux de stockage', href: paths.dashboard.store.rawMaterials.storageArea },
+          {
+            name: 'Lieux de stockage',
+            href: paths.dashboard.storeManagement.rawMaterial.storageArea,
+          },
           { name: 'Modifier un lieu de stockage' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

@@ -23,7 +23,7 @@ export function ExitSlipEditView({ id }) {
         heading="Modifier le bon de sortie"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Bons de sortie', href: paths.dashboard.store.rawMaterials.exitSlip },
+          { name: 'Bons de sortie', href: paths.dashboard.storeManagement.rawMaterial.exitSlips },
           { name: 'Modifier le bon de sortie' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

@@ -1,6 +1,5 @@
 import { mutate } from 'swr';
 import { useBoolean } from 'minimal-shared/hooks';
-import { useSearchParams } from 'react-router-dom';
 import { useState, useEffect, forwardRef, useCallback } from 'react';
 
 import Link from '@mui/material/Link';
@@ -127,7 +126,6 @@ const FILTERS_OPTIONS = [
 ];
 
 export function TransferSlipListView() {
-  const [searchParams, setSearchParams] = useSearchParams();
   const confirmDialog = useBoolean();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -196,46 +194,34 @@ export function TransferSlipListView() {
       const transformedData = transformIntegrationData(response.data?.data?.records);
       setTableData(transformedData);
       setRowCount(response.data?.data?.total);
-      setSearchParams({}, { replace: true });
     } catch (error) {
       console.error('Error resetting filters:', error);
     }
-  }, [setSearchParams]);
+  }, []);
 
-  const handleFilter = useCallback(
-    async (data) => {
-      try {
-        const filterParams = { ...data };
-        // Handle date range for created_at
-        if (data.created_at && Array.isArray(data.created_at) && data.created_at.length === 2) {
-          filterParams['created_at[0]'] = data.created_at[0];
-          filterParams['created_at[1]'] = data.created_at[1];
-        } else if (data.created_at) {
-          filterParams['created_at[0]'] = data.created_at;
-          filterParams['created_at[1]'] = data.created_at;
-        }
-        delete filterParams.created_at;
-
-        const response = await getFiltredTransferSlips(filterParams);
-        const transformedTransferSlips = transformIntegrationData(response.data?.data?.records);
-        setTableData(transformedTransferSlips);
-        setRowCount(response.data?.data?.total);
-        setEditedFilters(data);
-
-        const newSearchParams = new URLSearchParams();
-        Object.entries(data).forEach(([key, value]) => {
-          if (value !== null && value !== '' && value !== undefined) {
-            newSearchParams.set(key, value.toString());
-          }
-        });
-        setSearchParams(newSearchParams, { replace: true });
-      } catch (error) {
-        console.error('Error in filter submission:', error);
-        toast.error('Erreur lors du filtrage des données');
+  const handleFilter = useCallback(async (data) => {
+    try {
+      const filterParams = { ...data };
+      // Handle date range for created_at
+      if (data.created_at && Array.isArray(data.created_at) && data.created_at.length === 2) {
+        filterParams['created_at[0]'] = data.created_at[0];
+        filterParams['created_at[1]'] = data.created_at[1];
+      } else if (data.created_at) {
+        filterParams['created_at[0]'] = data.created_at;
+        filterParams['created_at[1]'] = data.created_at;
       }
-    },
-    [setSearchParams]
-  );
+      delete filterParams.created_at;
+
+      const response = await getFiltredTransferSlips(filterParams);
+      const transformedTransferSlips = transformIntegrationData(response.data?.data?.records);
+      setTableData(transformedTransferSlips);
+      setRowCount(response.data?.data?.total);
+      setEditedFilters(data);
+    } catch (error) {
+      console.error('Error in filter submission:', error);
+      toast.error('Erreur lors du filtrage des données');
+    }
+  }, []);
 
   const handlePaginationModelChange = async (newModel) => {
     try {
@@ -691,7 +677,7 @@ export function TransferSlipListView() {
               <TransferSlipExportButton data={tableData} />
               <Button
                 component={RouterLink}
-                href={paths.dashboard.store.rawMaterials.newTransferSlip}
+                href={paths.dashboard.storeManagement.rawMaterial.newTransferSlip}
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >

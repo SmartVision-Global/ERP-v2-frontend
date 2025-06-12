@@ -246,7 +246,10 @@ export function StorageAreaListView() {
       width: 100,
       hideable: false,
       renderCell: (params) => (
-        <RenderCellId params={params} href={paths.dashboard.store.rawMaterials.storageArea} />
+        <RenderCellId
+          params={params}
+          href={paths.dashboard.storeManagement.rawMaterial.storageArea}
+        />
       ),
     },
 
@@ -477,7 +480,7 @@ export function StorageAreaListView() {
               <StorageAreaExportButton data={tableData} />
               <Button
                 component={RouterLink}
-                href={paths.dashboard.store.rawMaterials.newStorageArea}
+                href={paths.dashboard.storeManagement.rawMaterial.newStorageArea}
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >
