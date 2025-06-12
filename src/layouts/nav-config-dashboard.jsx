@@ -65,7 +65,7 @@ export const navData = [
             title: 'Matières premières',
             path: paths.dashboard.store.rawMaterials.root,
             children: [
-              { title: 'Stocks', path: paths.dashboard.store.rawMaterials.stocks },
+              { title: 'Stocks', path: paths.dashboard.storeManagement.rawMaterial.root },
               { title: 'Lieu de stockage', path: paths.dashboard.store.rawMaterials.storageArea },
               { title: 'Entrée de stock', path: paths.dashboard.store.rawMaterials.initialStorage },
               { title: 'Bon de sortie', path: paths.dashboard.store.rawMaterials.exitSlip },
@@ -230,12 +230,12 @@ export const navData = [
 
             children: [
               {
-                title: 'Calcul de la paie',
-                path: paths.dashboard.rh.payrollManagement.calculation,
-              },
-              {
                 title: 'Préparation paie',
                 path: paths.dashboard.rh.payrollManagement.preparation,
+              },
+              {
+                title: 'Calcul de la paie',
+                path: paths.dashboard.rh.payrollManagement.calculation,
               },
             ],
           },
@@ -267,6 +267,21 @@ export const navData = [
             ],
           },
           //
+        ],
+      },
+      {
+        title: 'Achat et approvisionnement',
+        path: '/dashboard/purchase-supply',
+        icon: ICONS.order,
+        children: [
+          {
+            title: "Demande d'achat",
+            path: paths.dashboard.purchaseSupply.purchaseOrder.root,
+          },
+          {
+            title: 'Traitement DA',
+            path: paths.dashboard.purchaseSupply.processingDa.root,
+          },
         ],
       },
       {

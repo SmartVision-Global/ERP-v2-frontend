@@ -77,7 +77,6 @@ export function LeaveAbsenceHistoryDialog({
       minWidth: 240,
       hideable: false,
       renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
         <Label variant="soft" color="info">
           {ABS_TYPE_OPTIONS[params.row?.data.type]}
         </Label>
@@ -236,7 +235,6 @@ function applyFilter({ inputData, query }) {
   }
 
   return inputData.filter(({ personal, data }) => {
-    // const { loan_amount } = data;
     const { name } = personal;
     return [name].some((field) => field?.toLowerCase().includes(query.toLowerCase()));
   });

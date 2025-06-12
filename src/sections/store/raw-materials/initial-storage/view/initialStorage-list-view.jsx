@@ -1,10 +1,8 @@
 import { mutate } from 'swr';
 import { useBoolean } from 'minimal-shared/hooks';
-import { useSearchParams } from 'react-router-dom';
 import { useState, useEffect, forwardRef, useCallback } from 'react';
 
 import Link from '@mui/material/Link';
-import { Close, Add, Remove } from '@mui/icons-material';
 import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 import {
   Dialog,
@@ -13,25 +11,27 @@ import {
   DialogActions,
   Stack,
   Typography,
-} from '@mui/material';
-import {
-  TextField,
-  FormControl,
-  InputAdornment,
-  Container,
-  CircularProgress,
-  IconButton,
-} from '@mui/material';
-import {
   Box,
   Card,
-  Table,
   Button,
   Tooltip,
   MenuItem,
   TableBody,
   TableContainer,
   ListItemIcon,
+  Container,
+  CircularProgress,
+  IconButton,
+  TextField,
+  FormControl,
+  InputAdornment,
+  Chip,
+  Divider,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  Grid,
 } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
@@ -110,7 +110,6 @@ const FILTERS_OPTIONS = [
 ];
 
 export function InitialStorageListView() {
-  const [searchParams, setSearchParams] = useSearchParams();
   const confirmDialog = useBoolean();
 
   // Initialize pagination state
@@ -159,35 +158,22 @@ export function InitialStorageListView() {
       const transformedData = transformStorageData(response.data?.data?.records);
       setTableData(transformedData);
       setRowCount(response.data?.data?.total);
-      setSearchParams({}, { replace: true });
     } catch (error) {
       console.error('Error resetting filters:', error);
     }
-  }, [setSearchParams]);
+  }, []);
 
   // Handle filter submission
-  const handleFilter = useCallback(
-    async (data) => {
-      try {
-        const response = await getFiltredInitialStorages(data);
-        const transformedData = transformStorageData(response.data?.data?.records);
-        setTableData(transformedData);
-        setRowCount(response.data?.data?.total);
-
-        // Update URL params
-        const newSearchParams = new URLSearchParams();
-        Object.entries(data).forEach(([key, value]) => {
-          if (value !== null && value !== '' && value !== undefined) {
-            newSearchParams.set(key, value.toString());
-          }
-        });
-        setSearchParams(newSearchParams, { replace: true });
-      } catch (error) {
-        console.error('Error in filter submission:', error);
-      }
-    },
-    [setSearchParams]
-  );
+  const handleFilter = useCallback(async (data) => {
+    try {
+      const response = await getFiltredInitialStorages(data);
+      const transformedData = transformStorageData(response.data?.data?.records);
+      setTableData(transformedData);
+      setRowCount(response.data?.data?.total);
+    } catch (error) {
+      console.error('Error in filter submission:', error);
+    }
+  }, []);
 
   // Handle pagination changes
   const handlePaginationModelChange = async (newModel) => {
@@ -511,7 +497,7 @@ export function InitialStorageListView() {
               top: 8,
             }}
           >
-            <Close />
+            <Iconify icon="eva:close-fill" />
           </IconButton>
         </DialogTitle>
         <DialogContent>
@@ -542,7 +528,7 @@ export function InitialStorageListView() {
                               selectedInitialStorage.items[0].pmp = currentValue + 1;
                             }}
                           >
-                            <Add fontSize="small" />
+                            <Iconify icon="mingcute:add-line" />
                           </IconButton>
                           <IconButton
                             onClick={() => {
@@ -550,7 +536,7 @@ export function InitialStorageListView() {
                               selectedInitialStorage.items[0].pmp = Math.max(0, currentValue - 1);
                             }}
                           >
-                            <Remove fontSize="small" />
+                            <Iconify icon="mingcute:remove-line" />
                           </IconButton>
                         </InputAdornment>
                       ),
@@ -575,7 +561,7 @@ export function InitialStorageListView() {
                               selectedInitialStorage.items[0].quantity = currentValue + 1;
                             }}
                           >
-                            <Add fontSize="small" />
+                            <Iconify icon="mingcute:add-line" />
                           </IconButton>
                           <IconButton
                             onClick={() => {
@@ -587,7 +573,7 @@ export function InitialStorageListView() {
                               );
                             }}
                           >
-                            <Remove fontSize="small" />
+                            <Iconify icon="mingcute:remove-line" />
                           </IconButton>
                         </InputAdornment>
                       ),

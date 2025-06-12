@@ -139,7 +139,8 @@ export function TableToolbarCustom({
               )}
               {item.type === 'multi-select' && (
                 <>
-                  <InputLabel htmlFor={item.id}>{item.label}</InputLabel>{' '}
+                  <InputLabel htmlFor={item.id}>{item.label}</InputLabel>
+
                   <Select
                     multiple
                     name={`${item.id}`}
@@ -177,7 +178,8 @@ export function TableToolbarCustom({
                     {rangeCalendarPicker.startDate && rangeCalendarPicker.endDate
                       ? `${fDate(rangeCalendarPicker.startDate)} - ${fDate(rangeCalendarPicker.endDate)}`
                       : 'Date de création (Sélectionner un intervale)'}
-                  </Button>{' '}
+                  </Button>
+
                   <CustomDateRangePicker
                     name={item?.id}
                     variant="calendar"
@@ -213,8 +215,13 @@ export function TableToolbarCustom({
       </Grid>
       {filterOptions.length > 0 && (
         <Stack direction="row" spacing={1}>
-          <Button variant="contained" sx={{ px: 2, py: 1 }} onClick={onSubmitFilters}>
-            Chercher
+          <Button
+            variant="contained"
+            color="secondary"
+            sx={{ px: 2, py: 1 }}
+            onClick={onSubmitFilters}
+          >
+            Filtrer
           </Button>
           {Object.keys(filters).length > 0 && (
             <Button variant="outlined" onClick={onReset}>

@@ -151,7 +151,7 @@ export function NoCotisImposTableRow({ row, selected, onDeleteRow, index, update
                     values.salary > 0 ? (newAmount * 100) / values.salary : 0;
                   const newItem = {
                     ...fields[index],
-                    percent: calculatedPercent,
+                    percent: parseFloat(calculatedPercent.toFixed(2)),
                     amount: newAmount,
                   };
                   let newFields = fields;

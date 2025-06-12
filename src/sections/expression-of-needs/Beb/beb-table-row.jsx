@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 
 import { fDate, fTime } from 'src/utils/format-time';
 
-import { NATURE_OPTIONS, TYPE_OPTIONS, STATUS_OPTIONS, PRIORITY_OPTIONS } from 'src/_mock/expression-of-needs/Beb/Beb';
+import { PRODUCT_TYPE_OPTIONS, STATUS_OPTIONS, PRIORITY_OPTIONS, BEB_NATURE_OPTIONS } from 'src/_mock/expression-of-needs/Beb/Beb';
 
 import { Label } from 'src/components/label';
 
@@ -18,7 +18,7 @@ export function RenderCellCode({ params }) {
 }
 
 export function RenderCellNature({ params }) {
-  return <Typography>{NATURE_OPTIONS.find(option => option.value === params.row.nature)?.label ?? 'N/I'}</Typography>;
+  return <Typography>{BEB_NATURE_OPTIONS.find(option => option.value == params.row.nature)?.label ?? 'N/I'}</Typography>;
 }
 
 export function RenderCellCreatedBy({ params }) {
@@ -50,7 +50,7 @@ export function RenderCellStatus({ params }) {
 }
 
 export function RenderCellType({ params }) {
-  const type = TYPE_OPTIONS.find(option => option.value === params.row.type);
+  const type = PRODUCT_TYPE_OPTIONS.find(option => option.value == params.row.type);
   const color = type ? type.color : 'default';
   const label = type ? type.label : 'N/I';
   return <Label variant="soft" color={color}>{label}</Label>;
@@ -61,7 +61,7 @@ export function RenderCellService({ params }) {
 }
 
 export function RenderCellPriority({ params }) {
-  const priority = PRIORITY_OPTIONS.find(option => option.value === params.row.priority);
+  const priority = PRIORITY_OPTIONS.find(option => option.value == params.row.priority);
   const color = priority ? priority.color : 'default';
   const label = priority ? priority.label : 'N/I';
   return <Label variant="soft" color={color}>{label}</Label>;

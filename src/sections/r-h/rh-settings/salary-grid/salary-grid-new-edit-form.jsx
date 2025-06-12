@@ -291,6 +291,7 @@ export function SalaryGridNewEditForm({ currentProduct }) {
                         netSalary,
                         netPaySalary,
                       } = salaryCalculation(newSalary, deductionsCompensations);
+
                       setValue('salary_position', postSalary);
                       setValue('s_s_retenue', socialSecurityRetenue);
                       setValue('salary_position_retenue', postSalaryMinSSRetunue);

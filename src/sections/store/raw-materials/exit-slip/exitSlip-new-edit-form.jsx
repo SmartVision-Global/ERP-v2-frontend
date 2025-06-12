@@ -1,3 +1,4 @@
+import { mutate } from 'swr';
 import { z as zod } from 'zod';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -5,7 +6,6 @@ import { useForm, useFieldArray } from 'react-hook-form';
 
 import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
-import { Add, Remove, Delete } from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -31,6 +31,7 @@ import { useGetBebs } from 'src/actions/expression-of-needs/beb/beb';
 import { createExitSlip, updateExitSlip } from 'src/actions/exitSlip';
 
 import { toast } from 'src/components/snackbar';
+import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
 
 import { ProductSelectionDialog } from './product-selection-dialog';
@@ -111,6 +112,10 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
         await createExitSlip(data);
         toast.success('Bon de sortie créé avec succès!');
       }
+
+      // Mutate the data before navigation
+      await mutate('exitSlips');
+
       router.push(paths.dashboard.store.rawMaterials.exitSlip);
       onClose?.();
     } catch (error) {
@@ -230,7 +235,7 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
                     observation: '',
                   })
                 }
-                startIcon={<Add />}
+                startIcon={<Iconify icon="eva:plus-fill" />}
                 variant="outlined"
                 sx={{
                   borderStyle: 'dashed',
@@ -368,7 +373,7 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
                               }}
                               size="small"
                             >
-                              <Add fontSize="small" />
+                              <Iconify icon="eva:plus-fill" />
                             </IconButton>
                             <IconButton
                               onClick={() => {
@@ -380,7 +385,7 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
                               }}
                               size="small"
                             >
-                              <Remove fontSize="small" />
+                              <Iconify icon="eva:minus-fill" />
                             </IconButton>
                           </InputAdornment>
                         ),
@@ -408,7 +413,7 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
                               }}
                               size="small"
                             >
-                              <Add fontSize="small" />
+                              <Iconify icon="eva:plus-fill" />
                             </IconButton>
                             <IconButton
                               onClick={() => {
@@ -423,7 +428,7 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
                               }}
                               size="small"
                             >
-                              <Remove fontSize="small" />
+                              <Iconify icon="eva:minus-fill" />
                             </IconButton>
                           </InputAdornment>
                         ),
@@ -453,7 +458,7 @@ export function ExitSlipNewEditForm({ currentExitSlip, onClose, isEdit }) {
                         height: 32,
                       }}
                     >
-                      <Delete fontSize="small" />
+                      <Iconify icon="eva:trash-2-fill" />
                     </IconButton>
                   </Grid>
                 </Grid>

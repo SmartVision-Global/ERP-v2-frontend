@@ -182,6 +182,8 @@ export const paths = {
 
         calculation: `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/calculation`,
         newCalculation: `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/calculation/new`,
+        payroll: (id) =>
+          `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/calculation/${id}/payroll`,
 
         preparation: `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/preparation`,
         newPreparation: `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/preparation/new`,
@@ -198,6 +200,16 @@ export const paths = {
         newDac: `${ROOTS.DASHBOARD}/humain-ressource/para-tax-declaration/dac/new`,
       },
     },
+    purchaseSupply: {
+      purchaseOrder: {
+        root: `${ROOTS.DASHBOARD}/purchase-supply/purchase-order`,
+        newPurchaseOrder: `${ROOTS.DASHBOARD}/purchase-supply/purchase-order/new`,
+        editPurchaseOrder: (id) => `${ROOTS.DASHBOARD}/purchase-supply/purchase-order/${id}/edit`,
+      },
+      processingDa: {
+        root: `${ROOTS.DASHBOARD}/purchase-supply/processing-da`,
+      },
+    },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
       new: `${ROOTS.DASHBOARD}/user/new`,
@@ -208,6 +220,17 @@ export const paths = {
       edit: (id) => `${ROOTS.DASHBOARD}/user/${id}/edit`,
       demo: {
         edit: `${ROOTS.DASHBOARD}/user/${1}/edit`,
+      },
+    },
+    storeManagement: {
+      root: `${ROOTS.DASHBOARD}/store-management`,
+      rawMaterial: {
+        root: `${ROOTS.DASHBOARD}/store-management/raw-material`,
+        stocks: `${ROOTS.DASHBOARD}/store-management/raw-material`,
+        newStock: `${ROOTS.DASHBOARD}/store-management/raw-material/new`,
+        editStock: (id) => `${ROOTS.DASHBOARD}/store-management/raw-material/${id}/edit`,
+        // storageArea: `${ROOTS.DASHBOARD}/store-management/raw-material/storage-area`,
+        // initialStorage: `${ROOTS.DASHBOARD}/store-management/raw-material/initial-storage`,
       },
     },
     store: {
@@ -245,6 +268,7 @@ export const paths = {
         new: `${ROOTS.DASHBOARD}/expression-of-needs/beb/new`,
         edit: (id) => `${ROOTS.DASHBOARD}/expression-of-needs/beb/${id}/edit`,
       },
+      bmb: {},
     },
 
     settings: {

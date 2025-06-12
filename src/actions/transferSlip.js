@@ -76,6 +76,6 @@ export const updateTransferSlip = async (id, data) => {
 };
 
 export async function getTransferSlipItems(id) {
-  const response = await axios.get(`${TRANSFER_SLIP_ENDPOINT}/${id}/items`);
+  const response = await axios.get(`${TRANSFER_SLIP_ENDPOINT}/${id}`);
   return response;
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useBoolean } from 'minimal-shared/hooks';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 
@@ -9,6 +9,7 @@ import { Scrollbar } from 'src/components/scrollbar';
 import { TableHeadCustom } from 'src/components/table';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 
+import { salaryCalculation } from './utils';
 import { ProductListDialog } from './product-list-dialog';
 import { NoCotisImposTableRow } from './no-cotis-impos-table-row';
 
@@ -24,8 +25,8 @@ export function NoCotisImposNewEditForm() {
   const [openProductDialog, setOpenProductDialog] = useState(false);
   const confirmDialog = useBoolean();
 
-  const { control } = useFormContext();
-
+  const { control, setValue, watch } = useFormContext();
+  const values = watch();
   const { fields, append, remove, update } = useFieldArray({
     control,
     name: 'cotis_no_impos_items',
@@ -53,6 +54,47 @@ export function NoCotisImposNewEditForm() {
       confirmDialog.onTrue();
     }
   };
+  const handleDeleteRow = useCallback(
+    (index) => {
+      // eslint-disable-next-line no-debugger
+      debugger;
+      remove(index);
+      const filteredItems = fields.filter((_, idx) => idx !== index);
+      const deductionsCompensations = [
+        ...values.cotis_impos_items,
+        ...filteredItems,
+        // ...values.cotis_no_impos_items,
+        // ...filteredItems,
+        ...values.no_cotis_no_impos_items,
+      ];
+      const {
+        postSalary,
+        socialSecurityRetenue,
+        postSalaryMinSSRetunue,
+        salaryWithTax,
+        retenueIRG,
+        netSalary,
+        netPaySalary,
+      } = salaryCalculation(values.salary, deductionsCompensations);
+      setValue('salary_position', postSalary);
+      setValue('s_s_retenue', socialSecurityRetenue);
+      setValue('salary_position_retenue', postSalaryMinSSRetunue);
+      setValue('salary_impos', salaryWithTax);
+      setValue('retenueIRG', retenueIRG);
+      setValue('net_salary', netSalary);
+      setValue('net_salary_payer', netPaySalary);
+    },
+
+    [
+      remove,
+      fields,
+      values.salary,
+      setValue,
+      values.no_cotis_no_impos_items,
+      values.cotis_impos_items,
+    ]
+  );
+
   // const handleRowUpdate = useCallback(
   //   (newRow) => {
   //     const index = fields.findIndex((field) => field.id === newRow.id);
@@ -100,7 +142,7 @@ export function NoCotisImposNewEditForm() {
                   key={row.id}
                   row={row}
                   index={index}
-                  onDeleteRow={() => remove(index)}
+                  onDeleteRow={() => handleDeleteRow(index)}
                   update={update}
                   fields={fields}
                 />

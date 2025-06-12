@@ -4,7 +4,6 @@ import { useSearchParams } from 'react-router-dom';
 import { useState, useEffect, forwardRef, useCallback } from 'react';
 
 import Link from '@mui/material/Link';
-import { Close, Add, Remove } from '@mui/icons-material';
 import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 import {
   Dialog,
@@ -343,6 +342,7 @@ export function ExitSlipListView() {
     setOpenEditDialog(false);
     setSelectedExitSlip(null);
     triggerRefresh();
+    mutate('exitSlips');
   };
 
   const handleEdit = (row) => {
@@ -561,7 +561,6 @@ export function ExitSlipListView() {
       <DialogTitle>
         Détails du bon de sortie
         <IconButton
-          aria-label="close"
           onClick={handleCloseView}
           sx={{
             position: 'absolute',
@@ -569,7 +568,7 @@ export function ExitSlipListView() {
             top: 8,
           }}
         >
-          <Close />
+          <Iconify icon="eva:close-fill" />
         </IconButton>
       </DialogTitle>
       <DialogContent>
@@ -827,7 +826,6 @@ export function ExitSlipListView() {
         <DialogTitle>
           Modifier le bon de sortie
           <IconButton
-            aria-label="close"
             onClick={handleCloseEdit}
             sx={{
               position: 'absolute',
@@ -835,7 +833,7 @@ export function ExitSlipListView() {
               top: 8,
             }}
           >
-            <Close />
+            <Iconify icon="eva:close-fill" />
           </IconButton>
         </DialogTitle>
         <DialogContent>

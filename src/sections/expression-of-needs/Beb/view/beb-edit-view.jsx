@@ -13,15 +13,15 @@ export function BebEditView({ beb }) {
     <DashboardContent>
       <CustomBreadcrumbs
         heading="Edit"
-        backHref={paths.dashboard.rh.personal.root}
+        backHref={paths.dashboard.expressionOfNeeds.beb.root}
         links={[
           { name: 'Expression des besoins', href: paths.dashboard.expressionOfNeeds.beb.root },
-          { name: beb?.name },
+          { name: beb?.code },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      {beb && <BebNewEditForm currentBeb={beb} />}
+      {beb && <BebNewEditForm initialData={beb} />}
     </DashboardContent>
   );
 }

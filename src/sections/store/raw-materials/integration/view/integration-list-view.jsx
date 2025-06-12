@@ -348,7 +348,8 @@ export function IntegrationListView() {
   const handleCloseEdit = () => {
     setOpenEditDialog(false);
     setSelectedIntegration(null);
-    triggerRefresh();
+    // Mutate the data to trigger a refresh
+    mutate('integrations');
   };
 
   const handleEdit = (row) => {
@@ -584,7 +585,7 @@ export function IntegrationListView() {
             top: 8,
           }}
         >
-          <Close />
+          <Iconify icon="eva:close-fill" />
         </IconButton>
       </DialogTitle>
       <DialogContent>
@@ -860,7 +861,7 @@ export function IntegrationListView() {
               top: 8,
             }}
           >
-            <Close />
+            <Iconify icon="eva:close-fill" />
           </IconButton>
         </DialogTitle>
         <DialogContent>

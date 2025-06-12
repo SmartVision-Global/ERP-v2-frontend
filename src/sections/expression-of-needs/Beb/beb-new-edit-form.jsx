@@ -1,424 +1,445 @@
-import { z as zod } from 'zod';
-import { useCallback, useEffect } from 'react';
+import { z } from 'zod';
+import React, { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useFieldArray } from 'react-hook-form';
 
 import Grid from '@mui/material/Grid2';
-import { LoadingButton } from '@mui/lab';
-import { Box, Card, Stack, Divider, CardHeader, MenuItem, Typography, CircularProgress, IconButton } from '@mui/material';
+import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
+import { Box, Button, Stepper, Step, StepLabel, MenuItem, IconButton, Typography, Stack, Modal, TextField, InputAdornment } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { uploadMedia } from 'src/actions/media';
 import { useMultiLookups } from 'src/actions/lookups';
-import { TYPE_OPTIONS } from 'src/_mock/stores/raw-materials/data';
-import { useGetFamilies } from 'src/actions/settings/identification/raw-materials';
-import { createEntity, updateEntity } from 'src/actions/stores/raw-materials/stocks';
+import { useGetStocks } from 'src/actions/stores/raw-materials/stocks';
+import { createEntity, updateEntity } from 'src/actions/expression-of-needs/beb/beb';
+import { BEB_NATURE_OPTIONS, PRODUCT_TYPE_OPTIONS, PRIORITY_OPTIONS } from 'src/_mock/expression-of-needs/Beb/Beb';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
-import { Form, Field, schemaHelper } from 'src/components/hook-form';
+import { Form, Field } from 'src/components/hook-form';
 
-// Validation schema for stocks
-const StockSchema = zod.object({
-  builder_code: zod.string().min(1, { message: 'Code constructeur is required' }),
-  supplier_code: zod.string().min(1, { message: 'Code fournisseur is required' }),
-  family_id: zod.string().min(1, { message: 'Famille is required' }),
-  workshop_id: zod.string().min(1, { message: 'Atelier is required' }),
-  category_id: zod.string().min(1, { message: 'Catégorie is required' }),
-  unit_measure_id: zod.string().min(1, { message: 'Unité de mesure is required' }),
-  appellation: zod.string().min(1, { message: 'Appellation is required' }),
-  designation: zod.string().min(1, { message: 'Designation is required' }),
-  weight: zod.number({ coerce: true }).min(1, { message: 'Poids is required' }),
-  min: zod.number({ coerce: true }).min(1, { message: 'Quantité Min is required' }),
-  alert: zod.number({ coerce: true }).min(1, { message: 'Quantité Alerte is required' }),
-  consumption: zod.number({ coerce: true }).min(1, { message: 'Consommation journalière prévisionnelle is required' }),
-  type: zod.string().min(1, { message: 'Type is required' }),
-  image: schemaHelper.file().optional(),
-  catalog: schemaHelper.file().optional(),
-}).extend({
-  dimensions: zod.array(zod.object({ id: zod.number(), value: zod.number({ coerce: true }) })).optional(),
-  conditionings: zod.array(zod.object({ id: zod.number(), value: zod.number({ coerce: true }) })).optional(),
-  storage_areas: zod.array(
-    zod.object({
-      storage_area_id: zod.number({ coerce: true }),
-      location: zod.string().min(1, { message: 'Location is required' })
-    })
-  ).optional(),
-  fees: zod.object({
-    douan: zod.number({ coerce: true }).min(1, { message: 'Douan is required' }),
-    position: zod.string().min(1, { message: 'Position is required' })
-  }).optional(),
+// Validation schema for the first tab fields
+const bebSchema = z.object({
+  nature:  z.string().nonempty({ message: 'Nature is required' }),
+  requested_date: z.string().nonempty({ message: 'Date de besoins is required' }),
+  site_id: z.string().nonempty({ message: 'Site is required' }),
+  personal_id: z.string().nonempty({ message: 'Personnel is required' }),
+  type: z.string().nonempty({ message: 'Type is required' }),
+  priority: z.string().nonempty({ message: 'Priorité is required' }),
+  observation: z.string().optional(),
+  details: z.string().optional(),
+  items: z.array(z.object({
+    product_id: z.string().nonempty({ message: 'Produit est requis' }),
+    quantity: z.number({ coerce: true }).min(1, { message: 'Quantité est requise' }),
+    workshop_id: z.string().nonempty({ message: 'Atelier est requis' }),
+    machine_id: z.string().nonempty({ message: 'Machine est requise' }),
+    designation: z.string().optional(),
+    supplier_code: z.string().optional(),
+    current_quantity: z.number({ coerce: true }).optional(),
+    observation: z.string().optional(),
+    code: z.string().optional(),
+    unit_measure: z.any().optional(),
+    motif: z.string().optional(),
+  })).optional(),
 });
 
-export function BebNewEditForm({ currentStock }) {
+// BEB Request Form with two tabs: Informations and Produits
+export function BebNewEditForm({ initialData }) {
+  console.log('initialData', initialData);
   const router = useRouter();
-        
+  const [currentTab, setCurrentTab] = useState(0);
   const { dataLookups, dataLoading } = useMultiLookups([
+    { entity: 'persons', url: 'hr/lookups/personals' },
+    { entity: 'sites', url: 'settings/lookups/sites' },
     { entity: 'workshops', url: 'settings/lookups/workshops' },
-    { entity: 'categories', url: 'settings/lookups/categories', params: { group: 1 }},
-    { entity: 'units', url: 'settings/lookups/measurement-units' },
-    { entity: 'dimensions', url: 'settings/lookups/dimensions' },
-    { entity: 'conditionings', url: 'settings/lookups/conditionings' },
-    { entity: 'storageAreas', url: 'inventory/lookups/storage-areas' },
+    { entity: 'machines', url: 'settings/lookups/machines' },
   ]);
-  const { families: parentFamilies, familiesLoading } = useGetFamilies(1, true);
+  const personals = dataLookups.persons || [];
+  const sites = dataLookups.sites || [];
   const workshops = dataLookups.workshops || [];
-  const categories = dataLookups.categories || [];
-  const units = dataLookups.units || [];
-  const dimensionDefs = dataLookups.dimensions || [];
-  const conditionDefs = dataLookups.conditionings || [];
-  const storageAreas = dataLookups.storageAreas || [];
-  // console.log('currentStock', currentStock);
-  // console.log('dimensionDefs', dimensionDefs);
-  const defaultValues = {
-    builder_code: '',
-    supplier_code: '',
-    family_parent_id: '',
-    family_id: '',
-    workshop_id: '',
-    category_id: '',
-    unit_measure_id: '',
-    appellation: '',
-    designation: '',
-    weight: '',
-    min: '',
-    alert: '',
-    consumption: '',
-    type: TYPE_OPTIONS[0]?.value || '',
-    image: '',
-    catalog: '',
-    dimensions: dimensionDefs.map((d) => ({ id: Number(d.value), value: 0 })),
-    conditionings: conditionDefs.map((d) => ({ id: Number(d.value), value: 0 })),
-    storage_areas: [],
-    fees: { douan: '', position: '' },
+  const machines = dataLookups.machines || [];
+  
+  // Product selection filters and data
+  const [filterParams, setFilterParams] = useState({ code: '', supplier_code: '', builder_code: '', designation: '' });
+  const { stocks: productOptions, stocksLoading: productsLoading } = useGetStocks(filterParams);
+  // Handler to select product into form
+  const handleSelectProduct = (row) => {
+    const idx = openModalIndex;
+    console.log('handleSelectProduct', row);
+    setValue(`items.${idx}.product_id`, row.id.toString());
+    setValue(`items.${idx}.code`, row.code);
+    setValue(`items.${idx}.designation`, row.designation);
+    setValue(`items.${idx}.unit_measure`, row.unit_measure || { designation: '' });
+    setValue(`items.${idx}.supplier_code`, row.supplier_code);
+    setValue(`items.${idx}.current_quantity`, row.quantity || 0);
+    setOpenModalIndex(null);
   };
+  // Columns for product selection grid
+  const productColumns = [
+    { field: 'id', headerName: 'ID', width: 70 },
+    { field: 'code', headerName: 'Code', flex: 1, minWidth: 150 },
+    { field: 'supplier_code', headerName: 'Supplier Code', flex: 1, minWidth: 150 },
+    { field: 'builder_code', headerName: 'Builder Code', flex: 1, minWidth: 150 },
+    { field: 'designation', headerName: 'Designation', flex: 1.5, minWidth: 150 },
+    { field: 'quantity', headerName: 'Quantity', type: 'number', width: 100 },
+    {
+      field: 'actions', type: 'actions', headerName: '', width: 80,
+      getActions: (params) => [
+        <GridActionsCellItem
+          icon={<Iconify icon="eva:plus-fill" />}
+          label="Add"
+          onClick={() => handleSelectProduct(params.row)}
+          color="primary"
+        />
+      ],
+    },
+  ];
 
   const methods = useForm({
-    resolver: zodResolver(StockSchema),
-    defaultValues,
-    // values: {
-    //   ...currentStock,
-    //   family_id: currentStock?.family?.id?.toString() || '',
-    //   workshop_id: currentStock?.workshop_id?.toString() || '',
-    //   category_id: currentStock?.category?.id?.toString() || '',
-    //   unit_measure_id: currentStock?.unit_measure?.id?.toString() || '',
-    //   type: currentStock?.type || '',
-    //   image: currentStock?.image || '',
-    //   catalog: currentStock?.catalog || '',
-    //   builder_code: currentStock?.builder_code || '',
-    //   supplier_code: currentStock?.supplier_code || '',
-    //   appellation: currentStock?.appellation || '',
-    //   designation: currentStock?.designation || '',
-    //   weight: currentStock?.weight || '',
-    //   min: currentStock?.min || '',
-    //   alert: currentStock?.alert || '',
-    //   dimensions: currentStock?.dimensions || dimensionDefs.map((d) => ({ id: Number(d.value), value: 0 })),
-    //   conditionings: currentStock?.conditionings || conditionDefs.map((d) => ({ id: Number(d.value), value: 0 })),
-    //   storage_areas: currentStock?.storage_areas || [],
-    // },
+    resolver: zodResolver(bebSchema),
+    defaultValues: {
+      nature: initialData?.nature?.toString() || BEB_NATURE_OPTIONS[0]?.value || '',
+      requested_date: initialData?.requested_date?.split('T')[0] || '',
+      site_id: initialData?.site?.id?.toString() || '',
+      personal_id: initialData?.personal?.toString() || '',
+      type: initialData?.type?.toString() || PRODUCT_TYPE_OPTIONS[0]?.value?.toString() || '',
+      priority:
+        initialData?.priority?.toString() || PRIORITY_OPTIONS[0]?.value?.toString() || '',
+      observation: initialData?.observation || '',
+      details: initialData?.details || '',
+      items: initialData?.items
+        ? initialData.items.map((item) => ({
+            product_id: item.product_id?.toString() || '',
+            code: item.code || '',
+            supplier_code: item.supplier_code || '',
+            designation: item.designation || '',
+            current_quantity: item.current_quantity?.toString() || '',
+            quantity: item.quantity?.toString() || '',
+            workshop_id: item.workshop_id?.toString() || '',
+            machine_id: item.machine_id?.toString() || '',
+            observation: item.observation || '',
+            unit_measure: item.measure_unit || { designation: '' },
+            motif: item.motif || '',
+          }))
+        : [],
+    },
   });
 
-  const {
-    reset,
-    handleSubmit,
-    setValue,
+  const { handleSubmit, reset, control, setValue, watch } = methods;
+  const { fields: itemFields, append: appendItem, remove: removeItem } = useFieldArray({
     control,
-    watch,
-    formState: { isSubmitting },
-  } = methods;
+    name: 'items',
+    keyName: 'fieldKey',
+  });
+  const [openModalIndex, setOpenModalIndex] = useState(null);
 
-  // Inline field arrays for sections
-  const { fields: dimensionFields } = useFieldArray({ control, name: 'dimensions', keyName: 'fieldKey' });
-  const { fields: conditioningFields } = useFieldArray({ control, name: 'conditionings', keyName: 'fieldKey' });
-  const { fields: storageAreaFields, append: appendStorageArea, remove: removeStorageArea } = useFieldArray({ control, name: 'storage_areas', keyName: 'fieldKey' });
+  const handleTabChange = (event, newValue) => {
+    setCurrentTab(newValue);
+  };
 
-  // parent-child family select logic
-  const selectedParent = watch('family_parent_id');
-  const parentOptions = parentFamilies.map((f) => ({ value: f.id.toString(), text: f.name }));
-  const childOptions = parentFamilies.find((f) => f.id.toString() === selectedParent)?.children || [];
-  const childOptionsData = childOptions.map((c) => ({ value: c.id.toString(), text: c.name }));
-  // clear child selection when parent changes
+  // Move to next tab or submit at the last tab
+  const handleFormSubmit = async (data) => {
+    if (data.requested_date) data.requested_date = data.requested_date.split('T')[0];
+    if (currentTab === 0) {
+      setCurrentTab(1);
+    } else {
+      try {
+        // transform items to backend format
+        const payload = {
+          ...data,
+          items: data.items.map((item) => ({
+            product_id: item.product_id,
+            code: item.code,
+            designation: item.designation,
+            quantity: Number(item.quantity),
+            observation: item.observation,
+            // measure_unit: item.unit_measure,
+            motif: item.motif,
+            machine_id: Number(item.machine_id),
+            workshop_id: Number(item.workshop_id),
+          })),
+        };
+        console.log('payload', payload);
+        if (initialData?.id) {
+          await updateEntity('beb', initialData.id, payload);
+          toast.success('BEB updated');
+        } else {
+          await createEntity('beb', payload);
+          toast.success('BEB created');
+        }
+        router.push(paths.dashboard.expressionOfNeeds.beb.root);
+      } catch (error) {
+        toast.error(error?.message || 'Creation failed');
+      }
+    }
+  };
+
   useEffect(() => {
-    setValue('family_id', '');
-  }, [selectedParent, setValue]);
-
-  // Reset form when lookups (and optionally stock data) are ready, for both new and edit
-  useEffect(() => {
-    if (!dataLoading && !familiesLoading && dimensionDefs.length > 0 && conditionDefs.length > 0) {
+    if (initialData && !dataLoading && sites.length > 0 && personals.length > 0) {
       reset({
-        builder_code: currentStock?.builder_code || '',
-        supplier_code: currentStock?.supplier_code || '',
-        family_parent_id: currentStock?.family?.parent_id?.toString() || '',
-        family_id: currentStock?.family?.id?.toString() || '',
-        workshop_id: currentStock?.workshop_id?.toString() || '',
-        category_id: currentStock?.category?.id?.toString() || '',
-        unit_measure_id: currentStock?.unit_measure?.id?.toString() || '',
-        appellation: currentStock?.appellation || '',
-        designation: currentStock?.designation || '',
-        weight: currentStock?.weight || '',
-        min: currentStock?.min || '',
-        alert: currentStock?.alert || '',
-        consumption: currentStock?.consumption || '',
-        type: currentStock?.type.toString() || TYPE_OPTIONS[0]?.value || '',
-        image: currentStock?.image || '',
-        catalog: currentStock?.catalog || '',
-        dimensions: currentStock?.dimensions?.length
-          ? currentStock.dimensions.map((d) => ({ id: d.id, value: d.value }))
-          : dimensionDefs.map((d) => ({ id: Number(d.value), value: 0 })),
-        conditionings: currentStock?.conditionings?.length
-          ? currentStock.conditionings.map((c) => ({ id: c.id, value: c.value }))
-          : conditionDefs.map((d) => ({ id: Number(d.value), value: 0 })),
-        storage_areas: currentStock?.storage_areas?.length
-          ? currentStock.storage_areas.map((sa) => ({ storage_area_id: sa.storage_area_id, location: sa.location }))
+        nature: initialData.nature?.toString() || BEB_NATURE_OPTIONS[0]?.value || '',
+        requested_date: initialData.requested_date?.split('T')[0] || '',
+        site_id: initialData.site?.id?.toString() || '',
+        personal_id: initialData.personal?.toString() || '',
+        type: initialData.type?.toString() || PRODUCT_TYPE_OPTIONS[0]?.value?.toString() || '',
+        priority: initialData.priority?.toString() || PRIORITY_OPTIONS[0]?.value?.toString() || '',
+        observation: initialData.observation || '',
+        details: initialData.details || '',
+        items: initialData.items
+          ? initialData.items.map((item) => ({
+              product_id: item.product_id?.toString() || '',
+              code: item.code || '',
+              supplier_code: item.supplier_code || '',
+              designation: item.designation || '',
+              current_quantity: item.current_quantity?.toString() || '',
+              quantity: item.quantity?.toString() || '',
+              workshop_id: item.workshop_id?.toString() || '',
+              machine_id: item.machine_id?.toString() || '',
+              observation: item.observation || '',
+              unit_measure: item.measure_unit || { designation: '' },
+              motif: item.motif || '',
+            }))
           : [],
-        fees: currentStock?.fees || { douan: '', position: '' },
       });
     }
-  }, [dataLoading, familiesLoading, dimensionDefs, conditionDefs, currentStock, reset]);
+  }, [initialData, dataLoading, sites, personals, reset]);
 
-  const onDropImage = async (acceptedFiles) => {
-    const value = acceptedFiles[0];
-    const newData = new FormData();
-    newData.append('type', 'image');
-    newData.append('file', value);
-    newData.append('collection', 'photos');
-    setValue('image', value, { shouldValidate: true });
+  return (
+    <Form methods={methods} onSubmit={handleSubmit(handleFormSubmit)}>
+      <Stepper activeStep={currentTab} alternativeLabel sx={{ mb: 3 }}>
+        <Step key="Informations">
+          <StepLabel onClick={() => setCurrentTab(0)} style={{ cursor: 'pointer' }}>
+            Informations
+          </StepLabel>
+        </Step>
+        <Step key="Produits">
+          <StepLabel onClick={handleSubmit(handleFormSubmit)} style={{ cursor: 'pointer' }}>
+            Produits
+          </StepLabel>
+        </Step>
+      </Stepper>
 
-    try {
-      const response = await uploadMedia(newData);
-      setValue('image', response?.uuid, { shouldValidate: true });
-    } catch (error) {
-      console.log('error in upload file', error);
-    }
-  };
-
-  const onDropCatalog = async (acceptedFiles) => {
-    const value = acceptedFiles[0];
-    const newData = new FormData();
-    newData.append('type', 'image');
-    newData.append('file', value);
-    newData.append('collection', 'catalogs');
-    setValue('catalog', value, { shouldValidate: true });
-
-    try {
-      const response = await uploadMedia(newData);
-      setValue('catalog', response?.uuid, { shouldValidate: true });
-    } catch (error) {
-      console.log('error in upload file', error);
-    }
-  };
-
-  const handleRemoveImage = useCallback(() => {
-    setValue('image', null);
-  }, [setValue]);
-
-  const handleRemoveCatalog = useCallback(() => {
-    setValue('catalog', null);
-  }, [setValue]);
-
-  const onSubmit = handleSubmit(async (data) => {
-    console.log('data onSubmit', data);
-    try {
-      if (currentStock) {
-        await updateEntity('stocks', currentStock.id, {...data, product_type: 1});
-      } else {
-        await createEntity('stocks', {...data, product_type: 1});
-      }
-      toast.success(currentStock ? 'Stock updated' : 'Stock created');
-      router.push(paths.dashboard.store.rawMaterials.stocks);
-    } catch (error) {
-      console.error(error);
-      toast.error(error?.message || 'Operation failed');
-    } 
-  });
-
-  const renderDetails = () => (
-    <Card>
-      <CardHeader title={currentStock ? 'Modifier Stock' : 'Ajouter Stock'} sx={{ mb: 3 }} />
-      <Divider />
-      <Stack spacing={3} sx={{ p: 3 }}>
+      {currentTab === 0 && (
+        <Box>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="builder_code" label="Code constructeur" />
+              <Field.Select name="nature" label="Nature" size="small">
+                {BEB_NATURE_OPTIONS.map((opt) => (
+                  <MenuItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </MenuItem>
+                ))}
+              </Field.Select>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="supplier_code" label="Code fournisseur" />
-          </Grid>
-        </Grid>
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Field.Lookup name="family_parent_id" label="Famille Principale" data={parentOptions} />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Field.Lookup name="family_id" label="Sous famille" data={childOptionsData} />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Field.Lookup name="workshop_id" label="Atelier" data={workshops} />
-          </Grid>
-        </Grid>
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="category_id" label="Catégorie" data={categories} />
+              <Field.Lookup name="personal_id" label="Personnel" data={personals} />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="unit_measure_id" label="Unité de mesure" data={units} />
-          </Grid>
+              <Field.DatePicker
+                name="requested_date"
+                label="Date de besoins"
+                disablePast
+                slotProps={{ textField: { size: 'small' } }}
+              />
         </Grid>
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="appellation" label="Appellation" multiline rows={3} />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="designation" label="Designation" multiline rows={3} />
-          </Grid>
-        </Grid>
-        {/* Fees Section */}
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Number name="fees.douan" label="Douan" />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="fees.position" label="Position" />
-          </Grid>
-        </Grid>
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Field.Number name="weight" label="Poids" />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Field.Number name="min" label="Quantité Min" />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Field.Number name="alert" label="Quantité Alerte" />
-          </Grid>
-        </Grid>
-        {/* Dimensions Section */}
-        <Typography variant="subtitle2">Dimensions</Typography>
-        <Grid container spacing={3}>
-          {dimensionFields.map((field, index) => {
-            const def = dimensionDefs.find((d) => Number(d.value) === field.id) || {};
-            const label = def.text || def.name || `Dimension ${field.id}`;
-            return (
-              <Grid key={field.fieldKey} size={{ xs: 12, md: 4 }}>
-                <Field.Number name={`dimensions.${index}.value`} label={label} />
-              </Grid>
-            );
-          })}
-        </Grid>
-        {/* Conditionings Section */}
-        <Typography variant="subtitle2">Conditionings</Typography>
-        <Grid container spacing={3}>
-          {conditioningFields.map((field, index) => {
-            const def = conditionDefs.find((d) => Number(d.value) === field.id) || {};
-            const label = def.text || def.name || `Conditioning ${field.id}`;
-            
-            return (
-              <Grid key={field.fieldKey} size={{ xs: 12, md: 4 }}>
-                <Field.Number name={`conditionings.${index}.value`} label={label} />
-              </Grid>
-            );
-          })}
-        </Grid>
-        {/* Storage Areas Section */}
-        <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 3 }}>
-          <Typography variant="subtitle2">Storage Areas</Typography>
-          <IconButton color="primary" onClick={() => appendStorageArea({ storage_area_id: '', location: '' })}>
-            <Iconify icon="eva:plus-fill" />
-          </IconButton>
-        </Stack>
-        <Grid>
-          {storageAreaFields.map((field, index) => (
-            <Grid container spacing={3} key={field.fieldKey} sx={{ mb: 3 }}>
+           
               <Grid size={{ xs: 12, md: 6 }}>
                 <Field.Lookup
-                  name={`storage_areas.${index}.storage_area_id`}
-                  label="Storage Area"
-                  data={storageAreas}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, md: 5 }}>
-                <Field.Text
-                  name={`storage_areas.${index}.location`}
-                  label="Location"
-                />
-              </Grid>
-              <Grid size={{ xs: 12, md: 1 }}>
-                <IconButton color="error" onClick={() => removeStorageArea(index)}>
-                  <Iconify icon="eva:trash-2-outline" />
-                </IconButton>
-              </Grid>
+                name="site_id"
+                label="Site"
+                data={sites}
+              />
             </Grid>
-          ))}
-        </Grid>
-        <Grid container spacing={3}>
+           
+
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Select name="type" label="Type" size="small">
-              {TYPE_OPTIONS.map((option) => (
+                {PRODUCT_TYPE_OPTIONS.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
                 </MenuItem>
               ))}
             </Field.Select>
           </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Field.Number
-              name="consumption"
-              label="Consommation journalière prévisionnelle"
-            />
-          </Grid>
+
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Select name="priority" label="Priorité" size="small">
+                {PRIORITY_OPTIONS.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Field.Select>
         </Grid>
         
-        <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Image</Typography>
-              <Field.Upload
-                name="image"
-                label="Image"
-                onDelete={handleRemoveImage}
-                onDrop={onDropImage}
+              <Field.Text
+                name="observation"
+                label="Observations"
+                multiline
+                rows={3}
               />
-            </Stack>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Catalogue</Typography>
-              <Field.Upload
-                name="catalog"
-                label="Catalogue"
-                onDelete={handleRemoveCatalog}
-                onDrop={onDropCatalog}
+              <Field.Text
+                name="details"
+                label="Détails"
+                multiline
+                rows={3}
               />
-            </Stack>
-          </Grid>
-        </Grid>
-      </Stack>
-    </Card>
-  );
+            </Grid>
 
-  const renderActions = () => (
-    <Box sx={{ display: 'flex', gap: 2 }}>
-      <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
-        {currentStock ? 'Enregistrer' : 'Ajouter'}
-      </LoadingButton>
+            <Grid size={{ xs: 12, md: 12 }} display="flex" justifyContent="flex-end">
+              <Button type="submit" variant="contained">
+                ÉTAPE SUIVANTE
+              </Button>
+            </Grid>
+          </Grid>
     </Box>
-  );
+      )}
 
-  return (
-    <Form methods={methods} onSubmit={onSubmit}>
-      <Stack spacing={5} sx={{ mx: 'auto', maxWidth: { xs: 720, xl: 1080 } }}>
-        {(dataLoading || familiesLoading) ? (
-          <CircularProgress />
-        ) : (
-          <>
-            {renderDetails()}
-            {renderActions()}
-          </>
-        )}
-         
-      </Stack>
+      {currentTab === 1 && (
+        <Box>
+          <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 3 }}>
+            <Typography variant="subtitle2">Produits</Typography>
+            <IconButton color="primary" onClick={() => {
+              appendItem({
+                product_id: '',
+                code: '',
+                supplier_code: '',
+                designation: '',
+                current_quantity: '',
+                quantity: '',
+                workshop_id: '',
+                machine_id: '',
+                observation: '',
+                unit_measure: { designation: '' },
+                motif: ''
+              });
+              setOpenModalIndex(itemFields.length);
+            }}>
+              <Iconify icon="eva:plus-fill" />
+            </IconButton>
+          </Stack>
+          <Box sx={{ mt: 2 }}>
+            {itemFields.map((field, index) => (
+              <Box key={field.fieldKey} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 2, mb: 2 }}>
+                {/* First row: Code, Code Fournisseur, Désignation, Quantité actuelle */}
+                <Grid container spacing={2}>
+                  <Grid size={{ xs: 12, md: 3 }}>
+                    <Field.Text
+                      name={`items.${index}.code`}
+                      label="Code"
+                      InputProps={{ readOnly: true }}
+                      onClick={() => setOpenModalIndex(index)}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 3 }}>
+                    <Field.Text
+                      name={`items.${index}.supplier_code`}
+                      label="Code Fournisseur"
+                      InputProps={{ readOnly: true }}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 3 }}>
+                    <Field.Text
+                      name={`items.${index}.designation`}
+                      label="Désignation"
+                      InputProps={{ readOnly: true }}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 3 }}>
+                    <Field.Number
+                      name={`items.${index}.current_quantity`}
+                      label="Quantité actuelle"
+                      InputProps={{ readOnly: true }}
+                    />
+                  </Grid>
+                </Grid>
+                {/* Second row: Atelier, Machine, Quantité demandée, Observation, Motif */}
+                <Grid container spacing={2} sx={{ mt: 2 }}>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <Field.Lookup name={`items.${index}.workshop_id`} label="Atelier" data={workshops} />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <Field.Lookup name={`items.${index}.machine_id`} label="Machine" data={machines} />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Box sx={{ width: 36, height: 36, borderRadius: '25%', bgcolor: 'grey.300', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Typography variant="subtitle2" sx={{ fontSize: '1rem' }}>
+                          {watch(`items.${index}.unit_measure`)?.designation || ''}
+                        </Typography>
+                      </Box>
+                      <Field.Number name={`items.${index}.quantity`} label="Quantité demandée" />
+                    </Box>
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <Field.Text name={`items.${index}.observation`} label="Observation" multiline rows={2} />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <Field.Text name={`items.${index}.motif`} label="Motif" multiline rows={2} />
+                  </Grid>
+                </Grid>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                  <IconButton color="error" onClick={() => removeItem(index)}>
+                    <Iconify icon="eva:trash-2-outline" />
+                  </IconButton>
+                </Box>
+              </Box>
+            ))}
+          </Box>
+          <Modal open={openModalIndex !== null} onClose={() => setOpenModalIndex(null)}>
+            <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: 'background.paper', p: 3, width: '80%', maxHeight: '80%', overflow: 'auto' }}>
+              <Typography variant="h6" mb={2}>Sélectionner un produit</Typography>
+              <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                <TextField
+                  label="Code"
+                  size="small"
+                  value={filterParams.code}
+                  onChange={(e) => setFilterParams((prev) => ({ ...prev, code: e.target.value }))}
+                />
+                <TextField
+                  label="Supplier Code"
+                  size="small"
+                  value={filterParams.supplier_code}
+                  onChange={(e) => setFilterParams((prev) => ({ ...prev, supplier_code: e.target.value }))}
+                />
+                <TextField
+                  label="Builder Code"
+                  size="small"
+                  value={filterParams.builder_code}
+                  onChange={(e) => setFilterParams((prev) => ({ ...prev, builder_code: e.target.value }))}
+                />
+                <TextField
+                  label="Designation"
+                  size="small"
+                  value={filterParams.designation}
+                  onChange={(e) => setFilterParams((prev) => ({ ...prev, designation: e.target.value }))}
+                />
+              </Box>
+              <DataGrid
+                autoHeight
+                rows={productOptions}
+                columns={productColumns}
+                loading={productsLoading}
+                pageSizeOptions={[5, 10]}
+                pageSize={5}
+                disableColumnMenu
+              />
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                <Button onClick={() => setOpenModalIndex(null)}>Annuler</Button>
+              </Box>
+            </Box>
+          </Modal>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+            <Button type="submit" variant="contained">
+              VALIDER
+            </Button>
+          </Box>
+        </Box>
+      )}
     </Form>
   );
 }

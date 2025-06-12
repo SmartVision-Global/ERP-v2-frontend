@@ -13,25 +13,26 @@ import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { TextField, FormControl, InputAdornment } from '@mui/material';
 import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
-import { Dialog, DialogTitle, DialogContent, DialogActions, List, ListItem, ListItemText, Typography } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { CONFIG } from 'src/global-config';
 import { useMultiLookups } from 'src/actions/lookups';
-import { DashboardContent } from 'src/layouts/dashboard';
 import {
   PRODUCT_STATUS_OPTIONS,
-  IMAGE_OPTIONS,
 } from 'src/_mock';
+import { DashboardContent } from 'src/layouts/dashboard';
 import { useGetBebs, getFiltredBeb } from 'src/actions/expression-of-needs/beb/beb';
+import { PRODUCT_TYPE_OPTIONS, BEB_NATURE_OPTIONS, PRIORITY_OPTIONS } from 'src/_mock/expression-of-needs/Beb/Beb';
 
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
+import BebProductsList from '../BebProductsList';
 import {
   RenderCellId,
   RenderCellSite,
@@ -46,53 +47,14 @@ import {
   RenderCellCreatedDate,
 } from '../beb-table-row';
 
+
 // ----------------------------------------------------------------------
 
 const HIDE_COLUMNS = { categories: false };
 
 const HIDE_COLUMNS_TOGGLABLE = ['actions'];
 
-const columns = [
-  { field: 'id', headerName: 'ID', width: 100, minWidth: 100, renderCell: (params) => <RenderCellId params={params} /> },
-  { field: 'code', headerName: 'Code', flex: 1, minWidth: 150 },
-  { field: 'requested_date', headerName: 'Date de besoins', flex: 1, minWidth: 150, renderCell: (params) => <RenderCellRequestedDate params={params} />},
-  { field: 'time', headerName: 'Temps', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellTime params={params} />},
-  { field: 'created_by', headerName: 'Demandeur', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellCreatedBy params={params} />},
-  { field: 'status', headerName: 'Statut', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellStatus params={params} />},
-  { field: 'type', headerName: 'Type', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellType params={params} />},
-  { field: 'site', headerName: 'Site', flex: 1.5, minWidth: 120 , renderCell: (params) => <RenderCellSite params={params} />},
-  { field: 'service', headerName: 'Structure', width: 100, minWidth: 100, renderCell: (params) => <RenderCellService params={params} />},
-  { field: 'observation', headerName: 'Observations', flex: 1, minWidth: 120 },
-  { field: 'nature', headerName: 'Nature', width: 100, minWidth: 100, renderCell: (params) => <RenderCellNature params={params} />},
-  { field: 'priority', headerName: 'Priorité', width: 100, minWidth: 100, renderCell: (params) => <RenderCellPriority params={params} />},
-  
-  {
-    field: 'created_date',
-    headerName: 'Created Date',
-    flex: 1,
-    minWidth: 150,
-    renderCell: (params) => <RenderCellCreatedDate params={params} />,
-  },
-  {
-    type: 'actions',
-    field: 'actions',
-    headerName: ' ',
-    align: 'right',
-    headerAlign: 'right',
-    width: 80,
-    sortable: false,
-    filterable: false,
-    disableColumnMenu: true,
-    getActions: (params) => [
-      <GridActionsLinkItem
-        showInMenu
-        icon={<Iconify icon="solar:pen-bold" />}
-        label="Modifier"
-        href={paths.dashboard.store.rawMaterials.editStock(params.row.id)}
-      />,
-    ],
-  },
-];
+
 
 
 
@@ -112,29 +74,20 @@ export function BebListView() {
   const [tableData, setTableData] = useState(bebs);
 
   const { dataLookups } = useMultiLookups([
-    { entity: 'measurementUnits', url: 'settings/lookups/measurement-units' },
-    { entity: 'categories', url: 'settings/lookups/categories', params: { group: 1 } },
-    { entity: 'families', url: 'settings/lookups/families', params: { group: 1 } },
-    { entity: 'stores', url: 'settings/lookups/stores' },
+    { entity: 'sites', url: 'settings/lookups/sites' },
   ]);
 
-  const measurementUnits = dataLookups.measurementUnits || [];
-  const categories = dataLookups.categories || [];
-  const families = dataLookups.families || [];
-  // const subFamilies = families.length > 0 ? families.find((f) => f?.id.toString() === selectedParent)?.children || [] : [];
-  const stores = dataLookups.stores || [];
+  const sites = dataLookups.sites || [];
 
   const FILTERS_OPTIONS = [
-    { id: 'store', type: 'select', options: stores, label: 'Magasin', serverData: true },
     { id: 'code', type: 'input', label: 'Code' },
     { id: 'supplier_code', type: 'input', label: 'Supplier Code' },
     { id: 'designation', type: 'input', label: 'Designation' },
     { id: 'status', type: 'select', options: PRODUCT_STATUS_OPTIONS, label: 'Etat' },
-    { id: 'unit_measure', type: 'select', options: measurementUnits, label: 'Unit', serverData: true },
-    { id: 'category', type: 'select', options: categories, label: 'Category', serverData: true },
-    { id: 'family', type: 'select', options: families, label: 'Family', serverData: true },
-    // { id: 'sub_family', type: 'select', options: subFamilies, label: 'Sub Family' },
-    { id: 'image', type: 'select', options: IMAGE_OPTIONS, label: 'Image' },
+    { id: 'site', type: 'select', options: sites, label: 'Site', serverData: true },
+    { id: 'type', type: 'select', options: PRODUCT_TYPE_OPTIONS, label: 'Type' },
+    {id:'nature', type:'select', options:BEB_NATURE_OPTIONS, label:'Nature'},
+    {id:'priority', type:'select', options:PRIORITY_OPTIONS, label:'Priorité'},
     
     {
       id: 'created_date_start',
@@ -212,41 +165,41 @@ export function BebListView() {
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
 
-  const handleOpenDetail = (row) => {
+  const handleOpenDetail = useCallback((row) => {
     setSelectedRow(row);
     setDetailOpen(true);
-  };
+  }, []);
 
   const handleCloseDetail = () => {
     setDetailOpen(false);
     setSelectedRow(null);
   };
 
-  const columnsWithActions = useMemo(() =>
-    columns.map((col) => {
-      if (col.field === 'actions') {
-        return {
-          ...col,
-          getActions: (params) => [
-            <GridActionsLinkItem
-              showInMenu
-              icon={<Iconify icon="solar:pen-bold" />}
-              label="Modifier"
-              href={paths.dashboard.store.rawMaterials.editStock(params.row.id)}
-            />,
-            <GridActionsCellItem
-              showInMenu
-              icon={<Iconify icon="eva:eye-fill" />}
-              label="Consulter"
-              onClick={() => handleOpenDetail(params.row)}
-            />,
-          ],
-        };
-      }
-      return col;
-    }),
-  [handleOpenDetail]
-  );
+  // const columnsWithActions = useMemo(() =>
+  //   columns.map((col) => {
+  //     if (col.field === 'actions') {
+  //       return {
+  //         ...col,
+  //         getActions: (params) => [
+  //           <GridActionsLinkItem
+  //             showInMenu
+  //             icon={<Iconify icon="solar:pen-bold" />}
+  //             label="Modifier"
+  //             href={paths.dashboard.expressionOfNeeds.beb.edit(params.row.id)}
+  //           />,
+  //           <GridActionsCellItem
+  //             showInMenu
+  //             icon={<Iconify icon="humbleicons:view-list" />}
+  //             label="liste des produits"
+  //             onClick={() => handleOpenDetail(params.row)}
+  //           />,
+  //         ],
+  //       };
+  //     }
+  //     return col;
+  //   }),
+  // [handleOpenDetail]
+  // );
 
   const handleToolsClick = (event) => {
     setToolsAnchorEl(event.currentTarget);
@@ -329,6 +282,55 @@ if (col.field === 'location') {
     doc.autoTable({ head: [header], body: rows });
     doc.save('stocks.pdf');
   };
+  const columns = useMemo(() => 
+     [
+      { field: 'id', headerName: 'ID', width: 100, minWidth: 100, renderCell: (params) => <RenderCellId params={params} /> },
+      { field: 'code', headerName: 'Code', flex: 1, minWidth: 150 },
+      { field: 'requested_date', headerName: 'Date de besoins', flex: 1, minWidth: 150, renderCell: (params) => <RenderCellRequestedDate params={params} />},
+      { field: 'time', headerName: 'Temps', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellTime params={params} />},
+      { field: 'created_by', headerName: 'Demandeur', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellCreatedBy params={params} />},
+      { field: 'status', headerName: 'Statut', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellStatus params={params} />},
+      { field: 'type', headerName: 'Type', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellType params={params} />},
+      { field: 'site', headerName: 'Site', flex: 1.5, minWidth: 120 , renderCell: (params) => <RenderCellSite params={params} />},
+      { field: 'service', headerName: 'Structure', width: 100, minWidth: 100, renderCell: (params) => <RenderCellService params={params} />},
+      { field: 'observation', headerName: 'Observations', flex: 1, minWidth: 120 },
+      { field: 'nature', headerName: 'Nature', width: 100, minWidth: 100, renderCell: (params) => <RenderCellNature params={params} />},
+      { field: 'priority', headerName: 'Priorité', width: 100, minWidth: 100, renderCell: (params) => <RenderCellPriority params={params} />},
+      
+      {
+        field: 'created_date',
+        headerName: 'Created Date',
+        flex: 1,
+        minWidth: 150,
+        renderCell: (params) => <RenderCellCreatedDate params={params} />,
+      },
+      {
+        type: 'actions',
+        field: 'actions',
+        headerName: ' ',
+        align: 'right',
+        headerAlign: 'right',
+        width: 80,
+        sortable: false,
+        filterable: false,
+        disableColumnMenu: true,
+        getActions: (params) => [
+          <GridActionsLinkItem
+            showInMenu
+            icon={<Iconify icon="solar:pen-bold" />}
+            label="Modifier"
+            href={paths.dashboard.expressionOfNeeds.beb.edit(params.row.id)}
+          />,
+          <GridActionsCellItem
+                    showInMenu
+                    icon={<Iconify icon="humbleicons:view-list" />}
+                    label="liste des produits"
+                    onClick={() => handleOpenDetail(params.row)}
+                  />,
+        ],
+      },
+    ]
+  , [handleOpenDetail]);
 
   return (
     <>
@@ -427,7 +429,7 @@ if (col.field === 'location') {
             disableColumnMenu
             rows={tableData}
             rowCount={rowCount}
-            columns={columnsWithActions}
+            columns={columns}
             loading={bebsLoading}
             getRowHeight={() => 'auto'}
             paginationModel={paginationModel}
@@ -454,48 +456,10 @@ if (col.field === 'location') {
             }}
           />
           {selectedRow && (
-            <Dialog open={detailOpen} onClose={handleCloseDetail} maxWidth="sm" fullWidth>
-              <DialogTitle>Details produit: {selectedRow.code} -- {selectedRow.designation}</DialogTitle>
+            <Dialog open={detailOpen} onClose={handleCloseDetail} maxWidth="md" fullWidth>
+              <DialogTitle>liste des produits</DialogTitle>
               <DialogContent dividers>
-                <Box sx={{ display: 'inline-block', bgcolor: 'primary.main', color: '#fff', px: 1.5, py: 0.5, borderRadius: 1}}>
-                  <Typography variant="body2">Informations</Typography>
-                </Box>
-                <List>
-                  <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="body2">Codification</Typography>
-                    <Typography variant="body2">{selectedRow.code}</Typography>
-                  </ListItem>
-                  <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="body2">Désignation</Typography>
-                    <Typography variant="body2">{selectedRow.designation}</Typography>
-                  </ListItem>
-                  <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="body2">Unité de mesure</Typography>
-                    <Typography variant="body2">{selectedRow.unit_measure?.designation}</Typography>
-                  </ListItem>
-                  <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="body2">Famille</Typography>
-                    <Typography variant="body2">{selectedRow.family?.name}</Typography>
-                  </ListItem>
-                  <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="body2">Date de création</Typography>
-                    <Typography variant="body2">{selectedRow.created_date ? new Date(selectedRow.created_date).toLocaleDateString('fr-FR') : ''}</Typography>
-                  </ListItem>
-                  {selectedRow.catalog && (
-                    <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Typography variant="body2">Catalogue</Typography>
-                      <Link href={selectedRow.catalog} target="_blank" rel="noopener">
-                        <Typography variant="body2" color="primary">Voir PDF</Typography>
-                      </Link>
-                    </ListItem>
-                  )}
-                  {selectedRow.image && (
-                    <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)' }}>
-                      <ListItemText primary="Image" />
-                      <Box component="img" src={selectedRow.image} alt="item image" sx={{ maxWidth: '100%', maxHeight: 300 }} />
-                    </ListItem>
-                  )}
-                </List>
+                <BebProductsList id={selectedRow.id} />
               </DialogContent>
               <DialogActions>
                 <Button variant="contained" onClick={handleCloseDetail}>Fermer</Button>

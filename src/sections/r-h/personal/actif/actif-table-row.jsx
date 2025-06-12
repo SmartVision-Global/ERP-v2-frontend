@@ -187,13 +187,13 @@ export function RenderCellUser({ params, href }) {
       <ListItemText
         primary={
           <Typography
-            fontSize={14}
+            fontSize={12}
           >{`${params.row.first_name?.fr} ${params.row.last_name?.fr}`}</Typography>
         }
         secondary={`${params.row.first_name?.ar} ${params.row.last_name?.ar}`}
         slotProps={{
           primary: { noWrap: true },
-          secondary: { sx: { color: 'text.disabled', fontSize: 14 } },
+          secondary: { sx: { color: 'text.disabled', fontSize: 12 } },
         }}
       />
     </Box>
@@ -240,7 +240,7 @@ export function RenderCellCompany({ params, href }) {
     >
       <ListItemText
         primary={
-          <Typography color="inherit" fontSize={14}>
+          <Typography color="inherit" fontSize={12}>
             {params.row.enterprise?.name}
           </Typography>
         }
@@ -255,11 +255,11 @@ export function RenderCellCompany({ params, href }) {
 }
 
 export function RenderCellSite({ params, href }) {
-  return <Typography fontSize={14}>{params.row.site?.name}</Typography>;
+  return <Typography fontSize={12}>{params.row.site?.name}</Typography>;
 }
 
 export function RenderCellFunction({ params, href }) {
-  return <Typography fontSize={14}>{params.row.job?.name}</Typography>;
+  return <Typography fontSize={12}>{params.row.job?.name}</Typography>;
 }
 
 export function RenderCellPostalCode({ params, href }) {

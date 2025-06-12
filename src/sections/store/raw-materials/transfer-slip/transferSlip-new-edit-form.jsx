@@ -1,3 +1,4 @@
+import { mutate } from 'swr';
 import { z as zod } from 'zod';
 import { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -5,7 +6,6 @@ import { useForm, useFieldArray } from 'react-hook-form';
 
 import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
-import { Add, Remove, Delete } from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -28,6 +28,7 @@ import { useGetLookups } from 'src/actions/lookups';
 import { createTransferSlip, updateTransferSlip } from 'src/actions/transferSlip';
 
 import { toast } from 'src/components/snackbar';
+import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
 
 import { ProductSelectionDialog } from './product-selection-dialog';
@@ -57,6 +58,10 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
   const [selectedRowIndex, setSelectedRowIndex] = useState(null);
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
   const [isSupplierMode, setIsSupplierMode] = useState(false);
+
+  // Add debug logs for props
+  console.log('Component Props:', { currentIntegration, isEdit });
+
   const methods = useForm({
     resolver: zodResolver(TransferSlipSchema),
     defaultValues: {
@@ -64,25 +69,24 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
       store_id: currentIntegration?.store_id || undefined,
       store_to_id: currentIntegration?.store_to_id || undefined,
       observation: currentIntegration?.observation || '',
-      items: currentIntegration?.items?.map((item) => ({
-        id: item.id,
-        product_id: item.product_id || undefined,
-        product_code: item.product_code || '',
-        designation: item.designation || '',
-        supplier_code: item.supplier_code || '',
-        lot: item.lot || 'non-défini',
-        quantity: item.quantity ? Number(item.quantity) : 0,
-        observation: item.observation || '',
-      })) || [
-        {
-          product_id: undefined,
-          lot: 'non-défini',
-          quantity: 0,
-          observation: '',
-        },
-      ],
+      items:
+        currentIntegration?.items?.map((item) => ({
+          id: item.id,
+          product_id: item.product_id,
+          product_code: item.product_code || '',
+          designation: item.designation || '',
+          supplier_code: item.supplier_code || '',
+          lot: item.lot || 'non-défini',
+          quantity: item.quantity ? Number(item.quantity) : 0,
+          observation: item.observation || '',
+        })) || [],
     },
   });
+
+  // Add debug logs for form initialization
+  console.log('Current Integration:', currentIntegration);
+  console.log('Form Values:', methods.getValues());
+
   const products = [
     { value: 1, text: 'Matiere premier' },
     { value: 2, text: 'Semi-fini' },
@@ -102,6 +106,21 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
     name: 'items',
   });
 
+  // If no items exist in edit mode, add an empty one
+  useEffect(() => {
+    if (isEdit && (!fields || fields.length === 0)) {
+      append({
+        product_id: undefined,
+        product_code: '',
+        designation: '',
+        supplier_code: '',
+        lot: 'non-défini',
+        quantity: 0,
+        observation: '',
+      });
+    }
+  }, [isEdit, fields, append]);
+
   const selectedSource = watch('store_id');
 
   // Filter destination stores to exclude the selected source
@@ -116,6 +135,11 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
 
   const onSubmit = handleSubmit(async (data) => {
     try {
+      // Add console logs for debugging
+      console.log('Form Data:', data);
+      console.log('Current Integration:', currentIntegration);
+      console.log('Is Edit Mode:', isEdit);
+
       // Prepare payload
       const payload = {
         type: data.type,
@@ -123,12 +147,15 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
         store_to_id: data.store_to_id,
         observation: data.observation,
         items: data.items.map((item) => ({
+          id: item.id || undefined, // Include id only if it exists
           product_id: item.product_id,
           lot: item.lot || 'non-défini',
           quantity: Number(item.quantity),
           observation: item.observation || '',
         })),
       };
+
+      console.log('Payload:', payload);
 
       if (isEdit) {
         await updateTransferSlip(currentIntegration.id, payload);
@@ -137,10 +164,14 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
         await createTransferSlip(payload);
         toast.success('Bon de transfert créé avec succès!');
       }
+
+      // Mutate the data before navigation
+      await mutate('transferSlips');
+
       router.push(paths.dashboard.store.rawMaterials.transferSlip);
       onClose?.();
     } catch (error) {
-      console.error(error);
+      console.error('Error submitting form:', error);
       toast.error(error?.message || "Échec de l'opération");
     }
   });
@@ -189,13 +220,11 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
       } else {
         // When in normal mode, update all product fields
         update(selectedRowIndex, {
+          ...getValues(`items.${selectedRowIndex}`),
           product_id: product.id,
           product_code: product.code,
           designation: product.designation,
           supplier_code: product.supplier_code || '',
-          lot: 'non-défini',
-          quantity: 0,
-          observation: '',
         });
       }
     }
@@ -261,7 +290,7 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
                     observation: '',
                   })
                 }
-                startIcon={<Add />}
+                startIcon={<Iconify icon="eva:plus-fill" />}
                 variant="outlined"
                 sx={{
                   borderStyle: 'dashed',
@@ -371,6 +400,7 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
                       InputProps={{
                         sx: { bgcolor: 'background.paper' },
                       }}
+                      disabled={isEdit}
                     />
                   </Grid>
                   <Grid xs={1.5}>
@@ -380,6 +410,7 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
                       size="small"
                       label="Quantité"
                       fullWidth
+                      // disabled={isEdit}
                       InputProps={{
                         sx: { bgcolor: 'background.paper' },
                         endAdornment: (
@@ -393,8 +424,9 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
                                 });
                               }}
                               size="small"
+                              // disabled={isEdit}
                             >
-                              <Add fontSize="small" />
+                              <Iconify icon="eva:plus-fill" />
                             </IconButton>
                             <IconButton
                               onClick={() => {
@@ -405,8 +437,9 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
                                 });
                               }}
                               size="small"
+                              // disabled={isEdit}
                             >
-                              <Remove fontSize="small" />
+                              <Iconify icon="eva:minus-fill" />
                             </IconButton>
                           </InputAdornment>
                         ),
@@ -435,7 +468,7 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
                         height: 32,
                       }}
                     >
-                      <Delete fontSize="small" />
+                      <Iconify icon="eva:trash-2-fill" />
                     </IconButton>
                   </Grid>
                 </Grid>
@@ -519,6 +552,14 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
                   type="submit"
                   variant="contained"
                   loading={isSubmitting}
+                  onClick={async () => {
+                    console.log('Submit button clicked');
+                    const isValid = await methods.trigger();
+                    console.log('Form validation result:', isValid);
+                    if (isValid) {
+                      onSubmit(methods.getValues());
+                    }
+                  }}
                   sx={{ minWidth: 120 }}
                 >
                   {isEdit ? 'MODIFIER' : 'VALIDER'}

@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState, useCallback } from 'react';
 
-import { Close as CloseIcon, Add as AddIcon } from '@mui/icons-material';
 import {
   Dialog,
   DialogTitle,
@@ -69,7 +68,6 @@ export function ProductSelectionDialog({ open, onClose, onProductSelect }) {
       <DialogTitle>
         Sélectionner un produit
         <IconButton
-          aria-label="close"
           onClick={onClose}
           sx={{
             position: 'absolute',
@@ -77,16 +75,16 @@ export function ProductSelectionDialog({ open, onClose, onProductSelect }) {
             top: 8,
           }}
         >
-          <CloseIcon />
+          <Iconify icon="eva:close-fill" />
         </IconButton>
       </DialogTitle>
       <DialogContent>
-        <Box sx={{ mb: 2 }}>
+        <Box sx={{ mb: 2, mt: 1 }}>
           <TextField
             fullWidth
             placeholder="Rechercher un produit..."
             value={searchQuery}
-            onChange={handleSearch}
+            onChange={(e) => setSearchQuery(e.target.value)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -151,7 +149,7 @@ export function ProductSelectionDialog({ open, onClose, onProductSelect }) {
                   <Button
                     variant="contained"
                     size="small"
-                    startIcon={<AddIcon />}
+                    startIcon={<Iconify icon="eva:plus-fill" />}
                     onClick={() => handleProductSelect(product)}
                     sx={{ minWidth: 'auto', px: 1 }}
                   >

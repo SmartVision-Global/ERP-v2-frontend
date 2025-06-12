@@ -147,6 +147,13 @@ export const endpoints = {
   expressionOfNeeds: {
     beb: {
       list: '/v1/expression-of-need/eon-vouchers',
+      items: (id) => `/v1/expression-of-need/eon-vouchers/${id}/items`,
+    },
+  },
+  purchaseSupply: {
+    purchaseOrder: {
+      list: '/v1/purchases/purchase-requests',
+      items: (id) => `/v1/purchases/purchase-requests/${id}/items`,
     },
   },
 
@@ -164,8 +171,12 @@ export const endpoints = {
   endContract: '/v1/hr/treatment/personal_end_services',
   // payroll
   payrollMonth: '/v1/hr/payroll/preparation/payroll_months',
+  payrollMonthCalculation: '/v1/hr/payroll/calculation/payrolls',
+
   payrollMonthPersonalAttached: (id) => `/v1/hr/payroll/preparation/month/${id}/payrolls/attached`,
   payrollMonthPersonalUnAttached: (id) =>
     `/v1/hr/payroll/preparation/month/${id}/payrolls/unattached`,
   payrolls: '/v1/hr/payroll/preparation/payrolls',
+  calculatePayroll: (id) => `/v1/hr/payroll/calculation/payrolls/${id}/calculate`,
+  validationPayroll: (id) => `/v1/hr/payroll/calculation/payrolls/${id}/validation`,
 };

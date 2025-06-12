@@ -4,7 +4,6 @@ import { useSearchParams } from 'react-router-dom';
 import { useState, useEffect, forwardRef, useCallback } from 'react';
 
 import Link from '@mui/material/Link';
-import { Close, Add, Remove } from '@mui/icons-material';
 import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 import {
   Dialog,
@@ -336,7 +335,7 @@ export function TransferSlipListView() {
     setItemsLoading(true);
     try {
       const response = await getTransferSlipItems(row.id);
-      setTransferSlipItems(response.data.data);
+      setTransferSlipItems(response.data.data.items || []);
     } catch (error) {
       console.error('Error fetching transfer slip items:', error);
       toast.error('Erreur lors du chargement des articles');
@@ -503,7 +502,6 @@ export function TransferSlipListView() {
       <DialogTitle>
         Détails du bon de transfert
         <IconButton
-          aria-label="close"
           onClick={handleCloseView}
           sx={{
             position: 'absolute',
@@ -511,7 +509,7 @@ export function TransferSlipListView() {
             top: 8,
           }}
         >
-          <Close />
+          <Iconify icon="eva:close-fill" />
         </IconButton>
       </DialogTitle>
       <DialogContent>
@@ -602,17 +600,18 @@ export function TransferSlipListView() {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {transferSlipItems.map((item) => (
-                          <TableRow key={item.id}>
-                            <TableCell>{item.product?.code || '-'}</TableCell>
-                            <TableCell>{item.product?.designation || '-'}</TableCell>
-                            <TableCell>{item.product?.supplier_code || '-'}</TableCell>
-                            <TableCell>{item.lot || '-'}</TableCell>
-                            <TableCell align="right">{item.quantity}</TableCell>
-                            <TableCell>{item.motif || '-'}</TableCell>
-                            <TableCell>{item.observation || '-'}</TableCell>
-                          </TableRow>
-                        ))}
+                        {Array.isArray(transferSlipItems) &&
+                          transferSlipItems.map((item) => (
+                            <TableRow key={item.id}>
+                              <TableCell>{item.product?.code || '-'}</TableCell>
+                              <TableCell>{item.product?.designation || '-'}</TableCell>
+                              <TableCell>{item.product?.supplier_code || '-'}</TableCell>
+                              <TableCell>{item.lot || '-'}</TableCell>
+                              <TableCell align="right">{item.quantity}</TableCell>
+                              <TableCell>{item.motif || '-'}</TableCell>
+                              <TableCell>{item.observation || '-'}</TableCell>
+                            </TableRow>
+                          ))}
                       </TableBody>
                     </Table>
                   </TableContainer>
@@ -774,7 +773,6 @@ export function TransferSlipListView() {
         <DialogTitle>
           Modifier le bon de transfert
           <IconButton
-            aria-label="close"
             onClick={handleCloseEdit}
             sx={{
               position: 'absolute',
@@ -782,7 +780,7 @@ export function TransferSlipListView() {
               top: 8,
             }}
           >
-            <Close />
+            <Iconify icon="eva:close-fill" />
           </IconButton>
         </DialogTitle>
         <DialogContent>

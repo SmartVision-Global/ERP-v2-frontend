@@ -1,3 +1,4 @@
+import { mutate } from 'swr';
 import { z as zod } from 'zod';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -5,7 +6,6 @@ import { useForm, useFieldArray } from 'react-hook-form';
 
 import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
-import { Add, Remove, Delete } from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -29,6 +29,7 @@ import { useGetExitSlips } from 'src/actions/exitSlip';
 import { createIntegration, updateIntegration } from 'src/actions/integration';
 
 import { toast } from 'src/components/snackbar';
+import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
 
 import { ProductSelectionDialog } from './product-selection-dialog';
@@ -147,6 +148,10 @@ export function IntegrationNewEditForm({ currentIntegration, onClose, isEdit }) 
         await createIntegration(payload);
         toast.success('Intégration créée avec succès!');
       }
+
+      // Mutate the data before navigation
+      await mutate('integrations');
+
       router.push(paths.dashboard.store.rawMaterials.integrations);
       onClose?.();
     } catch (error) {
@@ -283,7 +288,7 @@ export function IntegrationNewEditForm({ currentIntegration, onClose, isEdit }) 
                     observation: '',
                   })
                 }
-                startIcon={<Add />}
+                startIcon={<Iconify icon="eva:plus-fill" />}
                 variant="outlined"
                 sx={{
                   borderStyle: 'dashed',
@@ -452,7 +457,7 @@ export function IntegrationNewEditForm({ currentIntegration, onClose, isEdit }) 
                               size="small"
                               disabled={isEdit}
                             >
-                              <Add fontSize="small" />
+                              <Iconify icon="eva:plus-fill" />
                             </IconButton>
                             <IconButton
                               onClick={() => {
@@ -465,7 +470,7 @@ export function IntegrationNewEditForm({ currentIntegration, onClose, isEdit }) 
                               size="small"
                               disabled={isEdit}
                             >
-                              <Remove fontSize="small" />
+                              <Iconify icon="eva:minus-fill" />
                             </IconButton>
                           </InputAdornment>
                         ),
@@ -509,7 +514,7 @@ export function IntegrationNewEditForm({ currentIntegration, onClose, isEdit }) 
                         height: 32,
                       }}
                     >
-                      <Delete fontSize="small" />
+                      <Iconify icon="eva:trash-2-fill" />
                     </IconButton>
                   </Grid>
                 </Grid>
