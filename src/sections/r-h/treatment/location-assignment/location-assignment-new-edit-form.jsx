@@ -22,13 +22,16 @@ import { Form, Field, schemaHelper } from 'src/components/hook-form';
 export const NewTauxCnasSchema = zod
   .object({
     personal_id: zod.string().min(1, { message: 'Veuillez remplir ce champ!' }).or(zod.number()),
-    relocation_type: zod.string().min(1, { message: 'Veuillez remplir ce champ!' }),
+    relocation_type: zod
+      .string()
+      .min(1, { message: 'Veuillez remplir ce champ!' })
+      .or(zod.number()),
     direction_id: zod.string().min(1, { message: 'Veuillez remplir ce champ!' }).or(zod.number()),
     site_id: zod.string().min(1, { message: 'Veuillez remplir ce champ!' }).or(zod.number()),
     workshop_id: zod.string().min(1, { message: 'Veuillez remplir ce champ!' }).or(zod.number()),
     machine_id: zod.string().min(1, { message: 'Veuillez remplir ce champ!' }).or(zod.number()),
     end_relocation_date: schemaHelper.date().nullable(),
-    observation: zod.string().min(1, { message: 'Veuillez remplir ce champ!' }),
+    observation: zod.string().optional().nullable(),
   })
   .superRefine((data, ctx) => {
     if (data.relocation_type === '2') {
