@@ -8,7 +8,7 @@ import axios, { fetcher, endpoints } from 'src/lib/axios';
 
 const swrOptions = {
   revalidateIfStale: true,
-  revalidateOnFocus: true,
+  revalidateOnFocus: false,
   revalidateOnReconnect: true,
 };
 
@@ -89,11 +89,12 @@ export async function archiveEndContract(id, data) {
   // mutate(`${ENDPOINT}/${id}`);
 }
 
-export async function validateEndContract(id, data) {
+export async function validateEndContract(id, data, params) {
   /**
    * Work on server
    */
   // const data = { directionData };
   await axios.post(`${ENDPOINT}/${id}/validate`, data);
-  mutate(`${ENDPOINT}`);
+  // mutate(`${ENDPOINT}`);
+  mutate([ENDPOINT, { params }]);
 }
