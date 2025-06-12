@@ -131,10 +131,8 @@ export function ZoneListView() {
     {
       field: 'id',
       headerName: 'ID',
-      //   flex: 0.5,
       flex: 1,
-
-      width: 100,
+      width: 40,
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
@@ -332,7 +330,8 @@ export function ZoneListView() {
             </FormControl>
           </Box>
           <DataGrid
-            checkboxSelection
+            disableColumnSorting
+            // checkboxSelection
             disableColumnMenu
             disableRowSelectionOnClick
             rows={dataFiltered}

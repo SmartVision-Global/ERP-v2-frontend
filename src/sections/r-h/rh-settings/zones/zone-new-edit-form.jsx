@@ -15,22 +15,23 @@ import { CALENDAR_COLOR_OPTIONS } from 'src/_mock';
 import { useGetLookups } from 'src/actions/lookups';
 import { createZone, updateZone } from 'src/actions/zone';
 
+import { Form, Field } from 'src/components/hook-form';
 import { ColorPicker } from 'src/components/color-utils';
-import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { FieldContainer } from 'src/components/form-validation-view';
 
 export const NewProductSchema = zod.object({
-  name: zod.string().min(1, { message: 'Name is required!' }),
-  code: zod.string().optional(),
-  surface: schemaHelper.nullableInput(
-    zod.number({ coerce: true }).optional()
-    // message for null value
-    // { message: 'Quantity is required!' }
-  ),
-  main_activity: zod.string().optional(),
-  site_id: zod.string().min(1, { message: 'Name is required!' }),
-  color: zod.string().min(1, { message: 'Name is required!' }),
-  safety_rules: zod.string().min(1, { message: 'Name is required!' }),
+  name: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  code: zod.string().optional().nullable(),
+  // surface: schemaHelper.nullableInput(
+  //   zod.number({ coerce: true }).optional().nullable()
+  //   // message for null value
+  //   // { message: 'Quantity is required!' }
+  // ),
+  surface: zod.number().optional().nullable().or(zod.string()),
+  main_activity: zod.string().optional().nullable(),
+  site_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
+  color: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  safety_rules: zod.string().optional().nullable(),
 });
 
 export function ZoneNewEditForm({ currentProduct }) {
@@ -39,7 +40,7 @@ export function ZoneNewEditForm({ currentProduct }) {
   const defaultValues = {
     name: '',
     code: '',
-    surface: 0,
+    surface: null,
     main_activity: '',
     site_id: '',
     color: '',
@@ -49,10 +50,11 @@ export function ZoneNewEditForm({ currentProduct }) {
   const methods = useForm({
     resolver: zodResolver(NewProductSchema),
     defaultValues,
-    values: {
-      ...currentProduct,
-      site_id: currentProduct?.site_id?.toString() || '',
-    },
+    // values: {
+    //   ...currentProduct,
+    // site_id: currentProduct?.site_id?.toString() || '',
+    // },
+    values: currentProduct,
   });
 
   const {
@@ -122,13 +124,13 @@ export function ZoneNewEditForm({ currentProduct }) {
             <Controller
               name="color"
               control={control}
-              render={({ field }) => (
+              render={({ field, fieldState: { error } }) => (
                 <ColorPicker
                   value={field.value}
                   onChange={(color) => field.onChange(color)}
                   options={CALENDAR_COLOR_OPTIONS}
                   sx={{ display: 'flex', alignItems: 'center' }}
-
+                  error={error?.message || ''}
                   // limit={4}
                 />
               )}
