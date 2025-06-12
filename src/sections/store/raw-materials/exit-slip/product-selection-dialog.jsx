@@ -15,6 +15,7 @@ import {
   Typography,
   Button,
   Pagination,
+  Stack,
   CircularProgress,
 } from '@mui/material';
 
@@ -39,7 +40,7 @@ export function ProductSelectionDialog({ open, onClose, onProductSelect }) {
   });
 
   const handleProductSelect = (product) => {
-    onProductSelect(product);
+    onProductSelect({ ...product, observation: product.observation || '' });
     onClose();
   };
 
@@ -78,12 +79,12 @@ export function ProductSelectionDialog({ open, onClose, onProductSelect }) {
         </IconButton>
       </DialogTitle>
       <DialogContent>
-        <Box sx={{ mb: 2 }}>
+        <Box sx={{ mb: 2, mt: 1 }}>
           <TextField
             fullWidth
             placeholder="Rechercher un produit..."
             value={searchQuery}
-            onChange={handleSearch}
+            onChange={(e) => setSearchQuery(e.target.value)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -165,6 +166,7 @@ export function ProductSelectionDialog({ open, onClose, onProductSelect }) {
             count={Math.ceil((stocksCount || 0) / PAGE_SIZE)}
             page={page}
             onChange={handlePageChange}
+            // color="primary"
           />
         </Box>
       </DialogContent>

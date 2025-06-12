@@ -29,7 +29,6 @@ export function TableToolbarCustom({
   paginationModel,
 }) {
   const rangeCalendarPicker = useDateRangePicker(dayjs(new Date('2024/08/08')), null);
-
   const getInput = useCallback(
     (event, type) => {
       const { name, value } = event.target;
@@ -61,11 +60,9 @@ export function TableToolbarCustom({
       } else {
         delete updatedFilters[filterId]; // Remove the filter if value is empty
       }
-
       return updatedFilters;
     });
   };
-
   const handleChangeDatePicker = (
     filterId,
     startDate,
@@ -94,7 +91,6 @@ export function TableToolbarCustom({
         .join(', '),
     []
   );
-
   const onSubmitFilters = () => {
     setPaginationModel({
       ...paginationModel,
@@ -107,7 +103,6 @@ export function TableToolbarCustom({
     };
     handleFilter(newData);
   };
-
   return (
     <Stack direction="column" spacing={2} paddingX={4} paddingY={2}>
       <Grid container spacing={2}>

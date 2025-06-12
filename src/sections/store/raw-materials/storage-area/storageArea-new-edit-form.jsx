@@ -9,8 +9,7 @@ import { Box, Card, Stack, Divider, CardHeader, MenuItem } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { useGetStores } from 'src/actions/store';
-import { useMultiLookups } from 'src/actions/lookups';
+import { useGetLookups } from 'src/actions/lookups';
 import { createStorageArea, useGetStorageAreas, updateStorageArea } from 'src/actions/storageArea'; // Add useGetStorageAreas here
 
 import { toast } from 'src/components/snackbar';
@@ -27,7 +26,7 @@ export const StorageAreaSchema = zod.object({
 
 export function StorageAreaNewEditForm({ currentStorageArea, onStorageAreaAdded, onClose }) {
   const router = useRouter();
-  const { stores } = useGetStores();
+  const { data: stores } = useGetLookups('settings/lookups/stores');
   const { storageAreas } = useGetStorageAreas({ only_parent: true });
 
   const isEdit = Boolean(currentStorageArea);
@@ -103,8 +102,8 @@ export function StorageAreaNewEditForm({ currentStorageArea, onStorageAreaAdded,
             <Field.Select name="store_id" label="Magasin" size="small" fullWidth>
               <MenuItem value={undefined}>Sélectionner un magasin</MenuItem>
               {stores?.map((store) => (
-                <MenuItem key={store.id} value={store.id}>
-                  {store.designation}
+                <MenuItem key={store.value} value={store.value}>
+                  {store.text}
                 </MenuItem>
               ))}
             </Field.Select>

@@ -139,13 +139,16 @@ export const endpoints = {
     list: '/v1/inventory/products',
     storageArea: '/v1/inventory/storage-areas',
     initialStorage: '/v1/inventory/initial-storages',
+    exitSlip: '/v1/inventory/exit-slips',
+    integrations: '/v1/inventory/integration-requests',
+    transferSlips: '/v1/inventory/transfer-slips',
   },
   // expression of needs
   expressionOfNeeds: {
-   beb: {
-    list: '/v1/expression-of-need/eon-vouchers',
-    items: (id) => `/v1/expression-of-need/eon-vouchers/${id}/items`,
-   }
+    beb: {
+      list: '/v1/expression-of-need/eon-vouchers',
+      items: (id) => `/v1/expression-of-need/eon-vouchers/${id}/items`,
+    },
   },
   purchaseSupply: {
     purchaseOrder: {

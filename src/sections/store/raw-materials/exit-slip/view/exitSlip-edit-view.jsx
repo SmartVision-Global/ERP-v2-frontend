@@ -1,35 +1,35 @@
 import { paths } from 'src/routes/paths';
 
+import { useGetExitSlip } from 'src/actions/exitSlip';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetStorageArea } from 'src/actions/storageArea';
 
 import { LoadingScreen } from 'src/components/loading-screen';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { StorageAreaNewEditForm } from '../initialStorage-new-edit-form';
+import { ExitSlipNewEditForm } from '../exitSlip-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-export function StorageAreaEditView({ id }) {
-  const { storageArea, isLoading } = useGetStorageArea(id);
+export function ExitSlipEditView({ id }) {
+  const { exitSlip, exitSlipLoading } = useGetExitSlip(id);
 
-  if (isLoading) {
+  if (exitSlipLoading) {
     return <LoadingScreen />;
   }
 
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Modifier un lieu de stockage"
+        heading="Modifier le bon de sortie"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Lieux de stockage', href: paths.dashboard.store.rawMaterials.storageArea },
-          { name: 'Modifier un lieu de stockage' },
+          { name: 'Bons de sortie', href: paths.dashboard.store.rawMaterials.exitSlip },
+          { name: 'Modifier le bon de sortie' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <StorageAreaNewEditForm currentStorageArea={storageArea} isEdit />
+      <ExitSlipNewEditForm currentExitSlip={exitSlip} isEdit />
     </DashboardContent>
   );
 }

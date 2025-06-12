@@ -1,35 +1,35 @@
 import { paths } from 'src/routes/paths';
 
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetStorageArea } from 'src/actions/storageArea';
+import { useGetIntegration } from 'src/actions/integration';
 
 import { LoadingScreen } from 'src/components/loading-screen';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { StorageAreaNewEditForm } from '../initialStorage-new-edit-form';
-
+import { IntegrationNewEditForm } from '../integration-new-edit-form';
 // ----------------------------------------------------------------------
 
-export function StorageAreaEditView({ id }) {
-  const { storageArea, isLoading } = useGetStorageArea(id);
+export function IntegrationEditView({ id }) {
+  const { integration, integrationLoading } = useGetIntegration(id);
+  console.log('integration', integration);
 
-  if (isLoading) {
+  if (integrationLoading) {
     return <LoadingScreen />;
   }
 
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Modifier un lieu de stockage"
+        heading="Modifier l'intégration"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Lieux de stockage', href: paths.dashboard.store.rawMaterials.storageArea },
-          { name: 'Modifier un lieu de stockage' },
+          { name: 'Intégrations', href: paths.dashboard.store.rawMaterials.integration },
+          { name: "Modifier l'intégration" },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <StorageAreaNewEditForm currentStorageArea={storageArea} isEdit />
+      <IntegrationNewEditForm currentIntegration={integration} isEdit />
     </DashboardContent>
   );
 }

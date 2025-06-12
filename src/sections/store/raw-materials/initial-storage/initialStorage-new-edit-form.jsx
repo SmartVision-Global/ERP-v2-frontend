@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useFieldArray } from 'react-hook-form';
 
 import { LoadingButton } from '@mui/lab';
-import { Add, Remove, Delete, BorderAll } from '@mui/icons-material';
+import { Add, Remove, Delete } from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -21,7 +21,7 @@ import {
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { useGetStores } from 'src/actions/store';
+import { useGetLookups } from 'src/actions/lookups';
 import { createInitialStorage } from 'src/actions/initialStorage';
 
 import { toast } from 'src/components/snackbar';
@@ -31,7 +31,7 @@ import { ProductSelectionDialog } from './product-selection-dialog';
 
 // -------------------- Schema --------------------
 const ProductEntrySchema = zod.object({
-  product_id: zod.string().optional(),
+  product_id: zod.number().optional(),
   designation: zod.string().optional(),
   lot: zod.string().optional(),
   pmp: zod.coerce.number().default(0),
@@ -47,7 +47,7 @@ const StorageAreaSchema = zod.object({
 // -------------------- Component --------------------
 export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdded, onClose }) {
   const router = useRouter();
-  const { stores } = useGetStores();
+  const { data: stores } = useGetLookups('settings/lookups/stores?type=1');
   const [selectedRowIndex, setSelectedRowIndex] = useState(null);
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
 
@@ -57,7 +57,8 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
       store_id: undefined,
       items: [
         {
-          product_id: '',
+          product_id: undefined,
+          product_code: '',
           designation: '',
           lot: 'non-défini',
           pmp: 0,
@@ -78,7 +79,7 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
 
   const { fields, append, remove, update } = useFieldArray({
     control,
-    name: 'items', // Changed from productEntries to items
+    name: 'items',
   });
 
   const onSubmit = handleSubmit(async (data) => {
@@ -97,6 +98,7 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
     if (selectedRowIndex !== null) {
       update(selectedRowIndex, {
         product_id: product.id,
+        product_code: product.code,
         designation: product.designation,
         lot: 'non-défini',
         pmp: 0,
@@ -119,7 +121,7 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
       >
         <Grid xs={1.5} marginLeft={2}>
           <Field.Text
-            name={`items.${index}.product_id`}
+            name={`items.${index}.product_code`}
             label="Code"
             variant="outlined"
             size="small"
@@ -130,21 +132,28 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
             }}
             InputProps={{
               readOnly: true,
+              sx: {
+                bgcolor: 'background.paper',
+                '&:hover': {
+                  bgcolor: 'background.paper',
+                },
+              },
             }}
           />
         </Grid>
         <Grid xs={2}>
           <Field.Text
-            name={`items.${index}.designation`} // Changed from productEntries to items
+            name={`items.${index}.designation`}
             label="Désignation"
             variant="outlined"
             size="small"
             fullWidth
+            InputProps={{ readOnly: true }}
           />
         </Grid>
         <Grid xs={1.5}>
           <Field.Text
-            name={`items.${index}.lot`} // Changed from productEntries to items
+            name={`items.${index}.lot`}
             label="Lot"
             variant="outlined"
             size="small"
@@ -153,7 +162,7 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
         </Grid>
         <Grid xs={1.5}>
           <Field.Text
-            name={`items.${index}.pmp`} // Changed from productEntries to items
+            name={`items.${index}.pmp`}
             label="PMP"
             type="number"
             variant="outlined"
@@ -191,7 +200,7 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
         </Grid>
         <Grid xs={1.5}>
           <Field.Text
-            name={`items.${index}.quantity`} // Changed from productEntries to items
+            name={`items.${index}.quantity`}
             type="number"
             size="small"
             label="Quantité"
@@ -228,7 +237,7 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
         </Grid>
         <Grid xs={2}>
           <Field.Text
-            name={`items.${index}.observation`} // Changed from productEntries to items
+            name={`items.${index}.observation`}
             size="small"
             variant="outlined"
             fullWidth
@@ -256,8 +265,8 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
                 <Field.Select name="store_id" label="Magasin" size="small" fullWidth>
                   <MenuItem value={undefined}>Sélectionner un magasin</MenuItem>
                   {stores?.map((store) => (
-                    <MenuItem key={store.id} value={store.id}>
-                      {store.designation}
+                    <MenuItem key={store.value} value={store.value}>
+                      {store.text}
                     </MenuItem>
                   ))}
                 </Field.Select>
@@ -271,7 +280,8 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
                 <Button
                   onClick={() =>
                     append({
-                      code: '',
+                      product_id: undefined,
+                      product_code: '',
                       designation: '',
                       lot: 'non-défini',
                       pmp: 0,

@@ -26,7 +26,7 @@ import { Iconify } from 'src/components/iconify';
 
 const PAGE_SIZE = 10;
 
-export function ProductSelectionDialog({ open, onClose, onProductSelect }) {
+export function ProductSelectionDialog({ open, onClose, onProductSelect, isSupplierMode }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
   const [editedFilters, setEditedFilters] = useState({});
@@ -65,7 +65,7 @@ export function ProductSelectionDialog({ open, onClose, onProductSelect }) {
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>
-        Sélectionner un produit
+        {isSupplierMode ? 'Sélectionner un code fournisseur' : 'Sélectionner un produit'}
         <IconButton
           onClick={onClose}
           sx={{
@@ -81,7 +81,9 @@ export function ProductSelectionDialog({ open, onClose, onProductSelect }) {
         <Box sx={{ mb: 2 }}>
           <TextField
             fullWidth
-            placeholder="Rechercher un produit..."
+            placeholder={
+              isSupplierMode ? 'Rechercher par code fournisseur...' : 'Rechercher un produit...'
+            }
             value={searchQuery}
             onChange={handleSearch}
             InputProps={{
@@ -128,11 +130,16 @@ export function ProductSelectionDialog({ open, onClose, onProductSelect }) {
                         variant="subtitle1"
                         sx={{ fontWeight: 'bold', color: 'text.primary' }}
                       >
-                        {product.code || ''}
+                        {isSupplierMode ? product.supplier_code || 'N/A' : product.code || ''}
                       </Typography>
                     }
                     secondary={
                       <Box sx={{ display: 'flex', gap: 2, mt: 0.5 }}>
+                        {!isSupplierMode && (
+                          <Typography variant="caption" color="text.secondary">
+                            Code Fournisseur: {product.supplier_code || 'N/A'}
+                          </Typography>
+                        )}
                         <Typography variant="caption" color="text.secondary">
                           Désignation: {product.designation || ''}
                         </Typography>
@@ -176,4 +183,5 @@ ProductSelectionDialog.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,
   onProductSelect: PropTypes.func,
+  isSupplierMode: PropTypes.bool,
 };

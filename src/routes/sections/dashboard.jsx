@@ -331,9 +331,15 @@ const PageStoreManagementStocksEdit = lazy(
 );
 
 // expression de besoins
-const PageExpressionOfNeedsBebList = lazy(() => import('src/pages/dashboard/expression-of-needs/Beb/list'));
-const PageExpressionOfNeedsBebNew = lazy(() => import('src/pages/dashboard/expression-of-needs/Beb/new'));
-const PageExpressionOfNeedsBebEdit = lazy(() => import('src/pages/dashboard/expression-of-needs/Beb/edit'));
+const PageExpressionOfNeedsBebList = lazy(
+  () => import('src/pages/dashboard/expression-of-needs/Beb/list')
+);
+const PageExpressionOfNeedsBebNew = lazy(
+  () => import('src/pages/dashboard/expression-of-needs/Beb/new')
+);
+const PageExpressionOfNeedsBebEdit = lazy(
+  () => import('src/pages/dashboard/expression-of-needs/Beb/edit')
+);
 
 const PageStoreStorageEreaList = lazy(
   () => import('src/pages/dashboard/store/raw-materials/storage-area/list')
@@ -348,7 +354,35 @@ const PageStoreInitialStorageList = lazy(
 const PageStoreInitialStorageNew = lazy(
   () => import('src/pages/dashboard/store/raw-materials/initial-storage/new')
 );
+const PageStoreExitSlipList = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/exit-slip/list')
+);
+const PageStoreExitSlipNew = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/exit-slip/new')
+);
+const PageStoreExitSlipEdit = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/exit-slip/edit')
+);
 
+const PageStoreIntegrationList = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/integration/list')
+);
+const PageStoreIntegrationNew = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/integration/new')
+);
+const PageStoreIntegrationEdit = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/integration/edit')
+);
+
+const PageStoreTransferSlipList = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/transfer-slip/list')
+);
+const PageStoreTransferSlipNew = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/transfer-slip/new')
+);
+const PageStoreTransferSlipEdit = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/transfer-slip/edit')
+);
 
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
@@ -740,6 +774,17 @@ export const dashboardRoutes = [
               { path: 'storage-area/new', element: <PageStoreStorageAreaNew /> },
               { path: 'initial-storage', element: <PageStoreInitialStorageList /> },
               { path: 'initial-storage/new', element: <PageStoreInitialStorageNew /> },
+              // { path: 'stocks/new', element: <PageStoreRawMaterialsStocksNew /> },
+              // { path: 'stocks/:id/edit', element: <PageStoreRawMaterialsStocksEdit /> },
+              { path: 'exit-slip', element: <PageStoreExitSlipList /> },
+              { path: 'exit-slip/new', element: <PageStoreExitSlipNew /> },
+              { path: 'exit-slip/:id/edit', element: <PageStoreExitSlipEdit /> },
+              { path: 'integrations', element: <PageStoreIntegrationList /> },
+              { path: 'integrations/new', element: <PageStoreIntegrationNew /> },
+              { path: 'integrations/:id/edit', element: <PageStoreIntegrationEdit /> },
+              { path: 'transfer-slip', element: <PageStoreTransferSlipList /> },
+              { path: 'transfer-slip/new', element: <PageStoreTransferSlipNew /> },
+              { path: 'transfer-slip/:id/edit', element: <PageStoreTransferSlipEdit /> },
               // { path: 'stocks/new', element: <PageStoreRawMaterialsStocksNew /> },
               // { path: 'stocks/:id/edit', element: <PageStoreRawMaterialsStocksEdit /> },
             ],
