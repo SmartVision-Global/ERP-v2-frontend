@@ -263,6 +263,9 @@ const PagePurchaseOrder = lazy(
 const PageNewPurchaseOrder = lazy(
   () => import('src/pages/dashboard/purchase-supply/purchase-order/new')
 );
+const PagePurchaseOrderEdit = lazy(
+  () => import('src/pages/dashboard/purchase-supply/purchase-order/edit')
+);
 //Processing Da
 const PageProcessingDa = lazy(
   () => import('src/pages/dashboard/purchase-supply/processing-da/list')
@@ -318,6 +321,19 @@ const PageStoreRawMaterialsStocksNew = lazy(
 const PageStoreRawMaterialsStocksEdit = lazy(
   () => import('src/pages/dashboard/store/raw-materials/stocks/edit')
 );
+
+// store management
+// stocks
+const PageStoreManagementStocksList = lazy(
+  () => import('src/pages/dashboard/store-management/stocks/list')
+);
+const PageStoreManagementStocksNew = lazy(
+  () => import('src/pages/dashboard/store-management/stocks/new')
+);
+const PageStoreManagementStocksEdit = lazy(
+  () => import('src/pages/dashboard/store-management/stocks/edit')
+);
+
 // expression de besoins
 const PageExpressionOfNeedsBebList = lazy(
   () => import('src/pages/dashboard/expression-of-needs/Beb/list')
@@ -341,6 +357,35 @@ const PageStoreInitialStorageList = lazy(
 );
 const PageStoreInitialStorageNew = lazy(
   () => import('src/pages/dashboard/store/raw-materials/initial-storage/new')
+);
+const PageStoreExitSlipList = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/exit-slip/list')
+);
+const PageStoreExitSlipNew = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/exit-slip/new')
+);
+const PageStoreExitSlipEdit = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/exit-slip/edit')
+);
+
+const PageStoreIntegrationList = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/integration/list')
+);
+const PageStoreIntegrationNew = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/integration/new')
+);
+const PageStoreIntegrationEdit = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/integration/edit')
+);
+
+const PageStoreTransferSlipList = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/transfer-slip/list')
+);
+const PageStoreTransferSlipNew = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/transfer-slip/new')
+);
+const PageStoreTransferSlipEdit = lazy(
+  () => import('src/pages/dashboard/store/raw-materials/transfer-slip/edit')
 );
 
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
@@ -589,6 +634,7 @@ export const dashboardRoutes = [
         children: [
           { path: 'purchase-order', element: <PagePurchaseOrder />, index: true },
           { path: 'purchase-order/new', element: <PageNewPurchaseOrder /> },
+          { path: 'purchase-order/:id/edit', element: <PagePurchaseOrderEdit /> },
           { path: 'processing-da', element: <PageProcessingDa /> },
         ],
       },
@@ -708,19 +754,45 @@ export const dashboardRoutes = [
         ],
       },
       {
+        path: 'store-management',
+        children: [
+          {
+            path: 'raw-material',
+
+            children: [
+              { index: true, element: <PageStoreManagementStocksList product_type={1} /> },
+              // { path: 'stocks', element: <PageStoreRawMaterialsStocksList /> },
+              { path: 'new', element: <PageStoreManagementStocksNew product_type={1} /> },
+              { path: ':id/edit', element: <PageStoreManagementStocksEdit product_type={1} /> },
+            ],
+          },
+        ],
+      },
+      {
         path: 'store',
         children: [
           {
             path: 'raw-materials',
             children: [
               { index: true, element: <PageStoreRawMaterialsStocksList /> },
-              { path: 'stocks', element: <PageStoreRawMaterialsStocksList /> },
+              // { path: 'stocks', element: <PageStoreRawMaterialsStocksList /> },
               { path: 'storage-area', element: <PageStoreStorageEreaList /> },
               { path: 'storage-area/new', element: <PageStoreStorageAreaNew /> },
               { path: 'initial-storage', element: <PageStoreInitialStorageList /> },
               { path: 'initial-storage/new', element: <PageStoreInitialStorageNew /> },
-              { path: 'stocks/new', element: <PageStoreRawMaterialsStocksNew /> },
-              { path: 'stocks/:id/edit', element: <PageStoreRawMaterialsStocksEdit /> },
+              // { path: 'stocks/new', element: <PageStoreRawMaterialsStocksNew /> },
+              // { path: 'stocks/:id/edit', element: <PageStoreRawMaterialsStocksEdit /> },
+              { path: 'exit-slip', element: <PageStoreExitSlipList /> },
+              { path: 'exit-slip/new', element: <PageStoreExitSlipNew /> },
+              { path: 'exit-slip/:id/edit', element: <PageStoreExitSlipEdit /> },
+              { path: 'integrations', element: <PageStoreIntegrationList /> },
+              { path: 'integrations/new', element: <PageStoreIntegrationNew /> },
+              { path: 'integrations/:id/edit', element: <PageStoreIntegrationEdit /> },
+              { path: 'transfer-slip', element: <PageStoreTransferSlipList /> },
+              { path: 'transfer-slip/new', element: <PageStoreTransferSlipNew /> },
+              { path: 'transfer-slip/:id/edit', element: <PageStoreTransferSlipEdit /> },
+              // { path: 'stocks/new', element: <PageStoreRawMaterialsStocksNew /> },
+              // { path: 'stocks/:id/edit', element: <PageStoreRawMaterialsStocksEdit /> },
             ],
           },
         ],
