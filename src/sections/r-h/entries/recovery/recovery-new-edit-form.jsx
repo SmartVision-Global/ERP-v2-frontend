@@ -20,39 +20,38 @@ import { createRecovery, updateRecovery } from 'src/actions/recovery';
 
 import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
-import { FieldContainer } from 'src/components/form-validation-view';
 
 export const NewTauxCnasSchema = zod
   .object({
-    personal_id: zod.string().min(1, { message: 'Rate must be a positive number!' }),
-    type: zod.string().min(1, { message: 'Rate must be a positive number!' }),
-    overtime_work_id: zod.string(),
-    permanency_id: zod.string(),
+    personal_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
+    type: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
+    overtime_work_id: zod.string().or(zod.number()).nullable(),
+    permanency_id: zod.string().or(zod.number()).nullable(),
     recuperated_hours: schemaHelper.nullableInput(
       zod
         .number({ coerce: true })
-        .min(1, { message: 'Quantity is required!' })
+        .min(0.5, { message: 'La valeur minimal est 0.5 heures' })
         .max(99, { message: 'Quantity must be between 1 and 99' }),
       // message for null value
-      { message: 'Quantity is required!' }
+      { message: 'Veuillez remplir ce champ' }
     ),
-    nature: zod.string(),
+    nature: zod.string().or(zod.number()),
     from_date: schemaHelper
-      .date({ message: { required: 'Expired date is required!' } })
+      .date({ message: { required: 'Veuillez remplir ce champ' } })
       .optional()
       .nullable(),
     to_date: schemaHelper
-      .date({ message: { required: 'Expired date is required!' } })
+      .date({ message: { required: 'Veuillez remplir ce champ' } })
       .optional()
       .nullable(),
-    observation: zod.string().optional(),
+    observation: zod.string().optional().nullable(),
   })
   .superRefine((data, ctx) => {
     if (data.type === '1') {
       if (!data.permanency_id) {
         ctx.addIssue({
           code: zod.ZodIssueCode.custom,
-          message: 'Jours supplémentaire required',
+          message: 'Veuillez remplir ce champ',
           path: ['permanency_id'],
         });
       }
@@ -61,7 +60,7 @@ export const NewTauxCnasSchema = zod
       if (!data.overtime_work_id) {
         ctx.addIssue({
           code: zod.ZodIssueCode.custom,
-          message: 'Heures supplémentaire required',
+          message: 'Veuillez remplir ce champ',
           path: ['overtime_work_id'],
         });
       }
@@ -70,7 +69,7 @@ export const NewTauxCnasSchema = zod
       if (!data.from_date) {
         ctx.addIssue({
           code: zod.ZodIssueCode.custom,
-          message: 'La date est obligatoire',
+          message: 'Veuillez remplir ce champ',
           path: ['from_date'],
         });
       }
@@ -79,14 +78,14 @@ export const NewTauxCnasSchema = zod
       if (!data.from_date) {
         ctx.addIssue({
           code: zod.ZodIssueCode.custom,
-          message: 'La date est obligatoire',
+          message: 'Veuillez remplir ce champ',
           path: ['from_date'],
         });
       }
       if (!data.to_date) {
         ctx.addIssue({
           code: zod.ZodIssueCode.custom,
-          message: 'La date est obligatoire',
+          message: 'Veuillez remplir ce champ',
           path: ['to_date'],
         });
       }
@@ -147,13 +146,14 @@ export function RecoveryNewEditForm({ currentTaux }) {
   const methods = useForm({
     resolver: zodResolver(NewTauxCnasSchema),
     defaultValues,
-    values: {
-      ...currentTaux,
-      nature: currentTaux?.nature || '1',
-      personal_id: currentTaux?.personal_id?.toString(),
-      permanency_id: currentTaux?.permanency_id?.toString() || '',
-      overtime_work_id: currentTaux?.overtime_work_id?.toString() || '',
-    },
+    values: currentTaux,
+    // values: {
+    //   ...currentTaux,
+    //   nature: currentTaux?.nature || '1',
+    //   personal_id: currentTaux?.personal_id?.toString(),
+    //   permanency_id: currentTaux?.permanency_id?.toString() || '',
+    //   overtime_work_id: currentTaux?.overtime_work_id?.toString() || '',
+    // },
   });
 
   const {
@@ -161,14 +161,16 @@ export function RecoveryNewEditForm({ currentTaux }) {
     watch,
     reset,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = methods;
+
+  console.log('error', errors);
 
   const values = watch();
 
   const onSubmit = handleSubmit(async (data) => {
     let updatedData = {};
-    if (data.type === '1') {
+    if (String(data.type) === '1') {
       updatedData = {
         // ...data,
         type: data.type,
@@ -183,7 +185,7 @@ export function RecoveryNewEditForm({ currentTaux }) {
         to_date: data.to_date ? dayjs(data.to_date).format('YYYY-MM-DD HH:mm:ss') : null,
       };
     }
-    if (data.type === '2') {
+    if (String(data.type) === '2') {
       updatedData = {
         type: data.type,
         personal_id: data.personal_id,
@@ -253,15 +255,15 @@ export function RecoveryNewEditForm({ currentTaux }) {
             </Field.Select>
           </Grid> */}
           <Grid size={{ xs: 12, md: 6 }}>
-            <FieldContainer
+            {/* <FieldContainer
               label="Nombre Heure supplémentaire"
               sx={{ alignItems: 'flex-start' }}
               direction="row"
-            >
-              <Field.NumberInput name="recuperated_hours" />
-            </FieldContainer>
+            > */}
+            <Field.Number name="recuperated_hours" label="Nombre Heure supplémentaire" />
+            {/* </FieldContainer> */}
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 12 }}>
             <Field.RadioGroup
               name="nature"
               label="Nature"
