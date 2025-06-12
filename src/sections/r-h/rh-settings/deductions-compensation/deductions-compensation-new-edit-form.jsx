@@ -21,17 +21,20 @@ import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 
 export const NewProductSchema = zod.object({
-  type: zod.string().min(1, { message: 'Name is required!' }),
-  code: zod.string().min(1, { message: 'Name is required!' }),
-  name: zod.string().min(1, { message: 'Name is required!' }),
-  designation: zod.string().min(1, { message: 'Name is required!' }),
-  subject_absence: zod.string(),
-  contributory_imposable: zod.string(),
-  is_deletable: zod.string(),
-  is_updatable: zod.string(),
-  periodic: zod.string(),
-  calculation_base: zod.string(),
-  display_base: zod.string(),
+  type: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
+  code: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  name: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  designation: zod.string().optional().nullable(),
+  subject_absence: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
+  contributory_imposable: zod
+    .string()
+    .min(1, { message: 'Veuillez remplir ce champ' })
+    .or(zod.number()),
+  is_deletable: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  is_updatable: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  periodic: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
+  calculation_base: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
+  display_base: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
 });
 
 export function DeductionsCompensationNewEditForm({ currentProduct }) {
@@ -55,7 +58,7 @@ export function DeductionsCompensationNewEditForm({ currentProduct }) {
     defaultValues,
     values: {
       ...currentProduct,
-
+      contributory_imposable: currentProduct?.contributory_imposable || '1',
       subject_absence: currentProduct?.subject_absence ? 'yes' : 'no',
       is_deletable: currentProduct?.is_deletable ? 'yes' : 'no',
       is_updatable: currentProduct?.is_updatable ? 'yes' : 'no',

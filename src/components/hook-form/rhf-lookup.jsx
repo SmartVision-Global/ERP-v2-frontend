@@ -69,7 +69,8 @@ export function RHFLookupMultiSelect({
               size="small"
               multiple
               displayEmpty={!!placeholder}
-              label={label}
+              // label={label}
+
               renderValue={(selected) => {
                 const selectedItems = options.filter((item) => selected.includes(`${item.value}`));
 

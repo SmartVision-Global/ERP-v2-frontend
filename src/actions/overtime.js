@@ -83,13 +83,14 @@ export async function updateOvertime(id, data) {
   //   mutate(endpoints.site);
 }
 
-export async function validateOvertime(id, data) {
+export async function validateOvertime(id, data, params) {
   /**
    * Work on server
    */
   // const data = { directionData };
   await axios.post(`${ENDPOINT}/${id}/validate`, data);
-  mutate(ENDPOINT);
+  // mutate(ENDPOINT);
+  mutate([ENDPOINT, { params }]);
 }
 
 export async function archiveOvertime(id, data) {

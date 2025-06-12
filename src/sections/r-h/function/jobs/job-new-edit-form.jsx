@@ -19,42 +19,42 @@ import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { FieldContainer } from 'src/components/form-validation-view';
 
 export const NewProductSchema = zod.object({
-  name: zod.string().min(1, { message: 'Name is required!' }),
-  designation: zod.string().min(1, { message: 'Name is required!' }),
-  site_id: zod.string().min(1, { message: 'Name is required!' }),
-  salary_category_id: zod.string().min(1, { message: 'Name is required!' }),
+  name: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  designation: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  site_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  salary_category_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
   salary_grids: zod.array(zod.string().or(zod.number())),
   job_employee_quota: schemaHelper.nullableInput(
     zod
       .number({ coerce: true })
-      .min(1, { message: 'Quantity is required!' })
-      .max(99, { message: 'Quantity must be between 1 and 99' }),
+      .min(0, { message: 'Veuillez remplir ce champ' })
+      .max(99, { message: 'Veuillez remplir ce champ' }),
     // message for null value
     { message: 'Quantity is required!' }
   ),
-  protective_clothing: zod.string().min(1, { message: 'Name is required!' }),
-  have_premium: zod.string().min(1, { message: 'Name is required!' }),
+  protective_clothing: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  have_premium: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
   premium_amount: schemaHelper.nullableInput(
     zod
       .number({ coerce: true })
-      .min(1, { message: 'Quantity is required!' })
-      .max(99999999, { message: 'Quantity must be between 1 and 99' }),
+      .min(0, { message: 'Veuillez remplir ce champ' })
+      .max(99999999, { message: 'Veuillez remplir ce champ' }),
     // message for null value
     { message: 'Quantity is required!' }
   ),
   max_absence_allowed: schemaHelper.nullableInput(
     zod
       .number({ coerce: true })
-      .min(1, { message: 'Quantity is required!' })
-      .max(99, { message: 'Quantity must be between 1 and 99' }),
+      .min(0, { message: 'Veuillez remplir ce champ' })
+      .max(99, { message: 'Veuillez remplir ce champ' }),
     // message for null value
-    { message: 'Quantity is required!' }
+    { message: 'Veuillez remplir ce champ' }
   ),
-  key_post: zod.string().min(1, { message: 'Name is required!' }),
-  direction_id: zod.string().min(1, { message: 'Name is required!' }),
-  service_id: zod.string().min(1, { message: 'Name is required!' }),
-  job_code: zod.string().min(1, { message: 'Name is required!' }),
-  manager_job_id: zod.string().optional(),
+  key_post: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  direction_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  service_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  job_code: zod.string().optional().nullable(),
+  manager_job_id: zod.string().optional().nullable(),
   mission_id: zod.string().optional().nullable(),
   action_id: zod.string().optional().nullable(),
   careerKnowledges: zod.array(zod.string()),
@@ -91,13 +91,14 @@ export function JobNewEditForm({ currentProduct }) {
   const jobs = dataLookups.jobs;
   const dutiesResponsibilities = dataLookups.dutiesResponsibilities;
   const careerKnowledges = dataLookups.careerKnowledges;
+  console.log('salaryGrids', salaryGrids);
 
   const defaultValues = {
     name: '',
     designation: '',
     site_id: '',
     salary_category_id: '',
-    salary_grids: '',
+    salary_grids: [],
     job_employee_quota: 0,
     protective_clothing: 'no',
     have_premium: 'no',
@@ -122,12 +123,12 @@ export function JobNewEditForm({ currentProduct }) {
       designation: currentProduct?.designation,
       site_id: currentProduct?.site_id ? currentProduct?.site_id.toString() : '',
       salary_category_id: currentProduct?.salary_category_id?.toString() || '',
-      salary_grids: currentProduct?.salary_grids,
-      job_employee_quota: currentProduct?.job_employee_quota,
+      salary_grids: currentProduct?.salary_grids || [],
+      job_employee_quota: currentProduct?.job_employee_quota || 0,
       protective_clothing: currentProduct?.protective_clothing ? 'yes' : 'no',
       have_premium: currentProduct?.have_premium ? 'yes' : 'no',
-      premium_amount: currentProduct?.premium_amount,
-      max_absence_allowed: currentProduct?.max_absence_allowed,
+      premium_amount: currentProduct?.premium_amount || 0,
+      max_absence_allowed: currentProduct?.max_absence_allowed || 0,
       key_post: currentProduct?.key_post ? 'yes' : 'no',
       direction_id: currentProduct?.direction_id?.toString() || '',
       service_id: currentProduct?.service_id?.toString() || '',
@@ -242,7 +243,15 @@ export function JobNewEditForm({ currentProduct }) {
         </Stack>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="salary_grids" label="Net à payer" data={salaryGrids} />
+            <Field.LookupMultiSelect
+              name="salary_grids"
+              label="Net à payer"
+              options={salaryGrids}
+              // <FormLabel htmlFor={labelId} {...slotProps?.inputLabel}>
+              slotProps={{
+                inputLabel: { shrink: true },
+              }}
+            />
 
             {/* <Field.Select name="salary_grids" label="Net à payer" size="small">
               {USER_STATUS_OPTIONS.map((status) => (

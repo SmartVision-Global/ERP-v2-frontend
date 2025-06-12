@@ -352,7 +352,7 @@ export function LeaveAbsenceListView() {
                 showInMenu
                 icon={<Iconify icon="solar:pen-bold" />}
                 label="Modifier"
-                href={paths.dashboard.rh.entries.editSocialLoan(params.row.id)}
+                href={paths.dashboard.rh.entries.editLeaveAbsence(params.row.id)}
               />,
               <GridActionsClickItem
                 showInMenu
@@ -452,7 +452,11 @@ export function LeaveAbsenceListView() {
           variant="contained"
           color="info"
           onClick={async () => {
-            await validateLeaveAbesence(selectedRow, { message: 'validation' });
+            await validateLeaveAbesence(
+              selectedRow,
+              { message: 'validation' },
+              { limit: PAGE_SIZE, offset: PAGE_SIZE * paginationModel.page }
+            );
             confirmDialog.onFalse();
           }}
         >

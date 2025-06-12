@@ -89,11 +89,12 @@ export async function archiveDecision(id, data) {
   // mutate(`${ENDPOINT}/${id}`);
 }
 
-export async function validateDecision(id, data) {
+export async function validateDecision(id, data, params) {
   /**
    * Work on server
    */
   // const data = { directionData };
   await axios.post(`${ENDPOINT}/${id}/validate`, data);
-  mutate(`${ENDPOINT}`);
+  // mutate(`${ENDPOINT}`);
+  mutate([ENDPOINT, { params }]);
 }

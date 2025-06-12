@@ -20,12 +20,18 @@ import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { FieldContainer } from 'src/components/form-validation-view';
 
 export const NewTauxCnasSchema = zod.object({
-  personal_id: zod.string().min(1, { message: 'Category is required!' }).or(zod.number()),
-  job_id: zod.string().min(1, { message: 'Category is required!' }).or(zod.number()),
-  salary_category_id: zod.string().min(1, { message: 'Category is required!' }).or(zod.number()),
-  rung_id: zod.string().min(1, { message: 'Category is required!' }).or(zod.number()),
-  salary_scale_level_id: zod.string().min(1, { message: 'Category is required!' }).or(zod.number()),
-  salary_grid_id: zod.string().min(1, { message: 'Category is required!' }).or(zod.number()),
+  personal_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
+  job_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
+  salary_category_id: zod
+    .string()
+    .min(1, { message: 'Veuillez remplir ce champ' })
+    .or(zod.number()),
+  rung_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
+  salary_scale_level_id: zod
+    .string()
+    .min(1, { message: 'Veuillez remplir ce champ' })
+    .or(zod.number()),
+  salary_grid_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
   salary_supplemental: schemaHelper.nullableInput(
     zod
       .number({ coerce: true })
@@ -34,8 +40,11 @@ export const NewTauxCnasSchema = zod.object({
     // message for null value
     { message: 'Quantity is required!' }
   ),
-  rate_id: zod.string().min(1, { message: 'Category is required!' }).or(zod.number()),
-  payroll_calculation: zod.string().min(1, { message: 'Category is required!' }),
+  rate_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
+  payroll_calculation: zod
+    .string()
+    .min(1, { message: 'Veuillez remplir ce champ' })
+    .or(zod.number()),
   days_per_month: schemaHelper.nullableInput(
     zod
       .number({ coerce: true })
@@ -53,7 +62,7 @@ export const NewTauxCnasSchema = zod.object({
     { message: 'Quantity is required!' }
   ),
 
-  observation: zod.string().optional(),
+  observation: zod.string().optional().nullable(),
 });
 
 export function PromotionDemotionNewEditForm({ currentTaux }) {
@@ -198,7 +207,7 @@ export function PromotionDemotionNewEditForm({ currentTaux }) {
         </Grid>
         <Stack alignItems="flex-end" sx={{ mt: 3 }}>
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            {currentTaux ? 'Sauvegarder les modifications' : 'Créer Pret Social'}
+            {currentTaux ? 'Sauvegarder les modifications' : 'Ajouter'}
           </LoadingButton>
         </Stack>
       </Stack>

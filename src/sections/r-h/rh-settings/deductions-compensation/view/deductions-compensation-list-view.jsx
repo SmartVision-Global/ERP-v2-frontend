@@ -413,6 +413,7 @@ export function DeductionsCompensationListView() {
           </FormControl>
         </Box>
         <DataGrid
+          disableColumnSorting
           disableRowSelectionOnClick
           disableColumnMenu
           rows={tableData}

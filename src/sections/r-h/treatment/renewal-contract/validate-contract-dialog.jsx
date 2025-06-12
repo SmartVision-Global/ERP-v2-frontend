@@ -11,6 +11,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
+import { CONFIG } from 'src/global-config';
 import { uploadMedia } from 'src/actions/media';
 import { validateContract } from 'src/actions/new-contract';
 
@@ -22,12 +23,13 @@ export const NewProductSchema = zod.object({
   file: schemaHelper.file().nullable(),
   report: zod.string().optional(),
 });
-
-export function ValidateContractDialog({ open, onClose, id }) {
+const PAGE_SIZE = CONFIG.pagination.pageSize;
+export function ValidateContractDialog({ open, onClose, id, page }) {
   const defaultValues = {
     file: null,
     report: '',
   };
+  console.log(page);
 
   const methods = useForm({
     resolver: zodResolver(NewProductSchema),
@@ -67,7 +69,7 @@ export function ValidateContractDialog({ open, onClose, id }) {
 
     try {
       //   await new Promise((resolve) => setTimeout(resolve, 500));
-      await validateContract(id, updatedData);
+      await validateContract(id, updatedData, { limit: PAGE_SIZE, offset: page * PAGE_SIZE });
       reset();
       onClose();
       // toast.success(currentProduct ? 'Update success!' : 'Create success!');

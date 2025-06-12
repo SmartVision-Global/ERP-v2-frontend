@@ -419,7 +419,7 @@ export function PermanenceListView() {
       getActions: (params) => {
         let actions = [];
         switch (params.row.status) {
-          case '1':
+          case 1:
             actions = [
               <GridActionsClickItem
                 showInMenu
@@ -438,7 +438,7 @@ export function PermanenceListView() {
                 showInMenu
                 icon={<Iconify icon="solar:pen-bold" />}
                 label="Modifier"
-                href={paths.dashboard.rh.entries.editSocialLoan(params.row.id)}
+                href={paths.dashboard.rh.entries.editPermanence(params.row.id)}
               />,
               <GridActionsClickItem
                 showInMenu
@@ -448,7 +448,7 @@ export function PermanenceListView() {
               />,
             ];
             break;
-          case '2':
+          case 2:
             actions = [
               <GridActionsClickItem
                 showInMenu
@@ -464,7 +464,7 @@ export function PermanenceListView() {
               />,
             ];
             break;
-          case '3':
+          case 3:
             actions = [
               <GridActionsClickItem
                 showInMenu
@@ -474,7 +474,7 @@ export function PermanenceListView() {
               />,
             ];
             break;
-          case '4':
+          case 4:
             actions = [
               <GridActionsClickItem
                 showInMenu
@@ -542,7 +542,11 @@ export function PermanenceListView() {
           color="info"
           onClick={async () => {
             // handleDeleteRows();
-            await validatePermanency(selectedRow, { message: 'validation' });
+            await validatePermanency(
+              selectedRow,
+              { message: 'validation' },
+              { limit: PAGE_SIZE, offset: PAGE_SIZE * paginationModel.page }
+            );
             confirmDialog.onFalse();
           }}
         >

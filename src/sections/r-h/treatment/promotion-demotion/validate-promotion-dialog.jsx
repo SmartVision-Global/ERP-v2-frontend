@@ -11,6 +11,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
+import { CONFIG } from 'src/global-config';
 import { uploadMedia } from 'src/actions/media';
 import { validateDecision } from 'src/actions/decision';
 
@@ -22,7 +23,7 @@ export const NewProductSchema = zod.object({
   file: schemaHelper.file().nullable(),
   report: zod.string().optional(),
 });
-
+const PAGE_SIZE = CONFIG.pagination.pageSize;
 export function ValidatePromotionDialog({ open, onClose, id }) {
   const defaultValues = {
     file: null,
@@ -67,7 +68,10 @@ export function ValidatePromotionDialog({ open, onClose, id }) {
 
     try {
       //   await new Promise((resolve) => setTimeout(resolve, 500));
-      await validateDecision(id, updatedData);
+      await validateDecision(id, updatedData, {
+        limit: PAGE_SIZE,
+        offset: 0,
+      });
       reset();
       onClose();
 

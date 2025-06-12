@@ -17,6 +17,8 @@ export function showError(error, setError) {
       // Or show via toast
       toast.error(`${field}: ${messages[0]}`);
     }
+  } else if (error && error?.message) {
+    toast.error(error?.message);
   } else {
     // Generic error fallback
     toast.error('An unexpected error occurred.');

@@ -23,14 +23,14 @@ import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
 export const NewTauxCnasSchema = zod.object({
   // personals: zod.array().min(1, { message: 'Personal is required' }),
-  personals: zod.array(zod.string()).min(1, { message: 'Choose at least one option!' }),
-  refund_nature: zod.string().min(1, { message: 'Category is required!' }),
-  from_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
-  to_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
+  personals: zod.array(zod.string()).min(1, { message: 'Veuillez choisir option' }),
+  refund_nature: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
+  from_date: schemaHelper.date({ message: { required: 'Veuillez remplir ce champ' } }),
+  to_date: schemaHelper.date({ message: { required: 'Veuillez remplir ce champ' } }),
 
-  days: zod.string().optional().nullable(),
-  hours: zod.string().optional().nullable(),
-  minutes: zod.string().optional().nullable(),
+  days: zod.number().optional().nullable().or(zod.string()),
+  hours: zod.number().optional().nullable().or(zod.string()),
+  minutes: zod.number().optional().nullable().or(zod.string()),
   observation: zod.string().optional().nullable(),
 });
 

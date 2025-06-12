@@ -322,7 +322,7 @@ export function RenewalContractListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => {
-        if (params.row.status === '1') {
+        if (params.row.status === 1) {
           return [
             <GridActionsClickItem
               showInMenu
@@ -440,6 +440,7 @@ export function RenewalContractListView() {
           open={confirmDialogValidation.value}
           onClose={confirmDialogValidation.onFalse}
           id={selectedRow}
+          page={paginationModel.page}
         />
       )}
     </>

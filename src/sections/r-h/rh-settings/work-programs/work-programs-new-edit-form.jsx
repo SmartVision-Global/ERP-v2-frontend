@@ -20,26 +20,26 @@ import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { FieldContainer } from 'src/components/form-validation-view';
 
 export const NewProductSchema = zod.object({
-  name: zod.string().min(1, { message: 'Name is required!' }),
-  description: zod.string().min(1, { message: 'Name is required!' }),
-  starting_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
+  name: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  description: zod.string().optional().nullable(),
+  starting_date: schemaHelper.date({ message: { required: 'Veuillez remplir ce champ' } }),
   rotation_days: schemaHelper.nullableInput(
     zod
       .number({ coerce: true })
-      .min(1, { message: 'Quantity is required!' })
-      .max(99, { message: 'Quantity must be between 1 and 99' }),
+      .min(1, { message: 'La valeur doit etre superieur ou égale 1' })
+      .max(31, { message: 'La valeur maximale est 31' }),
     // message for null value
-    { message: 'Quantity is required!' }
+    { message: 'Veuillez remplir ce champ' }
   ),
   days: zod.array(
     zod.object({
-      is_work_day: zod.string().min(1, { message: 'Name is required!' }),
-      pause: zod.string().min(1, { message: 'Name is required!' }),
+      is_work_day: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+      pause: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
       absence_value: schemaHelper.nullableInput(
         zod
           .number({ coerce: true })
-          .min(0, { message: 'Quantity is required!' })
-          .max(99, { message: 'Quantity must be between 1 and 99' }),
+          .min(0, { message: 'La valeur doit etre superieur ou égale 0' })
+          .max(31, { message: 'La valeur maximale est 31' }),
         // message for null value
         { message: 'Quantity is required!' }
       ),
@@ -49,20 +49,6 @@ export const NewProductSchema = zod.object({
       break_end: zod.string().optional().nullable(),
     })
   ),
-  // is_work_day: zod.string().min(1, { message: 'Name is required!' }),
-  // pause: zod.string().min(1, { message: 'Name is required!' }),
-  // absence_value: schemaHelper.nullableInput(
-  //   zod
-  //     .number({ coerce: true })
-  //     .min(1, { message: 'Quantity is required!' })
-  //     .max(99, { message: 'Quantity must be between 1 and 99' }),
-  //   // message for null value
-  //   { message: 'Quantity is required!' }
-  // ),
-  // start_time: zod.string().min(1, { message: 'Name is required!' }),
-  // end_time: zod.string().min(1, { message: 'Name is required!' }),
-  // break_start: zod.string().min(1, { message: 'Name is required!' }),
-  // break_end: zod.string().min(1, { message: 'Name is required!' }),
 });
 
 export function WorkProgramsNewEditForm({ currentProduct }) {

@@ -1,7 +1,5 @@
 // ----------------------------------------------------------------------
 
-import { initial } from 'es-toolkit';
-
 const ROOTS = {
   AUTH: '/auth',
   DASHBOARD: '/dashboard',
@@ -194,6 +192,9 @@ export const paths = {
         root: `${ROOTS.DASHBOARD}/humain-ressource/para-tax-declaration/das`,
 
         das: `${ROOTS.DASHBOARD}/humain-ressource/para-tax-declaration/das`,
+        dasDetails: (id, year) =>
+          `${ROOTS.DASHBOARD}/humain-ressource/para-tax-declaration/das/details/${id}/${year}`,
+
         newDas: `${ROOTS.DASHBOARD}/humain-ressource/para-tax-declaration/das/new`,
 
         dac: `${ROOTS.DASHBOARD}/humain-ressource/para-tax-declaration/dac`,

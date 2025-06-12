@@ -19,25 +19,25 @@ import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { FieldContainer } from 'src/components/form-validation-view';
 
 export const NewTauxCnasSchema = zod.object({
-  personal_id: zod.string().min(1, { message: 'Category is required!' }),
-  start_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
+  personal_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
+  start_date: schemaHelper.date({ message: { required: 'Veuillez remplir ce champ' } }),
   loan_term_months: schemaHelper.nullableInput(
     zod
       .number({ coerce: true })
       .min(1, { message: 'Quantity is required!' })
-      .max(9999, { message: 'Quantity must be between 1 and 99' }),
+      .max(9999, { message: 'Quantity must be between 1 and 9999' }),
     // message for null value
-    { message: 'Quantity is required!' }
+    { message: 'Veuillez remplir ce champ' }
   ),
   loan_amount: schemaHelper.nullableInput(
     zod
       .number({ coerce: true })
       .min(1, { message: 'Quantity is required!' })
-      .max(99999999, { message: 'Quantity must be between 1 and 99' }),
+      .max(99999999, { message: 'Quantity must be between 1 and 99999999' }),
     // message for null value
-    { message: 'Quantity is required!' }
+    { message: 'Veuillez remplir ce champ' }
   ),
-  observation: zod.string().optional(),
+  observation: zod.string().optional().nullable(),
 });
 
 export function SocialLoanNewEditForm({ currentTaux }) {
@@ -46,15 +46,16 @@ export function SocialLoanNewEditForm({ currentTaux }) {
   const defaultValues = {
     personal_id: '',
     start_date: null,
-    loan_term_months: 0,
-    loan_amount: 0,
+    loan_term_months: null,
+    loan_amount: null,
     observation: '',
   };
 
   const methods = useForm({
     resolver: zodResolver(NewTauxCnasSchema),
     defaultValues,
-    values: { ...currentTaux, personal_id: currentTaux?.personal_id?.toString() || '' },
+    // values: { ...currentTaux, personal_id: currentTaux?.personal_id?.toString() || '' },
+    values: currentTaux,
   });
 
   const {

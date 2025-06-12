@@ -17,7 +17,11 @@ const IndexPage = lazy(() => import('src/pages/dashboard/one'));
 const PageRhList = lazy(() => import('src/pages/dashboard/r-h/personal/actif/list'));
 const PageRhDocumentsList = lazy(() => import('src/pages/dashboard/r-h/personal/documents/list'));
 const PageRhBloqueList = lazy(() => import('src/pages/dashboard/r-h/personal/block/list'));
-const PageRhDasList = lazy(() => import('src/pages/dashboard/r-h/personal/das/list'));
+const PageRhDasList = lazy(() => import('src/pages/dashboard/r-h/para-tax-declaration/das/list'));
+const PageRhDasDetails = lazy(
+  () => import('src/pages/dashboard/r-h/para-tax-declaration/das/details')
+);
+
 const PageRhPersonalNew = lazy(() => import('src/pages/dashboard/r-h/personal/actif/new'));
 const PageRhPersonalEdit = lazy(() => import('src/pages/dashboard/r-h/personal/actif/edit'));
 
@@ -421,8 +425,8 @@ export const dashboardRoutes = [
             children: [
               { element: <PageRhList />, index: true },
               { path: 'documents', element: <PageRhDocumentsList /> },
-              { path: 'bloc', element: <PageRhBloqueList /> },
-              { path: 'das', element: <PageRhDasList /> },
+              // { path: 'bloc', element: <PageRhBloqueList /> },
+              // { path: 'das', element: <PageRhDasList /> },
               { path: 'new', element: <PageRhPersonalNew /> },
               { path: 'documents/new', element: <PageRhDocumentPersonalNew /> },
               { path: ':id/edit', element: <PageRhPersonalEdit /> },
@@ -610,7 +614,9 @@ export const dashboardRoutes = [
           {
             path: 'para-tax-declaration',
             children: [
-              { path: 'das', element: <ComingSoonPage />, index: true },
+              { path: 'das', element: <PageRhDasList />, index: true },
+              { path: 'das/details/:id/:year', element: <PageRhDasDetails />, index: true },
+
               {
                 path: 'das/new',
                 element: <ComingSoonPage />,

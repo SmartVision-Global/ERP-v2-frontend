@@ -332,7 +332,7 @@ export function WorkProgramsListView() {
             </FormControl>
           </Box>
           <DataGrid
-            checkboxSelection
+            disableColumnSorting
             disableColumnMenu
             disableRowSelectionOnClick
             rows={dataFiltered}

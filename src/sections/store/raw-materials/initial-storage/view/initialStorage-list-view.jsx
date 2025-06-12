@@ -1,4 +1,3 @@
-import { mutate } from 'swr';
 import { useBoolean } from 'minimal-shared/hooks';
 import { useState, useEffect, forwardRef, useCallback } from 'react';
 
@@ -6,23 +5,20 @@ import Link from '@mui/material/Link';
 import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 import {
   Dialog,
-  DialogTitle,
   DialogContent,
   DialogActions,
   Stack,
-  Typography,
   Box,
   Card,
   Button,
-  Tooltip,
   MenuItem,
-  TableBody,
-  TableContainer,
-  ListItemIcon,
+  TextField,
   Container,
+  Typography,
+  DialogTitle,
+  ListItemIcon,
   CircularProgress,
   IconButton,
-  TextField,
   FormControl,
   InputAdornment,
   Chip,
@@ -50,14 +46,6 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import StorageAreaExportButton from '../initialStorage-export-button';
 import { InitialStorageNewEditForm } from '../initialStorage-new-edit-form';
-import {
-  RenderCellId,
-  RenderCellSite,
-  RenderCellEntrepot,
-  RenderCellMagasin,
-  RenderCellObservation,
-  RenderCellCreatedAt,
-} from '../initialStorage-table-row';
 
 // ----------------------------------------------------------------------
 

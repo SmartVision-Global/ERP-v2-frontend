@@ -11,6 +11,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
+import { CONFIG } from 'src/global-config';
 import { uploadMedia } from 'src/actions/media';
 import { validateEndContract } from 'src/actions/end-contract';
 
@@ -22,8 +23,8 @@ export const NewProductSchema = zod.object({
   file: schemaHelper.file().nullable(),
   report: zod.string().optional(),
 });
-
-export function ValidateEndRelationshipDialog({ open, onClose, id }) {
+const PAGE_SIZE = CONFIG.pagination.pageSize;
+export function ValidateEndRelationshipDialog({ open, onClose, id, page }) {
   const defaultValues = {
     file: null,
     report: '',
@@ -67,7 +68,10 @@ export function ValidateEndRelationshipDialog({ open, onClose, id }) {
 
     try {
       //   await new Promise((resolve) => setTimeout(resolve, 500));
-      await validateEndContract(id, updatedData);
+      await validateEndContract(id, updatedData, {
+        limit: PAGE_SIZE,
+        offset: PAGE_SIZE * page,
+      });
       reset();
       onClose();
 

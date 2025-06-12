@@ -18,21 +18,20 @@ import { createOvertime, updateOvertime } from 'src/actions/overtime';
 
 import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
-import { FieldContainer } from 'src/components/form-validation-view';
 
 export const NewTauxCnasSchema = zod.object({
-  personal_id: zod.string().min(0, { message: 'Rate must be a positive number!' }),
-  overtime_work_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
-  refund_nature: zod.string().min(1, { message: 'Category is required!' }),
+  personal_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
+  overtime_work_date: schemaHelper.date({ message: { required: 'Veuillez remplir ce champ' } }),
+  refund_nature: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
   hours: schemaHelper.nullableInput(
     zod
       .number({ coerce: true })
-      .min(1, { message: 'Quantity is required!' })
-      .max(99, { message: 'Quantity must be between 1 and 99' }),
+      .min(0.5, { message: 'La valeur min est 0.5 hours' })
+      .max(99999, { message: 'Quantity must be between 1 and 99' }),
     // message for null value
-    { message: 'Quantity is required!' }
+    { message: 'Veuillez remplir ce champ' }
   ),
-  observation: zod.string().optional(),
+  observation: zod.string().optional().nullable(),
 });
 
 export function OvertimeNewEditForm({ currentTaux }) {
@@ -50,8 +49,8 @@ export function OvertimeNewEditForm({ currentTaux }) {
   const methods = useForm({
     resolver: zodResolver(NewTauxCnasSchema),
     defaultValues,
-    // values: currentTaux,
-    values: { ...currentTaux, personal_id: currentTaux?.personal_id?.toString() || '' },
+    values: currentTaux,
+    // values: { ...currentTaux, personal_id: currentTaux?.personal_id?.toString() || '' },
   });
 
   const {
@@ -85,7 +84,7 @@ export function OvertimeNewEditForm({ currentTaux }) {
 
   const renderDetails = () => (
     <Card>
-      <CardHeader title="Ajouter Jours Supplémentaires" sx={{ mb: 3 }} />
+      <CardHeader title="Ajouter Heures Supplémentaires" sx={{ mb: 3 }} />
 
       <Divider />
 
@@ -114,13 +113,13 @@ export function OvertimeNewEditForm({ currentTaux }) {
             </Field.Select>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <FieldContainer
+            {/* <FieldContainer
               label="Nombre Heure supplémentaire"
               sx={{ alignItems: 'center' }}
               direction="row"
-            >
-              <Field.NumberInput name="hours" />
-            </FieldContainer>
+            > */}
+            <Field.Number name="hours" type="number" label="Nombre Heure supplémentaire" />
+            {/* </FieldContainer> */}
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>

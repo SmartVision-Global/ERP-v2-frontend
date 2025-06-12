@@ -299,7 +299,7 @@ export function LocationAssignmentListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => {
-        if (params.row.status === '1') {
+        if (params.row.status === 1) {
           return [
             <GridActionsClickItem
               showInMenu

@@ -25,32 +25,38 @@ import { NoCotisImposNewEditForm } from './no-cotis-impos-new-edit-form';
 import { NoCotisNoImposNewEditForm } from './no-cotis-no-impos-new-edit-form';
 
 export const NewProductSchema = zod.object({
-  code: zod.string().min(1, { message: 'Name is required!' }),
-  designation: zod.string().min(1, { message: 'Name is required!' }),
+  code: zod.string().min(1, { message: 'Veuillez remplir ce champ!' }),
+  designation: zod.string().min(1, { message: 'Veuillez remplir ce champ!' }),
 
   salary: schemaHelper.nullableInput(
     zod
       .number({ coerce: true })
-      .min(1, { message: 'Quantity is required!' })
-      .max(10000000, { message: 'Quantity must be between 1 and 99' }),
+      .min(1, { message: 'Veuillez remplir ce champ!' })
+      .max(10000000, { message: 'Veuillez remplir ce champ!' }),
     // message for null value
-    { message: 'Quantity is required!' }
+    { message: 'Veuillez remplir ce champ!' }
   ),
-  salary_category_id: zod.string().min(1, { message: 'Name is required!' }).or(zod.number()),
-  rung_id: zod.string().min(1, { message: 'Name is required!' }).or(zod.number()),
-  salary_scale_level_id: zod.string().min(1, { message: 'Name is required!' }).or(zod.number()),
+  salary_category_id: zod
+    .string()
+    .min(1, { message: 'Veuillez remplir ce champ!' })
+    .or(zod.number()),
+  rung_id: zod.string().min(1, { message: 'Veuillez remplir ce champ!' }).or(zod.number()),
+  salary_scale_level_id: zod
+    .string()
+    .min(1, { message: 'Veuillez remplir ce champ!' })
+    .or(zod.number()),
   cotis_impos_items: zod.array(
     zod.object({
       id: zod.number(),
-      code: zod.string().min(1, { message: 'Title is required!' }),
-      name: zod.string().min(1, { message: 'Service is required!' }),
+      code: zod.string().min(1, { message: 'Veuillez remplir ce champ!' }),
+      name: zod.string().min(1, { message: 'Veuillez remplir ce champ!' }),
       percent: zod
         .number()
         // .int()
         .positive()
-        .min(0, { message: 'Quantity must be more than 0' })
-        .max(100, { message: 'Quantity must be less than 100' }),
-      amount: zod.number().positive().min(0, { message: 'Quantity must be more than 0' }),
+        .min(0, { message: 'Percent must be positive' })
+        .max(100, { message: 'Percent must be less than 100' }),
+      amount: zod.number().positive().min(0, { message: 'Amount must be positive' }),
 
       // Not required
     })
@@ -62,15 +68,14 @@ export const NewProductSchema = zod.object({
   cotis_no_impos_items: zod.array(
     zod.object({
       id: zod.number(),
-      code: zod.string().min(1, { message: 'Title is required!' }),
-      name: zod.string().min(1, { message: 'Service is required!' }),
+      code: zod.string().min(1, { message: 'Veuillez remplir ce champ!' }),
+      name: zod.string().min(1, { message: 'Veuillez remplir ce champ!' }),
       percent: zod
         .number()
-        // .int()
         .positive()
-        .min(0, { message: 'Quantity must be more than 0' })
-        .max(100, { message: 'Quantity must be less than 100' }),
-      amount: zod.number().positive().min(0, { message: 'Quantity must be more than 0' }),
+        .min(0, { message: 'Percent must be more positive' })
+        .max(100, { message: 'Percent must be less than 100' }),
+      amount: zod.number().positive().min(0, { message: 'Amount must be positive' }),
 
       // Not required
     })
@@ -81,15 +86,15 @@ export const NewProductSchema = zod.object({
   no_cotis_no_impos_items: zod.array(
     zod.object({
       id: zod.number(),
-      code: zod.string().min(1, { message: 'Title is required!' }),
-      name: zod.string().min(1, { message: 'Service is required!' }),
+      code: zod.string().min(1, { message: 'Veuillez remplir ce champ!' }),
+      name: zod.string().min(1, { message: 'Veuillez remplir ce champ!' }),
       percent: zod
         .number()
         // .f()
         .positive()
-        .min(0, { message: 'Quantity must be more than 0' })
+        .min(0, { message: 'Percent must be positive' })
         .max(100, { message: 'Quantity must be less than 100' }),
-      amount: zod.number().positive().min(0, { message: 'Quantity must be more than 0' }),
+      amount: zod.number().positive().min(0, { message: 'Amount must be positive' }),
       // Not required
     })
   ),
@@ -110,7 +115,6 @@ export function SalaryGridNewEditForm({ currentProduct }) {
   const defaultValues = {
     code: '',
     designation: '',
-
     salary: 0,
     salary_category_id: '',
     rung_id: '',

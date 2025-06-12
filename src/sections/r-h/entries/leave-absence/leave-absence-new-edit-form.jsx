@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { z as zod } from 'zod';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -11,6 +12,7 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { showError } from 'src/utils/toast-error';
+import { calculateDifference } from 'src/utils/format-time';
 
 import { ABS_TYPE_OPTIONS } from 'src/_mock';
 import { useGetLookups } from 'src/actions/lookups';
@@ -20,15 +22,15 @@ import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
 export const NewTauxCnasSchema = zod.object({
-  personal_id: zod.string().min(1, { message: 'Rate must be a positive number!' }),
-  type: zod.string().min(1, { message: 'Category is required!' }),
-  from_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
-  to_date: schemaHelper.date({ message: { required: 'Expired date is required!' } }),
+  personal_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
+  type: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
+  from_date: schemaHelper.date({ message: { required: 'Veuillez remplir ce champ' } }),
+  to_date: schemaHelper.date({ message: { required: 'Veuillez remplir ce champ' } }),
 
-  days: zod.string().optional().nullable(),
-  hours: zod.string().optional().nullable(),
-  minutes: zod.string().optional().nullable(),
-  observation: zod.string().optional(),
+  days: zod.number().optional().nullable(),
+  hours: zod.number().optional().nullable(),
+  minutes: zod.number().optional().nullable(),
+  observation: zod.string().optional().nullable(),
 });
 
 export function LeaveAbsenceNewEditForm({ currentTaux }) {
@@ -49,15 +51,28 @@ export function LeaveAbsenceNewEditForm({ currentTaux }) {
   const methods = useForm({
     resolver: zodResolver(NewTauxCnasSchema),
     defaultValues,
-    values: { ...currentTaux, personal_id: currentTaux?.personal_id?.toString() || '' },
+    // values: { ...currentTaux, personal_id: currentTaux?.personal_id?.toString() || '' },
+    values: currentTaux,
   });
 
   const {
+    setValue,
+    watch,
     setError,
     reset,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
+  const values = watch();
+
+  useEffect(() => {
+    if (values.from_date && values.to_date) {
+      const { days, hours, minutes } = calculateDifference(values.from_date, values.to_date);
+      setValue('days', days);
+      setValue('hours', hours);
+      setValue('minutes', minutes);
+    }
+  }, [values.from_date, values.to_date, setValue]);
 
   const onSubmit = handleSubmit(async (data) => {
     const updatedData = {
@@ -104,19 +119,19 @@ export function LeaveAbsenceNewEditForm({ currentTaux }) {
             </Field.Select>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.DatePicker name="from_date" label="Du" />
+            <Field.DateTimePicker name="from_date" label="Du" />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.DatePicker name="to_date" label="Au" />
+            <Field.DateTimePicker name="to_date" label="Au" />
           </Grid>
           <Grid size={{ xs: 12, md: 4 }}>
-            <Field.Text name="days" label="Jours" />
+            <Field.Text name="days" label="Jours" disabled />
           </Grid>
           <Grid size={{ xs: 12, md: 4 }}>
-            <Field.Text name="hours" label="Heures" />
+            <Field.Text name="hours" label="Heures" disabled />
           </Grid>
           <Grid size={{ xs: 12, md: 4 }}>
-            <Field.Text name="minutes" label="Minutes" />
+            <Field.Text name="minutes" label="Minutes" disabled />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Text name="observation" label="Observation" multiline rows={3} />
