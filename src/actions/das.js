@@ -71,6 +71,7 @@ export async function getFiltredDasDetails(params) {
 export async function getDocumentsDasDetails(params) {
   const response = await axios.get(`${endpoints.dasDetailsDownload}`, {
     params,
+    responseType: 'blob',
   });
   return response;
 }

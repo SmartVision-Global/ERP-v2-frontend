@@ -9,6 +9,8 @@ import { TextField, FormControl, InputAdornment } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { useParams } from 'src/routes/hooks';
 
+import { showError } from 'src/utils/toast-error';
+
 import { CONFIG } from 'src/global-config';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useGetDasDetails, getFiltredDasDetails, getDocumentsDasDetails } from 'src/actions/das';
@@ -82,6 +84,8 @@ export function DasDetailsView() {
   const [tableData, setTableData] = useState(dasDetails);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState({});
+  const [isDownloading, setIsDownloading] = useState(false);
+
   const [rowCount, setRowCount] = useState(dasDetailsCount);
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
@@ -146,36 +150,46 @@ export function DasDetailsView() {
     }
   };
 
-  const handleDownloadDocuments = async () => {
-    const response = await getDocumentsDasDetails({
-      enterprise_id,
-      year,
-      with_details: 0,
-    });
-    const blob = new Blob([response.data], {
-      type: response.headers['content-type'],
-    });
+  const handleDownloadDocuments = async (withDetails) => {
+    setIsDownloading(true);
+    try {
+      const response = await getDocumentsDasDetails({
+        enterprise_id,
+        year,
+        with_details: withDetails,
+      });
+      const blob = new Blob([response.data], {
+        type: response.headers['content-type'],
+      });
+      // Extract filename from headers (optional but recommended)
+      const contentDisposition = response.headers['content-disposition'];
+      let fileName = 'downloaded-file';
 
-    // Extract filename from headers (optional but recommended)
-    const contentDisposition = response.headers['content-disposition'];
-    let fileName = 'downloaded-file';
-
-    if (contentDisposition) {
-      const match = contentDisposition.match(/filename="?(.+)"?/);
-      if (match?.[1]) {
-        fileName = decodeURIComponent(match[1]);
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="?(.+)"?/);
+        if (match?.[1]) {
+          fileName = decodeURIComponent(match[1]);
+        }
       }
+
+      // Create a temporary download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      setIsDownloading(false);
+    } catch (error) {
+      setIsDownloading(false);
+
+      console.error('Error downloading file:', error);
+      showError(error);
+      // alert('Failed to download file.');
+    } finally {
+      setIsDownloading(false);
     }
-
-    // Create a temporary download link
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    a.click();
-
-    // Cleanup
-    window.URL.revokeObjectURL(url);
   };
 
   const columns = [
@@ -366,11 +380,26 @@ export function DasDetailsView() {
           sx={{
             display: 'flex',
             justifyContent: 'end',
+            flexDirection: 'row',
+            gap: 1,
             mr: 2,
           }}
         >
-          <LoadingButton color="secondary" variant="outlined" onClick={handleDownloadDocuments}>
-            Download
+          <LoadingButton
+            loading={isDownloading}
+            color="secondary"
+            variant="outlined"
+            onClick={() => handleDownloadDocuments(0)}
+          >
+            Télécharger
+          </LoadingButton>
+          <LoadingButton
+            loading={isDownloading}
+            color="secondary"
+            variant="outlined"
+            onClick={() => handleDownloadDocuments(1)}
+          >
+            Télécharger avec details
           </LoadingButton>
         </Box>
         <Box paddingX={4} paddingY={2} sx={{}}>
