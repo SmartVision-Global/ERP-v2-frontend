@@ -58,15 +58,24 @@ const IntegrationSchema = zod.object({
 });
 
 // -------------------- Component --------------------
-export function IntegrationNewEditForm({ currentIntegration, onClose, isEdit }) {
+export function IntegrationNewEditForm({ currentIntegration, onClose, isEdit, product_type }) {
   const router = useRouter();
-  const { data: stores } = useGetLookups('settings/lookups/stores?store_type=1&type=1');
-  const { data: machines } = useGetLookups('settings/lookups/machines?type=1');
-  const { data: personals } = useGetLookups('hr/lookups/personals?type=1');
-  const { data: bebs } = useGetLookups('expression-of-need/lookups/eon-vouchers?type=1');
-  const { data: workshops } = useGetLookups('settings/lookups/workshops?type=1');
-  const { data: exitSlips } = useGetLookups('inventory/lookups/exit-slips?type=1');
-  const { data: motifs } = useGetLookups('settings/lookups/return-patterns?type=1');
+  const { data: stores } = useGetLookups('settings/lookups/stores', {
+    store_type: 1,
+    type: product_type,
+  });
+  const { data: machines } = useGetLookups('settings/lookups/machines', { type: product_type });
+  const { data: personals } = useGetLookups('hr/lookups/personals', { type: product_type });
+  const { data: bebs } = useGetLookups('expression-of-need/lookups/eon-vouchers', {
+    type: product_type,
+  });
+  const { data: workshops } = useGetLookups('settings/lookups/workshops', { type: product_type });
+  const { data: exitSlips } = useGetLookups('inventory/lookups/exit-slips', {
+    type: product_type,
+  });
+  const { data: motifs } = useGetLookups('settings/lookups/return-patterns', {
+    type: product_type,
+  });
   const [activeStep, setActiveStep] = useState(0);
   const [selectedRowIndex, setSelectedRowIndex] = useState(null);
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);

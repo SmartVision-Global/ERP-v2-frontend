@@ -143,7 +143,7 @@ const FILTERS_OPTIONS = [
   },
 ];
 
-export function IntegrationListView() {
+export function IntegrationListView({ product_type }) {
   const confirmDialog = useBoolean();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -157,9 +157,14 @@ export function IntegrationListView() {
   const [editedFilters, setEditedFilters] = useState({});
   const [isFiltering, setIsFiltering] = useState(false);
 
-  const { data: stores } = useGetLookups('settings/lookups/stores');
-  const { data: personals } = useGetLookups('hr/lookups/personals?type=1');
-  const { data: bebs } = useGetLookups('expression-of-need/lookups/eon-vouchers');
+  const { data: stores } = useGetLookups('settings/lookups/stores', {
+    store_type: product_type,
+    type: product_type,
+  });
+  const { data: personals } = useGetLookups('hr/lookups/personals', { type: product_type });
+  const { data: bebs } = useGetLookups('expression-of-need/lookups/eon-vouchers', {
+    type: product_type,
+  });
   const [filterButtonEl, setFilterButtonEl] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [selectedIntegration, setSelectedIntegration] = useState(null);
