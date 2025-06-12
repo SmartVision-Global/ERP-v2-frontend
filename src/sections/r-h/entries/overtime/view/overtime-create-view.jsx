@@ -12,11 +12,11 @@ export function OvertimeCreateView() {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Ajouter Jours Supplémentaires"
+        heading="Ajouter Heures Supplémentaires"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           { name: 'Ressource humain', href: paths.dashboard.rh.personal },
-          { name: 'Ajouter Jours Supplémentaires' },
+          { name: 'Ajouter Heures Supplémentaires' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />

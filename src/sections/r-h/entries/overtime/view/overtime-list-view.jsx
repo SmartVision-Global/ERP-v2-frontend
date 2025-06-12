@@ -373,7 +373,7 @@ export function OvertimeListView() {
       getActions: (params) => {
         let actions = [];
         switch (params.row.status) {
-          case '1':
+          case 1:
             actions = [
               <GridActionsClickItem
                 showInMenu
@@ -392,7 +392,7 @@ export function OvertimeListView() {
                 showInMenu
                 icon={<Iconify icon="solar:pen-bold" />}
                 label="Modifier"
-                href={paths.dashboard.rh.entries.editSocialLoan(params.row.id)}
+                href={paths.dashboard.rh.entries.editOvertime(params.row.id)}
               />,
               <GridActionsClickItem
                 showInMenu
@@ -402,7 +402,7 @@ export function OvertimeListView() {
               />,
             ];
             break;
-          case '2':
+          case 2:
             actions = [
               <GridActionsClickItem
                 showInMenu
@@ -418,7 +418,7 @@ export function OvertimeListView() {
               />,
             ];
             break;
-          case '3':
+          case 3:
             actions = [
               <GridActionsClickItem
                 showInMenu
@@ -428,7 +428,7 @@ export function OvertimeListView() {
               />,
             ];
             break;
-          case '4':
+          case 4:
             actions = [
               <GridActionsClickItem
                 showInMenu
@@ -496,7 +496,11 @@ export function OvertimeListView() {
           color="info"
           onClick={async () => {
             // handleDeleteRows();
-            await validateOvertime(selectedRow, { message: 'validation' });
+            await validateOvertime(
+              selectedRow,
+              { message: 'validation' },
+              { limit: PAGE_SIZE, offset: PAGE_SIZE * paginationModel.page }
+            );
             confirmDialog.onFalse();
           }}
         >
