@@ -330,7 +330,7 @@ export function RateListView() {
             </FormControl>
           </Box>
           <DataGrid
-            checkboxSelection
+            disableColumnSorting
             disableColumnMenu
             disableRowSelectionOnClick
             rows={dataFiltered}

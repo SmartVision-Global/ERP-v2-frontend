@@ -18,8 +18,8 @@ import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { FieldContainer } from 'src/components/form-validation-view';
 
 export const NewTauxCnasSchema = zod.object({
-  code: zod.string().min(1, { message: 'Rate must be a positive number!' }),
-  wording: zod.string().min(1, { message: 'Category is required!' }),
+  code: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  wording: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
   employer_rate: schemaHelper.nullableInput(
     zod
       .number({ coerce: true })

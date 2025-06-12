@@ -17,9 +17,9 @@ import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 
 export const NewTauxCnasSchema = zod.object({
-  name: zod.string().min(1, { message: 'Rate must be a positive number!' }),
-  address: zod.string().min(1, { message: 'Category is required!' }),
-  employer_code: zod.string().min(1, { message: 'Category is required!' }),
+  name: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  address: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  employer_code: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
   username: zod.string().optional().nullable(),
   password: zod.string().optional().nullable(),
 });

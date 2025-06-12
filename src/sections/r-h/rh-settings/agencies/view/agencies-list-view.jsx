@@ -262,8 +262,8 @@ export function AgenciesListView() {
             </FormControl>
           </Box>
           <DataGrid
+            disableColumnSorting
             disableColumnMenu
-            checkboxSelection
             disableRowSelectionOnClick
             rows={dataFiltered}
             columns={columns}
