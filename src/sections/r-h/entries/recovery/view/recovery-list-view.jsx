@@ -452,7 +452,7 @@ export function RecoveryListView() {
       getActions: (params) => {
         let actions = [];
         switch (params.row.status) {
-          case '1':
+          case 1:
             actions = [
               <GridActionsClickItem
                 showInMenu
@@ -481,7 +481,7 @@ export function RecoveryListView() {
               />,
             ];
             break;
-          case '2':
+          case 2:
             actions = [
               <GridActionsClickItem
                 showInMenu
@@ -497,7 +497,7 @@ export function RecoveryListView() {
               />,
             ];
             break;
-          case '3':
+          case 3:
             actions = [
               <GridActionsClickItem
                 showInMenu
@@ -507,7 +507,7 @@ export function RecoveryListView() {
               />,
             ];
             break;
-          case '4':
+          case 4:
             actions = [
               <GridActionsClickItem
                 showInMenu
@@ -526,7 +526,7 @@ export function RecoveryListView() {
                 showInMenu
                 icon={<Iconify icon="solar:pen-bold" />}
                 label="Modifier"
-                href={paths.dashboard.rh.entries.editSocialLoan(params.row.id)}
+                href={paths.dashboard.rh.entries.editRecovery(params.row.id)}
               />,
               <GridActionsClickItem
                 showInMenu
@@ -575,7 +575,14 @@ export function RecoveryListView() {
           color="info"
           onClick={async () => {
             // handleDeleteRows();
-            await validateRecovery(selectedRow, { message: 'validation' });
+            await validateRecovery(
+              selectedRow,
+              { message: 'validation' },
+              {
+                limit: PAGE_SIZE,
+                offset: PAGE_SIZE * paginationModel.page,
+              }
+            );
             confirmDialog.onFalse();
           }}
         >

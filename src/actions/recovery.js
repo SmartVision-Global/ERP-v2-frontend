@@ -83,13 +83,13 @@ export async function updateRecovery(id, data) {
   //   mutate(endpoints.site);
 }
 
-export async function validateRecovery(id, data) {
+export async function validateRecovery(id, data, params) {
   /**
    * Work on server
    */
   // const data = { directionData };
   await axios.post(`${ENDPOINT}/${id}/validate`, data);
-  mutate(ENDPOINT);
+  mutate([ENDPOINT, { params }]);
 }
 
 export async function archiveRecovery(id, data) {

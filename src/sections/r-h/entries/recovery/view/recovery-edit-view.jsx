@@ -8,6 +8,11 @@ import { RecoveryNewEditForm } from '../recovery-new-edit-form';
 
 // ----------------------------------------------------------------------
 
+const RECOVERY = {
+  1: 'Permanence - jours supplémentaires',
+  2: 'Heures supplémentaires',
+};
+
 export function RecoveryEditView({ recovery }) {
   return (
     <DashboardContent>
@@ -16,8 +21,8 @@ export function RecoveryEditView({ recovery }) {
         backHref={paths.dashboard.rh.personal.root}
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Fonctions', href: paths.dashboard.rh.fonction.fonctions },
-          { name: recovery?.name },
+          { name: 'Récupération', href: paths.dashboard.rh.fonction.fonctions },
+          { name: recovery?.type ? RECOVERY[recovery?.type] : '-' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
