@@ -11,7 +11,7 @@ import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { Field } from 'src/components/hook-form';
 
-export function BebSelectList() {
+export function BebSelectList({ disabled }) {
   const [openBEBDialog, setOpenBEBDialog] = useState(false);
   const [error, setError] = useState('');
   const confirmDialog = useBoolean();
@@ -37,6 +37,26 @@ export function BebSelectList() {
       setValue('selectedBEB', beb);
       // Also set the order's eon_voucher_id
       setValue('eon_voucher_id', beb.id.toString());
+
+      if (beb) {
+        setValue('site_id', beb.site?.id?.toString() || '');
+        setValue('personal_id', beb.created_by?.id?.toString() || '');
+
+        if (beb.details && Array.isArray(beb.details)) {
+          const newItems = beb.details.map((item) => ({
+            product_id: item.product.id.toString(),
+            code: item.product.code,
+            supplier_code: item.product.supplier_code,
+            designation: item.product.designation,
+            current_quantity: item.product.quantity,
+            purchased_quantity: item.requested_quantity,
+            observation: item.observation || '',
+            unit_measure: item.product.unit_measure,
+          }));
+          setValue('items', newItems);
+        }
+      }
+
       handleCloseProductDialog();
       setError('');
     } catch (err) {
@@ -76,6 +96,7 @@ export function BebSelectList() {
               startIcon={<Iconify icon="mingcute:search-line" />}
               onClick={handleOpenBEBDialog}
               variant="outlined"
+              disabled={disabled}
             >
               Sélectionner BEB
             </Button>
@@ -87,6 +108,7 @@ export function BebSelectList() {
                 startIcon={<Iconify icon="mdi:close" />}
                 onClick={handleClearSelection}
                 variant="outlined"
+                disabled={disabled}
               >
                 Effacer
               </Button>
@@ -104,6 +126,7 @@ export function BebSelectList() {
         {/* Selected BEB Display */}
         <Box>
           <Field.Text
+            disabled={disabled}
             name="selectedBEB"
             label="BEB Sélectionné"
             value={
@@ -114,7 +137,7 @@ export function BebSelectList() {
             InputProps={{
               readOnly: true,
               endAdornment: selectedBEB && (
-                <IconButton size="small" onClick={handleClearSelection} sx={{ mr: 1 }}>
+                <IconButton size="small" onClick={handleClearSelection} sx={{ mr: 1 }} disabled={disabled}>
                   <Iconify icon="mdi:close" />
                 </IconButton>
               ),

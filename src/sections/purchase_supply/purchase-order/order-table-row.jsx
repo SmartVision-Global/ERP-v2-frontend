@@ -8,7 +8,7 @@ import { RouterLink } from 'src/routes/components';
 import { fCurrency } from 'src/utils/format-number';
 import { fDate, fTime } from 'src/utils/format-time';
 
-import { PRODUCT_TYPE_OPTIONS, STATUS_OPTIONS, PRIORITY_OPTIONS, BEB_NATURE_OPTIONS } from 'src/_mock/expression-of-needs/Beb/Beb';
+import { PRODUCT_TYPE_OPTIONS, STATUS_OPTIONS, PRIORITY_OPTIONS, ORDER_STATUS_OPTIONS } from 'src/_mock/expression-of-needs/Beb/Beb';
 
 import { Label } from 'src/components/label';
 
@@ -64,7 +64,7 @@ export function RenderCellTemp({ params }) {
 }
 export function RenderCellStatus({ params }) {
   // Adjust label color logic as needed
-  const status = STATUS_OPTIONS.find(option => option.value === params.row.status);
+  const status = ORDER_STATUS_OPTIONS.find(option => option.value == params.row.status);
   const color = status ? status.color : 'default';
   const label = status ? status.label : 'N/I';
   return <Label variant="soft" color={color}>{label}</Label>;

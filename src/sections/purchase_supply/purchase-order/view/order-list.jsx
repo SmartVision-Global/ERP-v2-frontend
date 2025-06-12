@@ -19,10 +19,12 @@ import { RouterLink } from 'src/routes/components';
 import { CONFIG } from 'src/global-config';
 import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { ORDER_STATUS_OPTIONS, TYPE_OPTIONS_ORDER, PRIORITY_OPTIONS } from 'src/_mock';
-import { useGetPurchaseOrders, getFiltredPurchaseOrders } from 'src/actions/purchase-supply/purchase-order/order';
+// import { ORDER_STATUS_OPTIONS } from 'src/_mock';
+import { PRODUCT_TYPE_OPTIONS, PRIORITY_OPTIONS, ORDER_STATUS_OPTIONS } from 'src/_mock/expression-of-needs/Beb/Beb';
+import { useGetPurchaseOrders, getFiltredPurchaseOrders, confirmPurchaseOrder, cancelPurchaseOrder } from 'src/actions/purchase-supply/purchase-order/order';
 
 import { Iconify } from 'src/components/iconify';
+import { toast } from 'src/components/snackbar';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -43,6 +45,7 @@ import {
 } from '../order-table-row';
 import UtilsButton from 'src/components/custom-buttons/utils-button';
 import OrderProductsList from './OrderProductsList';
+import { OrderActionDialog } from './order-action-dialog';
 
 // ----------------------------------------------------------------------
 
@@ -73,19 +76,21 @@ export function OrderPurchaseList() {
   const sites = dataLookups.sites;
 
   const FILTERS_OPTIONS = [
-    { id: 'id', type: 'input', label: 'ID', inputType: 'number' },
+    
+    { id: 'code', type: 'input', label: 'Code', inputType: 'string' },
     { id: 'beb', type: 'input', label: 'B.E.B', inputType: 'string' },
     { id: 'status', type: 'select', options: ORDER_STATUS_OPTIONS, label: 'Etat' },
     {
       id: 'type',
       type: 'select',
-      options: TYPE_OPTIONS_ORDER,
+      options: PRODUCT_TYPE_OPTIONS,
       label: 'Type',
     },
+    { id: 'site_id', type: 'select', options: sites, label: 'Site', serverData: true },
     { id: 'priority', type: 'select', options: PRIORITY_OPTIONS, label: 'Priorité' },
+    { id: 'personal_id', type: 'input', label: 'Demandeur', inputType: 'string' },
     { id: 'created_by', type: 'input', label: 'Créee par', inputType: 'string' },
     { id: 'treat_by', type: 'input', label: 'Traiter par', inputType: 'string' },
-    { id: 'site', type: 'select', options: sites, label: 'Site', serverData: true },
     { id: 'created_at', type: 'date-range', label: 'Date', cols: 3 },
   ];
   const [tableData, setTableData] = useState([]);
@@ -96,6 +101,8 @@ export function OrderPurchaseList() {
 
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedOrderForProducts, setSelectedOrderForProducts] = useState(null);
+
+  const [dialogState, setDialogState] = useState({ open: false, action: null, order: null });
 
   useEffect(() => {
     setTableData(purchaseOrders);
@@ -147,6 +154,36 @@ export function OrderPurchaseList() {
       console.log('error in pagination search request', error);
     }
   };
+
+  const handleOpenDialog = (order, action) => {
+    setDialogState({ open: true, action, order });
+  };
+
+  const handleCloseDialog = () => {
+    setDialogState({ open: false, action: null, order: null });
+  };
+
+  const handleDialogAction = async (notes) => {
+    const { action, order } = dialogState;
+
+    if (order) {
+      try {
+        if (action === 'confirm') {
+          await confirmPurchaseOrder(order.id, { notes });
+          toast.success("Demande d'achat confirmée avec succès");
+        } else if (action === 'cancel') {
+          await cancelPurchaseOrder(order.id, { notes });
+          toast.success("Demande d'achat annulée avec succès");
+        }
+        handleCloseDialog();
+        handleReset();
+      } catch (error) {
+        console.error(error);
+        toast.error(`Échec de l'action`);
+      }
+    }
+  };
+
   const exportToCsv = () => {
     const header = columns.map((col) => col.headerName).join(',');
     const rows = tableData.map((row) =>
@@ -263,12 +300,25 @@ export function OrderPurchaseList() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => [
-        <GridActionsLinkItem
+        ...(params.row.status === 1 ? [<GridActionsLinkItem
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}
           label="Modifier"
           href={paths.dashboard.purchaseSupply.purchaseOrder.editPurchaseOrder(params.row.id)}
-        />,
+        />] : []),
+        ...(params.row.status === 1 ? [<GridActionsCellItem
+          showInMenu
+          icon={<Iconify icon="eva:checkmark-circle-2-fill" />}
+          label="Confirmer la commande"
+          onClick={() => handleOpenDialog(params.row, 'confirm')}
+        />] : []),
+        ...([1, 2].includes(params.row.status) ? [<GridActionsCellItem
+            showInMenu
+            icon={<Iconify icon="eva:close-circle-fill" />}
+            label="Annuler la commande"
+            onClick={() => handleOpenDialog(params.row, 'cancel')}
+            sx={{ color: 'error.main' }}
+        />] : []),
         <GridActionsCellItem
                   showInMenu
                   icon={<Iconify icon="humbleicons:view-list" />}
@@ -397,6 +447,22 @@ export function OrderPurchaseList() {
           </DialogActions>
         </Dialog>
       )}
+      <OrderActionDialog
+        open={dialogState.open}
+        onClose={handleCloseDialog}
+        onAction={handleDialogAction}
+        order={dialogState.order}
+        title={
+          dialogState.action === 'confirm'
+            ? `Confirmation du demande d'achat ${dialogState.order?.code}`
+            : `Annulation du demande d'achat ${dialogState.order?.code}`
+        }
+        notesLabel={
+          dialogState.action === 'confirm' ? 'Notes de confirmation' : "Notes d'annulation"
+        }
+        actionButtonText="Oui"
+        actionButtonColor={dialogState.action === 'cancel' ? 'error' : 'primary'}
+      />
       {renderConfirmValidationDialog()}
     </>
   );

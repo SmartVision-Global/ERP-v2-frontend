@@ -24,6 +24,7 @@ import { BebSelectList } from '../beb-select-list';
 // Validation schema for the order's first tab
 const orderSchema = z.object({
   eon_voucher_id: z.string().optional(),
+  selectedBEB: z.any().optional(),
   status_id: z.string().nonempty({ message: 'Le statut est requis' }),
   site_id: z.string().nonempty({ message: 'Site is required' }),
   personal_id: z.string().nonempty({ message: 'Personnel is required' }),
@@ -39,7 +40,7 @@ const orderSchema = z.object({
     observation: z.string().optional(),
     code: z.string().optional(),
     unit_measure: z.any().optional(),
-  })).optional(),
+  })).nonempty({ message: 'Produit est requis' }),
 });
 
 // BEB Request Form with two tabs: Informations and Produits
@@ -99,15 +100,15 @@ export function PurchaseOrderNewEditForm({ initialData }) {
       type: initialData?.type?.toString() || PRODUCT_TYPE_OPTIONS[0]?.value?.toString() || '',
       priority:
         initialData?.priority?.toString() || PRIORITY_OPTIONS[0]?.value?.toString() || '',
-      status_id: initialData?.status_id?.toString() || '',
+      status_id: initialData?.status_id?.toString() || TWO_STATUS_OPTIONS[0]?.value?.toString() || '',
       observation: initialData?.observation || '',
       items: initialData?.items
         ? initialData.items.map((item) => ({
             product_id: item.product_id?.toString() || '',
-            code: item.code || '',
-            supplier_code: item.supplier_code || '',
-            designation: item.designation || '',
-            current_quantity: item.current_quantity?.toString() || '',
+            code: item.product?.code || '',
+            supplier_code: item.product?.supplier_code || '',
+            designation: item.product?.designation || '',
+            current_quantity: item.product?.quantity?.toString() || '',
             purchased_quantity: item.purchased_quantity?.toString() || '',
             observation: item.observation || '',
             unit_measure: item.unit_measure || { designation: '' },
@@ -164,26 +165,35 @@ export function PurchaseOrderNewEditForm({ initialData }) {
 
   useEffect(() => {
     if (initialData && !dataLoading && sites.length > 0 && personals.length > 0) {
+      const bebData = initialData.eon_voucher
+        ? {
+            ...initialData.eon_voucher,
+            created_by: initialData.eon_voucher.personal,
+          }
+        : null;
+
       reset({
-        eon_voucher_id: initialData.eon_voucher_id?.toString() || '',
+        eon_voucher_id: initialData.eon_voucher?.id?.toString() || '',
         site_id: initialData.site?.id?.toString() || '',
         personal_id: initialData.personal?.toString() || '',
         type: initialData.type?.toString() || PRODUCT_TYPE_OPTIONS[0]?.value?.toString() || '',
         priority: initialData.priority?.toString() || PRIORITY_OPTIONS[0]?.value?.toString() || '',
-        status_id: initialData.status_id?.toString() || TWO_STATUS_OPTIONS[0]?.value?.toString() || '',
+        status_id:
+          initialData.status_id?.toString() || TWO_STATUS_OPTIONS[0]?.value?.toString() || '',
         observation: initialData.observation || '',
         items: initialData.items
           ? initialData.items.map((item) => ({
               product_id: item.product_id?.toString() || '',
-              code: item.code || '',
-              supplier_code: item.supplier_code || '',
-              designation: item.designation || '',
-              current_quantity: item.current_quantity?.toString() || '',
+              code: item.product?.code || '',
+              supplier_code: item.product?.supplier_code || '',
+              designation: item.product?.designation || '',
+              current_quantity: item.product?.quantity?.toString() || '',
               purchased_quantity: item.purchased_quantity?.toString() || '',
               observation: item.observation || '',
               unit_measure: item.unit_measure || { designation: '' },
             }))
           : [],
+        selectedBEB: bebData,
       });
     }
   }, [initialData, dataLoading, sites, personals, reset]);
@@ -224,7 +234,7 @@ export function PurchaseOrderNewEditForm({ initialData }) {
               <Field.Lookup name="site_id" label="Site" data={sites} />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-              <Field.Select name="type" label="Type" size="small">
+              <Field.Select name="type" label="Type" size="small" disabled={!!initialData}>
                 {PRODUCT_TYPE_OPTIONS.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.label}
@@ -243,10 +253,10 @@ export function PurchaseOrderNewEditForm({ initialData }) {
           </Grid>
 
           <Grid size={{ xs: 12 }}>
-            <BebSelectList />
+            <BebSelectList disabled={!!initialData}/>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-              <Field.Lookup name="personal_id" label="Personnel" data={personals} />
+              <Field.Lookup name="personal_id" label="Personnel" data={personals}  disabled={!!initialData}/>
           </Grid>
           
           <Grid size={{ xs: 12, md: 6 }}>
