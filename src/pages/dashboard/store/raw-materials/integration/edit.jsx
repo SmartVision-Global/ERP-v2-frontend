@@ -10,16 +10,14 @@ import { IntegrationEditView } from 'src/sections/store/raw-materials/integratio
 
 const metadata = { title: `Modifier le bon de réintégration | Dashboard - ${CONFIG.appName}` };
 
-export default function Page() {
-  const { id } = useParams();
-
+export default function Page({ product_type, id }) {
   return (
     <>
       <Helmet>
         <title>{metadata.title}</title>
       </Helmet>
 
-      <IntegrationEditView id={id} />
+      <IntegrationEditView id={id} product_type={product_type} />
     </>
   );
 }

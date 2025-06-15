@@ -23,7 +23,7 @@ export function IntegrationEditView({ id }) {
         heading="Modifier l'intégration"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Intégrations', href: paths.dashboard.store.rawMaterials.integration },
+          { name: 'Intégrations', href: paths.dashboard.storeManagement.rawMaterial.integrations },
           { name: "Modifier l'intégration" },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

@@ -86,7 +86,7 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
     try {
       await createInitialStorage(data);
       toast.success('Lieu de stockage créé avec succès!');
-      router.push(paths.dashboard.store.rawMaterials.initialStorage);
+      router.push(paths.dashboard.storeManagement.rawMaterial.initialStorage);
       onClose?.();
     } catch (error) {
       console.error(error);

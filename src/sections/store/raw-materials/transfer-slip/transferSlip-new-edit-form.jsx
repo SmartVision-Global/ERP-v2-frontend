@@ -168,7 +168,7 @@ export function TransferSlipNewEditForm({ currentIntegration, onClose, isEdit })
       // Mutate the data before navigation
       await mutate('transferSlips');
 
-      router.push(paths.dashboard.store.rawMaterials.transferSlip);
+      router.push(paths.dashboard.storeManagement.rawMaterial.transferSlips);
       onClose?.();
     } catch (error) {
       console.error('Error submitting form:', error);

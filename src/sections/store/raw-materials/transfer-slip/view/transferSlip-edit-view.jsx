@@ -23,7 +23,10 @@ export function TransferSlipEditView({ id }) {
         heading="Modifier le bon de transfert"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Bons de transfert', href: paths.dashboard.store.rawMaterials.transferSlip },
+          {
+            name: 'Bons de transfert',
+            href: paths.dashboard.storeManagement.rawMaterial.transferSlips,
+          },
           { name: 'Modifier le bon de transfert' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

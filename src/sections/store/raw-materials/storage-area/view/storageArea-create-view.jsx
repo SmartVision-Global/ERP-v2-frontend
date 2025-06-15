@@ -15,7 +15,10 @@ export function StorageAreaCreateView() {
         heading="Ajouter un lieu de stockage"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Lieux de stockage', href: paths.dashboard.store.rawMaterials.storageArea },
+          {
+            name: 'Lieux de stockage',
+            href: paths.dashboard.storeManagement.rawMaterial.storageArea,
+          },
           { name: 'Ajouter un lieu de stockage' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

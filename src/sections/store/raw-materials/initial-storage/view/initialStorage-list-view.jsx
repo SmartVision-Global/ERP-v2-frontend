@@ -394,7 +394,7 @@ export function InitialStorageListView() {
               <StorageAreaExportButton data={tableData} />
               <Button
                 component={RouterLink}
-                href={paths.dashboard.store.rawMaterials.newInitialStorage}
+                href={paths.dashboard.storeManagement.rawMaterial.newInitialStorage}
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >

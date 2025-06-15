@@ -15,7 +15,10 @@ export function TransferSlipCreateView() {
         heading="Ajouter un bon de transfert"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Bons de transfert', href: paths.dashboard.store.rawMaterials.transferSlip },
+          {
+            name: 'Bons de transfert',
+            href: paths.dashboard.storeManagement.rawMaterial.transferSlips,
+          },
           { name: 'Ajouter un bon de transfert' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

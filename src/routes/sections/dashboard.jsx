@@ -761,9 +761,35 @@ export const dashboardRoutes = [
 
             children: [
               { index: true, element: <PageStoreManagementStocksList product_type={1} /> },
-              // { path: 'stocks', element: <PageStoreRawMaterialsStocksList /> },
               { path: 'new', element: <PageStoreManagementStocksNew product_type={1} /> },
               { path: ':id/edit', element: <PageStoreManagementStocksEdit product_type={1} /> },
+
+              { path: 'storage-area', element: <PageStoreStorageEreaList product_type={1} /> },
+              { path: 'storage-area/new', element: <PageStoreStorageAreaNew product_type={1} /> },
+              {
+                path: 'initial-storage',
+                element: <PageStoreInitialStorageList product_type={1} />,
+              },
+              {
+                path: 'initial-storage/new',
+                element: <PageStoreInitialStorageNew product_type={1} />,
+              },
+
+              { path: 'exit-slip', element: <PageStoreExitSlipList product_type={1} /> },
+              { path: 'exit-slip/new', element: <PageStoreExitSlipNew product_type={1} /> },
+              { path: 'exit-slip/:id/edit', element: <PageStoreExitSlipEdit product_type={1} /> },
+              { path: 'integrations', element: <PageStoreIntegrationList product_type={1} /> },
+              { path: 'integrations/new', element: <PageStoreIntegrationNew product_type={1} /> },
+              {
+                path: 'integrations/:id/edit',
+                element: <PageStoreIntegrationEdit product_type={1} />,
+              },
+              { path: 'transfer-slip', element: <PageStoreTransferSlipList product_type={1} /> },
+              { path: 'transfer-slip/new', element: <PageStoreTransferSlipNew product_type={1} /> },
+              {
+                path: 'transfer-slip/:id/edit',
+                element: <PageStoreTransferSlipEdit product_type={1} />,
+              },
             ],
           },
         ],
