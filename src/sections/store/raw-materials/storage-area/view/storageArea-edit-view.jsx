@@ -1,6 +1,5 @@
-import { useParams } from 'src/routes/hooks';
-
 import { paths } from 'src/routes/paths';
+import { useParams } from 'src/routes/hooks';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useGetStorageArea } from 'src/actions/storageArea';

@@ -1,7 +1,5 @@
 import { mutate } from 'swr';
 import { useBoolean } from 'minimal-shared/hooks';
-import { useSearchParams } from 'src/routes/hooks';
-
 import { useState, useEffect, forwardRef, useCallback } from 'react';
 
 import Link from '@mui/material/Link';
@@ -37,6 +35,7 @@ import {
 } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
+import { useSearchParams } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 
 import { useGetLookups } from 'src/actions/lookups';
