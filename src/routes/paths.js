@@ -227,9 +227,9 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/store-management`,
       rawMaterial: {
         root: `${ROOTS.DASHBOARD}/store-management/raw-material`,
-        stocks: `${ROOTS.DASHBOARD}/store-management/raw-material/stocks`,
-        newStock: `${ROOTS.DASHBOARD}/store-management/raw-material/stocks/new`,
-        editStock: (id) => `${ROOTS.DASHBOARD}/store-management/raw-material/stocks/${id}/edit`,
+        stocks: `${ROOTS.DASHBOARD}/store-management/raw-material`,
+        newStock: `${ROOTS.DASHBOARD}/store-management/raw-material/new`,
+        editStock: (id) => `${ROOTS.DASHBOARD}/store-management/raw-material/${id}/edit`,
 
         storageArea: `${ROOTS.DASHBOARD}/store-management/raw-material/storage-area`,
         newStorageArea: `${ROOTS.DASHBOARD}/store-management/raw-material/storage-area/new`,

@@ -24,7 +24,7 @@ import {
   Typography,
   FormControl,
   TextField,
-  InputAdornment
+  InputAdornment,
 } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
@@ -178,7 +178,7 @@ const columns = [
         showInMenu
         icon={<Iconify icon="solar:pen-bold" />}
         label="Modifier"
-        href={paths.dashboard.store.rawMaterials.editStock(params.row.id)}
+        href={paths.dashboard.storeManagement.rawMaterial.editStock(params.row.id)}
       />,
     ],
   },
@@ -196,7 +196,10 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [toolsAnchorEl, setToolsAnchorEl] = useState(null);
-  const { stocks, stocksLoading, stocksCount } = useGetStocks({ limit: paginationModel.pageSize, offset: 0 });
+  const { stocks, stocksLoading, stocksCount } = useGetStocks({
+    limit: paginationModel.pageSize,
+    offset: 0,
+  });
   const [rowCount, setRowCount] = useState(stocksCount);
   const [tableData, setTableData] = useState(stocks);
 
@@ -219,7 +222,13 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
     { id: 'supplier_code', type: 'input', label: 'Supplier Code' },
     { id: 'designation', type: 'input', label: 'Designation' },
     { id: 'status', type: 'select', options: PRODUCT_STATUS_OPTIONS, label: 'Etat' },
-    { id: 'unit_measure_id', type: 'select', options: measurementUnits, label: 'Unit', serverData: true },
+    {
+      id: 'unit_measure_id',
+      type: 'select',
+      options: measurementUnits,
+      label: 'Unit',
+      serverData: true,
+    },
     { id: 'category', type: 'select', options: categories, label: 'Category', serverData: true },
     { id: 'family', type: 'select', options: families, label: 'Family', serverData: true },
     // { id: 'sub_family', type: 'select', options: subFamilies, label: 'Sub Family' },
@@ -319,7 +328,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
                 showInMenu
                 icon={<Iconify icon="solar:pen-bold" />}
                 label="Modifier"
-                href={paths.dashboard.store.rawMaterials.editStock(params.row.id)}
+                href={paths.dashboard.storeManagement.rawMaterial.editStock(params.row.id)}
               />,
               <GridActionsCellItem
                 showInMenu
@@ -440,15 +449,18 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
         <CustomBreadcrumbs
           heading="List"
           links={[
-            { name: 'Gestion magasinage', href: paths.dashboard.store.rawMaterials.root },
-            { name: 'Stocks', href: paths.dashboard.store.rawMaterials.root },
+            {
+              name: 'Gestion magasinage',
+              href: paths.dashboard.storeManagement.rawMaterial.stocks,
+            },
+            { name: 'Stocks', href: paths.dashboard.storeManagement.rawMaterial.stocks },
             { name: 'Liste' },
           ]}
           action={
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
               <Button
                 component={RouterLink}
-                href={paths.dashboard.store.rawMaterials.newStock}
+                href={paths.dashboard.storeManagement.rawMaterial.newStock}
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >

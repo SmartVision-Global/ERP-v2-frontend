@@ -14,8 +14,8 @@ export function StockCreateView() {
       <CustomBreadcrumbs
         heading="Ajouter stock"
         links={[
-          { name: 'Gestion magasinage', href: paths.dashboard.store.rawMaterials.root },
-          { name: 'Stocks', href: paths.dashboard.store.rawMaterials.root },
+          { name: 'Gestion magasinage', href: paths.dashboard.storeManagement.rawMaterial.stocks },
+          { name: 'Stocks', href: paths.dashboard.storeManagement.rawMaterial.stocks },
           { name: 'Ajouter stock' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

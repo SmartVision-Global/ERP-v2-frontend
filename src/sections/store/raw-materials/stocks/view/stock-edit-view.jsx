@@ -16,7 +16,7 @@ export function StockEditView({ stock }) {
         backHref={paths.dashboard.rh.personal.root}
         links={[
           { name: 'Gestion magasinage', href: paths.dashboard.root },
-          { name: 'Stocks', href: paths.dashboard.store.rawMaterials.root },
+          { name: 'Stocks', href: paths.dashboard.storeManagement.rawMaterial.stocks },
           { name: stock?.name },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
