@@ -312,15 +312,15 @@ const PageSettingsIdentFamCategRpList = lazy(
 const SettingsServiceEdit = lazy(() => import('src/pages/dashboard/settings/services/edit'));
 
 // gestion magasinage
-const PageStoreRawMaterialsStocksList = lazy(
-  () => import('src/pages/dashboard/store/raw-materials/stocks/list')
-);
-const PageStoreRawMaterialsStocksNew = lazy(
-  () => import('src/pages/dashboard/store/raw-materials/stocks/new')
-);
-const PageStoreRawMaterialsStocksEdit = lazy(
-  () => import('src/pages/dashboard/store/raw-materials/stocks/edit')
-);
+// const PageStoreRawMaterialsStocksList = lazy(
+//   () => import('src/pages/dashboard/store/raw-materials/stocks/list')
+// );
+// const PageStoreRawMaterialsStocksNew = lazy(
+//   () => import('src/pages/dashboard/store/raw-materials/stocks/new')
+// );
+// const PageStoreRawMaterialsStocksEdit = lazy(
+//   () => import('src/pages/dashboard/store/raw-materials/stocks/edit')
+// );
 
 // store management
 // stocks
@@ -386,6 +386,12 @@ const PageStoreTransferSlipNew = lazy(
 );
 const PageStoreTransferSlipEdit = lazy(
   () => import('src/pages/dashboard/store-management/transfer-slip/edit')
+);
+
+// store mangement
+// operations
+const PageStoreOperationsList = lazy(
+  () => import('src/pages/dashboard/store-management/operations/list')
 );
 
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
@@ -766,6 +772,7 @@ export const dashboardRoutes = [
 
               { path: 'storage-area', element: <PageStoreStorageEreaList product_type={1} /> },
               { path: 'storage-area/new', element: <PageStoreStorageAreaNew product_type={1} /> },
+              { path: 'operations', element: <PageStoreOperationsList product_type={1} /> },
               {
                 path: 'initial-storage',
                 element: <PageStoreInitialStorageList product_type={1} />,
@@ -794,35 +801,35 @@ export const dashboardRoutes = [
           },
         ],
       },
-      {
-        path: 'store',
-        children: [
-          {
-            path: 'raw-materials',
-            children: [
-              { index: true, element: <PageStoreRawMaterialsStocksList /> },
-              // { path: 'stocks', element: <PageStoreRawMaterialsStocksList /> },
-              { path: 'storage-area', element: <PageStoreStorageEreaList /> },
-              { path: 'storage-area/new', element: <PageStoreStorageAreaNew /> },
-              { path: 'initial-storage', element: <PageStoreInitialStorageList /> },
-              { path: 'initial-storage/new', element: <PageStoreInitialStorageNew /> },
-              // { path: 'stocks/new', element: <PageStoreRawMaterialsStocksNew /> },
-              // { path: 'stocks/:id/edit', element: <PageStoreRawMaterialsStocksEdit /> },
-              { path: 'exit-slip', element: <PageStoreExitSlipList /> },
-              { path: 'exit-slip/new', element: <PageStoreExitSlipNew /> },
-              { path: 'exit-slip/:id/edit', element: <PageStoreExitSlipEdit /> },
-              { path: 'integrations', element: <PageStoreIntegrationList /> },
-              { path: 'integrations/new', element: <PageStoreIntegrationNew /> },
-              { path: 'integrations/:id/edit', element: <PageStoreIntegrationEdit /> },
-              { path: 'transfer-slip', element: <PageStoreTransferSlipList /> },
-              { path: 'transfer-slip/new', element: <PageStoreTransferSlipNew /> },
-              { path: 'transfer-slip/:id/edit', element: <PageStoreTransferSlipEdit /> },
-              // { path: 'stocks/new', element: <PageStoreRawMaterialsStocksNew /> },
-              // { path: 'stocks/:id/edit', element: <PageStoreRawMaterialsStocksEdit /> },
-            ],
-          },
-        ],
-      },
+      // {
+      //   path: 'store',
+      //   children: [
+      //     {
+      //       path: 'raw-materials',
+      //       children: [
+      //         { index: true, element: <PageStoreRawMaterialsStocksList /> },
+      //         // { path: 'stocks', element: <PageStoreRawMaterialsStocksList /> },
+      //         { path: 'storage-area', element: <PageStoreStorageEreaList /> },
+      //         { path: 'storage-area/new', element: <PageStoreStorageAreaNew /> },
+      //         { path: 'initial-storage', element: <PageStoreInitialStorageList /> },
+      //         { path: 'initial-storage/new', element: <PageStoreInitialStorageNew /> },
+      //         // { path: 'stocks/new', element: <PageStoreRawMaterialsStocksNew /> },
+      //         // { path: 'stocks/:id/edit', element: <PageStoreRawMaterialsStocksEdit /> },
+      //         { path: 'exit-slip', element: <PageStoreExitSlipList /> },
+      //         { path: 'exit-slip/new', element: <PageStoreExitSlipNew /> },
+      //         { path: 'exit-slip/:id/edit', element: <PageStoreExitSlipEdit /> },
+      //         { path: 'integrations', element: <PageStoreIntegrationList /> },
+      //         { path: 'integrations/new', element: <PageStoreIntegrationNew /> },
+      //         { path: 'integrations/:id/edit', element: <PageStoreIntegrationEdit /> },
+      //         { path: 'transfer-slip', element: <PageStoreTransferSlipList /> },
+      //         { path: 'transfer-slip/new', element: <PageStoreTransferSlipNew /> },
+      //         { path: 'transfer-slip/:id/edit', element: <PageStoreTransferSlipEdit /> },
+      //         // { path: 'stocks/new', element: <PageStoreRawMaterialsStocksNew /> },
+      //         // { path: 'stocks/:id/edit', element: <PageStoreRawMaterialsStocksEdit /> },
+      //       ],
+      //     },
+      //   ],
+      // },
       {
         path: 'expression-of-needs',
         children: [

@@ -231,6 +231,8 @@ export const paths = {
         newStock: `${ROOTS.DASHBOARD}/store-management/raw-material/new`,
         editStock: (id) => `${ROOTS.DASHBOARD}/store-management/raw-material/${id}/edit`,
 
+        operations: `${ROOTS.DASHBOARD}/store-management/raw-material/operations`,
+
         storageArea: `${ROOTS.DASHBOARD}/store-management/raw-material/storage-area`,
         newStorageArea: `${ROOTS.DASHBOARD}/store-management/raw-material/storage-area/new`,
         initialStorage: `${ROOTS.DASHBOARD}/store-management/raw-material/initial-storage`,

@@ -24,7 +24,7 @@ import {
   Typography,
   FormControl,
   TextField,
-  InputAdornment,
+  InputAdornment
 } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
@@ -34,12 +34,13 @@ import { CONFIG } from 'src/global-config';
 import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { PRODUCT_STATUS_OPTIONS, IMAGE_OPTIONS } from 'src/_mock';
-import { useGetStocks, getFiltredStocks } from 'src/actions/stores/raw-materials/stocks';
+import { useGetStocks, getFiltredStocks } from 'src/actions/store-management/stocks';
 
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+import { useTranslate } from 'src/locales';
 
 import {
   RenderCellId,
@@ -51,7 +52,7 @@ import {
   RenderCellConsumption,
   RenderCellSubFamilies,
   RenderCellCreatedDate,
-} from '../stock-table-row';
+} from '../operation-table-row';
 
 // ----------------------------------------------------------------------
 
@@ -59,30 +60,30 @@ const HIDE_COLUMNS = { categories: false };
 
 const HIDE_COLUMNS_TOGGLABLE = ['actions'];
 
-const columns = [
+const columns = (t) => [
   {
     field: 'id',
-    headerName: 'ID',
+    headerName: t('headers.id'),
     width: 100,
     minWidth: 100,
     renderCell: (params) => <RenderCellId params={params} />,
   },
-  { field: 'code', headerName: 'Code', flex: 1, minWidth: 150 },
-  { field: 'supplier_code', headerName: 'Supplier Code', flex: 1, minWidth: 120 },
-  { field: 'builder_code', headerName: 'Builder Code', flex: 1, minWidth: 120 },
-  { field: 'designation', headerName: 'Designation', flex: 1.5, minWidth: 120 },
-  { field: 'quantity', headerName: 'Quantity', type: 'number', width: 100, minWidth: 100 },
-  { field: 'status', headerName: 'Status', width: 100, minWidth: 100 },
+  { field: 'code', headerName: t('headers.code'), flex: 1, minWidth: 150 },
+  { field: 'supplier_code', headerName: t('headers.supplier_code'), flex: 1, minWidth: 120 },
+  { field: 'builder_code', headerName: t('headers.builder_code'), flex: 1, minWidth: 120 },
+  { field: 'designation', headerName: t('headers.designation'), flex: 1.5, minWidth: 120 },
+  { field: 'quantity', headerName: t('headers.quantity'), type: 'number', width: 100, minWidth: 100 },
+  { field: 'status', headerName: t('headers.status'), width: 100, minWidth: 100 },
   {
     field: 'unit_measure',
-    headerName: 'Unit',
+    headerName: t('headers.unit'),
     flex: 1,
     minWidth: 60,
     renderCell: (params) => <RenderCellUnit params={params} />,
   },
   {
     field: 'alert',
-    headerName: 'Quantité Alert',
+    headerName: t('headers.alert_quantity'),
     flex: 1,
     minWidth: 100,
     headerClassName: 'alert-column',
@@ -90,7 +91,7 @@ const columns = [
   },
   {
     field: 'min',
-    headerName: 'Min',
+    headerName: t('headers.min'),
     type: 'number',
     width: 70,
     minWidth: 70,
@@ -99,18 +100,14 @@ const columns = [
   },
   {
     field: 'consumption',
-    headerName: 'Consommation journalière prévisionnelle',
+    headerName: t('headers.daily_consumption'),
     headerClassName: 'consumption-column',
     cellClassName: 'consumption-column',
     renderHeader: () => (
       <div
         style={{ whiteSpace: 'normal', lineHeight: 1.2, textAlign: 'center', fontWeight: 'bold' }}
       >
-        Consommation
-        <br />
-        journalière
-        <br />
-        prévisionnelle
+        {t('headers.daily_consumption')}
       </div>
     ),
     type: 'number',
@@ -120,7 +117,7 @@ const columns = [
   },
   {
     field: 'unknown2',
-    headerName: 'Journée de consommation prévisionnelle',
+    headerName: t('headers.consumption_day'),
     type: 'number',
     width: 150,
     minWidth: 120,
@@ -130,35 +127,35 @@ const columns = [
   },
   {
     field: 'family',
-    headerName: 'Family',
+    headerName: t('headers.family'),
     flex: 1,
     minWidth: 150,
     renderCell: (params) => <RenderCellFamily params={params} />,
   },
   {
     field: 'sub_family',
-    headerName: 'Sous familles',
+    headerName: t('headers.sub_family'),
     flex: 1,
     minWidth: 150,
     renderCell: (params) => <RenderCellSubFamilies params={params} />,
   },
   {
     field: 'category',
-    headerName: 'Category',
+    headerName: t('headers.category'),
     flex: 1,
     minWidth: 150,
     renderCell: (params) => <RenderCellCategory params={params} />,
   },
   {
     field: 'location',
-    headerName: 'Location',
+    headerName: t('headers.location'),
     flex: 1,
     minWidth: 150,
     renderCell: (params) => <RenderCellLocation params={params} />,
   },
   {
     field: 'created_date',
-    headerName: 'Created Date',
+    headerName: t('headers.created_date'),
     flex: 1,
     minWidth: 150,
     renderCell: (params) => <RenderCellCreatedDate params={params} />,
@@ -166,28 +163,20 @@ const columns = [
   {
     type: 'actions',
     field: 'actions',
-    headerName: ' ',
+    headerName: t('headers.actions'),
     align: 'right',
     headerAlign: 'right',
     width: 80,
     sortable: false,
     filterable: false,
-    disableColumnMenu: true,
-    getActions: (params) => [
-      <GridActionsLinkItem
-        showInMenu
-        icon={<Iconify icon="solar:pen-bold" />}
-        label="Modifier"
-        href={paths.dashboard.storeManagement.rawMaterial.editStock(params.row.id)}
-      />,
-    ],
+    disableColumnMenu: true,  
   },
 ];
 
 // ----------------------------------------------------------------------
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 
-export function StockListView({ isSelectionDialog = false, componentsProps, onSearch }) {
+export function OperationsListView({ isSelectionDialog = false, componentsProps, onSearch, product_type }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
@@ -199,9 +188,25 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
   const { stocks, stocksLoading, stocksCount } = useGetStocks({
     limit: paginationModel.pageSize,
     offset: 0,
+    product_type,
   });
   const [rowCount, setRowCount] = useState(stocksCount);
   const [tableData, setTableData] = useState(stocks);
+  const { t } = useTranslate('store-management-module');
+
+  const { pathConfig, breadcrumbName } = useMemo(() => {
+    if (product_type === 1) {
+      return {
+        pathConfig: paths.dashboard.storeManagement.rawMaterial,
+        breadcrumbName: t('views.raw_materials'),
+      };
+    }
+    // Fallback for other product types. The user will implement them later.
+    return {
+      pathConfig: paths.dashboard.storeManagement.rawMaterial,
+      breadcrumbName: t('views.stocks'),
+    };
+  }, [product_type, t]);
 
   const { dataLookups } = useMultiLookups([
     { entity: 'measurementUnits', url: 'settings/lookups/measurement-units' },
@@ -216,34 +221,28 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
   // const subFamilies = families.length > 0 ? families.find((f) => f?.id.toString() === selectedParent)?.children || [] : [];
   const stores = dataLookups.stores || [];
 
-  const FILTERS_OPTIONS = [
-    { id: 'store', type: 'select', options: stores, label: 'Magasin', serverData: true },
-    { id: 'code', type: 'input', label: 'Code' },
-    { id: 'supplier_code', type: 'input', label: 'Supplier Code' },
-    { id: 'designation', type: 'input', label: 'Designation' },
-    { id: 'status', type: 'select', options: PRODUCT_STATUS_OPTIONS, label: 'Etat' },
-    {
-      id: 'unit_measure_id',
-      type: 'select',
-      options: measurementUnits,
-      label: 'Unit',
-      serverData: true,
-    },
-    { id: 'category', type: 'select', options: categories, label: 'Category', serverData: true },
-    { id: 'family', type: 'select', options: families, label: 'Family', serverData: true },
-    // { id: 'sub_family', type: 'select', options: subFamilies, label: 'Sub Family' },
-    { id: 'image', type: 'select', options: IMAGE_OPTIONS, label: 'Image' },
+  const columns_ = useMemo(() => columns(t), [t]);
 
+  const FILTERS_OPTIONS = useMemo(() => [
+    { id: 'store', type: 'select', options: stores, label: t('filters.store'), serverData: true },
+    { id: 'code', type: 'input', label: t('filters.code') },
+    { id: 'supplier_code', type: 'input', label: t('filters.supplier_code') },
+    { id: 'designation', type: 'input', label: t('filters.designation') },
+    { id: 'status', type: 'select', options: PRODUCT_STATUS_OPTIONS, label: t('filters.status') },
+    { id: 'unit_measure_id', type: 'select', options: measurementUnits, label: t('filters.unit'), serverData: true },
+    { id: 'category', type: 'select', options: categories, label: t('filters.category'), serverData: true },
+    { id: 'family', type: 'select', options: families, label: t('filters.family'), serverData: true },
+    { id: 'image', type: 'select', options: IMAGE_OPTIONS, label: t('filters.image') },
     {
       id: 'created_date_start',
       type: 'date-range',
-      label: 'Date de création',
+      label: t('filters.creation_date'),
       operatorMin: 'gte',
       operatorMax: 'lte',
       cols: 3,
       width: 1,
     },
-  ];
+  ], [stores, measurementUnits, categories, families, t]);
 
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState({});
@@ -260,6 +259,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
       const response = await getFiltredStocks({
         limit: PAGE_SIZE,
         offset: 0,
+        product_type,
       });
       setEditedFilters({});
       setPaginationModel({
@@ -271,20 +271,23 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
     } catch (error) {
       console.log(error);
     }
-  }, []);
+  }, [product_type]);
 
   const handleFilter = useCallback(
     async (data) => {
+      const newData = {
+        ...data,
+        product_type,
+      };
       try {
-        const response = await getFiltredStocks(data);
+        const response = await getFiltredStocks(newData);
         setTableData(response.data?.data?.records);
         setRowCount(response.data?.data?.total);
       } catch (error) {
         console.log('Error in search filters tasks', error);
       }
     },
-
-    []
+    [product_type]
   );
   const handlePaginationModelChange = async (newModel) => {
     console.log('handlePaginationModelChange', newModel);
@@ -293,6 +296,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
         ...editedFilters,
         limit: newModel.pageSize,
         offset: newModel.page * newModel.pageSize,
+        product_type,
       };
       const response = await getFiltredStocks(newData);
       setTableData(response.data?.data?.records);
@@ -303,7 +307,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
   };
 
   const getTogglableColumns = () =>
-    columns
+    columns_
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
 
@@ -319,7 +323,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
 
   const columnsWithActions = useMemo(
     () =>
-      columns.map((col) => {
+      columns_.map((col) => {
         if (col.field === 'actions') {
           return {
             ...col,
@@ -327,13 +331,13 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
               <GridActionsLinkItem
                 showInMenu
                 icon={<Iconify icon="solar:pen-bold" />}
-                label="Modifier"
-                href={paths.dashboard.storeManagement.rawMaterial.editStock(params.row.id)}
+                label={t('actions.edit')}
+                href={pathConfig.editStock(params.row.id)}
               />,
               <GridActionsCellItem
                 showInMenu
                 icon={<Iconify icon="eva:eye-fill" />}
-                label="Consulter"
+                label={t('actions.view')}
                 onClick={() => handleOpenDetail(params.row)}
               />,
             ],
@@ -341,7 +345,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
         }
         return col;
       }),
-    [handleOpenDetail]
+    [handleOpenDetail, pathConfig, t]
   );
 
   const handleToolsClick = (event) => {
@@ -362,26 +366,25 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
   };
 
   const exportToCsv = () => {
-    const header = columns.map((col) => col.headerName).join(',');
+    const header = columns_.map((col) => col.headerName).join(',');
     const rows = tableData.map((row) =>
-      columns
-        .map((col) => {
-          let value = row[col.field];
-          if (col.field === 'family') value = row.family?.name;
-          if (col.field === 'category') value = row.category?.name;
-          if (col.field === 'unit_measure') value = row.unit_measure?.designation;
-          if (col.field === 'location') {
-            const arr = row.product_storage;
-            value =
-              Array.isArray(arr) && arr.length
-                ? arr
-                    .map((item) => item.location)
-                    .filter(Boolean)
-                    .join(', ')
-                : '';
-          }
-          return value ?? '';
-        })
+      columns_.map((col) => {
+        let value = row[col.field];
+        if (col.field === 'family') value = row.family?.name;
+        if (col.field === 'category') value = row.category?.name;
+        if (col.field === 'unit_measure') value = row.unit_measure?.designation;
+        if (col.field === 'location') {
+          const arr = row.product_storage;
+          value =
+            Array.isArray(arr) && arr.length
+              ? arr
+                  .map((item) => item.location)
+                  .filter(Boolean)
+                  .join(', ')
+              : '';
+        }
+        return value ?? '';
+      })
         .join(',')
     );
     const csvContent = [header, ...rows].join('\n');
@@ -396,7 +399,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
 
   const exportToExcel = () => {
     const exportData = tableData.map((row) =>
-      columns.reduce((acc, col) => {
+      columns_.reduce((acc, col) => {
         let value = row[col.field];
         if (col.field === 'family') value = row.family?.name;
         if (col.field === 'category') value = row.category?.name;
@@ -423,9 +426,9 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
 
   const exportToPdf = () => {
     const doc = new jsPDF();
-    const header = columns.map((col) => col.headerName);
+    const header = columns_.map((col) => col.headerName);
     const rows = tableData.map((row) =>
-      columns.map((col) => {
+      columns_.map((col) => {
         let value = row[col.field];
         if (col.field === 'family') value = row.family?.name;
         if (col.field === 'category') value = row.category?.name;
@@ -449,22 +452,19 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
         <CustomBreadcrumbs
           heading="List"
           links={[
-            {
-              name: 'Gestion magasinage',
-              href: paths.dashboard.storeManagement.rawMaterial.stocks,
-            },
-            { name: 'Stocks', href: paths.dashboard.storeManagement.rawMaterial.stocks },
-            { name: 'Liste' },
+            { name: 'Gestion magasinage', href: pathConfig.root },
+            { name: breadcrumbName, href: pathConfig.root },
+            { name: t('views.list') },
           ]}
           action={
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
               <Button
                 component={RouterLink}
-                href={paths.dashboard.storeManagement.rawMaterial.newStock}
+                href={pathConfig.newStock}
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >
-                Ajouter Stock
+                {t('actions.add_stock')}
               </Button>
               <Button
                 variant="contained"
@@ -472,7 +472,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
                 startIcon={<Iconify icon="si:warning-fill" />}
                 onClick={handleToolsClick}
               >
-                Outils
+                {t('actions.tools')}
               </Button>
               <Menu
                 anchorEl={toolsAnchorEl}
@@ -490,7 +490,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
                   <ListItemIcon>
                     <Iconify icon="eva:printer-fill" />
                   </ListItemIcon>
-                  Impression
+                  {t('actions.print')}
                 </MenuItem>
                 <MenuItem
                   onClick={() => {
@@ -501,7 +501,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
                   <ListItemIcon>
                     <Iconify icon="eva:copy-fill" />
                   </ListItemIcon>
-                  Copie
+                  {t('actions.copy')}
                 </MenuItem>
                 <MenuItem
                   onClick={() => {
@@ -512,7 +512,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
                   <ListItemIcon>
                     <Iconify icon="catppuccin:ms-excel" />
                   </ListItemIcon>
-                  Excel
+                  {t('actions.excel')}
                 </MenuItem>
                 <MenuItem
                   onClick={() => {
@@ -523,7 +523,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
                   <ListItemIcon>
                     <Iconify icon="catppuccin:csv" />
                   </ListItemIcon>
-                  CSV
+                  {t('actions.csv')}
                 </MenuItem>
                 <MenuItem
                   onClick={() => {
@@ -534,7 +534,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
                   <ListItemIcon>
                     <Iconify icon="material-icon-theme:pdf" />
                   </ListItemIcon>
-                  PDF
+                  {t('actions.pdf')}
                 </MenuItem>
               </Menu>
             </Box>
@@ -564,7 +564,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
                 <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
                   <TextField
                     fullWidth
-                    placeholder="Search "
+                    placeholder={t('filters.search_placeholder')}
                     value={searchQuery}
                     onChange={handleSearch}
                     slotProps={{
@@ -600,7 +600,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
             onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
             slots={{
               noRowsOverlay: () => <EmptyContent />,
-              noResultsOverlay: () => <EmptyContent title="No results found" />,
+              noResultsOverlay: () => <EmptyContent title={t('messages.no_results')} />,
             }}
             slotProps={{
               toolbar: { setFilterButtonEl },
@@ -618,7 +618,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
           {selectedRow && (
             <Dialog open={detailOpen} onClose={handleCloseDetail} maxWidth="sm" fullWidth>
               <DialogTitle>
-                Details produit: {selectedRow.code} -- {selectedRow.designation}
+                {t('dialog.product_details', { code: selectedRow.code, designation: selectedRow.designation })}
               </DialogTitle>
               <DialogContent dividers>
                 <Box
@@ -631,7 +631,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
                     borderRadius: 1,
                   }}
                 >
-                  <Typography variant="body2">Informations</Typography>
+                  <Typography variant="body2">{t('dialog.information')}</Typography>
                 </Box>
                 <List>
                   <ListItem
@@ -642,7 +642,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
                       alignItems: 'center',
                     }}
                   >
-                    <Typography variant="body2">Codification</Typography>
+                    <Typography variant="body2">{t('dialog.codification')}</Typography>
                     <Typography variant="body2">{selectedRow.code}</Typography>
                   </ListItem>
                   <ListItem
@@ -653,7 +653,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
                       alignItems: 'center',
                     }}
                   >
-                    <Typography variant="body2">Désignation</Typography>
+                    <Typography variant="body2">{t('dialog.designation')}</Typography>
                     <Typography variant="body2">{selectedRow.designation}</Typography>
                   </ListItem>
                   <ListItem
@@ -664,7 +664,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
                       alignItems: 'center',
                     }}
                   >
-                    <Typography variant="body2">Unité de mesure</Typography>
+                    <Typography variant="body2">{t('dialog.unit_of_measure')}</Typography>
                     <Typography variant="body2">{selectedRow.unit_measure?.designation}</Typography>
                   </ListItem>
                   <ListItem
@@ -675,7 +675,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
                       alignItems: 'center',
                     }}
                   >
-                    <Typography variant="body2">Famille</Typography>
+                    <Typography variant="body2">{t('dialog.family')}</Typography>
                     <Typography variant="body2">{selectedRow.family?.name}</Typography>
                   </ListItem>
                   <ListItem
@@ -686,7 +686,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
                       alignItems: 'center',
                     }}
                   >
-                    <Typography variant="body2">Date de création</Typography>
+                    <Typography variant="body2">{t('dialog.creation_date')}</Typography>
                     <Typography variant="body2">
                       {selectedRow.created_date
                         ? new Date(selectedRow.created_date).toLocaleDateString('fr-FR')
@@ -702,17 +702,17 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
                         alignItems: 'center',
                       }}
                     >
-                      <Typography variant="body2">Catalogue</Typography>
+                      <Typography variant="body2">{t('dialog.catalog')}</Typography>
                       <Link href={selectedRow.catalog} target="_blank" rel="noopener">
                         <Typography variant="body2" color="primary">
-                          Voir PDF
+                          {t('dialog.view_pdf')}
                         </Typography>
                       </Link>
                     </ListItem>
                   )}
                   {selectedRow.image && (
                     <ListItem sx={{ borderTop: '1px solid rgba(0,0,0,0.12)' }}>
-                      <ListItemText primary="Image" />
+                      <ListItemText primary={t('dialog.image')} />
                       <Box
                         component="img"
                         src={selectedRow.image}
@@ -725,7 +725,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
               </DialogContent>
               <DialogActions>
                 <Button variant="contained" onClick={handleCloseDetail}>
-                  Fermer
+                  {t('actions.close')}
                 </Button>
               </DialogActions>
             </Dialog>

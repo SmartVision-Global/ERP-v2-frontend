@@ -67,6 +67,10 @@ export const navData = [
             children: [
               { title: 'Stocks', path: paths.dashboard.storeManagement.rawMaterial.root },
               {
+                title: 'Suivie des produits',
+                path: paths.dashboard.storeManagement.rawMaterial.operations,
+              },
+              {
                 title: 'Lieu de stockage',
                 path: paths.dashboard.storeManagement.rawMaterial.storageArea,
               },
