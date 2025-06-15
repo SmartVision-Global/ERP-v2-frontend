@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
-import { StorageAreaCreateView } from 'src/sections/store/raw-materials/storage-area/view/storageArea-create-view';
+import { StorageAreaCreateView } from 'src/sections/store-management/storage-area/view/storageArea-create-view';
 
 // ----------------------------------------------------------------------
 

@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
-import { InitialStorageCreateView } from 'src/sections/store/raw-materials/initial-storage/view';
+import { InitialStorageCreateView } from 'src/sections/store-management/initial-storage/view';
 
 // ----------------------------------------------------------------------
 
