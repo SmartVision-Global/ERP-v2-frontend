@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useFieldArray } from 'react-hook-form';
 
 import { LoadingButton } from '@mui/lab';
-import { Add, Remove, Delete } from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -25,6 +24,7 @@ import { useGetLookups } from 'src/actions/lookups';
 import { createInitialStorage } from 'src/actions/initialStorage';
 
 import { toast } from 'src/components/snackbar';
+import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
 
 import { ProductSelectionDialog } from './product-selection-dialog';
@@ -180,7 +180,7 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
                       });
                     }}
                   >
-                    <Add fontSize="small" />
+                    <Iconify icon="eva:plus-fill" />
                   </IconButton>
                   <IconButton
                     onClick={() => {
@@ -191,7 +191,7 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
                       });
                     }}
                   >
-                    <Remove fontSize="small" />
+                    <Iconify icon="eva:minus-fill" />
                   </IconButton>
                 </InputAdornment>
               ),
@@ -217,7 +217,7 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
                       });
                     }}
                   >
-                    <Add fontSize="small" />
+                    <Iconify icon="eva:plus-fill" />
                   </IconButton>
                   <IconButton
                     onClick={() => {
@@ -228,7 +228,7 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
                       });
                     }}
                   >
-                    <Remove fontSize="small" />
+                    <Iconify icon="eva:minus-fill" />
                   </IconButton>
                 </InputAdornment>
               ),
@@ -246,7 +246,7 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
         </Grid>
         <Grid xs={1}>
           <IconButton onClick={() => remove(index)} color="error">
-            <Delete />
+            <Iconify icon="eva:trash-2-fill" />
           </IconButton>
         </Grid>
       </Grid>
@@ -289,7 +289,7 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
                       observation: '',
                     })
                   }
-                  startIcon={<Add />}
+                  startIcon={<Iconify icon="eva:plus-fill" />}
                 >
                   Ajouter une ligne
                 </Button>
