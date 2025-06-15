@@ -1,4 +1,4 @@
-import { useParams } from 'next/navigation';
+import { useParams } from 'src/routes/hooks';
 
 import { paths } from 'src/routes/paths';
 

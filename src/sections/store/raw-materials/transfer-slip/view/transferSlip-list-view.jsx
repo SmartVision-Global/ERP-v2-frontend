@@ -1,6 +1,7 @@
 import { mutate } from 'swr';
 import { useBoolean } from 'minimal-shared/hooks';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'src/routes/hooks';
+
 import { useState, useEffect, forwardRef, useCallback } from 'react';
 
 import Link from '@mui/material/Link';
