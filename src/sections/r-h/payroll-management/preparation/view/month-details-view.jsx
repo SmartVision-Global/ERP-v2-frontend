@@ -7,7 +7,15 @@ import Card from '@mui/material/Card';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { DataGrid, gridClasses } from '@mui/x-data-grid';
-import { Button, Tooltip, TextField, IconButton, FormControl, InputAdornment } from '@mui/material';
+import {
+  Stack,
+  Button,
+  Tooltip,
+  TextField,
+  IconButton,
+  FormControl,
+  InputAdornment,
+} from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -16,7 +24,6 @@ import { showError } from 'src/utils/toast-error';
 
 import { CONFIG } from 'src/global-config';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { getFiltredPersonals } from 'src/actions/personal';
 import {
   deletePersonalPayroll,
   getFiltredAttachedPersonals,
@@ -149,14 +156,26 @@ export function MonthDetailsView({ month }) {
         limit: newModel.pageSize,
         offset: newModel.page * newModel.pageSize,
       };
-      const response = await getFiltredPersonals(month?.id, newData);
+      const response = await getFiltredAttachedPersonals(month?.id, newData);
       setTableData(response.data?.data?.records);
       setPaginationModel(newModel);
     } catch (error) {
       console.log('error in pagination search request', error);
     }
   };
-
+  const handleRefresh = async () => {
+    try {
+      const newData = {
+        ...editedFilters,
+        limit: paginationModel.pageSize,
+        offset: paginationModel.page * paginationModel.pageSize,
+      };
+      const response = await getFiltredAttachedPersonals(month?.id, newData);
+      setTableData(response.data?.data?.records);
+    } catch (error) {
+      console.log('error in pagination search request', error);
+    }
+  };
   const columns = [
     { field: 'category', headerName: 'Category', filterable: false },
     {
@@ -262,11 +281,21 @@ export function MonthDetailsView({ month }) {
       minWidth: 160,
       hideable: false,
       renderCell: (params) => (
-        <Tooltip title="Retirer">
-          <IconButton onClick={() => handleDeleteRow(params.row.id)}>
-            <Iconify icon="eva:person-delete-outline" sx={{ color: 'error.main' }} />
-          </IconButton>
-        </Tooltip>
+        <Stack direction="row" spacing={1}>
+          <Tooltip title="Retirer">
+            <IconButton onClick={() => handleDeleteRow(params.row.id)}>
+              <Iconify icon="eva:person-delete-outline" sx={{ color: 'error.main' }} />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Réinitialiser">
+            <IconButton
+              // onClick={() => handleRefresh(params.row.id)}
+              onClick={handleRefresh}
+            >
+              <Iconify icon="eva:refresh-fill" sx={{ color: 'info.main' }} />
+            </IconButton>
+          </Tooltip>
+        </Stack>
       ),
     },
     // {
@@ -353,6 +382,7 @@ export function MonthDetailsView({ month }) {
             handleFilter={handleFilter}
             setPaginationModel={setPaginationModel}
             paginationModel={paginationModel}
+            isRefresh
           />
           <Box display="flex" alignItems="end" justifyContent="end">
             <Button

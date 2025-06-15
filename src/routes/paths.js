@@ -183,6 +183,9 @@ export const paths = {
         payroll: (id) =>
           `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/calculation/${id}/payroll`,
 
+        payrollDetails: (id) =>
+          `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/calculation/${id}/details`,
+
         preparation: `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/preparation`,
         newPreparation: `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/preparation/new`,
         preparationDetails: (id) =>

@@ -1,9 +1,4 @@
-import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
 import { Typography } from '@mui/material';
-import ListItemText from '@mui/material/ListItemText';
-
-import { RouterLink } from 'src/routes/components';
 
 import { Label } from 'src/components/label';
 
@@ -59,7 +54,7 @@ export function RenderCellPrimeNonCotis({ params }) {
 export function RenderCellBaseSalary({ params }) {
   return (
     <Typography variant="body2" color="text.secondary">
-      {params.row?.total_net_salary}
+      {params.row?.total_net_salary?.toFixed(2)}
     </Typography>
   );
 }
@@ -67,7 +62,7 @@ export function RenderCellBaseSalary({ params }) {
 export function RenderCellCotisSalary({ params }) {
   return (
     <Typography variant="body2" color="text.secondary">
-      {params?.row?.total_contributory_salary}
+      {params?.row?.total_contributory_salary?.toFixed(2)}
     </Typography>
   );
 }
@@ -75,7 +70,7 @@ export function RenderCellCotisSalary({ params }) {
 export function RenderCellPositionSalary({ params }) {
   return (
     <Typography variant="body2" color="text.secondary">
-      {params.row?.total_post_salary}
+      {params.row?.total_post_salary?.toFixed(2)}
     </Typography>
   );
 }
@@ -83,7 +78,7 @@ export function RenderCellPositionSalary({ params }) {
 export function RenderCellImposSalary({ params }) {
   return (
     <Typography variant="body2" color="text.secondary">
-      {params.row?.total_taxable_wages}
+      {params.row?.total_taxable_wages?.toFixed(2)}
     </Typography>
   );
 }
@@ -91,38 +86,11 @@ export function RenderCellImposSalary({ params }) {
 export function RenderCellIrg({ params }) {
   return (
     <Typography variant="body2" color="text.secondary">
-      {params.row.total_tax}
+      {params.row?.total_tax?.toFixed(2)}
     </Typography>
   );
 }
 
 export function RenderCellNet({ params }) {
-  return <Typography variant="body2">{params.row?.total_net_salary}</Typography>;
-}
-
-export function RenderCellId({ params, href }) {
-  return (
-    <Box
-      sx={{
-        py: 2,
-        gap: 2,
-        width: 1,
-        display: 'flex',
-        alignItems: 'center',
-      }}
-    >
-      <ListItemText
-        primary={
-          <Link component={RouterLink} href={href} color="inherit">
-            {Math.floor(Math.random() * 1000) + 1}
-          </Link>
-        }
-        // secondary={params.row.category}
-        slotProps={{
-          primary: { noWrap: true },
-          secondary: { sx: { color: 'text.disabled' } },
-        }}
-      />
-    </Box>
-  );
+  return <Typography variant="body2">{params.row?.total_net_salary?.toFixed(2)}</Typography>;
 }

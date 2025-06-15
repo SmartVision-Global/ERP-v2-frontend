@@ -12,14 +12,18 @@ import { TextField, FormControl, InputAdornment } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
+import { showError } from 'src/utils/toast-error';
+
 import { CONFIG } from 'src/global-config';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetJobs, getFiltredJobs } from 'src/actions/function';
+import { useGetJobs, validateJob, getFiltredJobs } from 'src/actions/function';
 
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+
+import { GridActionsClickItem } from 'src/sections/r-h/payroll-management/preparation/view';
 
 import {
   RenderCellId,
@@ -29,6 +33,7 @@ import {
   RenderCellAmount,
   RenderCellKeyPost,
   RenderCellCreatedAt,
+  RenderCellSalaryGrids,
   RenderCellPresentPrime,
 } from '../job-table-row';
 
@@ -107,7 +112,17 @@ export function JobListView() {
   const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
-
+  const handleValidateJob = async (id) => {
+    try {
+      await validateJob(id, {
+        limit: PAGE_SIZE,
+        offset: PAGE_SIZE * paginationModel.page,
+      });
+    } catch (error) {
+      console.log(error);
+      showError(error);
+    }
+  };
   useEffect(() => {
     if (jobs.length) {
       setTableData(jobs);
@@ -185,6 +200,14 @@ export function JobListView() {
       renderCell: (params) => <RenderCellName params={params} />,
     },
     {
+      field: 'salary_grids',
+      headerName: 'Grille de salaire',
+      flex: 1,
+      minWidth: 320,
+      type: 'singleSelect',
+      renderCell: (params) => <RenderCellSalaryGrids params={params} />,
+    },
+    {
       field: 'site',
       headerName: 'Site',
       flex: 1,
@@ -250,13 +273,14 @@ export function JobListView() {
       disableColumnMenu: true,
       getActions: (params) => [
         // TODO valider job
-        // <GridActionsLinkItem
-        //   showInMenu
-        //   icon={<Iconify icon="solar:eye-bold" />}
-        //   label="Valider"
-        //   // href={paths.dashboard.product.details(params.row.id)}
-        //   href={paths.dashboard.root}
-        // />,
+        <GridActionsClickItem
+          showInMenu
+          icon={<Iconify icon="solar:eye-bold" />}
+          label="Valider"
+          // href={paths.dashboard.product.details(params.row.id)}
+          // href={paths.dashboard.root}
+          onClick={() => handleValidateJob(params.row?.id)}
+        />,
         <GridActionsLinkItem
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}

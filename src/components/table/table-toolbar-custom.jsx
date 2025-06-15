@@ -28,6 +28,7 @@ export function TableToolbarCustom({
   handleFilter,
   setPaginationModel,
   paginationModel,
+  isRefresh = false,
 }) {
   const rangeCalendarPicker = useDateRangePicker(dayjs(new Date('2024/08/08')), null);
   const getInput = useCallback(
@@ -104,6 +105,16 @@ export function TableToolbarCustom({
     };
     handleFilter(newData);
   };
+
+  const refresh = () => {
+    const newData = {
+      ...filters,
+      limit: paginationModel.pageSize,
+      offset: paginationModel.pageSize * paginationModel.page,
+    };
+    handleFilter(newData);
+  };
+
   return (
     <Stack direction="column" spacing={2} paddingX={4} paddingY={2}>
       <Grid container spacing={2}>
@@ -214,28 +225,35 @@ export function TableToolbarCustom({
           </Grid>
         ))}
       </Grid>
-      {filterOptions.length > 0 && (
-        <Stack direction="row" spacing={1}>
-          <Button
-            startIcon={<Iconify icon="ri:filter-line" />}
-            variant="contained"
-            color="secondary"
-            sx={{ px: 2, py: 1 }}
-            onClick={onSubmitFilters}
-          >
-            Filtrer
-          </Button>
-          {Object.keys(filters).length > 0 && (
+      <Stack direction="row" spacing={1}>
+        {filterOptions.length > 0 && (
+          <Stack direction="row" spacing={1}>
             <Button
-              startIcon={<Iconify icon="carbon:filter-reset" />}
-              variant="outlined"
-              onClick={onReset}
+              startIcon={<Iconify icon="ri:filter-line" />}
+              variant="contained"
+              color="secondary"
+              sx={{ px: 2, py: 1 }}
+              onClick={onSubmitFilters}
             >
-              Réinitialiser
+              Filtrer
             </Button>
-          )}
-        </Stack>
-      )}
+            {Object.keys(filters).length > 0 && (
+              <Button
+                startIcon={<Iconify icon="carbon:filter-reset" />}
+                variant="outlined"
+                onClick={onReset}
+              >
+                Supprimer les filtres
+              </Button>
+            )}
+          </Stack>
+        )}
+        {isRefresh && (
+          <Button onClick={refresh} startIcon={<Iconify icon="eva:refresh-fill" />}>
+            Réinitialiser
+          </Button>
+        )}
+      </Stack>
     </Stack>
   );
 }

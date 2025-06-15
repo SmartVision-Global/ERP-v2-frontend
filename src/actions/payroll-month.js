@@ -60,6 +60,30 @@ export function useGetCalculationPayrollMonths(params) {
   return memoizedValue;
 }
 
+export function useGetCalculationPayrollMonthsDetails(id, params) {
+  // const url = endpoints.function;
+  const url = params
+    ? [endpoints.payrollMonthCalculationDetails(id), { params }]
+    : endpoints.payrollMonthCalculationDetails(id);
+
+  const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
+
+  const memoizedValue = useMemo(
+    () => ({
+      payrollMonthsCalculationDetails: data?.data?.records || [],
+      payrollMonthsCalculationDetailsCount: data?.data?.total || 0,
+      payrollMonthsCalculationDetailsLoading: isLoading,
+      payrollMonthsCalculationDetailsError: error,
+      payrollMonthsCalculationDetailsValidating: isValidating,
+      payrollMonthsCalculationDetailsEmpty:
+        !isLoading && !isValidating && !data?.data?.records.length,
+    }),
+    [data?.data?.records, data?.data?.total, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
+
 // ----------------------------------------------------------------------
 export async function getFiltredPayrollMonths(params) {
   const response = await axios.get(`${ENDPOINT}`, {

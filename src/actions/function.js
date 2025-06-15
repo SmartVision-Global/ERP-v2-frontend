@@ -81,6 +81,15 @@ export async function updateJob(id, data) {
   mutate(ENDPOINT);
 }
 
+export async function validateJob(id, params) {
+  /**
+   * Work on server
+   */
+  // const data = { directionData };
+  await axios.post(`${ENDPOINT}/${id}/validate`);
+  mutate([ENDPOINT, { params }]);
+}
+
 export async function archiveJob(id, data) {
   /**
    * Work on server

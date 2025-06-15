@@ -20,6 +20,12 @@ export function RenderCellName({ params }) {
   return <Typography variant="body2">{params.row.name}</Typography>;
 }
 
+export function RenderCellSalaryGrids({ params }) {
+  const salaryGrids = params.row?.salary_grids?.map((item) => item.code);
+
+  return <Typography variant="body2">{salaryGrids.join(', ')}</Typography>;
+}
+
 export function RenderCellSite({ params }) {
   return <Typography variant="body2">{params.row.site?.name}</Typography>;
 }
@@ -86,8 +92,8 @@ export function RenderCellId({ params, href }) {
 }
 export function RenderCellStatus({ params }) {
   return (
-    <Label variant="soft" color={params.row.status === 1 ? 'warning' : 'error'}>
-      {params.row.status === 1 ? 'En cours' : 'En cours'}
+    <Label variant="soft" color={params.row.status === 1 ? 'warning' : 'info'}>
+      {params.row.status === 1 ? 'En cours' : 'Actif'}
     </Label>
   );
 }

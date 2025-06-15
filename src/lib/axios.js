@@ -173,6 +173,7 @@ export const endpoints = {
   // payroll
   payrollMonth: '/v1/hr/payroll/preparation/payroll_months',
   payrollMonthCalculation: '/v1/hr/payroll/calculation/payrolls',
+  payrollMonthCalculationDetails: (id) => `/v1/hr/payroll/calculation/${id}/payrolls/details`,
 
   payrollMonthPersonalAttached: (id) => `/v1/hr/payroll/preparation/month/${id}/payrolls/attached`,
   payrollMonthPersonalUnAttached: (id) =>

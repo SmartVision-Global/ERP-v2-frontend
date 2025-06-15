@@ -178,8 +178,8 @@ export function RenderCellUser({ params, href }) {
       }}
     >
       <Avatar
-        alt={params.row.name}
-        src={params.row.coverUrl}
+        alt={params.row?.first_name?.fr}
+        src={params.row?.photo?.url}
         variant="rounded"
         sx={{ width: 34, height: 34, borderRadius: '50%' }}
       />
