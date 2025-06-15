@@ -6,9 +6,9 @@ import { Box, Chip, Select, Checkbox, MenuItem, InputLabel, FormControl } from '
 import { Field } from '../hook-form';
 import { HelperText } from './help-text';
 
-export function RHFLookup({ name, label, data }) {
+export function RHFLookup({ name, label, data, disabled }) {
   return (
-    <Field.Select name={name} label={label} size="small">
+    <Field.Select name={name} label={label} size="small" disabled={disabled}>
       {data.map((item) => (
         <MenuItem key={`${item.value}`} value={`${item.value}`}>
           {item.text}

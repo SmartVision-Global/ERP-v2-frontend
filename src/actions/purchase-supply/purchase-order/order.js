@@ -17,6 +17,8 @@ const swrOptions = {
 const ENDPOINT = endpoints.purchaseSupply.purchaseOrder.list;
 // Dynamic endpoint for fetching items of a BEB (eon-voucher)
 const ENDPOINT_ITEMS = (id) => `${ENDPOINT}/${id}/items`;
+const ENDPOINT_CONFIRM = (id) => `${ENDPOINT}/${id}/confirme`;
+const ENDPOINT_CANCEL = (id) => `${ENDPOINT}/${id}/cancele`;
 
 // ----------------------------------------------------------------------
 
@@ -53,7 +55,7 @@ export async function getFiltredPurchaseOrders(params) {
 export function useGetPurchaseOrder(id) {
   const url = id ? `${ENDPOINT}/${id}` : '';
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
-
+  
   const memoizedValue = useMemo(
     () => ({
       purchaseOrder: data?.data,
@@ -141,3 +143,18 @@ export async function updateEntity(entityType, id, data) {
     throw error;
   }
 }
+
+
+export async function confirmPurchaseOrder(id, data) { 
+  const endpoint = ENDPOINT_CONFIRM(id);
+  await axios.post(endpoint, data);
+  mutate(ENDPOINT);
+}
+
+export async function cancelPurchaseOrder(id, data) { 
+  const endpoint = ENDPOINT_CANCEL(id);
+  await axios.post(endpoint, data);
+  mutate(ENDPOINT);
+}
+
+

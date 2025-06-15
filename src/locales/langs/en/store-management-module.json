@@ -1,0 +1,131 @@
+{
+    "views": {
+        "stocks": "Stocks",
+        "raw_materials": "Raw Materials",
+        "list": "List",
+        "add_stock": "Add Stock",
+        "store_management": "Store Management",
+        "edit_stock": "Edit: {{code}}"
+    },
+    "headers": {
+        "id": "ID",
+        "code": "Code",
+        "supplier_code": "Supplier Code",
+        "builder_code": "Builder Code",
+        "designation": "Designation",
+        "quantity": "Quantity",
+        "status": "Status",
+        "unit": "Unit",
+        "alert_quantity": "Alert Quantity",
+        "min": "Min",
+        "daily_consumption": "Daily Consumption Forecast",
+        "consumption_day": "Consumption Day Forecast",
+        "family": "Family",
+        "sub_family": "Sub Families",
+        "category": "Category",
+        "location": "Location",
+        "created_date": "Created Date",
+        "actions": " "
+    },
+    "actions": {
+        "add_stock": "Add Stock",
+        "tools": "Tools",
+        "edit": "Edit",
+        "view": "View",
+        "print": "Print",
+        "copy": "Copy",
+        "excel": "Excel",
+        "csv": "CSV",
+        "pdf": "PDF",
+        "close": "Close"
+    },
+    "filters": {
+        "search_placeholder": "Search...",
+        "store": "Store",
+        "code": "Code",
+        "supplier_code": "Supplier Code",
+        "designation": "Designation",
+        "status": "Status",
+        "unit": "Unit",
+        "category": "Category",
+        "family": "Family",
+        "image": "Image",
+        "creation_date": "Creation Date"
+    },
+    "dialog": {
+        "product_details": "Product Details: {{code}} -- {{designation}}",
+        "information": "Information",
+        "codification": "Codification",
+        "designation": "Designation",
+        "unit_of_measure": "Unit of Measure",
+        "family": "Family",
+        "creation_date": "Creation Date",
+        "catalog": "Catalog",
+        "view_pdf": "View PDF",
+        "image": "Image"
+    },
+    "messages":{
+        "no_results": "No results found"
+    },
+    "form": {
+        "validations": {
+            "builder_code_required": "Builder code is required",
+            "supplier_code_required": "Supplier code is required",
+            "family_required": "Family is required",
+            "workshop_required": "Workshop is required",
+            "category_required": "Category is required",
+            "unit_measure_required": "Unit of measure is required",
+            "appellation_required": "Appellation is required",
+            "designation_required": "Designation is required",
+            "weight_required": "Weight is required",
+            "min_quantity_required": "Min quantity is required",
+            "alert_quantity_required": "Alert quantity is required",
+            "daily_consumption_required": "Daily consumption forecast is required",
+            "type_required": "Type is required",
+            "location_required": "Location is required",
+            "douan_required": "Douan is required",
+            "position_required": "Position is required"
+        },
+        "messages": {
+            "stock_updated": "Stock updated",
+            "stock_created": "Stock created",
+            "operation_failed": "Operation failed"
+        },
+        "sections": {
+            "details": "Details",
+            "properties": "Properties",
+            "dimensions": "Dimensions",
+            "conditioning": "Conditioning",
+            "storage": "Storage",
+            "fees": "Fees"
+        },
+        "labels": {
+            "builder_code": "Builder Code",
+            "supplier_code": "Supplier Code",
+            "parent_family": "Parent Family",
+            "family": "Family",
+            "workshop": "Workshop",
+            "category": "Category",
+            "unit_of_measure": "Unit of measure",
+            "appellation": "Appellation",
+            "designation": "Designation",
+            "weight": "Weight",
+            "quantity_min": "Quantity Min",
+            "quantity_alert": "Quantity Alerte",
+            "daily_consumption_forecast": "Daily consumption forecast",
+            "type": "Type",
+            "image": "Image",
+            "catalog": "Catalog",
+            "upload_files": "Upload files",
+            "storage_area": "Storage Area",
+            "location": "Location",
+            "add_storage": "Add",
+            "douan": "Douan",
+            "position": "Position"
+        },
+        "actions": {
+            "save_changes": "Save Changes",
+            "create_stock": "Create Stock"
+        }
+    }
+} 

@@ -226,6 +226,17 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/user/${1}/edit`,
       },
     },
+    storeManagement: {
+      root: `${ROOTS.DASHBOARD}/store-management`,
+      rawMaterial: {
+        root: `${ROOTS.DASHBOARD}/store-management/raw-material`,
+        stocks: `${ROOTS.DASHBOARD}/store-management/raw-material`,
+        newStock: `${ROOTS.DASHBOARD}/store-management/raw-material/new`,
+        editStock: (id) => `${ROOTS.DASHBOARD}/store-management/raw-material/${id}/edit`,
+        // storageArea: `${ROOTS.DASHBOARD}/store-management/raw-material/storage-area`,
+        // initialStorage: `${ROOTS.DASHBOARD}/store-management/raw-material/initial-storage`,
+      },
+    },
     store: {
       rawMaterials: {
         root: `${ROOTS.DASHBOARD}/store/raw-materials`,
@@ -236,6 +247,15 @@ export const paths = {
         editStock: (id) => `${ROOTS.DASHBOARD}/store/raw-materials/stocks/${id}/edit`,
         initialStorage: `${ROOTS.DASHBOARD}/store/raw-materials/initial-storage`,
         newInitialStorage: `${ROOTS.DASHBOARD}/store/raw-materials/initial-storage/new`,
+        exitSlip: `${ROOTS.DASHBOARD}/store/raw-materials/exit-slip`,
+        newExitSlip: `${ROOTS.DASHBOARD}/store/raw-materials/exit-slip/new`,
+        editExitSlip: (id) => `${ROOTS.DASHBOARD}/store/raw-materials/exit-slip/${id}/edit`,
+        integrations: `${ROOTS.DASHBOARD}/store/raw-materials/integrations`,
+        newIntegration: `${ROOTS.DASHBOARD}/store/raw-materials/integrations/new`,
+        editIntegration: (id) => `${ROOTS.DASHBOARD}/store/raw-materials/integrations/${id}/edit`,
+        transferSlip: `${ROOTS.DASHBOARD}/store/raw-materials/transfer-slip`,
+        newTransferSlip: `${ROOTS.DASHBOARD}/store/raw-materials/transfer-slip/new`,
+        editTransferSlip: (id) => `${ROOTS.DASHBOARD}/store/raw-materials/transfer-slip/${id}/edit`,
       },
       spareParts: {
         root: `${ROOTS.DASHBOARD}/store/spare-parts`,

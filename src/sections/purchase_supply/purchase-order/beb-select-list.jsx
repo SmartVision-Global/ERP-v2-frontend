@@ -11,7 +11,7 @@ import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { Field } from 'src/components/hook-form';
 
-export function BEBNewEditForm() {
+export function BebSelectList({ disabled }) {
   const [openBEBDialog, setOpenBEBDialog] = useState(false);
   const [error, setError] = useState('');
   const confirmDialog = useBoolean();
@@ -35,6 +35,28 @@ export function BEBNewEditForm() {
     try {
       // Set the selected BEB in the form
       setValue('selectedBEB', beb);
+      // Also set the order's eon_voucher_id
+      setValue('eon_voucher_id', beb.id.toString());
+
+      if (beb) {
+        setValue('site_id', beb.site?.id?.toString() || '');
+        setValue('personal_id', beb.created_by?.id?.toString() || '');
+
+        if (beb.details && Array.isArray(beb.details)) {
+          const newItems = beb.details.map((item) => ({
+            product_id: item.product.id.toString(),
+            code: item.product.code,
+            supplier_code: item.product.supplier_code,
+            designation: item.product.designation,
+            current_quantity: item.product.quantity,
+            purchased_quantity: item.requested_quantity,
+            observation: item.observation || '',
+            unit_measure: item.product.unit_measure,
+          }));
+          setValue('items', newItems);
+        }
+      }
+
       handleCloseProductDialog();
       setError('');
     } catch (err) {
@@ -44,8 +66,11 @@ export function BEBNewEditForm() {
   };
 
   const handleClearSelection = () => {
+    // Clear BEB selection and eon_voucher_id
     setValue('selectedBEB', null);
+    setValue('eon_voucher_id', '');
   };
+
 
   return (
     <Box sx={{ p: 2 }}>
@@ -71,6 +96,7 @@ export function BEBNewEditForm() {
               startIcon={<Iconify icon="mingcute:search-line" />}
               onClick={handleOpenBEBDialog}
               variant="outlined"
+              disabled={disabled}
             >
               Sélectionner BEB
             </Button>
@@ -82,6 +108,7 @@ export function BEBNewEditForm() {
                 startIcon={<Iconify icon="mdi:close" />}
                 onClick={handleClearSelection}
                 variant="outlined"
+                disabled={disabled}
               >
                 Effacer
               </Button>
@@ -99,17 +126,18 @@ export function BEBNewEditForm() {
         {/* Selected BEB Display */}
         <Box>
           <Field.Text
+            disabled={disabled}
             name="selectedBEB"
             label="BEB Sélectionné"
             value={
               selectedBEB
-                ? `${selectedBEB.code} - ${selectedBEB.name || selectedBEB.applicant || ''}`
+                ? `${selectedBEB.code} - ${selectedBEB.created_by?.full_name || ''}`
                 : ''
             }
             InputProps={{
               readOnly: true,
               endAdornment: selectedBEB && (
-                <IconButton size="small" onClick={handleClearSelection} sx={{ mr: 1 }}>
+                <IconButton size="small" onClick={handleClearSelection} sx={{ mr: 1 }} disabled={disabled}>
                   <Iconify icon="mdi:close" />
                 </IconButton>
               ),
@@ -130,19 +158,24 @@ export function BEBNewEditForm() {
                   <strong>Code:</strong> {selectedBEB.code}
                 </Typography>
               )}
-              {selectedBEB.name && (
+              {selectedBEB.created_by?.full_name && (
                 <Typography variant="body2">
-                  <strong>Nom:</strong> {selectedBEB.name}
-                </Typography>
-              )}
-              {selectedBEB.applicant && (
-                <Typography variant="body2">
-                  <strong>Demandeur:</strong> {selectedBEB.applicant}
+                  <strong>Demandeur:</strong> {selectedBEB.created_by?.full_name}
                 </Typography>
               )}
               {selectedBEB.service && (
                 <Typography variant="body2">
-                  <strong>Service:</strong> {selectedBEB.service}
+                  <strong>Service:</strong> {selectedBEB.service?.name}
+                </Typography>
+              )}
+              {selectedBEB.site?.name && (
+                <Typography variant="body2">
+                  <strong>Site:</strong> {selectedBEB.site?.name}
+                </Typography>
+              )}
+              {selectedBEB.observation && (
+                <Typography variant="body2">
+                  <strong>Observation:</strong> {selectedBEB.observation}
                 </Typography>
               )}
             </Stack>

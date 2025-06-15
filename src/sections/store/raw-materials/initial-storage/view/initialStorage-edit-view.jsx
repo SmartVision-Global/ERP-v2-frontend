@@ -1,5 +1,3 @@
-import { useParams } from 'next/navigation';
-
 import { paths } from 'src/routes/paths';
 
 import { DashboardContent } from 'src/layouts/dashboard';
@@ -12,9 +10,8 @@ import { StorageAreaNewEditForm } from '../initialStorage-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-export function StorageAreaEditView() {
-  const params = useParams();
-  const { storageArea, isLoading } = useGetStorageArea(params.id);
+export function StorageAreaEditView({ id }) {
+  const { storageArea, isLoading } = useGetStorageArea(id);
 
   if (isLoading) {
     return <LoadingScreen />;
