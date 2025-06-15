@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
-import { Box, Typography, Chip, Tooltip } from '@mui/material';
+import { Box, Chip, Tooltip, Typography } from '@mui/material';
 
 // ----------------------------------------------------------------------
 

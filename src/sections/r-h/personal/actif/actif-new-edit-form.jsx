@@ -473,9 +473,12 @@ export function ActifNewEditForm({ currentProduct }) {
 
   const handleRemoveImage = useCallback(() => {
     setValue('image', null);
+    setValue('photo', '');
   }, [setValue]);
+
   const handleRemoveCertificate = useCallback(() => {
-    setValue('employment_certificate', null);
+    setValue('employment_certificate', '');
+    setValue('certificate', null);
   }, [setValue]);
 
   const onSubmit = handleSubmit(async (data) => {
@@ -674,7 +677,7 @@ export function ActifNewEditForm({ currentProduct }) {
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Photo de l&apos;employé</Typography>
               <Field.Upload
-                name="photo"
+                name="image"
                 maxSize={3145728}
                 onDelete={handleRemoveImage}
                 onDrop={onDropImage}
