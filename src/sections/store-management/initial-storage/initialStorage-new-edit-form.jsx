@@ -117,7 +117,7 @@ export function InitialStorageNewEditForm({ currentStorageArea, onStorageAreaAdd
         spacing={2}
         key={field.id}
         alignItems="center"
-        sx={{ display: 'flex', gap: 1, marginTop: 0.5 }}
+        sx={{ display: 'flex', gap: 1.5, marginTop: 0.5 }}
       >
         <Grid xs={1.5} marginLeft={2}>
           <Field.Text
