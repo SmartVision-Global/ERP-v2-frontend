@@ -543,7 +543,11 @@ export function LeaveAbsenceListView() {
             if (!cancellationReason) {
               setError(true);
             } else {
-              await cancelLeaveAbesence(selectedRow, { cancellation_reason: cancellationReason });
+              await cancelLeaveAbesence(
+                selectedRow,
+                { cancellation_reason: cancellationReason },
+                { limit: PAGE_SIZE, offset: PAGE_SIZE * paginationModel.page }
+              );
               confirmDialogCancel.onFalse();
               setCancellationReason('');
             }

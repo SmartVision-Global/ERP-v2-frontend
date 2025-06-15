@@ -539,7 +539,11 @@ export function SocialLoanListView() {
               setError(true);
             } else {
               // handleDeleteRows();
-              await cancelSocialLoan(selectedRow, { cancellation_reason: cancellationReason });
+              await cancelSocialLoan(
+                selectedRow,
+                { cancellation_reason: cancellationReason },
+                { limit: PAGE_SIZE, offset: PAGE_SIZE * paginationModel.page }
+              );
               confirmDialogCancel.onFalse();
               setCancellationReason('');
             }

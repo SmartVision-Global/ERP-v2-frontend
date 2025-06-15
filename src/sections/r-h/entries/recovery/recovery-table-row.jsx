@@ -9,7 +9,10 @@ import { fDate, fTime } from 'src/utils/format-time';
 
 import { Label } from 'src/components/label';
 
-import { STATUS_VALIDATION_OPTIONS } from '../leave-absence/leave-absence-table-row';
+import {
+  STATUS_VALIDATION_OPTIONS,
+  STATUS_VALIDATION_OPTIONS_COLORS,
+} from '../leave-absence/leave-absence-table-row';
 
 // ----------------------------------------------------------------------
 
@@ -73,10 +76,9 @@ export function RenderCellEndAt({ params }) {
     </Box>
   );
 }
-
 export function RenderCellStatus({ params }) {
   return (
-    <Label variant="soft" color={params.row.publish === 'published' ? 'info' : 'default'}>
+    <Label variant="soft" color={STATUS_VALIDATION_OPTIONS_COLORS[params.row.status]}>
       {STATUS_VALIDATION_OPTIONS[params.row.status]}
     </Label>
   );

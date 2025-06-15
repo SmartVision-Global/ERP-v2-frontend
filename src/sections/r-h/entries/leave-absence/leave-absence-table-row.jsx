@@ -33,6 +33,13 @@ export const STATUS_VALIDATION_OPTIONS = {
   4: 'Annulée',
 };
 
+export const STATUS_VALIDATION_OPTIONS_COLORS = {
+  1: 'info',
+  2: 'success',
+  3: 'warning',
+  4: 'error',
+};
+
 export function RenderCellFullname({ params }) {
   return <Typography variant="body2">{params.row?.personal?.name}</Typography>;
 }
@@ -78,7 +85,7 @@ export function RenderCellDesignation({ params }) {
 
 export function RenderCellStatus({ params }) {
   return (
-    <Label variant="soft" color={params.row.status === '1' ? 'info' : 'error'}>
+    <Label variant="soft" color={STATUS_VALIDATION_OPTIONS_COLORS[params.row.status]}>
       {STATUS_VALIDATION_OPTIONS[params.row.status]}
     </Label>
   );

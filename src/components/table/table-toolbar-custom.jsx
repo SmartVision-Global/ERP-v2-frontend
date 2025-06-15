@@ -250,7 +250,7 @@ export function TableToolbarCustom({
         )}
         {isRefresh && (
           <Button onClick={refresh} startIcon={<Iconify icon="eva:refresh-fill" />}>
-            Réinitialiser
+            Actualiser
           </Button>
         )}
       </Stack>

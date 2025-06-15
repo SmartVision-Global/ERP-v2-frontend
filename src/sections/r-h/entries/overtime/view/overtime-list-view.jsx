@@ -595,7 +595,11 @@ export function OvertimeListView() {
               setError(true);
             } else {
               // handleDeleteRows();
-              await cancelOvertime(selectedRow, { cancellation_reason: cancellationReason });
+              await cancelOvertime(
+                selectedRow,
+                { cancellation_reason: cancellationReason },
+                { limit: PAGE_SIZE, offset: PAGE_SIZE * paginationModel.page }
+              );
               confirmDialogCancel.onFalse();
               setCancellationReason('');
             }

@@ -504,35 +504,40 @@ export function ActifListView() {
       sortable: false,
       filterable: false,
       disableColumnMenu: true,
-      getActions: (params) => [
-        // <GridActionsLinkItem
-        //   showInMenu
-        //   icon={<Iconify icon="solar:eye-bold" />}
-        //   label="View"
-        //   href={paths.dashboard.root}
-        // />,
-        <GridActionsClickItem
-          showInMenu
-          icon={<Iconify icon="eva:checkmark-fill" />}
-          label="Valider"
-          onClick={() => handleOpenValidateConfirmDialog(params.row.id)}
-          // href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
-        />,
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:pen-bold" />}
-          label="Modifier"
-          href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
-        />,
+      getActions: (params) => {
+        let actions = [];
+        switch (params.row?.status) {
+          case 1:
+            actions = [
+              <GridActionsClickItem
+                showInMenu
+                icon={<Iconify icon="eva:checkmark-fill" />}
+                label="Valider"
+                onClick={() => handleOpenValidateConfirmDialog(params.row.id)}
+                // href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
+              />,
+              <GridActionsLinkItem
+                showInMenu
+                icon={<Iconify icon="solar:pen-bold" />}
+                label="Modifier"
+                href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
+              />,
+            ];
+            break;
 
-        // <GridActionsCellItem
-        //   showInMenu
-        //   icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-        //   label="Delete"
-        //   onClick={() => handleDeleteRow(params.row.id)}
-        //   sx={{ color: 'error.main' }}
-        // />,
-      ],
+          default:
+            actions = [
+              <GridActionsLinkItem
+                showInMenu
+                icon={<Iconify icon="solar:pen-bold" />}
+                label="Modifier"
+                href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
+              />,
+            ];
+            break;
+        }
+        return actions;
+      },
     },
   ];
 

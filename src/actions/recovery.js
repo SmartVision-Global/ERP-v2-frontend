@@ -102,13 +102,13 @@ export async function archiveRecovery(id, data) {
   mutate(ENDPOINT);
 }
 
-export async function cancelRecovery(id, data) {
+export async function cancelRecovery(id, data, params) {
   /**
    * Work on server
    */
   // const data = { directionData };
   await axios.post(`${ENDPOINT}/${id}/cancel`, data);
-  mutate(ENDPOINT);
+  mutate([ENDPOINT, { params }]);
 
   //   mutate(endpoints.site);
 }

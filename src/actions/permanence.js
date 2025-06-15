@@ -103,13 +103,13 @@ export async function archivePermanency(id, data) {
   mutate(ENDPOINT);
 }
 
-export async function cancelPermanency(id, data) {
+export async function cancelPermanency(id, data, params) {
   /**
    * Work on server
    */
   // const data = { directionData };
   await axios.post(`${ENDPOINT}/${id}/cancel`, data);
-  mutate(ENDPOINT);
+  mutate([ENDPOINT, { params }]);
 
   //   mutate(endpoints.site);
 }

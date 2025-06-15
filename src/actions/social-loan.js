@@ -103,12 +103,12 @@ export async function archiveSocialLoan(id, data) {
   mutate(ENDPOINT);
 }
 
-export async function cancelSocialLoan(id, data) {
+export async function cancelSocialLoan(id, data, params) {
   /**
    * Work on server
    */
   // const data = { directionData };
   await axios.post(`${ENDPOINT}/${id}/cancel`, data);
   //   mutate(endpoints.site);
-  mutate(ENDPOINT);
+  mutate([ENDPOINT, { params }]);
 }
