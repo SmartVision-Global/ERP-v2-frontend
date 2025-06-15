@@ -3,7 +3,6 @@ import { useBoolean } from 'minimal-shared/hooks';
 import { useState, useEffect, forwardRef, useCallback, useMemo } from 'react';
 
 import Link from '@mui/material/Link';
-import { Close, Add, Remove } from '@mui/icons-material';
 import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 import {
   Dialog,
