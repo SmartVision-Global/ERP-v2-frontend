@@ -11,19 +11,16 @@ export function RenderCellId({ params }) {
 }
 
 export function RenderCellCode({ params }) {
-  return <Typography>{params.row.code}</Typography>;
+  return <Typography>{params.row.code ?? 'N/I'}</Typography>;
 }
 
-export function RenderCellSupplierCode({ params }) {
-  return <Typography>{params.row.supplier_code}</Typography>;
-}
 
 export function RenderCellBuilderCode({ params }) {
   return <Typography>{params.row.builder_code}</Typography>;
 }
 
 export function RenderCellDesignation({ params }) {
-  return <Typography>{params.row.designation}</Typography>;
+  return <Typography>{params.row.product?.designation ?? 'N/I'}</Typography>;
 }
 
 export function RenderCellQuantity({ params }) {
@@ -36,7 +33,7 @@ export function RenderCellStatus({ params }) {
 }
 
 export function RenderCellUnit({ params }) {
-  return <Typography>{params.row.unit_measure?.designation ?? 'N/I'}</Typography>;
+  return <Typography>{params.row.measurement_unit?.designation ?? 'N/I'}</Typography>;
 }
 
 export function RenderCellAlert({ params }) {
@@ -85,3 +82,43 @@ export function RenderCellCreatedDate({ params }) {
         </Box>
       );
 }
+
+export function RenderCellDate({ params }) {
+  return (
+    <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
+      <span>{fDate(params.row.datetime)}</span>
+      <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
+        {fTime(params.row.datetime)}
+      </Box>
+    </Box>
+  );
+}
+
+export function RenderCellOperation({ params }) {
+  return <Label variant="soft" color="default">{params.row.nature}</Label>;
+}
+
+export function RenderCellProduct({ params }) {
+  return <Typography>{params.row.product_code ?? 'N/I'}</Typography>;
+}
+
+export function RenderCellSupplierCode({ params }) {
+  return <Typography>{params.row.product?.supplier_code?? 'N/I'}</Typography>;
+}
+
+
+export function RenderCellLocalCode({ params }) {
+  return <Typography>{params.row.product?.local_code?? 'N/I'}</Typography>;
+}
+
+export function RenderCellSource({ params }) {
+  return <Typography>{params.row.store?.name?? 'N/I'}</Typography>;
+}
+
+export function RenderCellDestination({ params }) {
+  return <Typography>{params.row.destination_store?.name?? 'N/I'}</Typography>;
+}
+
+
+
+

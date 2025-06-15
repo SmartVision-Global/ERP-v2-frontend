@@ -142,14 +142,14 @@ export function OrderPurchaseList() {
   );
   const handlePaginationModelChange = async (newModel) => {
     try {
-      // const newData = {
-      //   ...editedFilters,
-      //   limit: newModel.pageSize,
-      //   offset: newModel.page,
-      // };
-      // const response = await getFiltredOrder(newData);
-      // setTableData(response.data?.data?.records);
-      // setPaginationModel(newModel);
+      const newData = {
+        ...editedFilters,
+        limit: newModel.pageSize,
+        offset: newModel.page,
+      };
+      const response = await getFiltredOrder(newData);
+      setTableData(response.data?.data?.records);
+      setPaginationModel(newModel);
     } catch (error) {
       console.log('error in pagination search request', error);
     }
