@@ -72,7 +72,9 @@ export function RHFLookupMultiSelect({
               // label={label}
 
               renderValue={(selected) => {
-                const selectedItems = options.filter((item) => selected.includes(`${item.value}`));
+                const selectedItems = options.filter(
+                  (item) => selected.includes(`${item.value}`) || selected.includes(item.value)
+                );
 
                 if (!selectedItems.length && placeholder) {
                   return <Box sx={{ color: 'text.disabled' }}>{placeholder}</Box>;

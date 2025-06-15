@@ -93,16 +93,16 @@ export const NewProductSchema = zod
     speciality: zod.string().optional(),
 
     // Emplacement et Structure Organisationnelle
-    subsidiary_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    subsidiary_id: zod.string().optional().nullable(),
     direction_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
     site_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
 
-    division_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
-    department_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
-    section_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
-    workshop_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
-    machine_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
-    zone_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    division_id: zod.string().optional().nullable(),
+    department_id: zod.string().optional().nullable(),
+    section_id: zod.string().optional().nullable(),
+    workshop_id: zod.string().optional().nullable(),
+    machine_id: zod.string().optional().nullable(),
+    zone_id: zod.string().optional().nullable(),
 
     // Informations sur l'Emploi
     enterprise_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),

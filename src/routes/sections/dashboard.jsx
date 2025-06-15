@@ -240,6 +240,9 @@ const PageRhPayrollManagementCalculation = lazy(
 const PageRhPayrollManagementCalculationNew = lazy(
   () => import('src/pages/dashboard/r-h/payroll-management/calculation/new')
 );
+const PageRhPayrollManagementCalculationDetails = lazy(
+  () => import('src/pages/dashboard/r-h/payroll-management/calculation/details')
+);
 
 const PageRhPayrollManagementCalculationPayroll = lazy(
   () => import('src/pages/dashboard/r-h/payroll-management/calculation/payroll')
@@ -552,6 +555,12 @@ export const dashboardRoutes = [
                 path: 'calculation/new',
                 element: <PageRhPayrollManagementCalculationNew />,
               },
+              {
+                path: 'calculation/:id/details',
+                element: <PageRhPayrollManagementCalculationDetails />,
+                index: true,
+              },
+
               {
                 path: 'calculation/:id/payroll',
                 element: <PageRhPayrollManagementCalculationPayroll />,

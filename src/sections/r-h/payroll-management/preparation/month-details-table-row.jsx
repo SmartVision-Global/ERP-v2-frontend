@@ -13,7 +13,7 @@ const STATUS = {
 export function RenderCellId({ params, href }) {
   return (
     <Box>
-      <Typography>{params.row.personal_id}</Typography>
+      <Typography>{params.row.personal?.id}</Typography>
     </Box>
   );
 }
@@ -21,7 +21,7 @@ export function RenderCellId({ params, href }) {
 export function RenderCellUser({ params, href }) {
   return (
     <Box>
-      <Typography>{params.row.personal_name}</Typography>
+      <Typography>{params.row.personal?.name}</Typography>
     </Box>
   );
 }

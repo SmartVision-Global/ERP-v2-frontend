@@ -264,6 +264,13 @@ export function CalculationListView() {
           // href={paths.dashboard.product.details(params.row.id)}
           href={paths.dashboard.rh.payrollManagement.payroll(params.row.payroll_month_id)}
         />,
+        <GridActionsLinkItem
+          showInMenu
+          icon={<Iconify icon="eva:person-done-fill" />}
+          label="Details"
+          // href={paths.dashboard.product.details(params.row.id)}
+          href={paths.dashboard.rh.payrollManagement.payrollDetails(params.row.payroll_month_id)}
+        />,
       ],
     },
   ];

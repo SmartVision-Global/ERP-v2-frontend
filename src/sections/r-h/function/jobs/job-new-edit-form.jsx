@@ -1,10 +1,20 @@
 import { z as zod } from 'zod';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Stack, Divider, CardHeader } from '@mui/material';
+import {
+  Box,
+  Card,
+  Stack,
+  Select,
+  Divider,
+  MenuItem,
+  CardHeader,
+  InputLabel,
+  FormControl,
+} from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -15,6 +25,7 @@ import { createJob, updateJob } from 'src/actions/function';
 import { useGetLookups, useMultiLookups } from 'src/actions/lookups';
 
 import { toast } from 'src/components/snackbar';
+import { HelperText } from 'src/components/hook-form/help-text';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { FieldContainer } from 'src/components/form-validation-view';
 
@@ -123,7 +134,7 @@ export function JobNewEditForm({ currentProduct }) {
       designation: currentProduct?.designation,
       site_id: currentProduct?.site_id ? currentProduct?.site_id.toString() : '',
       salary_category_id: currentProduct?.salary_category_id?.toString() || '',
-      salary_grids: currentProduct?.salary_grids || [],
+      salary_grids: currentProduct?.salary_grids?.map(String) || [],
       job_employee_quota: currentProduct?.job_employee_quota || 0,
       protective_clothing: currentProduct?.protective_clothing ? 'yes' : 'no',
       have_premium: currentProduct?.have_premium ? 'yes' : 'no',
@@ -143,14 +154,61 @@ export function JobNewEditForm({ currentProduct }) {
   });
 
   const {
+    watch,
+    control,
     setError,
     reset,
     handleSubmit,
     formState: { isSubmitting, errors },
   } = methods;
-
+  const values = watch();
   console.log('err', errors);
+  const handleSalaryGridsChange = (ev) => {
+    const isValid = validateSelection(ev.target.value, salaryGrids);
+    if (!isValid) {
+      showError({
+        message:
+          'You can not select two salary grid with different base salary or with same net salary',
+      });
+      return values.salary_grids;
+    }
+    return ev.target.value;
+  };
+  const validateSelection = (selectedValues, allData) => {
+    // Find the full objects for the selected values
+    const selectedItems = allData.filter(
+      (item) => selectedValues.includes(item.value) || selectedValues.includes(`${item.value}`)
+    );
 
+    // If 1 or 0 items are selected, the conditions don't apply, so it's valid
+    if (selectedItems.length <= 1) {
+      return true;
+    }
+
+    // 1. Check if all salaries are the same
+    const firstSalary = Number(selectedItems[0].salary);
+    const allSalariesAreTheSame = selectedItems.every(
+      (item) => Number(item.salary) === firstSalary
+    );
+
+    if (!allSalariesAreTheSame) {
+      console.error('Validation failed: Salaries are not the same.');
+      return false;
+    }
+
+    // 2. Check if all net_salaries are different
+    const netSalaries = selectedItems.map((item) => Number(item.net_salary));
+    const uniqueNetSalaries = new Set(netSalaries);
+    const allNetSalariesAreDifferent = netSalaries.length === uniqueNetSalaries.size;
+
+    if (!allNetSalariesAreDifferent) {
+      console.error('Validation failed: Net salaries must be different.');
+      return false;
+    }
+
+    // If both checks pass, the selection is valid
+    return true;
+  };
   const onSubmit = handleSubmit(async (data) => {
     const updatedData = {
       // ...data,
@@ -170,7 +228,7 @@ export function JobNewEditForm({ currentProduct }) {
       have_premium: data.have_premium === 'yes' ? true : false,
       premium_amount: data.premium_amount,
       max_absence_allowed: data.max_absence_allowed,
-      salaryGrids: [parseInt(data.salary_grids)],
+      salaryGrids: data.salary_grids,
       careerKnowledges: data.careerKnowledges,
       dutiesResponsibilities: data.dutiesResponsibilities,
     };
@@ -243,7 +301,7 @@ export function JobNewEditForm({ currentProduct }) {
         </Stack>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.LookupMultiSelect
+            {/* <Field.LookupMultiSelect
               name="salary_grids"
               label="Net à payer"
               options={salaryGrids}
@@ -251,15 +309,86 @@ export function JobNewEditForm({ currentProduct }) {
               slotProps={{
                 inputLabel: { shrink: true },
               }}
-            />
+            /> */}
+            <Controller
+              name="salary_grids"
+              control={control}
+              render={({ field, fieldState: { error } }) => {
+                const labelId = `salary-grids-multi-select`;
+                const renderLabel = () => <InputLabel htmlFor={labelId}>Net à payer</InputLabel>;
 
-            {/* <Field.Select name="salary_grids" label="Net à payer" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select> */}
+                const renderOptions = () =>
+                  salaryGrids?.map((option) => (
+                    <MenuItem key={`${option.value}`} value={`${option.value}`}>
+                      {/* {checkbox && (
+                <Checkbox
+                  size="small"
+                  disableRipple
+                  checked={field.value.includes(`${option.value}`)}
+                  {...slotProps?.checkbox}
+                />
+              )} */}
+
+                      {option.text}
+                    </MenuItem>
+                  ));
+
+                return (
+                  <FormControl error={!!error} sx={{ width: '100%' }}>
+                    {renderLabel()}
+
+                    <Select
+                      {...field}
+                      onChange={(e) => field.onChange(handleSalaryGridsChange(e))}
+                      size="small"
+                      multiple
+                      displayEmpty
+                      // label={label}
+
+                      renderValue={(selected) => {
+                        const selectedItems = salaryGrids.filter(
+                          (item) =>
+                            selected.includes(`${item.value}`) || selected.includes(item.value)
+                        );
+
+                        // if (!selectedItems.length) {
+                        //   return <Box sx={{ color: 'text.disabled' }}>Selectionner</Box>;
+                        // }
+
+                        // if (chip) {
+                        //   return (
+                        //     <Box sx={{ gap: 0.5, display: 'flex', flexWrap: 'wrap' }}>
+                        //       {selectedItems?.map((item) => (
+                        //         <Chip
+                        //           key={`${item.value}`}
+                        //           size="small"
+                        //           variant="soft"
+                        //           label={item.text}
+                        //           {...slotProps?.chip}
+                        //         />
+                        //       ))}
+                        //     </Box>
+                        //   );
+                        // }
+
+                        return selectedItems?.map((item) => item.text).join(', ');
+                      }}
+                      inputProps={{
+                        id: `salary_grids-multi-select`,
+                      }}
+                    >
+                      {renderOptions()}
+                    </Select>
+
+                    <HelperText
+                      // {...slotProps?.helperText}
+                      errorMessage={error?.message}
+                      // helperText={helperText}
+                    />
+                  </FormControl>
+                );
+              }}
+            />
           </Grid>
         </Grid>
         <Grid container spacing={3}>
