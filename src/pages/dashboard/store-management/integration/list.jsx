@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
-import { IntegrationListView } from 'src/sections/store/raw-materials/integration/view/integration-list-view';
+import { IntegrationListView } from 'src/sections/store-management/integration/view/integration-list-view';
 
 // ----------------------------------------------------------------------
 

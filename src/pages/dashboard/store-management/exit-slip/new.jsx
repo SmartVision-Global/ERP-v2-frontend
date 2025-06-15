@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
-import { ExitSlipCreateView } from 'src/sections/store/raw-materials/exit-slip/view/exitSlip-create-view';
+import { ExitSlipCreateView } from 'src/sections/store-management/exit-slip/view/exitSlip-create-view';
 
 // ----------------------------------------------------------------------
 

@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
-import { TransferSlipEditView } from 'src/sections/store/raw-materials/transfer-slip/view/transferSlip-edit-view';
+import { TransferSlipEditView } from 'src/sections/store-management/transfer-slip/view/transferSlip-edit-view';
 
 // ----------------------------------------------------------------------
 
