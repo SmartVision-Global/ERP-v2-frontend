@@ -63,34 +63,115 @@ export const navData = [
         children: [
           {
             title: 'Matières premières',
-            path: paths.dashboard.store.rawMaterials.root,
+            path: paths.dashboard.storeManagement.root,
             children: [
               { title: 'Stocks', path: paths.dashboard.storeManagement.rawMaterial.root },
-              { title: 'Lieu de stockage', path: paths.dashboard.store.rawMaterials.storageArea },
-              { title: 'Entrée de stock', path: paths.dashboard.store.rawMaterials.initialStorage },
-              { title: 'Bon de sortie', path: paths.dashboard.store.rawMaterials.exitSlip },
-              { title: 'Intégrations', path: paths.dashboard.store.rawMaterials.integrations },
+              {
+                title: 'Suivie des produits',
+                path: paths.dashboard.storeManagement.rawMaterial.operations,
+              },
+              {
+                title: 'Lieu de stockage',
+                path: paths.dashboard.storeManagement.rawMaterial.storageArea,
+              },
+              {
+                title: 'Entrée de stock',
+                path: paths.dashboard.storeManagement.rawMaterial.initialStorage,
+              },
+              {
+                title: 'Bon de sortie',
+                path: paths.dashboard.storeManagement.rawMaterial.exitSlips,
+              },
+              {
+                title: 'Intégrations',
+                path: paths.dashboard.storeManagement.rawMaterial.integrations,
+              },
               {
                 title: 'Bons de transfert',
-                path: paths.dashboard.store.rawMaterials.transferSlip,
+                path: paths.dashboard.storeManagement.rawMaterial.transferSlips,
               },
             ],
           },
           // {
           //   title: 'Pièces de rechange',
-          //   path: paths.dashboard.store.spareParts,
+          //   path: paths.dashboard.storeManagement.root.root,
           //   children: [
-          //     { title: 'Liste', path: paths.dashboard.store.spareParts.root },
-          //     { title: 'Parametrage', path: paths.dashboard.store.spareParts.settings },
+          //     { title: 'Stocks', path: paths.dashboard.storeManagement.rawMaterial.root },
+          //     {
+          //       title: 'Lieu de stockage',
+          //       path: paths.dashboard.storeManagement.rawMaterial.storageArea,
+          //     },
+          //     {
+          //       title: 'Entrée de stock',
+          //       path: paths.dashboard.storeManagement.rawMaterial.initialStorage,
+          //     },
+          //     {
+          //       title: 'Bon de sortie',
+          //       path: paths.dashboard.storeManagement.rawMaterial.exitSlip,
+          //     },
+          //     {
+          //       title: 'Intégrations',
+          //       path: paths.dashboard.storeManagement.rawMaterial.integrations,
+          //     },
+          //     {
+          //       title: 'Bons de transfert',
+          //       path: paths.dashboard.storeManagement.rawMaterial.transferSlips,
+          //     },
           //   ],
           // },
           // {
           //   title: 'Outillage',
-          //   path: paths.dashboard.store.tools,
+          //   path: paths.dashboard.storeManagement.root.root,
+          //   children: [
+          //     { title: 'Stocks', path: paths.dashboard.storeManagement.rawMaterial.root },
+          //     {
+          //       title: 'Lieu de stockage',
+          //       path: paths.dashboard.storeManagement.rawMaterial.storageArea,
+          //     },
+          //     {
+          //       title: 'Entrée de stock',
+          //       path: paths.dashboard.storeManagement.rawMaterial.initialStorage,
+          //     },
+          //     {
+          //       title: 'Bon de sortie',
+          //       path: paths.dashboard.storeManagement.rawMaterial.exitSlip,
+          //     },
+          //     {
+          //       title: 'Intégrations',
+          //       path: paths.dashboard.storeManagement.rawMaterial.integrations,
+          //     },
+          //     {
+          //       title: 'Bons de transfert',
+          //       path: paths.dashboard.storeManagement.rawMaterial.transferSlips,
+          //     },
+          //   ],
           // },
           // {
           //   title: 'Fournitures',
-          //   path: paths.dashboard.store.supplies,
+          //   path: paths.dashboard.storeManagement.root.root,
+          //   children: [
+          //     { title: 'Stocks', path: paths.dashboard.storeManagement.rawMaterial.root },
+          //     {
+          //       title: 'Lieu de stockage',
+          //       path: paths.dashboard.storeManagement.rawMaterial.storageArea,
+          //     },
+          //     {
+          //       title: 'Entrée de stock',
+          //       path: paths.dashboard.storeManagement.rawMaterial.initialStorage,
+          //     },
+          //     {
+          //       title: 'Bon de sortie',
+          //       path: paths.dashboard.storeManagement.rawMaterial.exitSlip,
+          //     },
+          //     {
+          //       title: 'Intégrations',
+          //       path: paths.dashboard.storeManagement.rawMaterial.integrations,
+          //     },
+          //     {
+          //       title: 'Bons de transfert',
+          //       path: paths.dashboard.storeManagement.rawMaterial.transferSlips,
+          //     },
+          //   ],
           // },
         ],
       },

@@ -5,7 +5,8 @@
         "list": "List",
         "add_stock": "Add Stock",
         "store_management": "Store Management",
-        "edit_stock": "Edit: {{code}}"
+        "edit_stock": "Edit: {{code}}",
+        "product_tracking": "Product Tracking"
     },
     "headers": {
         "id": "ID",
@@ -25,7 +26,23 @@
         "category": "Category",
         "location": "Location",
         "created_date": "Created Date",
-        "actions": " "
+        "actions": " ",
+        "operation": "Operation",
+        "product": "Product",
+        "local_code": "Local Code",
+        "measure_unit": "Measure Unit",
+        "lot": "Lot",
+        "pmp": "PMP",
+        "destination": "Destination",
+        "quantity_entered": "Quantity Entered",
+        "value_of_entry": "Value of Entry",
+        "value_of_exit": "Value of Exit",
+        "source": "Source",
+        "current_quantity": "Current Quantity",
+        "tier": "Tier",
+        "date": "Date",
+        "actual_quantity": "Actual Quantity",
+        "exit_quantity": "Exit Quantity"
     },
     "actions": {
         "add_stock": "Add Stock",
@@ -50,7 +67,17 @@
         "category": "Category",
         "family": "Family",
         "image": "Image",
-        "creation_date": "Creation Date"
+        "creation_date": "Creation Date",
+        "operation": "Operation",
+        "product": "Product",
+        "destination_store": "Destination Store",
+        "source_store": "Source Store",
+        "date": "Date",
+        "lot": "Lot",
+        "pmp": "PMP",
+        "measure_unit": "Measure Unit",
+        "tier": "Tier"
+      
     },
     "dialog": {
         "product_details": "Product Details: {{code}} -- {{designation}}",
