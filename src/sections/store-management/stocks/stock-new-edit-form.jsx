@@ -10,6 +10,7 @@ import { Box, Card, Stack, Divider, CardHeader, MenuItem, Typography, CircularPr
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { useTranslate } from 'src/locales';
 import { uploadMedia } from 'src/actions/media';
 import { useMultiLookups } from 'src/actions/lookups';
 import { DATA_TYPE_OPTIONS } from 'src/_mock/stores/raw-materials/data';
@@ -138,6 +139,7 @@ export function StockNewEditForm({ currentStock, product_type }) {
     setValue,
     control,
     watch,
+    setError,
     formState: { isSubmitting },
   } = methods;
 
@@ -189,6 +191,7 @@ export function StockNewEditForm({ currentStock, product_type }) {
       });
     }
   }, [dataLoading, familiesLoading, dimensionDefs, conditionDefs, currentStock, reset]);
+  const { t } = useTranslate('store-management-module');
 
   const onDropImage = async (acceptedFiles) => {
     const value = acceptedFiles[0];
@@ -234,16 +237,21 @@ export function StockNewEditForm({ currentStock, product_type }) {
     console.log('data onSubmit', data);
     try {
       if (currentStock) {
-        await updateEntity('stocks', currentStock.id, {...data, product_type});
+        await updateEntity('stocks', currentStock.id, { ...data, product_type });
       } else {
-        await createEntity('stocks', {...data, product_type});
+        await createEntity('stocks', { ...data, product_type });
       }
       toast.success(currentStock ? 'Stock updated' : 'Stock created');
       router.push(pathConfig.root);
     } catch (error) {
       console.error(error);
+      if (error && error.errors) {
+        Object.entries(error.errors).forEach(([key, value]) => {
+          setError(key, { type: 'manual', message: value[0] });
+        });
+      }
       toast.error(error?.message || 'Operation failed');
-    } 
+    }
   });
 
   const renderDetails = () => (
@@ -412,8 +420,8 @@ export function StockNewEditForm({ currentStock, product_type }) {
 
   const renderActions = () => (
     <Box sx={{ display: 'flex', gap: 2 }}>
-      <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
-        {currentStock ? 'Enregistrer' : 'Ajouter'}
+      <LoadingButton type="submit" variant="contained" size="medium" loading={isSubmitting}>
+        {currentStock ? t('form.actions.save') : t('form.actions.add')}
       </LoadingButton>
     </Box>
   );
@@ -422,7 +430,7 @@ export function StockNewEditForm({ currentStock, product_type }) {
     <Form methods={methods} onSubmit={onSubmit}>
       <Stack spacing={5} sx={{ mx: 'auto', maxWidth: { xs: 720, xl: 1080 } }}>
         {(dataLoading || familiesLoading) ? (
-          <CircularProgress />
+          <CircularProgress sx={{ mx: 'auto' }} />
         ) : (
           <>
             {renderDetails()}
