@@ -401,6 +401,9 @@ const PageStoreOperationsList = lazy(
 const PageStoreLoanBorrowingThirdList = lazy(
   () => import('src/pages/dashboard/store-management/loan-borrowing/third/list')
 );
+const PageStoreLoanBorrowingThirdNew = lazy(
+  () => import('src/pages/dashboard/store-management/loan-borrowing/third/new')
+);
 
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
@@ -787,7 +790,7 @@ export const dashboardRoutes = [
               { path: 'storage-area', element: <PageStoreStorageEreaList product_type={1} /> },
               { path: 'storage-area/new', element: <PageStoreStorageAreaNew product_type={1} /> },
               { path: 'operations', element: <PageStoreOperationsList product_type={1} /> },
-              { path: 'third', element: <PageStoreLoanBorrowingThirdList /> },
+              
               {
                 path: 'initial-storage',
                 element: <PageStoreInitialStorageList product_type={1} />,
@@ -812,6 +815,14 @@ export const dashboardRoutes = [
                 path: 'transfer-slip/:id/edit',
                 element: <PageStoreTransferSlipEdit product_type={1} />,
               },
+            ],
+          },
+          {
+            path: '',
+            children: [
+              
+              { path: 'third', element: <PageStoreLoanBorrowingThirdList /> },
+              { path: 'third/new', element: <PageStoreLoanBorrowingThirdNew /> },
             ],
           },
         ],

@@ -100,7 +100,7 @@ export const navData = [
             children:[
               {
                 title:'Tiers',
-                path:paths.dashboard.storeManagement.rawMaterial.third,
+                path:paths.dashboard.storeManagement.loanBorrowing.third,
               },
               
             ]

@@ -73,25 +73,11 @@ export function ThirdListView({ isSelectionDialog = false, componentsProps, onSe
   const { thirds, thirdsLoading, thirdsCount } = useGetThirds({
     limit: paginationModel.pageSize,
     offset: 0,
-    product_type,
+    product_type: 1 ,
   });
   const [rowCount, setRowCount] = useState(thirdsCount);
   const [tableData, setTableData] = useState(thirds);
   const { t } = useTranslate('store-management-module');
-
-  const { pathConfig, breadcrumbName } = useMemo(() => {
-    if (product_type === 1) {
-      return {
-        pathConfig: paths.dashboard.storeManagement.rawMaterial,
-        breadcrumbName: t('views.raw_materials'),
-      };
-    }
-    // Fallback for other product types. The user will implement them later.
-    return {
-      pathConfig: paths.dashboard.storeManagement.rawMaterial,
-      breadcrumbName: t('views.stocks'),
-    };
-  }, [product_type, t]);
 
   const { dataLookups } = useMultiLookups([
     { entity: 'measurementUnits', url: 'settings/lookups/measurement-units' },
@@ -216,16 +202,16 @@ export function ThirdListView({ isSelectionDialog = false, componentsProps, onSe
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <CustomBreadcrumbs
-          heading={t('views.product_tracking')}
+          heading={t('views.third')}
           links={[
-            { name: t('views.store_management'), href: pathConfig.root },
-            { name: breadcrumbName, href: pathConfig.root },
+            { name: t('views.store_management'), href: paths.dashboard.storeManagement.root },
+            { name: t('views.loan_borrowing'), href: paths.dashboard.storeManagement.loanBorrowing.root },
             { name: t('views.list') },
           ]}
           action={
             <Button
             component={RouterLink}
-            href={paths.dashboard.settings.site.newSite}
+            href={paths.dashboard.storeManagement.loanBorrowing.newThird}
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
           >

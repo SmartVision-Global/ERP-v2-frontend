@@ -235,7 +235,7 @@ export const paths = {
         editStock: (id) => `${ROOTS.DASHBOARD}/store-management/raw-material/${id}/edit`,
 
         operations: `${ROOTS.DASHBOARD}/store-management/raw-material/operations`,
-        third: `${ROOTS.DASHBOARD}/store-management/raw-material/third`,
+        
 
         storageArea: `${ROOTS.DASHBOARD}/store-management/raw-material/storage-area`,
         newStorageArea: `${ROOTS.DASHBOARD}/store-management/raw-material/storage-area/new`,
@@ -253,6 +253,12 @@ export const paths = {
         newTransferSlip: `${ROOTS.DASHBOARD}/store-management/raw-material/transfer-slip/new`,
         editTransferSlip: (id) =>
           `${ROOTS.DASHBOARD}/store-management/raw-material/transfer-slip/${id}/edit`,
+      },
+      loanBorrowing: {
+        // root: `${ROOTS.DASHBOARD}/store-management/loan-borrowing`,
+        third: `${ROOTS.DASHBOARD}/store-management/third`,
+        newThird: `${ROOTS.DASHBOARD}/store-management/third/new`,
+        editThird: (id) => `${ROOTS.DASHBOARD}/store-management/third/${id}/edit`,
       },
     },
     store: {
