@@ -152,7 +152,9 @@
             },
             "actions": {
                 "save_changes": "Enregistrer les modifications",
-                "create_stock": "Créer le stock"
+                "create_stock": "Créer le stock",
+                "save": "Enregistrer",
+                "add": "Ajouter"
             }
         }
     

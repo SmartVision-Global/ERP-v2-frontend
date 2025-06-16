@@ -55,6 +55,7 @@
         "csv": "CSV",
         "pdf": "PDF",
         "close": "Close"
+        
     },
     "filters": {
         "search_placeholder": "Search...",
@@ -152,7 +153,9 @@
         },
         "actions": {
             "save_changes": "Save Changes",
-            "create_stock": "Create Stock"
+            "create_stock": "Create Stock",
+            "save": "Save",
+            "add": "Add"
         }
     }
 } 
