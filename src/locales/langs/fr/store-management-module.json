@@ -77,7 +77,9 @@
             "lot": "Lot",
             "pmp": "PMP",
             "measure_unit": "Unité de mesure",
-            "tier": "Tier"
+            "tier": "Tier",
+            "full_name": "Nom complet",
+            "type": "Type"
         },
         "dialog": {
             "product_details": "Détails produit: {{code}} -- {{designation}}",

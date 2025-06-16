@@ -91,6 +91,19 @@ export const navData = [
                 path: paths.dashboard.storeManagement.rawMaterial.transferSlips,
               },
             ],
+            
+        
+          },
+          {
+            title:'Prêt Emprunt',
+            path:paths.dashboard.storeManagement.rawMaterial.root,
+            children:[
+              {
+                title:'Tiers',
+                path:paths.dashboard.storeManagement.rawMaterial.third,
+              },
+              
+            ]
           },
           // {
           //   title: 'Pièces de rechange',

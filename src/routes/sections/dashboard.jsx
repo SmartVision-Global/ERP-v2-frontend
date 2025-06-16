@@ -397,6 +397,11 @@ const PageStoreOperationsList = lazy(
   () => import('src/pages/dashboard/store-management/operations/list')
 );
 
+// loan borrowing
+const PageStoreLoanBorrowingThirdList = lazy(
+  () => import('src/pages/dashboard/store-management/loan-borrowing/third/list')
+);
+
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
 function SuspenseOutlet() {
@@ -782,6 +787,7 @@ export const dashboardRoutes = [
               { path: 'storage-area', element: <PageStoreStorageEreaList product_type={1} /> },
               { path: 'storage-area/new', element: <PageStoreStorageAreaNew product_type={1} /> },
               { path: 'operations', element: <PageStoreOperationsList product_type={1} /> },
+              { path: 'third', element: <PageStoreLoanBorrowingThirdList /> },
               {
                 path: 'initial-storage',
                 element: <PageStoreInitialStorageList product_type={1} />,

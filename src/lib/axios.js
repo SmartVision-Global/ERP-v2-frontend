@@ -137,6 +137,7 @@ export const endpoints = {
     // raw materials stocks : product_type=1,
     list: '/v1/inventory/products',
     operations: '/v1/inventory/product-history',
+    third: '/v1/inventory/tiers',
     storageArea: '/v1/inventory/storage-areas',
     initialStorage: '/v1/inventory/initial-storages',
     exitSlip: '/v1/inventory/exit-slips',
