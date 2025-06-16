@@ -290,6 +290,12 @@ export function CalculationPersonalPayrollView({ month }) {
                 >
                   {/* <Iconify icon="eva:person-done-fill" sx={{ color: 'success.main' }} /> */}
                   <Iconify icon="eva:plus-square-outline" sx={{ color: 'info.main' }} />
+                  {/* <Image
+                    src="/assets/icons/iconify/eva--plus-square-outline.svg"
+                    sx={{
+                      color: 'info.main',
+                    }}
+                  /> */}
                 </IconButton>
               </Tooltip>
             );

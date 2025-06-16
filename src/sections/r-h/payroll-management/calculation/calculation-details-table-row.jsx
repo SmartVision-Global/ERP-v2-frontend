@@ -20,7 +20,7 @@ export function RenderCellId({ params }) {
 export function RenderCellPersonal({ params }) {
   return (
     <Typography fontSize={12} variant="body2">
-      {params?.row?.name}
+      {params?.row?.personal?.name}
     </Typography>
   );
 }
@@ -28,35 +28,35 @@ export function RenderCellPersonal({ params }) {
 export function RenderCellSite({ params }) {
   return (
     <Typography fontSize={12} variant="body2">
-      {params?.row?.site}
+      {params?.row?.personal?.site}
     </Typography>
   );
 }
 export function RenderCellBank({ params }) {
   return (
     <Typography fontSize={12} variant="body2">
-      {params?.row?.bank}
+      {params?.row?.personal?.bank}
     </Typography>
   );
 }
 export function RenderCellRib({ params }) {
   return (
     <Typography fontSize={12} variant="body2">
-      {params?.row?.rib}
+      {params?.row?.personal?.rib}
     </Typography>
   );
 }
 
 export function RenderCellJobRegime({ params, href }) {
-  return <Typography fontSize={12}>{JOB_REGIME[params.row?.job_regime]}</Typography>;
+  return <Typography fontSize={12}>{JOB_REGIME[params.row?.personal?.job_regime]}</Typography>;
 }
 
 export function RenderCellJob({ params, href }) {
-  return <Typography fontSize={12}>{params.row?.job}</Typography>;
+  return <Typography fontSize={12}>{params.row?.personal?.job}</Typography>;
 }
 
 export function RenderCellSalaryGrid({ params, href }) {
-  return <Typography fontSize={12}>{params.row?.salary_grid}</Typography>;
+  return <Typography fontSize={12}>{params.row?.personal?.salary_grid}</Typography>;
 }
 
 export function RenderCellDaysWorked({ params, href }) {
@@ -82,64 +82,18 @@ export function RenderCellOverdays({ params }) {
   return <Typography variant="body2">{params.row?.total_days_worked}</Typography>;
 }
 
-export function RenderCellOvertime({ params }) {
-  return (
-    <Typography variant="body2">
-      {params.row?.total_overtime_50 +
-        params.row?.total_overtime_75 +
-        params.row?.total_overtime_100}
-    </Typography>
-  );
-}
-
-export function RenderCellPrimeCotis({ params }) {
-  return <Typography variant="body2">0</Typography>;
-}
-
-export function RenderCellPrimeNonCotis({ params }) {
-  return <Typography variant="body2">0</Typography>;
-}
-
 export function RenderCellBaseSalary({ params }) {
-  return (
-    <Typography variant="body2" color="text.secondary">
-      {fCurrency(params.row?.salary)}
-    </Typography>
-  );
+  return <Typography variant="body2">{fCurrency(params.row?.salary)}</Typography>;
 }
 
-export function RenderCellCotisSalary({ params }) {
-  return (
-    <Typography variant="body2" color="text.secondary">
-      {params?.row?.total_contributory_salary?.toFixed(2)}
-    </Typography>
-  );
+export function RenderCellContributorySalary({ params }) {
+  return <Typography variant="body2">{fCurrency(params.row?.contributory_salary)}</Typography>;
 }
 
-export function RenderCellPositionSalary({ params }) {
-  return (
-    <Typography variant="body2" color="text.secondary">
-      {params.row?.total_post_salary?.toFixed(2)}
-    </Typography>
-  );
-}
-
-export function RenderCellImposSalary({ params }) {
-  return (
-    <Typography variant="body2" color="text.secondary">
-      {params.row?.total_taxable_wages?.toFixed(2)}
-    </Typography>
-  );
-}
-
-export function RenderCellIrg({ params }) {
-  return (
-    <Typography variant="body2" color="text.secondary">
-      {params.row?.total_tax?.toFixed(2)}
-    </Typography>
-  );
+export function RenderCellPostSalary({ params }) {
+  return <Typography variant="body2">{fCurrency(params.row?.post_salary)}</Typography>;
 }
 
 export function RenderCellNet({ params }) {
-  return <Typography variant="body2">{params.row?.total_net_salary?.toFixed(2)}</Typography>;
+  return <Typography variant="body2">{fCurrency(params.row?.net_salary_payable)}</Typography>;
 }

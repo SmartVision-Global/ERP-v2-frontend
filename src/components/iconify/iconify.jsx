@@ -22,6 +22,7 @@ export const Iconify = forwardRef((props, ref) => {
           height: width,
           flexShrink: 0,
           display: 'inline-flex',
+          pointerEvents: 'none',
         },
         ...(Array.isArray(sx) ? sx : [sx]),
       ]}

@@ -105,6 +105,25 @@ export function RenderCellContract({ params }) {
             ? 'warning'
             : 'default'
       }
+      // sx={
+      //   params.row.contract_type == '1'
+      //     ? {
+      //         // Add an animated background / border / color pulse
+      //         animation: 'pulse 1.5s infinite',
+      //         '@keyframes pulse': {
+      //           '0%': {
+      //             boxShadow: '0 0 0 0 rgba(25, 118, 210, 0.7)',
+      //           },
+      //           '70%': {
+      //             boxShadow: '0 0 0 10px rgba(25, 118, 210, 0)',
+      //           },
+      //           '100%': {
+      //             boxShadow: '0 0 0 0 rgba(25, 118, 210, 0)',
+      //           },
+      //         },
+      //       }
+      //     : {}
+      // }
     >
       {CONTRACT_TYPE[params.row.contract_type]}
     </Label>
@@ -344,13 +363,13 @@ export function RenderCellBanq({ params }) {
   return (
     <Label variant="soft" color="default">
       {/* {params.row.publish} */}
-      {params.row.bank?.name}
+      {params.row.bank?.name ?? '-'}
     </Label>
   );
 }
 
 export function RenderCellRib({ params, href }) {
-  return <Typography fontSize={14}>{params.row.rib}</Typography>;
+  return <Typography fontSize={14}>{params.row.rib ?? '-'}</Typography>;
 }
 
 export function RenderCellTeamType({ params, href }) {
