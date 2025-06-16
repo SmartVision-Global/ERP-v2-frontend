@@ -66,3 +66,49 @@ export function useGetThird(id) {
   return memoizedValue;
 }
 
+/**
+ * Generic function to create any entity type
+
+ * @param {object} data - The data for the new entity
+ */
+export async function createEntity(data) {
+  if (!enableServer) return;
+  
+  const endpoint = ENDPOINT;
+  if (!endpoint) {
+    console.error(`No endpoint found for entity type`);
+    return;
+  }
+  console.log('createEntity data', data);
+  try {
+    await axios.post(endpoint, data);
+    mutate(endpoints.stores.list);
+  } catch (error) {
+    console.error(`Error creating entity:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Generic function to update any entity type
+ * @param {string} entityType - The type of entity to update
+ * @param {number|string} id - The ID of the entity to update
+ * @param {object} data - The updated data
+ */
+export async function updateEntity(entityType, id, data) {
+  if (!enableServer) return;
+  
+  const endpoint = ENDPOINT;
+  if (!endpoint) {
+    console.error(`No endpoint found for entity type: ${entityType}`);
+    return;
+  }
+  
+  try {
+    await axios.patch(`${endpoint}/${id}`, data);
+    mutate(endpoints.stores.list);
+  } catch (error) {
+    console.error(`Error updating ${entityType}:`, error);
+    throw error;
+  }
+}

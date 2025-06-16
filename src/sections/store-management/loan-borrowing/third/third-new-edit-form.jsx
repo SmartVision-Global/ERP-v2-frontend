@@ -1,236 +1,146 @@
 import { z as zod } from 'zod';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useEffect, useMemo } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Stack, Divider, CardHeader, MenuItem, Typography, CircularProgress, IconButton } from '@mui/material';
+import { Box, Card, Stack, Stepper, Step, StepLabel, StepButton, CardHeader, Typography, MenuItem, Divider } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useTranslate } from 'src/locales';
-import { uploadMedia } from 'src/actions/media';
-import { useMultiLookups } from 'src/actions/lookups';
-import { DATA_TYPE_OPTIONS } from 'src/_mock/stores/raw-materials/data';
-import { useGetFamilies } from 'src/actions/settings/identification/raw-materials';
-import { createEntity, updateEntity } from 'src/actions/stores/raw-materials/stocks';
+import { THIRD_TYPE_OPTIONS } from 'src/_mock/stores/raw-materials/data';
+import { createEntity, updateEntity } from 'src/actions/store-management/third';
 
 import { toast } from 'src/components/snackbar';
-import { Iconify } from 'src/components/iconify';
-import { Form, Field, schemaHelper } from 'src/components/hook-form';
+import { Form, Field } from 'src/components/hook-form';
 
-// Validation schema for stocks
-const StockSchema = zod.object({
-  builder_code: zod.string().min(1, { message: 'Code constructeur is required' }),
-  supplier_code: zod.string().min(1, { message: 'Code fournisseur is required' }),
-  family_id: zod.string().min(1, { message: 'Famille is required' }),
-  workshop_id: zod.string().min(1, { message: 'Atelier is required' }),
-  category_id: zod.string().min(1, { message: 'Catégorie is required' }),
-  unit_measure_id: zod.string().min(1, { message: 'Unité de mesure is required' }),
-  appellation: zod.string().min(1, { message: 'Appellation is required' }),
-  designation: zod.string().min(1, { message: 'Designation is required' }),
-  weight: zod.number({ coerce: true }).min(1, { message: 'Poids is required' }),
-  min: zod.number({ coerce: true }).min(1, { message: 'Quantité Min is required' }),
-  alert: zod.number({ coerce: true }).min(1, { message: 'Quantité Alerte is required' }),
-  consumption: zod.number({ coerce: true }).min(1, { message: 'Consommation journalière prévisionnelle is required' }),
-  type: zod.string().min(1, { message: 'Type is required' }),
-  image: schemaHelper.file().optional(),
-  catalog: schemaHelper.file().optional(),
-}).extend({
-  dimensions: zod.array(zod.object({ id: zod.number(), value: zod.number({ coerce: true }) })).optional(),
-  conditionings: zod.array(zod.object({ id: zod.number(), value: zod.number({ coerce: true }) })).optional(),
-  storage_areas: zod.array(
-    zod.object({
-      storage_area_id: zod.number({ coerce: true }),
-      location: zod.string().min(1, { message: 'Location is required' })
-    })
-  ).optional(),
-  fees: zod.object({
-    douan: zod.number({ coerce: true }).min(1, { message: 'Douan is required' }),
-    position: zod.string().min(1, { message: 'Position is required' })
-  }).optional(),
+// New Schema
+const ThirdSchema = zod.object({
+  code: zod.string().min(1, { message: 'Code is required' }),
+  full_name: zod.string().optional(),
+  phone_number: zod.string().optional(),
+  mobile_number: zod.string().optional(),
+  city: zod.string().optional(),
+  country: zod.string().optional(),
+  address: zod.string().min(1, { message: 'Address is required' }),
+  comment: zod.string().optional(),
+  // Fields for other tabs - for now optional and not in the UI
+  type: zod.number().min(1, { message: 'Type is required' }),
+  fax: zod.string().optional(),
+  email: zod.string().email({ message: 'Invalid email address' }).optional().or(zod.literal('')),
+  website: zod.string().url({ message: 'Invalid URL' }).optional().or(zod.literal('')),
+  sold: zod.number({ coerce: true }).optional(),
+  sold_p: zod.number({ coerce: true }).optional(),
+  trade_registry: zod.string().optional(),
+  idfiscale: zod.string().optional(),
+  art_Imposition: zod.string().optional(),
+  nis: zod.string().optional(),
+  account_number: zod.string().optional(),
+  bank: zod.string().optional(),
+  rib: zod.string().optional(),
 });
+
 
 export function ThirdNewEditForm({ currentThird }) {
   const router = useRouter();
-        
-  const { dataLookups, dataLoading } = useMultiLookups([
-    { entity: 'workshops', url: 'settings/lookups/workshops' },
-    { entity: 'categories', url: 'settings/lookups/categories', params: { group: 1 }},
-    { entity: 'units', url: 'settings/lookups/measurement-units' },
-    { entity: 'dimensions', url: 'settings/lookups/dimensions' },
-    { entity: 'conditionings', url: 'settings/lookups/conditionings' },
-    { entity: 'storageAreas', url: 'inventory/lookups/storage-areas' },
-  ]);
-  const { families: parentFamilies, familiesLoading } = useGetFamilies(1, true);
-  const workshops = dataLookups.workshops || [];
-  const categories = dataLookups.categories || [];
-  const units = dataLookups.units || [];
-  const dimensionDefs = dataLookups.dimensions || [];
-  const conditionDefs = dataLookups.conditionings || [];
-  const storageAreas = dataLookups.storageAreas || [];
-  // console.log('currentThird', currentThird);
-  // console.log('dimensionDefs', dimensionDefs);
-  const defaultValues = {
-    builder_code: '',
-    supplier_code: '',
-    family_parent_id: '',
-    family_id: '',
-    workshop_id: '',
-    category_id: '',
-    unit_measure_id: '',
-    appellation: '',
-    designation: '',
-    weight: '',
-    min: '',
-    alert: '',
-    consumption: '',
-    type: DATA_TYPE_OPTIONS[0]?.value || '',
-    image: '',
-    catalog: '',
-    dimensions: dimensionDefs.map((d) => ({ id: Number(d.value), value: 0 })),
-    conditionings: conditionDefs.map((d) => ({ id: Number(d.value), value: 0 })),
-    storage_areas: [],
-    fees: { douan: '', position: '' },
-  };
+  const { t } = useTranslate('store-management-module');
+  const [activeStep, setActiveStep] = useState(0);
 
+  const STEPS = [
+    'Identification du produit',
+    'Paramétrage du produit 1',
+    'Paramétrage du produit 2',
+  ];
+
+  const defaultValues = useMemo(
+    () => ({
+        code: currentThird?.code || '',
+        full_name: currentThird?.full_name || '',
+        phone_number: currentThird?.phone_number || '',
+        mobile_number: currentThird?.mobile_number || '',
+        city: currentThird?.city || '',
+        country: currentThird?.country || '',
+        address: currentThird?.address || '',
+        comment: currentThird?.comment || '',
+        type: currentThird?.type || 1, 
+        fax: currentThird?.fax || '',
+        email: currentThird?.email || '',
+        website: currentThird?.website || '',
+        sold: currentThird?.sold || 0,
+        sold_p: currentThird?.sold_p || 0,
+        trade_registry: currentThird?.trade_registry || '',
+        idfiscale: currentThird?.idfiscale || '',
+        art_Imposition: currentThird?.art_Imposition || '',
+        nis: currentThird?.nis || '',
+        account_number: currentThird?.account_number || '',
+        bank: currentThird?.bank || '',
+        rib: currentThird?.rib || '',
+    }),
+    [currentThird]
+  );
+  
   const methods = useForm({
-    resolver: zodResolver(StockSchema),
+    resolver: zodResolver(ThirdSchema),
     defaultValues,
-    // values: {
-    //   ...currentThird,
-    //   family_id: currentThird?.family?.id?.toString() || '',
-    //   workshop_id: currentThird?.workshop_id?.toString() || '',
-    //   category_id: currentThird?.category?.id?.toString() || '',
-    //   unit_measure_id: currentThird?.unit_measure?.id?.toString() || '',
-    //   type: currentThird?.type || '',
-    //   image: currentThird?.image || '',
-    //   catalog: currentThird?.catalog || '',
-    //   builder_code: currentThird?.builder_code || '',
-    //   supplier_code: currentThird?.supplier_code || '',
-    //   appellation: currentThird?.appellation || '',
-    //   designation: currentThird?.designation || '',
-    //   weight: currentThird?.weight || '',
-    //   min: currentThird?.min || '',
-    //   alert: currentThird?.alert || '',
-    //   dimensions: currentThird?.dimensions || dimensionDefs.map((d) => ({ id: Number(d.value), value: 0 })),
-    //   conditionings: currentThird?.conditionings || conditionDefs.map((d) => ({ id: Number(d.value), value: 0 })),
-    //   storage_areas: currentThird?.storage_areas || [],
-    // },
   });
 
   const {
     reset,
     handleSubmit,
-    setValue,
-    control,
-    watch,
+    trigger,
     setError,
     formState: { isSubmitting },
   } = methods;
 
-  // Inline field arrays for sections
-  const { fields: dimensionFields } = useFieldArray({ control, name: 'dimensions', keyName: 'fieldKey' });
-  const { fields: conditioningFields } = useFieldArray({ control, name: 'conditionings', keyName: 'fieldKey' });
-  const { fields: storageAreaFields, append: appendStorageArea, remove: removeStorageArea } = useFieldArray({ control, name: 'storage_areas', keyName: 'fieldKey' });
-
-  // parent-child family select logic
-  const selectedParent = watch('family_parent_id');
-  const parentOptions = parentFamilies.map((f) => ({ value: f.id.toString(), text: f.name }));
-  const childOptions = parentFamilies.find((f) => f.id.toString() === selectedParent)?.children || [];
-  const childOptionsData = childOptions.map((c) => ({ value: c.id.toString(), text: c.name }));
-  // clear child selection when parent changes
   useEffect(() => {
-    setValue('family_id', '');
-  }, [selectedParent, setValue]);
-
-  // Reset form when lookups (and optionally stock data) are ready, for both new and edit
-  useEffect(() => {
-    if (!dataLoading && !familiesLoading && dimensionDefs.length > 0 && conditionDefs.length > 0) {
-      reset({
-        builder_code: currentThird?.builder_code || '',
-        supplier_code: currentThird?.supplier_code || '',
-        family_parent_id: currentThird?.family?.parent_id?.toString() || '',
-        family_id: currentThird?.family?.id?.toString() || '',
-        workshop_id: currentThird?.workshop_id?.toString() || '',
-        category_id: currentThird?.category?.id?.toString() || '',
-        unit_measure_id: currentThird?.unit_measure?.id?.toString() || '',
-        appellation: currentThird?.appellation || '',
-        designation: currentThird?.designation || '',
-        weight: currentThird?.weight || '',
-        min: currentThird?.min || '',
-        alert: currentThird?.alert || '',
-        consumption: currentThird?.consumption || '',
-        type: currentThird?.type.toString() || DATA_TYPE_OPTIONS[0]?.value || '',
-        image: currentThird?.image || '',
-        catalog: currentThird?.catalog || '',
-        dimensions: currentThird?.dimensions?.length
-          ? currentThird.dimensions.map((d) => ({ id: d.id, value: d.value }))
-          : dimensionDefs.map((d) => ({ id: Number(d.value), value: 0 })),
-        conditionings: currentThird?.conditionings?.length
-          ? currentThird.conditionings.map((c) => ({ id: c.id, value: c.value }))
-          : conditionDefs.map((d) => ({ id: Number(d.value), value: 0 })),
-        storage_areas: currentThird?.storage_areas?.length
-          ? currentThird.storage_areas.map((sa) => ({ storage_area_id: sa.storage_area_id, location: sa.location }))
-          : [],
-        fees: currentThird?.fees || { douan: '', position: '' },
-      });
+    if (currentThird) {
+      reset(defaultValues);
     }
-  }, [dataLoading, familiesLoading, dimensionDefs, conditionDefs, currentThird, reset]);
-  const { t } = useTranslate('store-management-module');
+  }, [currentThird, defaultValues, reset]);
+  
+  const tabFields = {
+    0: ['code', 'address'],
+    1: ['email', 'website'],
+    2: []
+  };
 
-  const onDropImage = async (acceptedFiles) => {
-    const value = acceptedFiles[0];
-    const newData = new FormData();
-    newData.append('type', 'image');
-    newData.append('file', value);
-    newData.append('collection', 'photos');
-    setValue('image', value, { shouldValidate: true });
-
-    try {
-      const response = await uploadMedia(newData);
-      setValue('image', response?.uuid, { shouldValidate: true });
-    } catch (error) {
-      console.log('error in upload file', error);
+  const handleNextStep = async () => {
+    const fieldsToValidate = tabFields[activeStep];
+    const isValid = await trigger(fieldsToValidate);
+    if (isValid) {
+      setActiveStep(activeStep + 1);
     }
   };
 
-  const onDropCatalog = async (acceptedFiles) => {
-    const value = acceptedFiles[0];
-    const newData = new FormData();
-    newData.append('type', 'image');
-    newData.append('file', value);
-    newData.append('collection', 'catalogs');
-    setValue('catalog', value, { shouldValidate: true });
-
-    try {
-      const response = await uploadMedia(newData);
-      setValue('catalog', response?.uuid, { shouldValidate: true });
-    } catch (error) {
-      console.log('error in upload file', error);
+  const handlePreviousStep = () => {
+    setActiveStep(activeStep - 1);
+  };
+  
+  const handleStepClick = (step) => async () => {
+    if (step > activeStep) {
+        const fieldsToValidate = tabFields[activeStep];
+        const isValid = await trigger(fieldsToValidate);
+        if (isValid) {
+            setActiveStep(step);
+        }
+    } else {
+        setActiveStep(step);
     }
   };
-
-  const handleRemoveImage = useCallback(() => {
-    setValue('image', null);
-  }, [setValue]);
-
-  const handleRemoveCatalog = useCallback(() => {
-    setValue('catalog', null);
-  }, [setValue]);
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log('data onSubmit', data);
+    console.log('onSubmit data', data);
     try {
       if (currentThird) {
-        await updateEntity('stocks', currentThird.id, { ...data });
+        await updateEntity(currentThird.id, data);
       } else {
-        await createEntity('stocks', { ...data });
+        await createEntity(data);
       }
-      toast.success(currentThird ? 'Stock updated' : 'Stock created');
-      router.push(paths.dashboard.storeManagement.rawMaterial.root);
+      toast.success(currentThird ? 'Third updated' : 'Third created');
+      router.push(paths.dashboard.storeManagement.loanBorrowing.third);
     } catch (error) {
       console.error(error);
       if (error && error.errors) {
@@ -242,191 +152,162 @@ export function ThirdNewEditForm({ currentThird }) {
     }
   });
 
-  const renderDetails = () => (
-    <Card>
-      <CardHeader title={currentThird ? 'Modifier Stock' : 'Ajouter Stock'} sx={{ mb: 3 }} />
-      <Divider />
-      <Stack spacing={3} sx={{ p: 3 }}>
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="builder_code" label="Code constructeur" />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="supplier_code" label="Code fournisseur" />
-          </Grid>
-        </Grid>
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Field.Lookup name="family_parent_id" label="Famille Principale" data={parentOptions} />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Field.Lookup name="family_id" label="Sous famille" data={childOptionsData} />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Field.Lookup name="workshop_id" label="Atelier" data={workshops} />
-          </Grid>
-        </Grid>
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="category_id" label="Catégorie" data={categories} />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="unit_measure_id" label="Unité de mesure" data={units} />
-          </Grid>
-        </Grid>
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="appellation" label="Appellation" multiline rows={3} />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="designation" label="Designation" multiline rows={3} />
-          </Grid>
-        </Grid>
-        {/* Fees Section */}
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Number name="fees.douan" label="Douan" />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="fees.position" label="Position" />
-          </Grid>
-        </Grid>
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Field.Number name="weight" label="Poids" />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Field.Number name="min" label="Quantité Min" />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Field.Number name="alert" label="Quantité Alerte" />
-          </Grid>
-        </Grid>
-        {/* Dimensions Section */}
-        <Typography variant="subtitle2">Dimensions</Typography>
-        <Grid container spacing={3}>
-          {dimensionFields.map((field, index) => {
-            const def = dimensionDefs.find((d) => Number(d.value) === field.id) || {};
-            const label = def.text || def.name || `Dimension ${field.id}`;
-            return (
-              <Grid key={field.fieldKey} size={{ xs: 12, md: 4 }}>
-                <Field.Number name={`dimensions.${index}.value`} label={label} />
-              </Grid>
-            );
-          })}
-        </Grid>
-        {/* Conditionings Section */}
-        <Typography variant="subtitle2">Conditionings</Typography>
-        <Grid container spacing={3}>
-          {conditioningFields.map((field, index) => {
-            const def = conditionDefs.find((d) => Number(d.value) === field.id) || {};
-            const label = def.text || def.name || `Conditioning ${field.id}`;
-            
-            return (
-              <Grid key={field.fieldKey} size={{ xs: 12, md: 4 }}>
-                <Field.Number name={`conditionings.${index}.value`} label={label} />
-              </Grid>
-            );
-          })}
-        </Grid>
-        {/* Storage Areas Section */}
-        <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 3 }}>
-          <Typography variant="subtitle2">Storage Areas</Typography>
-          <IconButton color="primary" onClick={() => appendStorageArea({ storage_area_id: '', location: '' })}>
-            <Iconify icon="eva:plus-fill" />
-          </IconButton>
-        </Stack>
-        <Grid>
-          {storageAreaFields.map((field, index) => (
-            <Grid container spacing={3} key={field.fieldKey} sx={{ mb: 3 }}>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <Field.Lookup
-                  name={`storage_areas.${index}.storage_area_id`}
-                  label="Storage Area"
-                  data={storageAreas}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, md: 5 }}>
-                <Field.Text
-                  name={`storage_areas.${index}.location`}
-                  label="Location"
-                />
-              </Grid>
-              <Grid size={{ xs: 12, md: 1 }}>
-                <IconButton color="error" onClick={() => removeStorageArea(index)}>
-                  <Iconify icon="eva:trash-2-outline" />
-                </IconButton>
-              </Grid>
-            </Grid>
-          ))}
-        </Grid>
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="type" label="Type" size="small">
-              {DATA_TYPE_OPTIONS.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Field.Select>
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Field.Number
-              name="consumption"
-              label="Consommation journalière prévisionnelle"
-            />
-          </Grid>
-        </Grid>
-        
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Image</Typography>
-              <Field.Upload
-                name="image"
-                label="Image"
-                onDelete={handleRemoveImage}
-                onDrop={onDropImage}
-              />
-            </Stack>
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Catalogue</Typography>
-              <Field.Upload
-                name="catalog"
-                label="Catalogue"
-                onDelete={handleRemoveCatalog}
-                onDrop={onDropCatalog}
-              />
-            </Stack>
-          </Grid>
-        </Grid>
-      </Stack>
-    </Card>
+  const renderTabContent = () => (
+    <Box sx={{ mt: 3 }}>
+        {activeStep === 0 && (
+            <Card>
+              <CardHeader title="Identification du produit" sx={{ mb: 3 }} />
+              <Divider />
+                <Stack spacing={3} sx={{ p: 3 }}>
+                    <Grid container spacing={3}>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <Field.Text name="code" label="Code" />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <Field.Text name="full_name" label="Fullname" />
+                        </Grid>
+                    </Grid>
+                    <Grid container spacing={3}>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <Field.Text name="phone_number" label="Phone Number" />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <Field.Text name="mobile_number" label="Mobile Phone" />
+                        </Grid>
+                    </Grid>
+                    <Grid container spacing={3}>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <Field.Text name="city" label="City" />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <Field.Text name="country" label="Country" />
+                        </Grid>
+                    </Grid>
+                    <Grid container spacing={3}>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <Field.Text name="address" label="Address" multiline rows={3} />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <Field.Text name="comment" label="Comment" multiline rows={3} />
+                        </Grid>
+                    </Grid>
+                    
+                </Stack>
+            </Card>
+        )}
+        {activeStep === 1 && (
+            <Card>
+                <CardHeader title="Paramétrage du produit 1" sx={{ mb: 3 }} />
+                <Divider />
+                 <Stack spacing={3} sx={{ p: 3 }}>
+                    <Grid container spacing={3}>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <Field.Select name="type" label="Type" size="small">
+                                {THIRD_TYPE_OPTIONS.map((option) => (
+                                    <MenuItem key={option.value} value={option.value}>
+                                        {option.label}
+                                    </MenuItem>
+                                ))}
+                            </Field.Select>
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                           <Field.Text name="fax" label="Fax" />
+                        </Grid>
+                    </Grid>
+                    <Grid container spacing={3}>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <Field.Text name="email" label="Email" />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <Field.Text name="website" label="Website" />
+                        </Grid>
+                    </Grid>
+                    <Grid container spacing={3}>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <Field.Number name="sold" label="Sold" type="number" />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <Field.Number name="sold_p" label="Sold P" type="number" />
+                        </Grid>
+                    </Grid>
+                 </Stack>
+            </Card>
+        )}
+        {activeStep === 2 && (
+            <Card>
+                <CardHeader title="Paramétrage du produit 2" sx={{ mb: 3 }} />
+                <Divider />
+                <Stack spacing={3} sx={{ p: 3 }}>
+                <Grid container spacing={3}>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                           <Field.Text name="trade_registry" label="Trade Registry" />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                           <Field.Text name="idfiscale" label="ID Fiscale" />
+                        </Grid>
+                    </Grid>
+                    <Grid container spacing={3}>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                           <Field.Text name="art_Imposition" label="Art Imposition" />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                           <Field.Text name="nis" label="NIS" />
+                        </Grid>
+                    </Grid>
+                    <Grid container spacing={3}>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                           <Field.Text name="bank" label="Bank" />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                           <Field.Text name="account_number" label="Account Number" />
+                        </Grid>
+                    </Grid>
+                    <Grid container spacing={3}>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                           <Field.Text name="rib" label="RIB" />
+                        </Grid>
+                    </Grid>
+                </Stack>
+            </Card>
+        )}
+    </Box>
   );
 
-  const renderActions = () => (
-    <Box sx={{ display: 'flex', gap: 2 }}>
-      <LoadingButton type="submit" variant="contained" size="medium" loading={isSubmitting}>
-        {currentThird ? t('form.actions.save') : t('form.actions.add')}
-      </LoadingButton>
+  const renderNavigationButtons = () => (
+    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3 }}>
+      {activeStep > 0 && (
+        <LoadingButton variant="outlined" onClick={handlePreviousStep}>
+          Previous Step
+        </LoadingButton>
+      )}
+      {activeStep < STEPS.length - 1 && (
+        <LoadingButton variant="contained" onClick={handleNextStep}>
+          Next Step
+        </LoadingButton>
+      )}
+      {activeStep === STEPS.length - 1 && (
+        <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+          Validate
+        </LoadingButton>
+      )}
     </Box>
   );
 
   return (
     <Form methods={methods} onSubmit={onSubmit}>
-      <Stack spacing={5} sx={{ mx: 'auto', maxWidth: { xs: 720, xl: 1080 } }}>
-        {(dataLoading || familiesLoading) ? (
-          <CircularProgress sx={{ mx: 'auto' }} />
-        ) : (
-          <>
-            {renderDetails()}
-            {renderActions()}
-          </>
-        )}
-         
-      </Stack>
+        <CardHeader title={currentThird ? 'Edit Third' : 'New Third'} />
+        <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 3 }}>
+            {STEPS.map((label, index) => (
+                <Step key={label}>
+                    <StepButton onClick={handleStepClick(index)}>
+                        <StepLabel>{label}</StepLabel>
+                    </StepButton>
+                </Step>
+            ))}
+        </Stepper>
+      
+        {renderTabContent()}
+        {renderNavigationButtons()}
     </Form>
   );
 }
