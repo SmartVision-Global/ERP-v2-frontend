@@ -1007,7 +1007,7 @@ export function ActifNewEditForm({ currentProduct }) {
               sx={{ display: 'flex', justifyContent: 'space-between' }}
             />
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }} />
+          {/* <Grid size={{ xs: 12, md: 6 }} /> */}
 
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Lookup name="rate_id" label="Regime de cotisation" data={rates} />

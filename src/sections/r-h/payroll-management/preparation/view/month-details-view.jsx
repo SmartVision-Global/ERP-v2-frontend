@@ -287,14 +287,14 @@ export function MonthDetailsView({ month }) {
               <Iconify icon="eva:person-delete-outline" sx={{ color: 'error.main' }} />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Réinitialiser">
+          {/* <Tooltip title="Réinitialiser">
             <IconButton
               // onClick={() => handleRefresh(params.row.id)}
               onClick={handleRefresh}
             >
               <Iconify icon="eva:refresh-fill" sx={{ color: 'info.main' }} />
             </IconButton>
-          </Tooltip>
+          </Tooltip> */}
         </Stack>
       ),
     },

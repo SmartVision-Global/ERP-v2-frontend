@@ -20,15 +20,14 @@ import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { FieldContainer } from 'src/components/form-validation-view';
 
 export const NewTauxCnasSchema = zod.object({
-  enterprise_id: zod
-    .number()
-    .min(0, { message: 'Rate must be a positive number!' })
-    .or(zod.string()),
-  month: zod.string().min(1, { message: 'Category is required!' }),
-  year: zod.string().min(1, { message: 'Category is required!' }),
-  presence_bonus_exists: zod.string().min(1, { message: 'Category is required!' }),
-  collective_return_bonus_exists: zod.string().min(1, { message: 'Category is required!' }),
-  individual_performance_bonus_exists: zod.string().min(1, { message: 'Category is required!' }),
+  enterprise_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
+  month: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
+  year: zod.string().min(1, { message: 'Veuillez remplir ce champ' }).or(zod.number()),
+  presence_bonus_exists: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  collective_return_bonus_exists: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  individual_performance_bonus_exists: zod
+    .string()
+    .min(1, { message: 'Veuillez remplir ce champ' }),
   maximum_point: schemaHelper.nullableInput(
     zod
       .number({ coerce: true })
@@ -65,7 +64,16 @@ export function MonthNewEditForm({ currentTaux }) {
   const methods = useForm({
     resolver: zodResolver(NewTauxCnasSchema),
     defaultValues,
-    values: currentTaux,
+    values: {
+      enterprise_id: currentTaux?.enterprise_id || '',
+      month: currentTaux?.month || '',
+      year: currentTaux?.year || '',
+      presence_bonus_exists: currentTaux?.presence_bonus_exists || '0',
+      collective_return_bonus_exists: currentTaux?.collective_return_bonus_exists || '0',
+      individual_performance_bonus_exists: currentTaux?.individual_performance_bonus_exists || '0',
+      maximum_point: currentTaux?.maximum_point || 0,
+      lowest_point: currentTaux?.lowest_point || 0,
+    },
   });
 
   const {
@@ -78,7 +86,7 @@ export function MonthNewEditForm({ currentTaux }) {
   const onSubmit = handleSubmit(async (data) => {
     try {
       if (currentTaux) {
-        await updatePayrollMonth(data);
+        await updatePayrollMonth(currentTaux?.id, data);
       } else {
         await createPayrollMonth(data);
       }

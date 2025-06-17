@@ -58,6 +58,9 @@ export function DeductionsCompensationNewEditForm({ currentProduct }) {
     defaultValues,
     values: {
       ...currentProduct,
+      type: currentProduct?.type || '',
+      code: currentProduct?.code || '',
+      name: currentProduct?.name || '',
       contributory_imposable: currentProduct?.contributory_imposable || '1',
       subject_absence: currentProduct?.subject_absence ? 'yes' : 'no',
       is_deletable: currentProduct?.is_deletable ? 'yes' : 'no',

@@ -258,6 +258,10 @@ const PageRhPayrollManagementPreparationNew = lazy(
 const PageRhPayrollManagementPreparationDetails = lazy(
   () => import('src/pages/dashboard/r-h/payroll-management/preparation/details')
 );
+
+const PageRhPayrollManagementPreparationEdit = lazy(
+  () => import('src/pages/dashboard/r-h/payroll-management/preparation/edit')
+);
 // ============== purchase_Supply ==================
 //purchase Order
 const PagePurchaseOrder = lazy(
@@ -603,7 +607,6 @@ export const dashboardRoutes = [
               {
                 path: 'calculation/:id/details',
                 element: <PageRhPayrollManagementCalculationDetails />,
-                index: true,
               },
 
               {
@@ -617,6 +620,10 @@ export const dashboardRoutes = [
               {
                 path: 'preparation/:id/details',
                 element: <PageRhPayrollManagementPreparationDetails />,
+              },
+              {
+                path: 'preparation/:id/edit',
+                element: <PageRhPayrollManagementPreparationEdit />,
               },
             ],
           },
