@@ -28,7 +28,7 @@ export function TableToolbarCustom({
   handleFilter,
   setPaginationModel,
   paginationModel,
-  isRefresh = false,
+  // isRefresh = false,
 }) {
   const rangeCalendarPicker = useDateRangePicker(dayjs(new Date('2024/08/08')), null);
   const getInput = useCallback(
@@ -106,14 +106,14 @@ export function TableToolbarCustom({
     handleFilter(newData);
   };
 
-  const refresh = () => {
-    const newData = {
-      ...filters,
-      limit: paginationModel.pageSize,
-      offset: paginationModel.pageSize * paginationModel.page,
-    };
-    handleFilter(newData);
-  };
+  // const refresh = () => {
+  //   const newData = {
+  //     ...filters,
+  //     limit: paginationModel.pageSize,
+  //     offset: paginationModel.pageSize * paginationModel.page,
+  //   };
+  //   handleFilter(newData);
+  // };
 
   return (
     <Stack direction="column" spacing={2} paddingX={4} paddingY={2}>
@@ -248,11 +248,11 @@ export function TableToolbarCustom({
             )}
           </Stack>
         )}
-        {isRefresh && (
+        {/* {isRefresh && (
           <Button onClick={refresh} startIcon={<Iconify icon="eva:refresh-fill" />}>
             Actualiser
           </Button>
-        )}
+        )} */}
       </Stack>
     </Stack>
   );

@@ -163,19 +163,19 @@ export function MonthDetailsView({ month }) {
       console.log('error in pagination search request', error);
     }
   };
-  const handleRefresh = async () => {
-    try {
-      const newData = {
-        ...editedFilters,
-        limit: paginationModel.pageSize,
-        offset: paginationModel.page * paginationModel.pageSize,
-      };
-      const response = await getFiltredAttachedPersonals(month?.id, newData);
-      setTableData(response.data?.data?.records);
-    } catch (error) {
-      console.log('error in pagination search request', error);
-    }
-  };
+  // const handleRefresh = async () => {
+  //   try {
+  //     const newData = {
+  //       ...editedFilters,
+  //       limit: paginationModel.pageSize,
+  //       offset: paginationModel.page * paginationModel.pageSize,
+  //     };
+  //     const response = await getFiltredAttachedPersonals(month?.id, newData);
+  //     setTableData(response.data?.data?.records);
+  //   } catch (error) {
+  //     console.log('error in pagination search request', error);
+  //   }
+  // };
   const columns = [
     { field: 'category', headerName: 'Category', filterable: false },
     {
@@ -382,7 +382,7 @@ export function MonthDetailsView({ month }) {
             handleFilter={handleFilter}
             setPaginationModel={setPaginationModel}
             paginationModel={paginationModel}
-            isRefresh
+            // isRefresh
           />
           <Box display="flex" alignItems="end" justifyContent="end">
             <Button

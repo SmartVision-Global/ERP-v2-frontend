@@ -266,7 +266,7 @@ export function CalculationListView() {
         />,
         <GridActionsLinkItem
           showInMenu
-          icon={<Iconify icon="eva:person-done-fill" />}
+          icon={<Iconify icon="solar:eye-bold" />}
           label="Details"
           // href={paths.dashboard.product.details(params.row.id)}
           href={paths.dashboard.rh.payrollManagement.payrollDetails(params.row.payroll_month_id)}
