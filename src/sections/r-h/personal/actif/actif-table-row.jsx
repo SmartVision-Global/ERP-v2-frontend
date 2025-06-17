@@ -110,6 +110,8 @@ export function RenderCellContract({ params }) {
         params.row.contract_type == '1' && daysToEndContract < 10
           ? {
               // Add an animated background / border / color pulse
+              // backgroundColor: 'red',
+              // color: 'white',
               animation: 'pulse 1.5s infinite',
               '@keyframes pulse': {
                 '0%': {

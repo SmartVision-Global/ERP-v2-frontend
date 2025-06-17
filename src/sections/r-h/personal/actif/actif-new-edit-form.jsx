@@ -471,9 +471,10 @@ export function ActifNewEditForm({ currentProduct }) {
   };
   const values = watch();
   const { data: salaryGrids } = useGetLookups('hr/lookups/salary_grids', {
-    salary_category_id: values.salary_category_id || null,
-    rung_id: values.rung_id || null,
-    salary_scale_level_id: values.salary_scale_level_id || null,
+    salary_category: values.salary_category_id || null,
+    rung: values.rung_id || null,
+    salary_scale_level: values.salary_scale_level_id || null,
+    job: values.job_id || null,
   });
 
   const handleRemoveImage = useCallback(() => {
