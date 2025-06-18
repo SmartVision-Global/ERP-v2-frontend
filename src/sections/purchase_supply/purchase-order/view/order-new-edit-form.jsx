@@ -34,6 +34,7 @@ const orderSchema = z.object({
   items: z.array(z.object({
     product_id: z.string().nonempty({ message: 'Produit est requis' }),
     purchased_quantity: z.number({ coerce: true }).min(1, { message: 'Quantité est requise' }),
+    requested_date: z.string().nonempty({ message: 'Date de besoins est requise' }),
     designation: z.string().optional(),
     supplier_code: z.string().optional(),
     current_quantity: z.number({ coerce: true }).optional(),
@@ -104,7 +105,7 @@ export function PurchaseOrderNewEditForm({ initialData }) {
       observation: initialData?.observation || '',
       items: initialData?.items
         ? initialData.items.map((item) => ({
-            product_id: item.product_id?.toString() || '',
+            product_id: item.product?.id?.toString() || '',
             code: item.product?.code || '',
             supplier_code: item.product?.supplier_code || '',
             designation: item.product?.designation || '',
@@ -112,6 +113,7 @@ export function PurchaseOrderNewEditForm({ initialData }) {
             purchased_quantity: item.purchased_quantity?.toString() || '',
             observation: item.observation || '',
             unit_measure: item.unit_measure || { designation: '' },
+            requested_date: item.requested_date?.split('T')[0] || new Date().toISOString().split('T')[0],
           }))
         : [],
     },
@@ -146,6 +148,7 @@ export function PurchaseOrderNewEditForm({ initialData }) {
             designation: item.designation,
             purchased_quantity: Number(item.purchased_quantity),
             observation: item.observation,
+            requested_date: item.requested_date,
           })),
         };
         console.log('payload', payload);
@@ -183,7 +186,7 @@ export function PurchaseOrderNewEditForm({ initialData }) {
         observation: initialData.observation || '',
         items: initialData.items
           ? initialData.items.map((item) => ({
-              product_id: item.product_id?.toString() || '',
+              product_id: item.product?.id?.toString() || '',
               code: item.product?.code || '',
               supplier_code: item.product?.supplier_code || '',
               designation: item.product?.designation || '',
@@ -191,6 +194,7 @@ export function PurchaseOrderNewEditForm({ initialData }) {
               purchased_quantity: item.purchased_quantity?.toString() || '',
               observation: item.observation || '',
               unit_measure: item.unit_measure || { designation: '' },
+              requested_date: item.requested_date?.split('T')[0] || new Date().toISOString().split('T')[0],
             }))
           : [],
         selectedBEB: bebData,
@@ -276,7 +280,7 @@ export function PurchaseOrderNewEditForm({ initialData }) {
             </Grid>
 
             <Grid size={{ xs: 12, md: 12 }} display="flex" justifyContent="flex-end">
-              <Button type="submit" variant="contained">
+              <Button onClick={() => setCurrentTab(1)} variant="contained">
                 ÉTAPE SUIVANTE
               </Button>
             </Grid>
@@ -299,6 +303,7 @@ export function PurchaseOrderNewEditForm({ initialData }) {
                 purchased_quantity: '',
                 observation: '',
                 unit_measure: { designation: '' },
+                requested_date: new Date().toISOString().split('T')[0],
               });
               setOpenModalIndex(itemFields.length);
             }}>
@@ -342,10 +347,18 @@ export function PurchaseOrderNewEditForm({ initialData }) {
                 </Grid>
                 {/* Second row: Quantité A acheter and Observation */}
                 <Grid container spacing={2} sx={{ mt: 2 }}>
-                  <Grid size={{ xs: 12, md: 6 }}>
+                  <Grid size={{ xs: 12, md: 4 }}>
                     <Field.Number name={`items.${index}.purchased_quantity`} label="Quantité à acheter" />
                   </Grid>
-                  <Grid size={{ xs: 12, md: 6 }}>
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <Field.DatePicker
+                      name={`items.${index}.requested_date`}
+                      label="Date de besoins"
+                      disablePast
+                      slotProps={{ textField: { size: 'small' } }}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 4 }}>
                     <Field.Text name={`items.${index}.observation`} label="Observation" multiline rows={2} />
                   </Grid>
                 </Grid>
@@ -401,6 +414,9 @@ export function PurchaseOrderNewEditForm({ initialData }) {
             </Box>
           </Modal>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+            <Button onClick={() => setCurrentTab(0)} variant="outlined" sx={{ mr: 1 }}>
+              ÉTAPE PRÉCÉDENTE
+            </Button>
             <Button type="submit" variant="contained">
               VALIDER
             </Button>

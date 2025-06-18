@@ -14,8 +14,8 @@ export function OrderPurchaseCreate() {
       <CustomBreadcrumbs
         heading="Demande D'achats"
         links={[
-          { name: 'Achat et Approvisionnement', href: paths.dashboard.root },
-          { name: 'Liste', href: paths.dashboard.rh.personal.root },
+          { name: 'Achat et Approvisionnement', href: paths.dashboard.purchaseSupply.purchaseOrder.root },
+          { name: 'Liste', href: paths.dashboard.purchaseSupply.purchaseOrder.root },
           { name: "Demande D'achats" },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}

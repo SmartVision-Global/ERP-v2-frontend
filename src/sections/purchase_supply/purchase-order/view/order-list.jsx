@@ -142,14 +142,14 @@ export function OrderPurchaseList() {
   );
   const handlePaginationModelChange = async (newModel) => {
     try {
-      // const newData = {
-      //   ...editedFilters,
-      //   limit: newModel.pageSize,
-      //   offset: newModel.page,
-      // };
-      // const response = await getFiltredOrder(newData);
-      // setTableData(response.data?.data?.records);
-      // setPaginationModel(newModel);
+      const newData = {
+        ...editedFilters,
+        limit: newModel.pageSize,
+        offset: newModel.page,
+      };
+      const response = await getFiltredOrder(newData);
+      setTableData(response.data?.data?.records);
+      setPaginationModel(newModel);
     } catch (error) {
       console.log('error in pagination search request', error);
     }
@@ -279,9 +279,9 @@ export function OrderPurchaseList() {
   );
 
   const columns = [
-    { field: 'id', headerName: 'ID', flex: 1, minWidth: 100, renderCell: (params) => <RenderCellId params={params} /> },
-    { field: 'code', headerName: 'Code', flex: 1, minWidth: 150 },
-    { field: 'created_time', headerName: 'Temps', flex: 1, minWidth: 150 },
+    { field: 'id', headerName: 'ID', flex: 1, minWidth: 50, renderCell: (params) => <RenderCellId params={params} /> },
+    { field: 'code', headerName: 'Code', flex: 1, minWidth: 100 },
+    { field: 'created_time', headerName: 'Temps', flex: 1, minWidth: 100 },
     { field: 'status', headerName: 'Etat', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellStatus params={params} /> },
     { field: 'type', headerName: 'Type', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellType params={params} /> },
     { field: 'eon_voucher', headerName: 'B.E.B', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellCode params={params} /> },
@@ -295,7 +295,7 @@ export function OrderPurchaseList() {
       headerName: ' ',
       align: 'right',
       headerAlign: 'right',
-      width: 80,
+      width: 50,
       sortable: false,
       filterable: false,
       disableColumnMenu: true,
