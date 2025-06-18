@@ -404,6 +404,10 @@ const PageStoreLoanBorrowingThirdList = lazy(
 const PageStoreLoanBorrowingThirdNew = lazy(
   () => import('src/pages/dashboard/store-management/loan-borrowing/third/new')
 );
+const PageStoreLoanBorrowingThirdEdit = lazy(
+  () => import('src/pages/dashboard/store-management/loan-borrowing/third/edit')
+);
+
 
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
@@ -823,6 +827,7 @@ export const dashboardRoutes = [
               
               { path: 'third', element: <PageStoreLoanBorrowingThirdList /> },
               { path: 'third/new', element: <PageStoreLoanBorrowingThirdNew /> },
+              { path: 'third/:id/edit', element: <PageStoreLoanBorrowingThirdEdit /> },
             ],
           },
         ],

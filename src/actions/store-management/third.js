@@ -95,12 +95,12 @@ export async function createEntity(data) {
  * @param {number|string} id - The ID of the entity to update
  * @param {object} data - The updated data
  */
-export async function updateEntity(entityType, id, data) {
+export async function updateEntity(id, data) {
   if (!enableServer) return;
   
   const endpoint = ENDPOINT;
   if (!endpoint) {
-    console.error(`No endpoint found for entity type: ${entityType}`);
+    console.error(`No endpoint found for entity type`);
     return;
   }
   
@@ -108,7 +108,7 @@ export async function updateEntity(entityType, id, data) {
     await axios.patch(`${endpoint}/${id}`, data);
     mutate(endpoints.stores.list);
   } catch (error) {
-    console.error(`Error updating ${entityType}:`, error);
+    console.error(`Error updating entity:`, error);
     throw error;
   }
 }

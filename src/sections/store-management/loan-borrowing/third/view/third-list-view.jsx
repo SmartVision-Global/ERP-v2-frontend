@@ -8,7 +8,10 @@ import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import {
   FormControl,
   TextField,
-  InputAdornment
+  InputAdornment,
+  MenuItem,
+  ListItemIcon,
+  Link
 } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
@@ -58,6 +61,25 @@ const columns = (t) => [
     flex: 1,
     minWidth: 150,
     renderCell: (params) => <RenderCellCreatedDate params={params} />,
+  },
+  {
+    type: 'actions',
+    field: 'actions',
+    headerName: ' ',
+    align: 'right',
+    headerAlign: 'right',
+    width: 80,
+    sortable: false,
+    filterable: false,
+    disableColumnMenu: true,
+    getActions: (params) => [
+      <GridActionsLinkItem
+        showInMenu
+        icon={<Iconify icon="solar:pen-bold" />}
+        label={t('actions.edit')}
+        href={paths.dashboard.storeManagement.loanBorrowing.editThird(params.row.id)}
+      />,
+    ],
   },
 ];
 
@@ -296,3 +318,22 @@ export function ThirdListView({ isSelectionDialog = false, componentsProps, onSe
     </>
   );
 }
+
+export const GridActionsLinkItem = forwardRef((props, ref) => {
+  const { href, label, icon, sx } = props;
+
+  return (
+    <MenuItem ref={ref} sx={sx}>
+      <Link
+        component={RouterLink}
+        href={href}
+        underline="none"
+        color="inherit"
+        sx={{ width: 1, display: 'flex', alignItems: 'center' }}
+      >
+        {icon && <ListItemIcon>{icon}</ListItemIcon>}
+        {label}
+      </Link>
+    </MenuItem>
+  );
+});

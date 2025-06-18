@@ -7,7 +7,11 @@
             "add_stock": "Ajouter stock",
             "store_management": "Gestion magasinage",
             "edit_stock": "Modifier : {{code}}",
-            "product_tracking": "Suivi des produits"
+            "product_tracking": "Suivi des produits",
+            "add_third": "Ajouter Tier",
+            "edit_third": "Modifier Tier",
+            "new_third": "Nouveau Tier",
+            "loan_borrowing": "Prêt-emprunt"
         },
         "headers": {
             "id": "ID",
@@ -55,7 +59,10 @@
             "excel": "Excel",
             "csv": "CSV",
             "pdf": "PDF",
-            "close": "Fermer"
+            "close": "Fermer",
+            "previous_step": "Étape précédente",
+            "next_step": "Étape suivante",
+            "validate": "Valider"
         },
         "filters": {
             "search_placeholder": "Rechercher...",
@@ -113,12 +120,18 @@
                 "type_required": "Type est requis",
                 "location_required": "Emplacement est requis",
                 "douan_required": "Douane est requise",
-                "position_required": "Position est requise"
+                "position_required": "Position est requise",
+                "code_required": "Le code est requis",
+                "address_required": "L'adresse est requise",
+                "invalid_email": "Adresse e-mail invalide",
+                "invalid_url": "URL invalide"
             },
             "messages": {
                 "stock_updated": "Stock mis à jour",
                 "stock_created": "Stock créé",
-                "operation_failed": "L'opération a échoué"
+                "operation_failed": "L'opération a échoué",
+                "third_updated": "Tier mis à jour",
+                "third_created": "Tier créé"
             },
             "sections": {
                 "details": "Détails",
@@ -150,13 +163,38 @@
                 "location": "Emplacement",
                 "add_storage": "Ajouter",
                 "douan": "Douane",
-                "position": "Position"
+                "position": "Position",
+                "code": "Code",
+                "full_name": "Nom et prénom",
+                "phone_number": "Numéro de téléphone",
+                "mobile_number": "Numéro de portable",
+                "city": "Ville",
+                "country": "Pays",
+                "address": "Adresse",
+                "comment": "Commentaire",
+                "fax": "Fax",
+                "email": "Email",
+                "website": "Site web",
+                "sold": "Solde",
+                "sold_p": "Solde P",
+                "trade_registry": "Registre de commerce",
+                "idfiscale": "ID Fiscale",
+                "art_imposition": "Article d'imposition",
+                "nis": "NIS",
+                "bank": "Banque",
+                "account_number": "Numéro de compte",
+                "rib": "RIB"
             },
             "actions": {
                 "save_changes": "Enregistrer les modifications",
                 "create_stock": "Créer le stock",
                 "save": "Enregistrer",
                 "add": "Ajouter"
+            },
+            "steps": {
+                "identification": "Identification du produit",
+                "parametrage1": "Paramétrage du produit 1",
+                "parametrage2": "Paramétrage du produit 2"
             }
         }
     

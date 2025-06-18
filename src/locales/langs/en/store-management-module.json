@@ -6,7 +6,11 @@
         "add_stock": "Add Stock",
         "store_management": "Store Management",
         "edit_stock": "Edit: {{code}}",
-        "product_tracking": "Product Tracking"
+        "product_tracking": "Product Tracking",
+        "add_third": "Add Third",
+        "edit_third": "Edit Third",
+        "new_third": "New Third",
+        "loan_borrowing": "Loan Borrowing"
     },
     "headers": {
         "id": "ID",
@@ -54,8 +58,10 @@
         "excel": "Excel",
         "csv": "CSV",
         "pdf": "PDF",
-        "close": "Close"
-        
+        "close": "Close",
+        "previous_step": "Previous Step",
+        "next_step": "Next Step",
+        "validate": "Validate"
     },
     "filters": {
         "search_placeholder": "Search...",
@@ -94,7 +100,12 @@
         "image": "Image"
     },
     "messages":{
-        "no_results": "No results found"
+        "no_results": "No results found",
+        "stock_updated": "Stock updated",
+        "stock_created": "Stock created",
+        "operation_failed": "Operation failed",
+        "third_updated": "Third updated",
+        "third_created": "Third created"
     },
     "form": {
         "validations": {
@@ -113,7 +124,11 @@
             "type_required": "Type is required",
             "location_required": "Location is required",
             "douan_required": "Douan is required",
-            "position_required": "Position is required"
+            "position_required": "Position is required",
+            "code_required": "Code is required",
+            "address_required": "Address is required",
+            "invalid_email": "Invalid email address",
+            "invalid_url": "Invalid URL"
         },
         "messages": {
             "stock_updated": "Stock updated",
@@ -150,13 +165,41 @@
             "location": "Location",
             "add_storage": "Add",
             "douan": "Douan",
-            "position": "Position"
+            "position": "Position",
+            "code": "Code",
+            "full_name": "Full Name",
+            "phone_number": "Phone Number",
+            "mobile_number": "Mobile Phone",
+            "city": "City",
+            "country": "Country",
+            "address": "Address",
+            "comment": "Comment",
+            "fax": "Fax",
+            "email": "Email",
+            "website": "Website",
+            "sold": "Sold",
+            "sold_p": "Sold P",
+            "trade_registry": "Trade Registry",
+            "idfiscale": "ID Fiscale",
+            "art_imposition": "Art Imposition",
+            "nis": "NIS",
+            "bank": "Bank",
+            "account_number": "Account Number",
+            "rib": "RIB"
         },
         "actions": {
             "save_changes": "Save Changes",
             "create_stock": "Create Stock",
             "save": "Save",
-            "add": "Add"
+            "add": "Add",
+            "previous_step": "Previous Step",
+            "next_step": "Next Step",
+            "validate": "Validate"
+        },
+        "steps": {
+            "identification": "Product Identification",
+            "parametrage1": "Product Configuration 1",
+            "parametrage2": "Product Configuration 2"
         }
     }
 } 

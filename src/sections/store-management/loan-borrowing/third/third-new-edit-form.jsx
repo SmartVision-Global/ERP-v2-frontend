@@ -18,20 +18,19 @@ import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 
 // New Schema
-const ThirdSchema = zod.object({
-  code: zod.string().min(1, { message: 'Code is required' }),
+const getThirdSchema = (t) => zod.object({
+  code: zod.string().min(1, { message: t('form.validations.code_required') }),
   full_name: zod.string().optional(),
   phone_number: zod.string().optional(),
   mobile_number: zod.string().optional(),
   city: zod.string().optional(),
   country: zod.string().optional(),
-  address: zod.string().min(1, { message: 'Address is required' }),
+  address: zod.string().min(1, { message: t('form.validations.address_required') }),
   comment: zod.string().optional(),
-  // Fields for other tabs - for now optional and not in the UI
-  type: zod.number().min(1, { message: 'Type is required' }),
+  type: zod.number().min(1, { message: t('form.validations.type_required') }),
   fax: zod.string().optional(),
-  email: zod.string().email({ message: 'Invalid email address' }).optional().or(zod.literal('')),
-  website: zod.string().url({ message: 'Invalid URL' }).optional().or(zod.literal('')),
+  email: zod.string().email({ message: t('form.validations.invalid_email') }).optional().or(zod.literal('')),
+  website: zod.string().url({ message: t('form.validations.invalid_url') }).optional().or(zod.literal('')),
   sold: zod.number({ coerce: true }).optional(),
   sold_p: zod.number({ coerce: true }).optional(),
   trade_registry: zod.string().optional(),
@@ -50,10 +49,12 @@ export function ThirdNewEditForm({ currentThird }) {
   const [activeStep, setActiveStep] = useState(0);
 
   const STEPS = [
-    'Identification du produit',
-    'Paramétrage du produit 1',
-    'Paramétrage du produit 2',
+    t('form.steps.identification'),
+    t('form.steps.parametrage1'),
+    t('form.steps.parametrage2'),
   ];
+
+  const ThirdSchema = getThirdSchema(t);
 
   const defaultValues = useMemo(
     () => ({
@@ -132,14 +133,14 @@ export function ThirdNewEditForm({ currentThird }) {
   };
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log('onSubmit data', data);
+    console.log('onSubmit data', data, 'currentThird', currentThird);
     try {
       if (currentThird) {
         await updateEntity(currentThird.id, data);
       } else {
         await createEntity(data);
       }
-      toast.success(currentThird ? 'Third updated' : 'Third created');
+      toast.success(currentThird ? t('form.messages.third_updated') : t('form.messages.third_created'));
       router.push(paths.dashboard.storeManagement.loanBorrowing.third);
     } catch (error) {
       console.error(error);
@@ -148,7 +149,7 @@ export function ThirdNewEditForm({ currentThird }) {
           setError(key, { type: 'manual', message: value[0] });
         });
       }
-      toast.error(error?.message || 'Operation failed');
+      toast.error(error?.message || t('form.messages.operation_failed'));
     }
   });
 
@@ -156,39 +157,39 @@ export function ThirdNewEditForm({ currentThird }) {
     <Box sx={{ mt: 3 }}>
         {activeStep === 0 && (
             <Card>
-              <CardHeader title="Identification du produit" sx={{ mb: 3 }} />
+              <CardHeader title={t('form.steps.identification')} sx={{ mb: 3 }} />
               <Divider />
                 <Stack spacing={3} sx={{ p: 3 }}>
                     <Grid container spacing={3}>
                         <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Text name="code" label="Code" />
+                            <Field.Text name="code" label={t('form.labels.code')} />
                         </Grid>
                         <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Text name="full_name" label="Fullname" />
-                        </Grid>
-                    </Grid>
-                    <Grid container spacing={3}>
-                        <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Text name="phone_number" label="Phone Number" />
-                        </Grid>
-                        <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Text name="mobile_number" label="Mobile Phone" />
+                            <Field.Text name="full_name" label={t('form.labels.full_name')} />
                         </Grid>
                     </Grid>
                     <Grid container spacing={3}>
                         <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Text name="city" label="City" />
+                            <Field.Text name="phone_number" label={t('form.labels.phone_number')} />
                         </Grid>
                         <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Text name="country" label="Country" />
+                            <Field.Text name="mobile_number" label={t('form.labels.mobile_number')} />
                         </Grid>
                     </Grid>
                     <Grid container spacing={3}>
                         <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Text name="address" label="Address" multiline rows={3} />
+                            <Field.Text name="city" label={t('form.labels.city')} />
                         </Grid>
                         <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Text name="comment" label="Comment" multiline rows={3} />
+                            <Field.Text name="country" label={t('form.labels.country')} />
+                        </Grid>
+                    </Grid>
+                    <Grid container spacing={3}>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <Field.Text name="address" label={t('form.labels.address')} multiline rows={3} />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <Field.Text name="comment" label={t('form.labels.comment')} multiline rows={3} />
                         </Grid>
                     </Grid>
                     
@@ -197,12 +198,12 @@ export function ThirdNewEditForm({ currentThird }) {
         )}
         {activeStep === 1 && (
             <Card>
-                <CardHeader title="Paramétrage du produit 1" sx={{ mb: 3 }} />
+                <CardHeader title={t('form.steps.parametrage1')} sx={{ mb: 3 }} />
                 <Divider />
                  <Stack spacing={3} sx={{ p: 3 }}>
                     <Grid container spacing={3}>
                         <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Select name="type" label="Type" size="small">
+                            <Field.Select name="type" label={t('form.labels.type')} size="small">
                                 {THIRD_TYPE_OPTIONS.map((option) => (
                                     <MenuItem key={option.value} value={option.value}>
                                         {option.label}
@@ -211,23 +212,23 @@ export function ThirdNewEditForm({ currentThird }) {
                             </Field.Select>
                         </Grid>
                         <Grid size={{ xs: 12, md: 6 }}>
-                           <Field.Text name="fax" label="Fax" />
+                           <Field.Text name="fax" label={t('form.labels.fax')} />
                         </Grid>
                     </Grid>
                     <Grid container spacing={3}>
                         <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Text name="email" label="Email" />
+                            <Field.Text name="email" label={t('form.labels.email')} />
                         </Grid>
                         <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Text name="website" label="Website" />
+                            <Field.Text name="website" label={t('form.labels.website')} />
                         </Grid>
                     </Grid>
                     <Grid container spacing={3}>
                         <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Number name="sold" label="Sold" type="number" />
+                            <Field.Number name="sold" label={t('form.labels.sold')} type="number" />
                         </Grid>
                         <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Number name="sold_p" label="Sold P" type="number" />
+                            <Field.Number name="sold_p" label={t('form.labels.sold_p')} type="number" />
                         </Grid>
                     </Grid>
                  </Stack>
@@ -235,36 +236,36 @@ export function ThirdNewEditForm({ currentThird }) {
         )}
         {activeStep === 2 && (
             <Card>
-                <CardHeader title="Paramétrage du produit 2" sx={{ mb: 3 }} />
+                <CardHeader title={t('form.steps.parametrage2')} sx={{ mb: 3 }} />
                 <Divider />
                 <Stack spacing={3} sx={{ p: 3 }}>
                 <Grid container spacing={3}>
                         <Grid size={{ xs: 12, md: 6 }}>
-                           <Field.Text name="trade_registry" label="Trade Registry" />
+                           <Field.Text name="trade_registry" label={t('form.labels.trade_registry')} />
                         </Grid>
                         <Grid size={{ xs: 12, md: 6 }}>
-                           <Field.Text name="idfiscale" label="ID Fiscale" />
-                        </Grid>
-                    </Grid>
-                    <Grid container spacing={3}>
-                        <Grid size={{ xs: 12, md: 6 }}>
-                           <Field.Text name="art_Imposition" label="Art Imposition" />
-                        </Grid>
-                        <Grid size={{ xs: 12, md: 6 }}>
-                           <Field.Text name="nis" label="NIS" />
+                           <Field.Text name="idfiscale" label={t('form.labels.idfiscale')} />
                         </Grid>
                     </Grid>
                     <Grid container spacing={3}>
                         <Grid size={{ xs: 12, md: 6 }}>
-                           <Field.Text name="bank" label="Bank" />
+                           <Field.Text name="art_Imposition" label={t('form.labels.art_imposition')} />
                         </Grid>
                         <Grid size={{ xs: 12, md: 6 }}>
-                           <Field.Text name="account_number" label="Account Number" />
+                           <Field.Text name="nis" label={t('form.labels.nis')} />
                         </Grid>
                     </Grid>
                     <Grid container spacing={3}>
                         <Grid size={{ xs: 12, md: 6 }}>
-                           <Field.Text name="rib" label="RIB" />
+                           <Field.Text name="bank" label={t('form.labels.bank')} />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                           <Field.Text name="account_number" label={t('form.labels.account_number')} />
+                        </Grid>
+                    </Grid>
+                    <Grid container spacing={3}>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                           <Field.Text name="rib" label={t('form.labels.rib')} />
                         </Grid>
                     </Grid>
                 </Stack>
@@ -277,17 +278,17 @@ export function ThirdNewEditForm({ currentThird }) {
     <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3 }}>
       {activeStep > 0 && (
         <LoadingButton variant="outlined" onClick={handlePreviousStep}>
-          Previous Step
+          {t('form.actions.previous_step')}
         </LoadingButton>
       )}
       {activeStep < STEPS.length - 1 && (
         <LoadingButton variant="contained" onClick={handleNextStep}>
-          Next Step
+          {t('form.actions.next_step')}
         </LoadingButton>
       )}
       {activeStep === STEPS.length - 1 && (
         <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-          Validate
+          {t('form.actions.validate')}
         </LoadingButton>
       )}
     </Box>
@@ -295,7 +296,7 @@ export function ThirdNewEditForm({ currentThird }) {
 
   return (
     <Form methods={methods} onSubmit={onSubmit}>
-        <CardHeader title={currentThird ? 'Edit Third' : 'New Third'} />
+        <CardHeader title={currentThird ? t('views.edit_third') : t('views.new_third')} />
         <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 3 }}>
             {STEPS.map((label, index) => (
                 <Step key={label}>

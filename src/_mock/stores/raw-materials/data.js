@@ -20,9 +20,9 @@ export const THIRD_STATUS_OPTIONS = [
 
 export const THIRD_TYPE_OPTIONS = [
     {value: '', label: 'Selectionner', color: 'default'},
-    {value: '1', label: 'T1', color: 'success'},
-    {value: '2', label: 'T2', color: 'warning'},
-    {value: '3', label: 'T3', color: 'info'},
+    {value: 1, label: 'T1', color: 'success'},
+    {value: 2  , label: 'T2', color: 'warning'},
+    {value: 3, label: 'T3', color: 'info'},
 ]
 
 

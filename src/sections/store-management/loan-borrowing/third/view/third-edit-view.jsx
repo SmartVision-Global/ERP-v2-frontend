@@ -7,23 +7,28 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { ThirdNewEditForm } from '../third-new-edit-form';
 
-  // ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
 
-export function ThirdCreateView() {
+export function ThirdEditView({ third }) {
   const { t } = useTranslate('store-management-module');
+
+    
+
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading={t('views.add_third')}
+        heading={t('views.edit_third', { code: third?.code })}
+        backHref={paths.dashboard.storeManagement.loanBorrowing.third}
         links={[
           { name: t('views.store_management'), href: paths.dashboard.storeManagement.root },
-          { name: t('views.loan_borrowing'), href: paths.dashboard.storeManagement.loanBorrowing.third },
-          { name: t('views.add_third') },
+          { name: t('views.loan_borrowing'), href: paths.dashboard.storeManagement.loanBorrowing.root },
+          { name: t('views.third'), href: paths.dashboard.storeManagement.loanBorrowing.third },
+          { name: third?.code },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <ThirdNewEditForm />
+      {third && <ThirdNewEditForm currentThird={third} />}
     </DashboardContent>
   );
 }
