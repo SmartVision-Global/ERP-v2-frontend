@@ -20,7 +20,7 @@ import { RouterLink } from 'src/routes/components';
 import { CONFIG } from 'src/global-config';
 import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetThirds, getFiltredThirds } from 'src/actions/store-management/third';
+import { useGetBorrowings, getFiltredBorrowings } from 'src/actions/store-management/borrowing';
 
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
@@ -33,8 +33,16 @@ import {
   RenderCellCreatedDate,
   RenderCellStatus,
   RenderCellType,
+  RenderCellCode,
+  RenderCellObservation,
+  RenderCellTiers,
+  RenderCellStore,
+  RenderCellNature,
+  RenderCellTypeBorrowing,
+  RenderCellStatusBorrowing,
+  RenderCellReturnStatusBorrowing,
 } from '../../table-rows';
-import { THIRD_STATUS_OPTIONS, THIRD_TYPE_OPTIONS } from 'src/_mock/stores/raw-materials/data';
+import { BORROWING_STATUS_OPTIONS, BORROWING_TYPE_OPTIONS, BORROWING_NATURE_OPTIONS, BORROWING_RETURN_STATUS_OPTIONS } from 'src/_mock/stores/raw-materials/data';
 
 // ----------------------------------------------------------------------
 
@@ -45,21 +53,23 @@ const HIDE_COLUMNS_TOGGLABLE = [];
 const columns = (t) => [
   {
     field: 'id',
-    headerName: 'ID',
+    headerName: t('headers.id'),
     width: 80,
     renderCell: (params) => <RenderCellId params={params} />,
   },
-  { field: 'code', headerName: 'Code', flex: 1, minWidth: 100 },
-  { field: 'full_name', headerName: 'Name', flex: 1, minWidth: 150 },
-  { field: 'mobile_number', headerName: 'Mobile Number', flex: 1, minWidth: 150 },
-  { field: 'sold', headerName: 'Sold', flex: 1, minWidth: 100 },
-  { field: 'type', headerName: 'Type', flex: 1, minWidth: 100, renderCell: (params) => <RenderCellType params={params} /> },
-  { field: 'status', headerName: 'Status', flex: 1, minWidth: 100, renderCell: (params) => <RenderCellStatus params={params} /> },
+  { field: 'code', headerName: t('headers.code'), flex: 1, minWidth: 100, renderCell: (params) => <RenderCellCode params={params} /> },
+  { field: 'observation', headerName: t('headers.observation'), flex: 1, minWidth: 150, renderCell: (params) => <RenderCellObservation params={params} /> },
+  { field: 'tiers', headerName: t('headers.tiers'), flex: 1, minWidth: 100, renderCell: (params) => <RenderCellTiers params={params} /> },
+  { field: 'store', headerName: t('headers.store'), flex: 1, minWidth: 100, renderCell: (params) => <RenderCellStore params={params} /> },
+  { field: 'nature', headerName: t('headers.nature'), flex: 1, minWidth: 110, renderCell: (params) => <RenderCellNature params={params} /> },
+  { field: 'type', headerName: t('headers.type'), flex: 1, minWidth: 100, renderCell: (params) => <RenderCellTypeBorrowing params={params} /> },
+  { field: 'status', headerName: t('headers.status'), flex: 1, minWidth: 100, renderCell: (params) => <RenderCellStatusBorrowing params={params} /> },
+  { field: 'return_status', headerName: t('headers.return_status'), flex: 1, minWidth: 120, renderCell: (params) => <RenderCellReturnStatusBorrowing params={params} /> },
   {
     field: 'created_date',
     headerName: t('headers.created_date'),
     flex: 1,
-    minWidth: 150,
+    minWidth: 110,
     renderCell: (params) => <RenderCellCreatedDate params={params} />,
   },
   {
@@ -86,51 +96,55 @@ const columns = (t) => [
 // ----------------------------------------------------------------------
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 
-export function ThirdListView({ isSelectionDialog = false, componentsProps, onSearch, product_type }) {
+export function BorrowingListView({ isSelectionDialog = false, componentsProps, onSearch }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: PAGE_SIZE,
   });
-  const { thirds, thirdsLoading, thirdsCount } = useGetThirds({
+  const { borrowings, borrowingsLoading, borrowingsCount } = useGetBorrowings({
     limit: paginationModel.pageSize,
     offset: 0,
-    product_type: 1 ,
   });
-  const [rowCount, setRowCount] = useState(thirdsCount);
-  const [tableData, setTableData] = useState(thirds);
+  const [rowCount, setRowCount] = useState(borrowingsCount);
+  const [tableData, setTableData] = useState(borrowings);
   const { t } = useTranslate('store-management-module');
 
   const { dataLookups } = useMultiLookups([
-    { entity: 'measurementUnits', url: 'settings/lookups/measurement-units' },
-    { entity: 'categories', url: 'settings/lookups/categories', params: { group: 1 } },
-    { entity: 'families', url: 'settings/lookups/families', params: { group: 1 } },
+   
+    { entity: 'tiers', url: 'inventory/lookups/tiers' },
     { entity: 'stores', url: 'settings/lookups/stores' },
   ]);
 
-  const measurementUnits = dataLookups.measurementUnits || [];
-  const categories = dataLookups.categories || [];
-  const families = dataLookups.families || [];
-  // const subFamilies = families.length > 0 ? families.find((f) => f?.id.toString() === selectedParent)?.children || [] : [];
-  const stores = dataLookups.stores || [];
 
+  const tiers = dataLookups.tiers || [];
+  const stores = dataLookups.stores || [];
   const columns_ = useMemo(() => columns(t), [t]);
 
   const FILTERS_OPTIONS = useMemo(
     () => [
       { id: 'code', type: 'input', label: t('filters.code') },
-      { id: 'full_name', type: 'input', label: t('filters.full_name') },
+      { id: 'observation', type: 'input', label: t('filters.observation') },
+      { id: 'tiers', type: 'select', options: tiers || [], label: t('filters.tiers'), serverData: true },
+      { id: 'store_id', type: 'select', options: stores || [], label: t('filters.store'), serverData: true },
+      { id: 'nature', type: 'select', options: BORROWING_NATURE_OPTIONS, label: t('filters.nature')},
       {
         id: 'type',
         type: 'select',
-        options: THIRD_TYPE_OPTIONS,
+        options: BORROWING_TYPE_OPTIONS,
         label: t('filters.type'),
       },
       {
         id: 'status',
         type: 'select',
-        options: THIRD_STATUS_OPTIONS,
+        options: BORROWING_STATUS_OPTIONS,
         label: t('filters.status'),
+      },
+      {
+        id: 'return_status',
+        type: 'select',
+        options: BORROWING_RETURN_STATUS_OPTIONS,
+        label: t('filters.return_status'),
       },
       {
         id: 'created_date_start',
@@ -142,7 +156,7 @@ export function ThirdListView({ isSelectionDialog = false, componentsProps, onSe
         width: 1,
       },
     ],
-    [t]
+    [t, tiers, stores]
   );
 
   const [filterButtonEl, setFilterButtonEl] = useState(null);
@@ -151,18 +165,17 @@ export function ThirdListView({ isSelectionDialog = false, componentsProps, onSe
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (thirds) {
-      setTableData(thirds);
-      setRowCount(thirdsCount);
+    if (borrowings) {
+      setTableData(borrowings);
+      setRowCount(borrowingsCount);
     }
-  }, [thirds, thirdsCount]);
+  }, [borrowings, borrowingsCount]);
 
   const handleReset = useCallback(async () => {
     try {
-      const response = await getFiltredThirds({
+      const response = await getFiltredBorrowings({
         limit: PAGE_SIZE,
         offset: 0,
-        product_type,
       });
       setEditedFilters({});
       setPaginationModel({
@@ -174,23 +187,19 @@ export function ThirdListView({ isSelectionDialog = false, componentsProps, onSe
     } catch (error) {
       console.log(error);
     }
-  }, [product_type]);
+  }, []);
 
   const handleFilter = useCallback(
     async (data) => {
-      const newData = {
-        ...data,
-        product_type,
-      };
       try {
-        const response = await getFiltredThirds(newData);
+        const response = await getFiltredBorrowings(data);
         setTableData(response.data?.data?.records);
         setRowCount(response.data?.data?.total);
       } catch (error) {
         console.log('Error in search filters tasks', error);
       }
     },
-    [product_type]
+    []
   );
   const handlePaginationModelChange = async (newModel) => {
     try {
@@ -198,9 +207,8 @@ export function ThirdListView({ isSelectionDialog = false, componentsProps, onSe
         ...editedFilters,
         limit: newModel.pageSize,
         offset: newModel.page * newModel.pageSize,
-        product_type,
       };
-      const response = await getFiltredThirds(newData);
+      const response = await getFiltredBorrowings(newData);
       setTableData(response.data?.data?.records);
       setPaginationModel(newModel);
     } catch (error) {
@@ -224,20 +232,20 @@ export function ThirdListView({ isSelectionDialog = false, componentsProps, onSe
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <CustomBreadcrumbs
-          heading={t('views.third')}
+          heading={t('views.borrowing')}
           links={[
             { name: t('views.store_management'), href: paths.dashboard.storeManagement.root },
-            { name: t('views.loan_borrowing'), href: paths.dashboard.storeManagement.loanBorrowing.root },
+            { name: t('views.loan_borrowing'), href: paths.dashboard.storeManagement.loanBorrowing.borrowing },
             { name: t('views.list') },
           ]}
           action={
             <Button
             component={RouterLink}
-            href={paths.dashboard.storeManagement.loanBorrowing.newThird}
+            href={paths.dashboard.storeManagement.loanBorrowing.newBorrowing}
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
           >
-            Ajouter
+            {t('actions.add_borrowing')}
           </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
@@ -287,7 +295,7 @@ export function ThirdListView({ isSelectionDialog = false, componentsProps, onSe
             rows={tableData}
             rowCount={rowCount}
             columns={columns_}
-            loading={thirdsLoading}
+            loading={borrowingsLoading}
             getRowHeight={() => 'auto'}
             paginationModel={paginationModel}
             paginationMode="server"

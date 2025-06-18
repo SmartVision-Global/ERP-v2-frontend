@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 
 import { fDate, fTime } from 'src/utils/format-time';
 
-import { THIRD_STATUS_OPTIONS, THIRD_TYPE_OPTIONS } from 'src/_mock/stores/raw-materials/data';
+import { THIRD_STATUS_OPTIONS, THIRD_TYPE_OPTIONS, BORROWING_NATURE_OPTIONS, BORROWING_TYPE_OPTIONS, BORROWING_STATUS_OPTIONS, BORROWING_RETURN_STATUS_OPTIONS } from 'src/_mock/stores/raw-materials/data';
 
 import { Label } from 'src/components/label';
 // Custom cell renderers for StockListView
@@ -126,4 +126,44 @@ export function RenderCellCreatedDate({ params }) {
     );
 }
 
+export function RenderCellObservation({ params }) {
+  return <Typography>{params.row.observation ?? 'N/I'}</Typography>;
+}
+
+export function RenderCellTiers({ params }) {
+  return <Typography>{params.row.tier?.code ?? 'N/I'}</Typography>;
+}
+
+export function RenderCellStore({ params }) {
+  return <Typography>{params.row.store?.code ?? 'N/I'}</Typography>;
+}
+
+export function RenderCellNature({ params }) {
+  const nature = BORROWING_NATURE_OPTIONS.find(option => option.value == params.row.nature);
+  const color = nature?.color ?? 'default';
+  const label = nature?.label ?? 'N/I';
+  return <Label variant="soft" color={color}>{label}</Label>;
+}
+
+
+export function RenderCellTypeBorrowing({ params }) {
+  const type = BORROWING_TYPE_OPTIONS.find(option => option.value == params.row.type);
+  const color = type?.color ?? 'default';
+  const label = type?.label ?? 'N/I';
+  return <Label variant="soft" color={color}>{label}</Label>;
+}
+
+export function RenderCellStatusBorrowing({ params }) {
+  const status = BORROWING_STATUS_OPTIONS.find(option => option.value == params.row.status);
+  const color = status?.color ?? 'default';
+  const label = status?.label ?? 'N/I';
+  return <Label variant="soft" color={color}>{label}</Label>;
+}
+
+export function RenderCellReturnStatusBorrowing({ params }) {
+  const status = BORROWING_RETURN_STATUS_OPTIONS.find(option => option.value == params.row.return_status);
+  const color = status?.color ?? 'default';
+  const label = status?.label ?? 'N/I';
+  return <Label variant="soft" color={color}>{label}</Label>;
+}
 

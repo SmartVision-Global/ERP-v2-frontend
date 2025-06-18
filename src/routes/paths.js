@@ -257,10 +257,13 @@ export const paths = {
           `${ROOTS.DASHBOARD}/store-management/raw-material/transfer-slip/${id}/edit`,
       },
       loanBorrowing: {
-        // root: `${ROOTS.DASHBOARD}/store-management/loan-borrowing`,
+        root: `${ROOTS.DASHBOARD}/store-management/loan-borrowing`,
         third: `${ROOTS.DASHBOARD}/store-management/third`,
         newThird: `${ROOTS.DASHBOARD}/store-management/third/new`,
         editThird: (id) => `${ROOTS.DASHBOARD}/store-management/third/${id}/edit`,
+        borrowing: `${ROOTS.DASHBOARD}/store-management/borrowing`,
+        newBorrowing: `${ROOTS.DASHBOARD}/store-management/borrowing/new`,
+        editBorrowing: (id) => `${ROOTS.DASHBOARD}/store-management/borrowing/${id}/edit`,
       },
     },
     store: {

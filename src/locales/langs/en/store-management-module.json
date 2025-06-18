@@ -10,7 +10,9 @@
         "add_third": "Add Third",
         "edit_third": "Edit Third",
         "new_third": "New Third",
-        "loan_borrowing": "Loan Borrowing"
+        "loan_borrowing": "Loan Borrowing",
+        "borrowing": "Borrowing",
+        "add_borrowing": "Add Borrowing"
     },
     "headers": {
         "id": "ID",
@@ -46,7 +48,13 @@
         "tier": "Tier",
         "date": "Date",
         "actual_quantity": "Actual Quantity",
-        "exit_quantity": "Exit Quantity"
+        "exit_quantity": "Exit Quantity",
+        "observation": "Observation",
+        "tiers": "Tiers",
+        "store": "Store",
+        "nature": "Nature",
+        "type": "Type",
+        "return_status": "Return Status"
     },
     "actions": {
         "add_stock": "Add Stock",
@@ -61,7 +69,8 @@
         "close": "Close",
         "previous_step": "Previous Step",
         "next_step": "Next Step",
-        "validate": "Validate"
+        "validate": "Validate",
+        "add_borrowing": "Add Borrowing"
     },
     "filters": {
         "search_placeholder": "Search...",
@@ -85,7 +94,11 @@
         "measure_unit": "Measure Unit",
         "tier": "Tier",
         "full_name": "Full Name",
-        "type": "Type"
+        "type": "Type",
+        "observation": "Observation",
+        "nature": "Nature",
+        "return_status": "Return Status",
+        "tiers": "Tiers"
     },
     "dialog": {
         "product_details": "Product Details: {{code}} -- {{designation}}",

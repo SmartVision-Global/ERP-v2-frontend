@@ -63,7 +63,7 @@ export const navData = [
         children: [
           {
             title: 'Matières premières',
-            path: paths.dashboard.storeManagement.root,
+            path: paths.dashboard.storeManagement.rawMaterial.root,
             children: [
               { title: 'Stocks', path: paths.dashboard.storeManagement.rawMaterial.root },
               {
@@ -96,8 +96,12 @@ export const navData = [
           },
           {
             title:'Prêt Emprunt',
-            path:paths.dashboard.storeManagement.rawMaterial.root,
+            path:paths.dashboard.storeManagement.loanBorrowing.root,
             children:[
+              {
+                title:'Prêt Emprunt'	,
+                path:paths.dashboard.storeManagement.loanBorrowing.borrowing,
+              },
               {
                 title:'Tiers',
                 path:paths.dashboard.storeManagement.loanBorrowing.third,
