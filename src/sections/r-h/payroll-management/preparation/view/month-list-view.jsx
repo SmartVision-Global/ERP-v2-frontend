@@ -276,10 +276,17 @@ export function MonthListView() {
       getActions: (params) => [
         <GridActionsLinkItem
           showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
+          icon={<Iconify icon="ci:user-01" />}
           label="Ajouter personel"
           // href={paths.dashboard.product.details(params.row.id)}
           href={paths.dashboard.rh.payrollManagement.preparationDetails(params.row.id)}
+        />,
+        <GridActionsLinkItem
+          showInMenu
+          icon={<Iconify icon="solar:pen-bold" />}
+          label="Modifier"
+          // href={paths.dashboard.product.details(params.row.id)}
+          href={paths.dashboard.rh.payrollManagement.editMonth(params.row.id)}
         />,
       ],
     },

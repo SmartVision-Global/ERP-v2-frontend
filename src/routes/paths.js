@@ -188,6 +188,8 @@ export const paths = {
 
         preparation: `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/preparation`,
         newPreparation: `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/preparation/new`,
+        editMonth: (id) =>
+          `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/preparation/${id}/edit`,
         preparationDetails: (id) =>
           `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/preparation/${id}/details`,
       },

@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import fr from 'dayjs/locale/fr';
+import utc from 'dayjs/plugin/utc';
 import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
@@ -29,6 +30,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
+dayjs.extend(utc);
 
 // ----------------------------------------------------------------------
 
@@ -306,4 +308,13 @@ export function calculateDifference(startDate, endDate) {
     hours,
     minutes,
   };
+}
+
+export function daysToNow(date) {
+  if (!isValidDate(date)) {
+    return NaN; // or throw an error, up to you
+  }
+
+  // always compare in UTC if your input is UTC
+  return dayjs(date).utc().diff(dayjs().utc(), 'day');
 }

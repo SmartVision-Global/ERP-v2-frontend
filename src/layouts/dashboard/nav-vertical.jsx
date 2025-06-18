@@ -61,7 +61,7 @@ export function NavVertical({
         ]}
       />
 
-      {slots?.bottomArea}
+      {/* {slots?.bottomArea} */}
     </>
   );
 

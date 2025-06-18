@@ -110,6 +110,28 @@ export function useGetPayrollMonth(productId) {
   return memoizedValue;
 }
 
+export function useGetCalculationPayrollMonthsDeducationsCompensations(id) {
+  // const url = endpoints.function;
+  const url = endpoints.payrollMonthDeducationsCompensations(id);
+
+  const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
+
+  const memoizedValue = useMemo(
+    () => ({
+      payrollMonthsDeducationsCompensations: data?.data?.records || [],
+      payrollMonthsDeducationsCompensationsCount: data?.data?.total || 0,
+      payrollMonthsDeducationsCompensationsLoading: isLoading,
+      payrollMonthsDeducationsCompensationsError: error,
+      payrollMonthsDeducationsCompensationsValidating: isValidating,
+      payrollMonthsDeducationsCompensationsEmpty:
+        !isLoading && !isValidating && !data?.data?.records.length,
+    }),
+    [data?.data?.records, data?.data?.total, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
+
 export async function createPayrollMonth(data) {
   /**
    * Work on server

@@ -17,9 +17,9 @@ import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 
 export const NewProductSchema = zod.object({
-  name: zod.string().min(1, { message: 'Name is required!' }),
+  name: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
   designation: zod.string().optional(),
-  address: zod.string().min(1, { message: 'Name is required!' }),
+  address: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
 });
 
 export function SiteNewEditForm({ currentProduct }) {

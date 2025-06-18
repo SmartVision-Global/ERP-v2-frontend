@@ -6,7 +6,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { RouterLink } from 'src/routes/components';
 
 import { fCurrency } from 'src/utils/format-number';
-import { fDate, fTime } from 'src/utils/format-time';
+import { fDate, fTime, daysToNow } from 'src/utils/format-time';
 
 import { Label } from 'src/components/label';
 
@@ -95,6 +95,7 @@ export function RenderCellSex({ params }) {
 }
 
 export function RenderCellContract({ params }) {
+  const daysToEndContract = daysToNow(params.row.to_date);
   return (
     <Label
       variant="soft"
@@ -104,6 +105,27 @@ export function RenderCellContract({ params }) {
           : params.row.contract_type === '2'
             ? 'warning'
             : 'default'
+      }
+      sx={
+        params.row.contract_type == '1' && daysToEndContract < 10
+          ? {
+              // Add an animated background / border / color pulse
+              // backgroundColor: 'red',
+              // color: 'white',
+              animation: 'pulse 1.5s infinite',
+              '@keyframes pulse': {
+                '0%': {
+                  boxShadow: '0 0 0 0 rgba(25, 118, 210, 0.7)',
+                },
+                '70%': {
+                  boxShadow: '0 0 0 10px rgba(25, 118, 210, 0)',
+                },
+                '100%': {
+                  boxShadow: '0 0 0 0 rgba(25, 118, 210, 0)',
+                },
+              },
+            }
+          : {}
       }
     >
       {CONTRACT_TYPE[params.row.contract_type]}
@@ -344,13 +366,13 @@ export function RenderCellBanq({ params }) {
   return (
     <Label variant="soft" color="default">
       {/* {params.row.publish} */}
-      {params.row.bank?.name}
+      {params.row.bank?.name ?? '-'}
     </Label>
   );
 }
 
 export function RenderCellRib({ params, href }) {
-  return <Typography fontSize={14}>{params.row.rib}</Typography>;
+  return <Typography fontSize={14}>{params.row.rib ?? '-'}</Typography>;
 }
 
 export function RenderCellTeamType({ params, href }) {
@@ -380,6 +402,7 @@ export function RenderCellContractEndAt({ params }) {
   return (
     <Box sx={{ gap: 0.5, display: 'flex', flexDirection: 'column' }}>
       <span>{params.row.to_date ? fDate(params.row.to_date) : '-'}</span>
+      {/* <span>To now :{daysToNow(params.row.to_date)}</span> */}
       {/* <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
         {fTime(params.row.created_at)}
       </Box> */}

@@ -17,32 +17,32 @@ import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 
 export const NewProductSchema = zod.object({
-  name: zod.string().min(1, { message: 'Name is required!' }),
+  name: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
   seat: zod.string().optional(),
-  address: zod.string().min(1, { message: 'Address is required!' }),
-  city: zod.string().min(1, { message: 'city is required!' }),
-  country: zod.string().min(1, { message: 'country is required!' }),
-  activity: zod.string().min(1, { message: 'activity is required!' }),
+  address: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  city: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  country: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  activity: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
 
-  bank: zod.string().min(1, { message: 'bank is required!' }),
-  bank_account: zod.string().min(1, { message: 'bank_account is required!' }),
-  ccp_account: zod.string().min(1, { message: 'ccp_account is required!' }),
-  email: zod.string().min(1, { message: 'email is required!' }),
-  phone: zod.string().min(1, { message: 'phone is required!' }),
-  fax: zod.string().min(1, { message: 'fax is required!' }),
-  color: zod.string().min(1, { message: 'color is required!' }),
+  bank: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  bank_account: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  ccp_account: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  email: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  phone: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  fax: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  color: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
   email_com: zod.string().optional().nullable(),
   phone_com: zod.string().optional().nullable(),
   email_pur: zod.string().optional().nullable(),
   phone_pur: zod.string().optional().nullable(),
   email_bil: zod.string().optional().nullable(),
   phone_bil: zod.string().optional().nullable(),
-  trade_registry: zod.string().min(1, { message: 'trade_registry is required!' }),
-  article_taxation: zod.string().min(1, { message: 'article_taxation is required!' }),
-  tax_registration_number: zod.string().min(1, { message: 'tax_registration_number is required!' }),
-  nif: zod.string().min(1, { message: 'nif is required!' }),
-  nis: zod.string().min(1, { message: 'nis is required!' }),
-  rib: zod.string().min(1, { message: 'rib is required!' }),
+  trade_registry: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  article_taxation: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  tax_registration_number: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  nif: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  nis: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  rib: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
 });
 
 export function EntrepriseNewEditForm({ currentProduct }) {
@@ -106,7 +106,6 @@ export function EntrepriseNewEditForm({ currentProduct }) {
       console.info('DATA', updatedData);
     } catch (error) {
       showError(error, setError);
-
       console.error(error);
     }
   });

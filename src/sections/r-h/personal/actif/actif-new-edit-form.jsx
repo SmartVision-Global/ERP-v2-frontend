@@ -23,7 +23,7 @@ import { useRouter } from 'src/routes/hooks';
 import { showError } from 'src/utils/toast-error';
 
 import { uploadMedia } from 'src/actions/media';
-import { useMultiLookups } from 'src/actions/lookups';
+import { useGetLookups, useMultiLookups } from 'src/actions/lookups';
 import { createPersonal, updatePersonal } from 'src/actions/personal';
 import {
   COMMUN_SEXE_OPTIONS,
@@ -107,9 +107,9 @@ export const NewProductSchema = zod
     // Informations sur l'Emploi
     enterprise_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
     job_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
-    salary_category_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
-    rung_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
-    salary_scale_level_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+    salary_category_id: zod.string().optional().nullable(),
+    rung_id: zod.string().optional().nullable(),
+    salary_scale_level_id: zod.string().optional().nullable(),
 
     salary_grid_id: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
     salary_supplemental: zod.number().optional(),
@@ -266,7 +266,7 @@ export function ActifNewEditForm({ currentProduct }) {
   const enterprises = dataLookups?.enterprises || [];
   const jobs = dataLookups?.jobs || [];
   const salaryCategories = dataLookups?.salary_categories || [];
-  const salaryGrids = dataLookups?.salary_grids || [];
+  // const salaryGrids = dataLookups?.salary_grids || [];
   const salaryScaleLevels = dataLookups?.salary_scale_levels || [];
   const agencies = dataLookups?.agencies || [];
   const banks = dataLookups?.banks || [];
@@ -470,6 +470,12 @@ export function ActifNewEditForm({ currentProduct }) {
     }
   };
   const values = watch();
+  const { data: salaryGrids } = useGetLookups('hr/lookups/salary_grids', {
+    salary_category: values.salary_category_id || null,
+    rung: values.rung_id || null,
+    salary_scale_level: values.salary_scale_level_id || null,
+    job: values.job_id || null,
+  });
 
   const handleRemoveImage = useCallback(() => {
     setValue('image', null);
@@ -1002,7 +1008,7 @@ export function ActifNewEditForm({ currentProduct }) {
               sx={{ display: 'flex', justifyContent: 'space-between' }}
             />
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }} />
+          {/* <Grid size={{ xs: 12, md: 6 }} /> */}
 
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Lookup name="rate_id" label="Regime de cotisation" data={rates} />

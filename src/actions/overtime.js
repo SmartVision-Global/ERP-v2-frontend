@@ -103,13 +103,13 @@ export async function archiveOvertime(id, data) {
   mutate(ENDPOINT);
 }
 
-export async function cancelOvertime(id, data) {
+export async function cancelOvertime(id, data, params) {
   /**
    * Work on server
    */
   // const data = { directionData };
   await axios.post(`${ENDPOINT}/${id}/cancel`, data);
-  mutate(ENDPOINT);
+  mutate([ENDPOINT, { params }]);
 
   //   mutate(endpoints.site);
 }
