@@ -257,7 +257,7 @@ export const paths = {
           `${ROOTS.DASHBOARD}/store-management/raw-material/transfer-slip/${id}/edit`,
       },
       loanBorrowing: {
-        root: `${ROOTS.DASHBOARD}/store-management/loan-borrowing`,
+        root: `${ROOTS.DASHBOARD}/store-management`,
         third: `${ROOTS.DASHBOARD}/store-management/third`,
         newThird: `${ROOTS.DASHBOARD}/store-management/third/new`,
         editThird: (id) => `${ROOTS.DASHBOARD}/store-management/third/${id}/edit`,

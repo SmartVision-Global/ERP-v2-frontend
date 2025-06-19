@@ -66,6 +66,20 @@ export function useGetBorrowing(id) {
   return memoizedValue;
 }
 
+export function useGetBorrowingProducts(id) {
+  const url = id ? `${ENDPOINT}/${id}/products` : '';
+  const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
+
+  return {
+    borrowingProducts: data?.data,
+    borrowingProductsLoading: isLoading,
+    borrowingProductsError: error,
+    borrowingProductsValidating: isValidating,
+    borrowingProductsEmpty: !isLoading && !isValidating && !data?.data,
+  };
+}
+
+
 /**
  * Generic function to create any entity type
 

@@ -4,14 +4,18 @@ import { useMemo, useState, useEffect, forwardRef, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
-import { DataGrid, gridClasses } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, gridClasses } from '@mui/x-data-grid';
 import {
   FormControl,
   TextField,
   InputAdornment,
   MenuItem,
   ListItemIcon,
-  Link
+  Link,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
@@ -43,55 +47,13 @@ import {
   RenderCellReturnStatusBorrowing,
 } from '../../table-rows';
 import { BORROWING_STATUS_OPTIONS, BORROWING_TYPE_OPTIONS, BORROWING_NATURE_OPTIONS, BORROWING_RETURN_STATUS_OPTIONS } from 'src/_mock/stores/raw-materials/data';
+import BorrowingProductsList from './borrowing-products-list';
 
 // ----------------------------------------------------------------------
 
 const HIDE_COLUMNS = { categories: false };
 
 const HIDE_COLUMNS_TOGGLABLE = [];
-
-const columns = (t) => [
-  {
-    field: 'id',
-    headerName: t('headers.id'),
-    width: 80,
-    renderCell: (params) => <RenderCellId params={params} />,
-  },
-  { field: 'code', headerName: t('headers.code'), flex: 1, minWidth: 100, renderCell: (params) => <RenderCellCode params={params} /> },
-  { field: 'observation', headerName: t('headers.observation'), flex: 1, minWidth: 150, renderCell: (params) => <RenderCellObservation params={params} /> },
-  { field: 'tiers', headerName: t('headers.tiers'), flex: 1, minWidth: 100, renderCell: (params) => <RenderCellTiers params={params} /> },
-  { field: 'store', headerName: t('headers.store'), flex: 1, minWidth: 120, renderCell: (params) => <RenderCellStore params={params} /> },
-  { field: 'nature', headerName: t('headers.nature'), flex: 1, minWidth: 150, renderCell: (params) => <RenderCellNature params={params} /> },
-  { field: 'type', headerName: t('headers.type'), flex: 1, minWidth: 100, renderCell: (params) => <RenderCellTypeBorrowing params={params} /> },
-  { field: 'status', headerName: t('headers.status'), flex: 1, minWidth: 100, renderCell: (params) => <RenderCellStatusBorrowing params={params} /> },
-  { field: 'return_status', headerName: t('headers.return_status'), flex: 1, minWidth: 120, renderCell: (params) => <RenderCellReturnStatusBorrowing params={params} /> },
-  {
-    field: 'created_date',
-    headerName: t('headers.created_date'),
-    flex: 1,
-    minWidth: 110,
-    renderCell: (params) => <RenderCellCreatedDate params={params} />,
-  },
-  {
-    type: 'actions',
-    field: 'actions',
-    headerName: ' ',
-    align: 'right',
-    headerAlign: 'right',
-    width: 80,
-    sortable: false,
-    filterable: false,
-    disableColumnMenu: true,
-    getActions: (params) => [
-      <GridActionsLinkItem
-        showInMenu
-        icon={<Iconify icon="solar:pen-bold" />}
-        label={t('actions.edit')}
-        href={paths.dashboard.storeManagement.loanBorrowing.editBorrowing(params.row.id)}
-      />,
-    ],
-  },
-];
 
 // ----------------------------------------------------------------------
 const PAGE_SIZE = CONFIG.pagination.pageSize;
@@ -116,10 +78,71 @@ export function BorrowingListView({ isSelectionDialog = false, componentsProps, 
     { entity: 'stores', url: 'settings/lookups/stores' },
   ]);
 
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [selectedBorrowingForProducts, setSelectedBorrowingForProducts] = useState(null);
+
+  const handleOpenDetail = useCallback((row) => {
+    setSelectedBorrowingForProducts(row);
+    setDetailOpen(true);
+  }, []);
+
+  const handleCloseDetail = () => {
+    setDetailOpen(false);
+    setSelectedBorrowingForProducts(null);
+  };
+
+  const columns = useMemo(() => [
+    {
+      field: 'id',
+      headerName: t('headers.id'),
+      width: 80,
+      renderCell: (params) => <RenderCellId params={params} />,
+    },
+    { field: 'code', headerName: t('headers.code'), flex: 1, minWidth: 100, renderCell: (params) => <RenderCellCode params={params} /> },
+    { field: 'observation', headerName: t('headers.observation'), flex: 1, minWidth: 150, renderCell: (params) => <RenderCellObservation params={params} /> },
+    { field: 'tiers', headerName: t('headers.tiers'), flex: 1, minWidth: 100, renderCell: (params) => <RenderCellTiers params={params} /> },
+    { field: 'store', headerName: t('headers.store'), flex: 1, minWidth: 120, renderCell: (params) => <RenderCellStore params={params} /> },
+    { field: 'nature', headerName: t('headers.nature'), flex: 1, minWidth: 150, renderCell: (params) => <RenderCellNature params={params} /> },
+    { field: 'type', headerName: t('headers.type'), flex: 1, minWidth: 100, renderCell: (params) => <RenderCellTypeBorrowing params={params} /> },
+    { field: 'status', headerName: t('headers.status'), flex: 1, minWidth: 100, renderCell: (params) => <RenderCellStatusBorrowing params={params} /> },
+    { field: 'return_status', headerName: t('headers.return_status'), flex: 1, minWidth: 120, renderCell: (params) => <RenderCellReturnStatusBorrowing params={params} /> },
+    {
+      field: 'created_date',
+      headerName: t('headers.created_date'),
+      flex: 1,
+      minWidth: 110,
+      renderCell: (params) => <RenderCellCreatedDate params={params} />,
+    },
+    {
+      type: 'actions',
+      field: 'actions',
+      headerName: ' ',
+      align: 'right',
+      headerAlign: 'right',
+      width: 80,
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      getActions: (params) => [
+        <GridActionsLinkItem
+          showInMenu
+          icon={<Iconify icon="solar:pen-bold" />}
+          label={t('actions.edit')}
+          href={paths.dashboard.storeManagement.loanBorrowing.editBorrowing(params.row.id)}
+        />,
+        <GridActionsCellItem
+          showInMenu
+          icon={<Iconify icon="humbleicons:view-list" />}
+          label="liste des produits"
+          onClick={() => handleOpenDetail(params.row)}
+        />,
+      ],
+    },
+  ], [t, handleOpenDetail]);
+
 
   const tiers = dataLookups.tiers || [];
   const stores = dataLookups.stores || [];
-  const columns_ = useMemo(() => columns(t), [t]);
 
   const FILTERS_OPTIONS = useMemo(
     () => [
@@ -217,7 +240,7 @@ export function BorrowingListView({ isSelectionDialog = false, componentsProps, 
   };
 
   const getTogglableColumns = () =>
-    columns_
+    columns
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
 
@@ -294,7 +317,7 @@ export function BorrowingListView({ isSelectionDialog = false, componentsProps, 
             disableColumnMenu
             rows={tableData}
             rowCount={rowCount}
-            columns={columns_}
+            columns={columns}
             loading={borrowingsLoading}
             getRowHeight={() => 'auto'}
             paginationModel={paginationModel}
@@ -323,6 +346,17 @@ export function BorrowingListView({ isSelectionDialog = false, componentsProps, 
           
         </Card>
       </DashboardContent>
+      {selectedBorrowingForProducts && (
+        <Dialog open={detailOpen} onClose={handleCloseDetail} maxWidth="xl" fullWidth>
+          <DialogTitle>liste des produits</DialogTitle>
+          <DialogContent dividers>
+            <BorrowingProductsList id={selectedBorrowingForProducts.id} />
+          </DialogContent>
+          <DialogActions>
+            <Button variant="contained" onClick={handleCloseDetail}>Fermer</Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </>
   );
 }
