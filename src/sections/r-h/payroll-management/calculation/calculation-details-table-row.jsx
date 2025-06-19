@@ -75,7 +75,7 @@ export function RenderCellYear({ params }) {
 }
 
 export function RenderCellCompany({ params }) {
-  return <Typography variant="body2">{params.row?.enterprise}</Typography>;
+  return <Typography variant="body2">{params.row?.personal?.enterprise}</Typography>;
 }
 
 export function RenderCellOverdays({ params }) {
