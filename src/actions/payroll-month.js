@@ -158,3 +158,10 @@ export async function archiveJob(id, data) {
   await axios.delete(`${ENDPOINT}/${id}`);
   // mutate(`${ENDPOINT}/${id}`);
 }
+
+export async function getPayrollDocument(id) {
+  const response = await axios.get(`${endpoints.payrollDocument(id)}`, {
+    responseType: 'blob',
+  });
+  return response;
+}
