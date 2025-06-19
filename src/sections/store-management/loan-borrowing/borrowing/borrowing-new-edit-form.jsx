@@ -1,90 +1,93 @@
 import { z as zod } from 'zod';
-import { useForm } from 'react-hook-form';
+import { useMemo, useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useForm, useFieldArray } from 'react-hook-form';
 
 import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Stack, Stepper, Step, StepLabel, StepButton, CardHeader, Typography, MenuItem, Divider } from '@mui/material';
+import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
+import { Box, Card, Stack, Stepper, Step, StepLabel, StepButton, CardHeader, Typography, MenuItem, Divider, Button, IconButton, Modal, TextField } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useTranslate } from 'src/locales';
-import { THIRD_TYPE_OPTIONS } from 'src/_mock/stores/raw-materials/data';
-import { createEntity, updateEntity } from 'src/actions/store-management/third';
+import { useMultiLookups } from 'src/actions/lookups';
+import { useGetStocks } from 'src/actions/stores/raw-materials/stocks';
+import { createEntity, updateEntity } from 'src/actions/store-management/borrowing';
+import { BORROWING_NATURE_OPTIONS, BORROWING_TYPE_OPTIONS } from 'src/_mock/stores/raw-materials/data';
 
 import { toast } from 'src/components/snackbar';
+import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
 
-// New Schema
-const getThirdSchema = (t) => zod.object({
-  code: zod.string().min(1, { message: t('form.validations.code_required') }),
-  full_name: zod.string().optional(),
-  phone_number: zod.string().optional(),
-  mobile_number: zod.string().optional(),
-  city: zod.string().optional(),
-  country: zod.string().optional(),
-  address: zod.string().min(1, { message: t('form.validations.address_required') }),
-  comment: zod.string().optional(),
-  type: zod.number().min(1, { message: t('form.validations.type_required') }),
-  fax: zod.string().optional(),
-  email: zod.string().email({ message: t('form.validations.invalid_email') }).optional().or(zod.literal('')),
-  website: zod.string().url({ message: t('form.validations.invalid_url') }).optional().or(zod.literal('')),
-  sold: zod.number({ coerce: true }).optional(),
-  sold_p: zod.number({ coerce: true }).optional(),
-  trade_registry: zod.string().optional(),
-  idfiscale: zod.string().optional(),
-  art_Imposition: zod.string().optional(),
-  nis: zod.string().optional(),
-  account_number: zod.string().optional(),
-  bank: zod.string().optional(),
-  rib: zod.string().optional(),
+const getBorrowingSchema = (t) => zod.object({
+  tier_id: zod.string().min(1, { message: t('form.validations.tier_required') }),
+  nature: zod.number(),
+  store_id: zod.string().min(1, { message: t('form.validations.store_required') }),
+  type: zod.number(),
+  observation: zod.string().optional(),
+  items: zod.array(zod.object({
+    product_id: zod.string().nonempty({ message: t('form.validations.product_required') }),
+    quantity: zod.number({ coerce: true }).min(1, { message: t('form.validations.quantity_required') }),
+    designation: zod.string().optional(),
+    in_stock: zod.number({ coerce: true }).optional(),
+    observation: zod.string().optional(),
+    code: zod.string().optional(),
+    unit_measure: zod.any().optional(),
+    supplier_code: zod.string().optional(),
+    builder_code: zod.string().optional(),
+  })).min(1, { message: t('form.validations.at_least_one_product') }),
 });
 
-
-export function BorrowingNewEditForm({ currentThird }) {
+export function BorrowingNewEditForm({ currentBorrowing }) {
   const router = useRouter();
   const { t } = useTranslate('store-management-module');
   const [activeStep, setActiveStep] = useState(0);
 
+  const { dataLookups } = useMultiLookups([
+    { entity: 'tiers', url: 'inventory/lookups/tiers' },
+    { entity: 'stores', url: 'settings/lookups/stores' },
+  ]);
+
+  const tiers = dataLookups.tiers || [];
+  const stores = dataLookups.stores || [];
+
+  const [filterParams, setFilterParams] = useState({ code: '', supplier_code: '', builder_code: '', designation: '' });
+  const { stocks: productOptions, stocksLoading: productsLoading } = useGetStocks(filterParams);
+  const [openModalIndex, setOpenModalIndex] = useState(null);
+
   const STEPS = [
-    t('form.steps.identification'),
-    t('form.steps.parametrage1'),
-    t('form.steps.parametrage2'),
+    t('form.steps.transaction_tier'),
+    t('form.steps.products'),
   ];
 
-  const ThirdSchema = getThirdSchema(t);
+  const BorrowingSchema = getBorrowingSchema(t);
 
   const defaultValues = useMemo(
     () => ({
-        code: currentThird?.code || '',
-        full_name: currentThird?.full_name || '',
-        phone_number: currentThird?.phone_number || '',
-        mobile_number: currentThird?.mobile_number || '',
-        city: currentThird?.city || '',
-        country: currentThird?.country || '',
-        address: currentThird?.address || '',
-        comment: currentThird?.comment || '',
-        type: currentThird?.type || 1, 
-        fax: currentThird?.fax || '',
-        email: currentThird?.email || '',
-        website: currentThird?.website || '',
-        sold: currentThird?.sold || 0,
-        sold_p: currentThird?.sold_p || 0,
-        trade_registry: currentThird?.trade_registry || '',
-        idfiscale: currentThird?.idfiscale || '',
-        art_Imposition: currentThird?.art_Imposition || '',
-        nis: currentThird?.nis || '',
-        account_number: currentThird?.account_number || '',
-        bank: currentThird?.bank || '',
-        rib: currentThird?.rib || '',
+      tier_id: currentBorrowing?.tier?.id?.toString() || '',
+      nature: currentBorrowing?.nature || (BORROWING_NATURE_OPTIONS.length > 0 ? BORROWING_NATURE_OPTIONS[0].value : null),
+      store_id: currentBorrowing?.store?.id?.toString() || '',
+      type: currentBorrowing?.type || (BORROWING_TYPE_OPTIONS.length > 0 ? BORROWING_TYPE_OPTIONS[0].value : null),
+      observation: currentBorrowing?.observation || '',
+      items: currentBorrowing?.items ? currentBorrowing.items.map(item => ({
+        product_id: item.product?.id?.toString() || '',
+        code: item.product?.code || '',
+        designation: item.product?.designation || '',
+        in_stock: item.product?.quantity || '',
+        quantity: item.quantity?.toString() || '',
+        observation: item.observation || '',
+        unit_measure: item.product?.unit_measure || { designation: '' },
+        supplier_code: item.product?.supplier_code || '',
+        builder_code: item.product?.builder_code || '',
+      })) : [],
     }),
-    [currentThird]
+    [currentBorrowing]
   );
   
   const methods = useForm({
-    resolver: zodResolver(ThirdSchema),
+    resolver: zodResolver(BorrowingSchema),
     defaultValues,
   });
 
@@ -93,19 +96,27 @@ export function BorrowingNewEditForm({ currentThird }) {
     handleSubmit,
     trigger,
     setError,
-    formState: { isSubmitting },
+    watch,
+    control,
+    setValue,
+    formState: { isSubmitting, errors },
   } = methods;
 
+  const { fields: itemFields, append: appendItem, remove: removeItem } = useFieldArray({
+    control,
+    name: 'items',
+    keyName: 'fieldKey',
+  });
+
   useEffect(() => {
-    if (currentThird) {
+    if (currentBorrowing) {
       reset(defaultValues);
     }
-  }, [currentThird, defaultValues, reset]);
+  }, [currentBorrowing, defaultValues, reset]);
   
   const tabFields = {
-    0: ['code', 'address'],
-    1: ['email', 'website'],
-    2: []
+    0: ['tier_id', 'store_id'],
+    1: ['items']
   };
 
   const handleNextStep = async () => {
@@ -132,16 +143,59 @@ export function BorrowingNewEditForm({ currentThird }) {
     }
   };
 
+  const handleSelectProduct = (row) => {
+    const idx = openModalIndex;
+    setValue(`items.${idx}.product_id`, row.id.toString());
+    setValue(`items.${idx}.code`, row.code);
+    setValue(`items.${idx}.designation`, row.designation);
+    setValue(`items.${idx}.unit_measure`, row.unit_measure || { designation: '' });
+    setValue(`items.${idx}.in_stock`, row.quantity || 0);
+    setValue(`items.${idx}.supplier_code`, row.supplier_code || '');
+    setValue(`items.${idx}.builder_code`, row.builder_code || '');
+    setOpenModalIndex(null);
+  };
+
+  const productColumns = [
+    { field: 'id', headerName: 'ID', width: 70 },
+    { field: 'code', headerName: 'Code', flex: 1, minWidth: 150 },
+    { field: 'supplier_code', headerName: 'Supplier Code', flex: 1, minWidth: 150 },
+    { field: 'builder_code', headerName: 'Builder Code', flex: 1, minWidth: 150 },
+    { field: 'designation', headerName: 'Designation', flex: 1.5, minWidth: 150 },
+    { field: 'quantity', headerName: 'Quantity', type: 'number', width: 100 },
+    {
+      field: 'actions', type: 'actions', headerName: '', width: 80,
+      getActions: (params) => [
+        <GridActionsCellItem
+          icon={<Iconify icon="eva:plus-fill" />}
+          label="Add"
+          onClick={() => handleSelectProduct(params.row)}
+          color="primary"
+        />
+      ],
+    },
+  ];
+
   const onSubmit = handleSubmit(async (data) => {
-    console.log('onSubmit data', data, 'currentThird', currentThird);
+    
     try {
-      if (currentThird) {
-        await updateEntity(currentThird.id, data);
+      const payload = {
+          ...data,
+          items: data.items.map(item => ({
+              product_id: item.product_id,
+              quantity: Number(item.quantity),
+              observation: item.observation,
+              in_stock: Number(item.in_stock),
+          }))
+      };
+      
+      if (currentBorrowing) {
+        await updateEntity(currentBorrowing.id, payload);
+        toast.success(t('form.messages.borrowing_updated'));
       } else {
-        await createEntity(data);
+        await createEntity(payload);
+        toast.success(t('form.messages.borrowing_created'));
       }
-      toast.success(currentThird ? t('form.messages.third_updated') : t('form.messages.third_created'));
-      router.push(paths.dashboard.storeManagement.loanBorrowing.third);
+      router.push(paths.dashboard.storeManagement.loanBorrowing.borrowing);
     } catch (error) {
       console.error(error);
       if (error && error.errors) {
@@ -157,117 +211,126 @@ export function BorrowingNewEditForm({ currentThird }) {
     <Box sx={{ mt: 3 }}>
         {activeStep === 0 && (
             <Card>
-              <CardHeader title={t('form.steps.identification')} sx={{ mb: 3 }} />
+              <CardHeader 
+                title={STEPS[0]} 
+                subheader="Pour commencer, veuillez selectionner le tiers, le magasin et le type d'action."
+                sx={{ mb: 3 }} 
+              />
               <Divider />
                 <Stack spacing={3} sx={{ p: 3 }}>
                     <Grid container spacing={3}>
                         <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Text name="code" label={t('form.labels.code')} />
+                            <Field.Lookup name="tier_id" label={t('form.labels.tiers')} data={tiers} />
                         </Grid>
                         <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Text name="full_name" label={t('form.labels.full_name')} />
-                        </Grid>
-                    </Grid>
-                    <Grid container spacing={3}>
-                        <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Text name="phone_number" label={t('form.labels.phone_number')} />
-                        </Grid>
-                        <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Text name="mobile_number" label={t('form.labels.mobile_number')} />
-                        </Grid>
-                    </Grid>
-                    <Grid container spacing={3}>
-                        <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Text name="city" label={t('form.labels.city')} />
-                        </Grid>
-                        <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Text name="country" label={t('form.labels.country')} />
-                        </Grid>
-                    </Grid>
-                    <Grid container spacing={3}>
-                        <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Text name="address" label={t('form.labels.address')} multiline rows={3} />
-                        </Grid>
-                        <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Text name="comment" label={t('form.labels.comment')} multiline rows={3} />
-                        </Grid>
-                    </Grid>
-                    
-                </Stack>
-            </Card>
-        )}
-        {activeStep === 1 && (
-            <Card>
-                <CardHeader title={t('form.steps.parametrage1')} sx={{ mb: 3 }} />
-                <Divider />
-                 <Stack spacing={3} sx={{ p: 3 }}>
-                    <Grid container spacing={3}>
-                        <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Select name="type" label={t('form.labels.type')} size="small">
-                                {THIRD_TYPE_OPTIONS.map((option) => (
+                            <Field.Select name="nature" label={t('form.labels.nature')} size="small">
+                                {BORROWING_NATURE_OPTIONS.map((option) => (
                                     <MenuItem key={option.value} value={option.value}>
                                         {option.label}
                                     </MenuItem>
                                 ))}
                             </Field.Select>
                         </Grid>
+                    </Grid>
+                    <Grid container spacing={3}>
                         <Grid size={{ xs: 12, md: 6 }}>
-                           <Field.Text name="fax" label={t('form.labels.fax')} />
+                            <Field.Lookup name="store_id" label={t('form.labels.store')} data={stores} />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <Field.Select name="type" label={t('form.labels.action')} size="small">
+                                {BORROWING_TYPE_OPTIONS.map((option) => (
+                                    <MenuItem key={option.value} value={option.value}>
+                                        {option.label}
+                                    </MenuItem>
+                                ))}
+                            </Field.Select>
                         </Grid>
                     </Grid>
                     <Grid container spacing={3}>
                         <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Text name="email" label={t('form.labels.email')} />
-                        </Grid>
-                        <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Text name="website" label={t('form.labels.website')} />
+                            <Field.Text name="observation" label={t('form.labels.observation')} multiline rows={3} />
                         </Grid>
                     </Grid>
-                    <Grid container spacing={3}>
-                        <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Number name="sold" label={t('form.labels.sold')} type="number" />
-                        </Grid>
-                        <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Number name="sold_p" label={t('form.labels.sold_p')} type="number" />
-                        </Grid>
-                    </Grid>
-                 </Stack>
+                </Stack>
             </Card>
         )}
-        {activeStep === 2 && (
-            <Card>
-                <CardHeader title={t('form.steps.parametrage2')} sx={{ mb: 3 }} />
+        {activeStep === 1 && (
+             <Card>
+                <CardHeader 
+                  title={STEPS[1]}
+                  subheader="Veuillez remplir la table des produits , la table doit contenir au moins un produit." 
+                  sx={{ mb: 3 }} 
+                />
                 <Divider />
                 <Stack spacing={3} sx={{ p: 3 }}>
-                <Grid container spacing={3}>
-                        <Grid size={{ xs: 12, md: 6 }}>
-                           <Field.Text name="trade_registry" label={t('form.labels.trade_registry')} />
+                  <Stack direction="row" alignItems="center" spacing={1}>
+                    <Typography variant="subtitle2">{t('views.add_products')}</Typography>
+                    <IconButton color="primary" onClick={() => {
+                      appendItem({ product_id: '', code: '', designation: '', in_stock: '', quantity: '', observation: '', unit_measure: { designation: '' }, supplier_code: '', builder_code: '' });
+                      setOpenModalIndex(itemFields.length);
+                    }}>
+                      <Iconify icon="eva:plus-fill" />
+                    </IconButton>
+                  </Stack>
+                  {!!errors.items && <Typography color="error" sx={{ mt: 2 }}>{errors.items.message}</Typography>}
+                  <Box sx={{ mt: 2 }}>
+                    {itemFields.map((field, index) => (
+                      <Box key={field.fieldKey} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 2, mb: 2 }}>
+                        <Grid container spacing={2}>
+                          <Grid size={{ xs: 12, md: 4 }}>
+                            <Field.Text name={`items.${index}.code`} label={t('form.labels.code')} InputProps={{ readOnly: true }}  />
+                          </Grid>
+                          <Grid size={{ xs: 12, md: 4 }}>
+                            <Field.Text name={`items.${index}.supplier_code`} label={t('form.labels.supplier_code')} InputProps={{ readOnly: true }} />
+                          </Grid>
+                          <Grid size={{ xs: 12, md: 4 }}>
+                            <Field.Text name={`items.${index}.builder_code`} label={t('form.labels.builder_code')} InputProps={{ readOnly: true }} />
+                          </Grid>
                         </Grid>
-                        <Grid size={{ xs: 12, md: 6 }}>
-                           <Field.Text name="idfiscale" label={t('form.labels.idfiscale')} />
+                        <Grid container spacing={2} sx={{ mt: 2 }}>
+                          <Grid size={{ xs: 12, md: 4 }}>
+                            <Field.Text name={`items.${index}.designation`} label={t('form.labels.designation')} InputProps={{ readOnly: true }} />
+                          </Grid>
+                          <Grid size={{ xs: 12, md: 4 }}>
+                            <Field.Number name={`items.${index}.in_stock`} label={t('form.labels.in_stock')} disabled />
+                          </Grid>
+                          <Grid size={{ xs: 12, md: 4 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'start', gap: 1 }}>
+                              <Box sx={{ width: 36, height: 36, borderRadius: '25%', bgcolor: 'grey.300', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Typography variant="subtitle2" sx={{ fontSize: '1rem' }}>
+                                  {watch(`items.${index}.unit_measure`)?.designation || ''}
+                                  </Typography>
+                              </Box>
+                              <Field.Number name={`items.${index}.quantity`} label={t('form.labels.quantity')} />
+                            </Box>
+                          </Grid>
                         </Grid>
-                    </Grid>
-                    <Grid container spacing={3}>
-                        <Grid size={{ xs: 12, md: 6 }}>
-                           <Field.Text name="art_Imposition" label={t('form.labels.art_imposition')} />
+                        <Grid container spacing={2} sx={{ mt: 2 }}>
+                          <Grid size={{ xs: 12, md:6 }}>
+                            <Field.Text name={`items.${index}.observation`} label={t('form.labels.observation')} multiline rows={2} />
+                          </Grid>
                         </Grid>
-                        <Grid size={{ xs: 12, md: 6 }}>
-                           <Field.Text name="nis" label={t('form.labels.nis')} />
-                        </Grid>
-                    </Grid>
-                    <Grid container spacing={3}>
-                        <Grid size={{ xs: 12, md: 6 }}>
-                           <Field.Text name="bank" label={t('form.labels.bank')} />
-                        </Grid>
-                        <Grid size={{ xs: 12, md: 6 }}>
-                           <Field.Text name="account_number" label={t('form.labels.account_number')} />
-                        </Grid>
-                    </Grid>
-                    <Grid container spacing={3}>
-                        <Grid size={{ xs: 12, md: 6 }}>
-                           <Field.Text name="rib" label={t('form.labels.rib')} />
-                        </Grid>
-                    </Grid>
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                          <IconButton color="error" onClick={() => removeItem(index)}><Iconify icon="eva:trash-2-outline" /></IconButton>
+                        </Box>
+                      </Box>
+                    ))}
+                  </Box>
+                  <Modal open={openModalIndex !== null} onClose={() => setOpenModalIndex(null)}>
+                    <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: 'background.paper', p: 3, width: '80%', maxHeight: '80%', overflow: 'auto' }}>
+                      <Typography variant="h6" mb={2}>{t('form.labels.select_product')}</Typography>
+                      <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                        <TextField label="Code" size="small" value={filterParams.code} onChange={(e) => setFilterParams((prev) => ({ ...prev, code: e.target.value }))} />
+                        <TextField label="Supplier Code" size="small" value={filterParams.supplier_code} onChange={(e) => setFilterParams((prev) => ({ ...prev, supplier_code: e.target.value }))} />
+                        <TextField label="Builder Code" size="small" value={filterParams.builder_code} onChange={(e) => setFilterParams((prev) => ({ ...prev, builder_code: e.target.value }))} />
+                        <TextField label="Designation" size="small" value={filterParams.designation} onChange={(e) => setFilterParams((prev) => ({ ...prev, designation: e.target.value }))} />
+                      </Box>
+                      <DataGrid autoHeight rows={productOptions} columns={productColumns} loading={productsLoading} pageSizeOptions={[5, 10,20,50,100]} />
+                      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                        <Button onClick={() => setOpenModalIndex(null)}>{t('actions.cancel')}</Button>
+                      </Box>
+                    </Box>
+                  </Modal>
                 </Stack>
             </Card>
         )}
@@ -296,7 +359,7 @@ export function BorrowingNewEditForm({ currentThird }) {
 
   return (
     <Form methods={methods} onSubmit={onSubmit}>
-        <CardHeader title={currentThird ? t('views.edit_third') : t('views.new_third')} />
+        {/* <CardHeader title={currentBorrowing ? t('views.edit_borrowing') : t('views.new_borrowing')} /> */}
         <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 3 }}>
             {STEPS.map((label, index) => (
                 <Step key={label}>

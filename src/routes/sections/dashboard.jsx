@@ -419,6 +419,11 @@ const PageStoreLoanBorrowingBorrowingNew = lazy(
   () => import('src/pages/dashboard/store-management/loan-borrowing/borrowing/new')
 );
 
+const PageStoreLoanBorrowingBorrowingEdit = lazy(
+  () => import('src/pages/dashboard/store-management/loan-borrowing/borrowing/edit')
+);
+
+
 
 
 
@@ -843,7 +848,7 @@ export const dashboardRoutes = [
             children: [
               { path: 'borrowing', element: <PageStoreLoanBorrowingBorrowingList /> },
               { path: 'borrowing/new', element: <PageStoreLoanBorrowingBorrowingNew /> },
-              // { path: 'borrowing/:id/edit', element: <PageStoreLoanBorrowingBorrowingEdit /> },
+              { path: 'borrowing/:id/edit', element: <PageStoreLoanBorrowingBorrowingEdit /> },
               { path: 'third', element: <PageStoreLoanBorrowingThirdList /> },
               { path: 'third/new', element: <PageStoreLoanBorrowingThirdNew /> },
               { path: 'third/:id/edit', element: <PageStoreLoanBorrowingThirdEdit /> },

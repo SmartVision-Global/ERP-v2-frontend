@@ -12,7 +12,11 @@
             "edit_third": "Modifier Tier",
             "new_third": "Nouveau Tier",
             "loan_borrowing": "Prêt-emprunt",
-            "borrowing": "Emprunt"
+            "borrowing": "Emprunt",
+            "add_borrowing": "Ajouter emprunt",
+            "edit_borrowing": "Modifier emprunt",
+            "new_borrowing": "Nouveau emprunt",
+            "add_products": "Ajouter produits"
         },
         "headers": {
             "id": "ID",
@@ -54,7 +58,11 @@
             "store": "Magasin",
             "nature": "Nature",
             "type": "Type",
-            "return_status": "Statut de retour"
+            "return_status": "Statut de retour",
+            "invalid_email": "Adresse e-mail invalide",
+            "invalid_url": "URL invalide",
+            "tier_required": "Tier est requis",
+            "store_required": "Magasin est requis"
         },
         "actions": {
             "add_stock": "Ajouter Stock",
@@ -113,7 +121,14 @@
             "image": "Image"
         },
         "messages":{
-            "no_results": "Aucun résultat trouvé"
+            "no_results": "Aucun résultat trouvé",
+            "stock_updated": "Stock mis à jour",
+            "stock_created": "Stock créé",
+            "operation_failed": "L'opération a échoué",
+            "third_updated": "Tier mis à jour",
+            "third_created": "Tier créé",
+            "borrowing_updated": "Emprunt mis à jour",
+            "borrowing_created": "Emprunt créé"
         },
         "form": {
             "validations": {
@@ -136,14 +151,18 @@
                 "code_required": "Le code est requis",
                 "address_required": "L'adresse est requise",
                 "invalid_email": "Adresse e-mail invalide",
-                "invalid_url": "URL invalide"
+                "invalid_url": "URL invalide",
+                "tier_required": "Tier est requis",
+                "store_required": "Magasin est requis"
             },
             "messages": {
                 "stock_updated": "Stock mis à jour",
                 "stock_created": "Stock créé",
                 "operation_failed": "L'opération a échoué",
                 "third_updated": "Tier mis à jour",
-                "third_created": "Tier créé"
+                "third_created": "Tier créé",
+                "borrowing_updated": "Emprunt mis à jour",
+                "borrowing_created": "Emprunt créé"
             },
             "sections": {
                 "details": "Détails",
@@ -151,7 +170,13 @@
                 "dimensions": "Dimensions",
                 "conditioning": "Conditionnement",
                 "storage": "Stockage",
-                "fees": "Frais"
+                "fees": "Frais",
+                "rib": "RIB",
+                "tiers": "Tiers",
+                "store": "Magasin",
+                "nature": "Nature",
+                "observation": "Observation",
+                "action": "Action"
             },
             "labels": {
                 "builder_code": "Code constructeur",
@@ -195,7 +220,17 @@
                 "nis": "NIS",
                 "bank": "Banque",
                 "account_number": "Numéro de compte",
-                "rib": "RIB"
+                "rib": "RIB",
+                "tiers": "Tiers",
+                "store": "Magasin",
+                "nature": "Nature",
+                "observation": "Observation",
+                "action": "Action",
+                "products": "Produits",
+                "in_stock": "En stock",
+                "quantity": "Quantité",
+                "select_product": "Sélectionner un produit"
+                
             },
             "actions": {
                 "save_changes": "Enregistrer les modifications",
@@ -206,7 +241,9 @@
             "steps": {
                 "identification": "Identification du produit",
                 "parametrage1": "Paramétrage du produit 1",
-                "parametrage2": "Paramétrage du produit 2"
+                "parametrage2": "Paramétrage du produit 2",
+                "transaction_tier": "Niveau de transaction",
+                "products": "Produits"
             }
         }
     

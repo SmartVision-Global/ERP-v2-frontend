@@ -60,8 +60,8 @@ const columns = (t) => [
   { field: 'code', headerName: t('headers.code'), flex: 1, minWidth: 100, renderCell: (params) => <RenderCellCode params={params} /> },
   { field: 'observation', headerName: t('headers.observation'), flex: 1, minWidth: 150, renderCell: (params) => <RenderCellObservation params={params} /> },
   { field: 'tiers', headerName: t('headers.tiers'), flex: 1, minWidth: 100, renderCell: (params) => <RenderCellTiers params={params} /> },
-  { field: 'store', headerName: t('headers.store'), flex: 1, minWidth: 100, renderCell: (params) => <RenderCellStore params={params} /> },
-  { field: 'nature', headerName: t('headers.nature'), flex: 1, minWidth: 110, renderCell: (params) => <RenderCellNature params={params} /> },
+  { field: 'store', headerName: t('headers.store'), flex: 1, minWidth: 120, renderCell: (params) => <RenderCellStore params={params} /> },
+  { field: 'nature', headerName: t('headers.nature'), flex: 1, minWidth: 150, renderCell: (params) => <RenderCellNature params={params} /> },
   { field: 'type', headerName: t('headers.type'), flex: 1, minWidth: 100, renderCell: (params) => <RenderCellTypeBorrowing params={params} /> },
   { field: 'status', headerName: t('headers.status'), flex: 1, minWidth: 100, renderCell: (params) => <RenderCellStatusBorrowing params={params} /> },
   { field: 'return_status', headerName: t('headers.return_status'), flex: 1, minWidth: 120, renderCell: (params) => <RenderCellReturnStatusBorrowing params={params} /> },
@@ -87,7 +87,7 @@ const columns = (t) => [
         showInMenu
         icon={<Iconify icon="solar:pen-bold" />}
         label={t('actions.edit')}
-        href={paths.dashboard.storeManagement.loanBorrowing.editThird(params.row.id)}
+        href={paths.dashboard.storeManagement.loanBorrowing.editBorrowing(params.row.id)}
       />,
     ],
   },

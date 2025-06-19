@@ -12,7 +12,10 @@
         "new_third": "New Third",
         "loan_borrowing": "Loan Borrowing",
         "borrowing": "Borrowing",
-        "add_borrowing": "Add Borrowing"
+        "add_borrowing": "Add Borrowing",
+        "edit_borrowing": "Edit Borrowing",
+        "new_borrowing": "New Borrowing",
+        "add_products": "Add Products"
     },
     "headers": {
         "id": "ID",
@@ -54,7 +57,8 @@
         "store": "Store",
         "nature": "Nature",
         "type": "Type",
-        "return_status": "Return Status"
+        "return_status": "Return Status",
+        "third_created": "Third created"
     },
     "actions": {
         "add_stock": "Add Stock",
@@ -118,7 +122,9 @@
         "stock_created": "Stock created",
         "operation_failed": "Operation failed",
         "third_updated": "Third updated",
-        "third_created": "Third created"
+        "third_created": "Third created",
+        "borrowing_updated": "Borrowing updated",
+        "borrowing_created": "Borrowing created"
     },
     "form": {
         "validations": {
@@ -141,12 +147,33 @@
             "code_required": "Code is required",
             "address_required": "Address is required",
             "invalid_email": "Invalid email address",
-            "invalid_url": "Invalid URL"
+            "invalid_url": "Invalid URL",
+            "tier_required": "Tier is required",
+            "store_required": "Store is required",
+            "product_required": "Product is required",
+            "quantity_required": "Quantity is required",
+            "at_least_one_product": "At least one product must be added"
         },
         "messages": {
             "stock_updated": "Stock updated",
             "stock_created": "Stock created",
-            "operation_failed": "Operation failed"
+            "operation_failed": "Operation failed",
+            "borrowing_updated": "Borrowing updated",
+            "borrowing_created": "Borrowing created",
+            "rib": "RIB",
+            "tiers": "Tiers",
+            "store": "Store",
+            "nature": "Nature",
+            "observation": "Observation",
+            "action": "Action",
+            "products": "Products",
+            "in_stock": "In Stock",
+            "quantity": "Quantity",
+            "select_product": "Select Product",
+            "art_imposition": "Art Imposition",
+            "nis": "NIS",
+            "bank": "Bank",
+            "account_number": "Account Number"
         },
         "sections": {
             "details": "Details",
@@ -154,7 +181,13 @@
             "dimensions": "Dimensions",
             "conditioning": "Conditioning",
             "storage": "Storage",
-            "fees": "Fees"
+            "fees": "Fees",
+            "rib": "RIB",
+            "tiers": "Tiers",
+            "store": "Store",
+            "nature": "Nature",
+            "observation": "Observation",
+            "action": "Action"
         },
         "labels": {
             "builder_code": "Builder Code",
@@ -198,7 +231,14 @@
             "nis": "NIS",
             "bank": "Bank",
             "account_number": "Account Number",
-            "rib": "RIB"
+            "rib": "RIB",
+            "tiers": "Tiers",
+            "store": "Store",
+            "nature": "Nature",
+            "action": "Action",
+            "observation": "Observation",
+            "in_stock": "In Stock",
+            "quantity": "Quantity"
         },
         "actions": {
             "save_changes": "Save Changes",
@@ -207,12 +247,19 @@
             "add": "Add",
             "previous_step": "Previous Step",
             "next_step": "Next Step",
-            "validate": "Validate"
+            "validate": "Validate",
+            "parametrage1": "Product Configuration 1",
+            "parametrage2": "Product Configuration 2",
+            "transaction_tier": "Transaction Tier",
+            "products": "Products",
+            "cancel": "Cancel"
         },
         "steps": {
             "identification": "Product Identification",
             "parametrage1": "Product Configuration 1",
-            "parametrage2": "Product Configuration 2"
+            "parametrage2": "Product Configuration 2",
+            "transaction_tier": "Transaction Tier",
+            "products": "Products"
         }
     }
 } 

@@ -3,18 +3,18 @@ import { Helmet } from 'react-helmet-async';
 import { useParams } from 'src/routes/hooks';
 
 import { CONFIG } from 'src/global-config';
-import { useGetThird } from 'src/actions/store-management/third';
+import { useGetBorrowing } from 'src/actions/store-management/borrowing';
 
-import { ThirdEditView } from 'src/sections/store-management/loan-borrowing/third/view';
+import { BorrowingEditView } from 'src/sections/store-management/loan-borrowing/borrowing/view';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Modifier Tier | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `Modifier Prêt Emprunt | Dashboard - ${CONFIG.appName}` };
 
 export default function Page() {
   const { id = '' } = useParams();
 
-  const { third } = useGetThird(id);
+  const { borrowing } = useGetBorrowing(id);
   
 
   return (
@@ -23,7 +23,7 @@ export default function Page() {
         <title> {metadata.title}</title>
       </Helmet>
 
-      <ThirdEditView third={third} />
+      <BorrowingEditView borrowing={borrowing} />
     </>
   );
 }

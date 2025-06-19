@@ -142,7 +142,18 @@ export function RenderCellNature({ params }) {
   const nature = BORROWING_NATURE_OPTIONS.find(option => option.value == params.row.nature);
   const color = nature?.color ?? 'default';
   const label = nature?.label ?? 'N/I';
-  return <Label variant="soft" color={color}>{label}</Label>;
+  return <Label
+  variant="soft"
+  color={color}
+  sx={{
+    height: 'auto',
+    lineHeight: '1.5',
+    whiteSpace: 'normal',
+    padding: '4px 8px',
+  }}
+>
+  {label}
+</Label>;
 }
 
 
