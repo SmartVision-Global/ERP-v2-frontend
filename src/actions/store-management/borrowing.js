@@ -66,17 +66,24 @@ export function useGetBorrowing(id) {
   return memoizedValue;
 }
 
-export function useGetBorrowingProducts(id) {
-  const url = id ? `${ENDPOINT}/${id}/products` : '';
-  const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
 
-  return {
-    borrowingProducts: data?.data,
-    borrowingProductsLoading: isLoading,
-    borrowingProductsError: error,
-    borrowingProductsValidating: isValidating,
-    borrowingProductsEmpty: !isLoading && !isValidating && !data?.data,
-  };
+
+export function useGetBorrowingItems(id, params) {
+  const url = id ? `${ENDPOINT}/${id}/items` : null;
+  const swrKey = id ? [url, { params }] : null;
+  
+  const { data, isLoading, error, isValidating } = useSWR(swrKey, fetcher, swrOptions);
+  const memoizedValue = useMemo(
+    () => ({
+      items: data?.data || [],
+      itemsCount: data?.data?.total || 0,
+      itemsLoading: isLoading,
+      itemsError: error,
+      itemsValidating: isValidating,
+    }),
+    [data?.data, data?.data?.total, error, isLoading, isValidating]
+  );
+  return memoizedValue;
 }
 
 
@@ -123,6 +130,30 @@ export async function updateEntity(id, data) {
     mutate(endpoints.stores.list);
   } catch (error) {
     console.error(`Error updating entity:`, error);
+    throw error;
+  }
+}
+
+export async function confirmBorrowing(id, data) {
+  if (!enableServer) return;
+  const endpoint = `${ENDPOINT}/${id}/confirm`;
+  try {
+    await axios.post(endpoint, data);
+    mutate(ENDPOINT);
+  } catch (error) {
+    console.error(`Error confirming borrowing:`, error);
+    throw error;
+  }
+}
+
+export async function cancelBorrowing(id, data) {
+  if (!enableServer) return;
+  const endpoint = `${ENDPOINT}/${id}/cancel`;
+  try {
+    await axios.post(endpoint, data);
+    mutate(ENDPOINT);
+  } catch (error) {
+    console.error(`Error canceling borrowing:`, error);
     throw error;
   }
 }

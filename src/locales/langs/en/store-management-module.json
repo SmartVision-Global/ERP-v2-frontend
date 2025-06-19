@@ -74,7 +74,11 @@
         "previous_step": "Previous Step",
         "next_step": "Next Step",
         "validate": "Validate",
-        "add_borrowing": "Add Borrowing"
+        "add_borrowing": "Add Borrowing",
+        "confirm": "Confirm",
+        "cancel": "Cancel",
+        "product_list": "Product List",
+        "submit": "Submit"
     },
     "filters": {
         "search_placeholder": "Search...",
@@ -114,7 +118,12 @@
         "creation_date": "Creation Date",
         "catalog": "Catalog",
         "view_pdf": "View PDF",
-        "image": "Image"
+        "image": "Image",
+        "confirm_borrowing_title": "Confirm Borrowing: {{code}}",
+        "cancel_borrowing_title": "Cancel Borrowing: {{code}}",
+        "confirm_notes": "Confirmation Notes",
+        "cancel_notes": "Cancellation Notes",
+        "product_list_title": "Product List"
     },
     "messages":{
         "no_results": "No results found",
@@ -253,6 +262,7 @@
             "transaction_tier": "Transaction Tier",
             "products": "Products",
             "cancel": "Cancel"
+           
         },
         "steps": {
             "identification": "Product Identification",

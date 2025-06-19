@@ -4,7 +4,7 @@ import { useMemo, useState, useEffect, forwardRef, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
-import { DataGrid, GridActionsCellItem, gridClasses } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import {
   FormControl,
   TextField,
@@ -24,8 +24,9 @@ import { RouterLink } from 'src/routes/components';
 import { CONFIG } from 'src/global-config';
 import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetBorrowings, getFiltredBorrowings } from 'src/actions/store-management/borrowing';
+import { useGetBorrowings, getFiltredBorrowings, confirmBorrowing, cancelBorrowing } from 'src/actions/store-management/borrowing';
 
+import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
@@ -35,8 +36,6 @@ import { useTranslate } from 'src/locales';
 import {
   RenderCellId,
   RenderCellCreatedDate,
-  RenderCellStatus,
-  RenderCellType,
   RenderCellCode,
   RenderCellObservation,
   RenderCellTiers,
@@ -48,6 +47,7 @@ import {
 } from '../../table-rows';
 import { BORROWING_STATUS_OPTIONS, BORROWING_TYPE_OPTIONS, BORROWING_NATURE_OPTIONS, BORROWING_RETURN_STATUS_OPTIONS } from 'src/_mock/stores/raw-materials/data';
 import BorrowingProductsList from './borrowing-products-list';
+import { BorrowingActionDialog } from './borrowing-action-dialog';
 
 // ----------------------------------------------------------------------
 
@@ -80,6 +80,36 @@ export function BorrowingListView({ isSelectionDialog = false, componentsProps, 
 
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedBorrowingForProducts, setSelectedBorrowingForProducts] = useState(null);
+  const [dialogState, setDialogState] = useState({ open: false, action: null, borrowing: null });
+
+  const handleOpenDialog = (borrowing, action) => {
+    setDialogState({ open: true, action, borrowing });
+  };
+
+  const handleCloseDialog = () => {
+    setDialogState({ open: false, action: null, borrowing: null });
+  };
+
+  const handleDialogAction = async (notes) => {
+    const { action, borrowing } = dialogState;
+
+    if (borrowing) {
+      try {
+        if (action === 'confirm') {
+          await confirmBorrowing(borrowing.id, { notes });
+          toast.success(t('messages.borrowing_confirmed'));
+        } else if (action === 'cancel') {
+          await cancelBorrowing(borrowing.id, { notes });
+          toast.success(t('messages.borrowing_canceled'));
+        }
+        handleCloseDialog();
+        handleReset(); 
+      } catch (error) {
+        console.error(error);
+        toast.error(t('messages.action_failed'));
+      }
+    }
+  };
 
   const handleOpenDetail = useCallback((row) => {
     setSelectedBorrowingForProducts(row);
@@ -124,16 +154,29 @@ export function BorrowingListView({ isSelectionDialog = false, componentsProps, 
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => [
-        <GridActionsLinkItem
+        ...(params.row.status === 1 ? [<GridActionsLinkItem
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}
           label={t('actions.edit')}
           href={paths.dashboard.storeManagement.loanBorrowing.editBorrowing(params.row.id)}
-        />,
+        />] : []),
+        ...(params.row.status === 1 ? [<GridActionsCellItem
+          showInMenu
+          icon={<Iconify icon="eva:checkmark-circle-2-fill" />}
+          label={t('actions.confirm')}
+          onClick={() => handleOpenDialog(params.row, 'confirm')}
+        />] : []),
+        ...([1, 2].includes(params.row.status) ? [<GridActionsCellItem
+            showInMenu
+            icon={<Iconify icon="eva:close-circle-fill" />}
+            label={t('actions.cancel')}
+            onClick={() => handleOpenDialog(params.row, 'cancel')}
+            sx={{ color: 'error.main' }}
+        />] : []),
         <GridActionsCellItem
           showInMenu
           icon={<Iconify icon="humbleicons:view-list" />}
-          label="liste des produits"
+          label={t('actions.product_list')}
           onClick={() => handleOpenDetail(params.row)}
         />,
       ],
@@ -335,28 +378,37 @@ export function BorrowingListView({ isSelectionDialog = false, componentsProps, 
               panel: { anchorEl: filterButtonEl },
               columnsManagement: { getTogglableColumns },
             }}
-            sx={{
-              [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' },
-              '& .alert-column': { backgroundColor: '#FFEFCE' },
-              '& .min-column': { backgroundColor: '#FCD1D1' },
-              '& .consumption-column': { backgroundColor: '#BFDEFF' },
-              '& .unknown2-column': { backgroundColor: '#C7F1E5' },
-            }}
+            
           />
           
         </Card>
       </DashboardContent>
       {selectedBorrowingForProducts && (
         <Dialog open={detailOpen} onClose={handleCloseDetail} maxWidth="xl" fullWidth>
-          <DialogTitle>liste des produits</DialogTitle>
+          <DialogTitle>{t('dialog.product_list_title')}</DialogTitle>
           <DialogContent dividers>
             <BorrowingProductsList id={selectedBorrowingForProducts.id} />
           </DialogContent>
           <DialogActions>
-            <Button variant="contained" onClick={handleCloseDetail}>Fermer</Button>
+            <Button variant="contained" onClick={handleCloseDetail}>{t('actions.close')}</Button>
           </DialogActions>
         </Dialog>
       )}
+      <BorrowingActionDialog
+        open={dialogState.open}
+        onClose={handleCloseDialog}
+        onAction={handleDialogAction}
+        title={
+          dialogState.action === 'confirm'
+            ? t('dialog.confirm_borrowing_title', { code: dialogState.borrowing?.code })
+            : t('dialog.cancel_borrowing_title', { code: dialogState.borrowing?.code })
+        }
+        notesLabel={
+          dialogState.action === 'confirm' ? t('dialog.confirm_notes') : t('dialog.cancel_notes')
+        }
+        actionButtonText={t('actions.submit')}
+        actionButtonColor={dialogState.action === 'cancel' ? 'error' : 'primary'}
+      />
     </>
   );
 }

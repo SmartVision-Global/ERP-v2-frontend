@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { DataGrid } from '@mui/x-data-grid';
 
 import { useTranslate } from 'src/locales';
-import { useGetBorrowingProducts } from 'src/actions/store-management/borrowing';
+import { useGetBorrowingItems } from 'src/actions/store-management/borrowing';
 
 import { EmptyContent } from 'src/components/empty-content';
 
@@ -19,7 +19,8 @@ import {
 
 const BorrowingProductsList = ({ id }) => {
   const { t } = useTranslate('store-management-module');
-  const { borrowingProducts, borrowingProductsLoading } = useGetBorrowingProducts(id);
+  console.log('hi habibbi', id)
+  const { items, itemsLoading } = useGetBorrowingItems(id);
 
   const columns = useMemo(
     () => [
@@ -93,15 +94,15 @@ const BorrowingProductsList = ({ id }) => {
     [t]
   );
 
-  if (borrowingProductsLoading) {
+  if (itemsLoading) {
     return <div>Loading...</div>;
   }
 
   return (
     <DataGrid
-      rows={borrowingProducts || []}
+      rows={items || []}
       columns={columns}
-      loading={borrowingProductsLoading}
+      loading={itemsLoading}
       getRowHeight={() => 'auto'}
       slots={{
         noRowsOverlay: () => <EmptyContent />,
@@ -112,7 +113,7 @@ const BorrowingProductsList = ({ id }) => {
 };
 
 BorrowingProductsList.propTypes = {
-  id: PropTypes.string.isRequired,
+  id: PropTypes.number.isRequired,
 };
 
 export default BorrowingProductsList; 

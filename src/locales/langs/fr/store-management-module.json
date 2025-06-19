@@ -36,6 +36,7 @@
             "category": "Catégorie",
             "location": "Emplacement",
             "created_date": "Date de création",
+            "updated_at": "Date de mise à jour",
             "actions": " ",
             "operation": "Opération",
             "product": "Produit",
@@ -62,7 +63,10 @@
             "invalid_email": "Adresse e-mail invalide",
             "invalid_url": "URL invalide",
             "tier_required": "Tier est requis",
-            "store_required": "Magasin est requis"
+            "store_required": "Magasin est requis",
+            "qte": "Qté",
+            "returned_qte": "Qté retourné",
+            "current_qte": "Qté actuelle (magasin)"
         },
         "actions": {
             "add_stock": "Ajouter Stock",
@@ -78,7 +82,13 @@
             "previous_step": "Étape précédente",
             "next_step": "Étape suivante",
             "validate": "Valider",
-            "add_borrowing": "Ajouter emprunt"
+            "add_borrowing": "Ajouter emprunt",
+            "confirm": "Confirmer",
+            "cancel": "Annuler",
+            "submit": "Oui",
+            "product_list": "Liste des produits"
+           
+            
         },
         "filters": {
             "search_placeholder": "Rechercher...",
@@ -118,7 +128,12 @@
             "creation_date": "Date de création",
             "catalog": "Catalogue",
             "view_pdf": "Voir PDF",
-            "image": "Image"
+            "image": "Image",
+            "confirm_borrowing_title": "Confirmation de l'emprunt {code}",
+            "cancel_borrowing_title": "Annulation de l'emprunt {code}",
+            "confirm_notes": "Notes de confirmation",
+            "cancel_notes": "Notes d'annulation",
+            "product_list_title": "Liste des produits"
         },
         "messages":{
             "no_results": "Aucun résultat trouvé",
@@ -128,7 +143,10 @@
             "third_updated": "Tier mis à jour",
             "third_created": "Tier créé",
             "borrowing_updated": "Emprunt mis à jour",
-            "borrowing_created": "Emprunt créé"
+            "borrowing_created": "Emprunt créé",
+            "borrowing_confirmed": "Emprunt confirmé avec succès",
+            "borrowing_canceled": "Emprunt annulé avec succès",
+            "action_failed": "Échec de l'action"
         },
         "form": {
             "validations": {
@@ -245,6 +263,13 @@
                 "transaction_tier": "Niveau de transaction",
                 "products": "Produits"
             }
+        },
+        "dialogs": {
+            "confirm_borrowing_title": "Confirmation de l'emprunt {code}",
+            "cancel_borrowing_title": "Annulation de l'emprunt {code}",
+            "confirm_notes": "Notes de confirmation",
+            "cancel_notes": "Notes d'annulation",
+            "product_list_title": "Liste des produits"
         }
     
 } 
