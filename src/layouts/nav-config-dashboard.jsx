@@ -103,6 +103,10 @@ export const navData = [
                 path:paths.dashboard.storeManagement.loanBorrowing.borrowing,
               },
               {
+                title:'Retour Emprunt',
+                path:paths.dashboard.storeManagement.loanBorrowing.borrowingReturn,
+              },
+              {
                 title:'Tiers',
                 path:paths.dashboard.storeManagement.loanBorrowing.third,
               },

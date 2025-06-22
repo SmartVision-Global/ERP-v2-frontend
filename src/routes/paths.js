@@ -264,6 +264,10 @@ export const paths = {
         borrowing: `${ROOTS.DASHBOARD}/store-management/borrowing`,
         newBorrowing: `${ROOTS.DASHBOARD}/store-management/borrowing/new`,
         editBorrowing: (id) => `${ROOTS.DASHBOARD}/store-management/borrowing/${id}/edit`,
+        
+        borrowingReturn: `${ROOTS.DASHBOARD}/store-management/borrowing-return`,
+        newBorrowingReturn: `${ROOTS.DASHBOARD}/store-management/borrowing-return/new`,
+        editBorrowingReturn: (id) => `${ROOTS.DASHBOARD}/store-management/borrowing-return/${id}/edit`,
       },
     },
     store: {

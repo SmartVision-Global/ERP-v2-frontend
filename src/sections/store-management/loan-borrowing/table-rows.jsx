@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 
 import { fDate, fTime } from 'src/utils/format-time';
 
-import { THIRD_STATUS_OPTIONS, THIRD_TYPE_OPTIONS, BORROWING_NATURE_OPTIONS, BORROWING_TYPE_OPTIONS, BORROWING_STATUS_OPTIONS, BORROWING_RETURN_STATUS_OPTIONS } from 'src/_mock/stores/raw-materials/data';
+import { THIRD_STATUS_OPTIONS, THIRD_TYPE_OPTIONS, BORROWING_NATURE_OPTIONS, BORROWING_TYPE_OPTIONS, BORROWING_STATUS_OPTIONS, BORROWING_RETURN_STATUS_OPTIONS, BORROWING_RETURN_TYPE_OPTIONS } from 'src/_mock/stores/raw-materials/data';
 
 import { Label } from 'src/components/label';
 // Custom cell renderers for StockListView
@@ -142,18 +142,22 @@ export function RenderCellNature({ params }) {
   const nature = BORROWING_NATURE_OPTIONS.find(option => option.value == params.row.nature);
   const color = nature?.color ?? 'default';
   const label = nature?.label ?? 'N/I';
-  return <Label
-  variant="soft"
-  color={color}
-  sx={{
-    height: 'auto',
-    lineHeight: '1.5',
-    whiteSpace: 'normal',
-    padding: '4px 8px',
-  }}
->
-  {label}
-</Label>;
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+      <Label
+        variant="soft"
+        color={color}
+        sx={{
+          height: 'auto',
+          lineHeight: '1.5',
+          whiteSpace: 'normal',
+          padding: '4px 8px',
+        }}
+      >
+        {label}
+      </Label>
+    </Box>
+  );
 }
 
 
@@ -161,20 +165,48 @@ export function RenderCellTypeBorrowing({ params }) {
   const type = BORROWING_TYPE_OPTIONS.find(option => option.value == params.row.type);
   const color = type?.color ?? 'default';
   const label = type?.label ?? 'N/I';
-  return <Label variant="soft" color={color}>{label}</Label>;
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+      <Label variant="soft" color={color}>{label}</Label>
+    </Box>
+  );
 }
+
+export function RenderCellTypeBorrowingReturn({ params }) {
+  const type = BORROWING_RETURN_TYPE_OPTIONS.find(option => option.value == params.row.type);
+  const color = type?.color ?? 'default';
+  const label = type?.label ?? 'N/I';
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+      <Label variant="soft" color={color}>{label}</Label>
+    </Box>
+  );
+}
+
 
 export function RenderCellStatusBorrowing({ params }) {
   const status = BORROWING_STATUS_OPTIONS.find(option => option.value == params.row.status);
   const color = status?.color ?? 'default';
   const label = status?.label ?? 'N/I';
-  return <Label variant="soft" color={color}>{label}</Label>;
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+      <Label variant="soft" color={color}>{label}</Label>
+    </Box>
+  );
 }
 
 export function RenderCellReturnStatusBorrowing({ params }) {
   const status = BORROWING_RETURN_STATUS_OPTIONS.find(option => option.value == params.row.return_status);
   const color = status?.color ?? 'default';
   const label = status?.label ?? 'N/I';
-  return <Label variant="soft" color={color}>{label}</Label>;
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+      <Label variant="soft" color={color}>{label}</Label>
+    </Box>
+  );
+}
+
+export function RenderCellLoanBorrowing({ params }) {
+  return <Typography>{params.row.borrowing?.code ?? 'N/I'}</Typography>;
 }
 

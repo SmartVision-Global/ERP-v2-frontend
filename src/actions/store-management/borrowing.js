@@ -14,7 +14,7 @@ const swrOptions = {
   revalidateOnReconnect: enableServer || false,
 };
 
-const ENDPOINT = endpoints.stores.borrowing;
+const ENDPOINT = endpoints.stores.borrowings;
 
 
 // ----------------------------------------------------------------------

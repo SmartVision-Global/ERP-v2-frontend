@@ -55,3 +55,10 @@ export const BORROWING_RETURN_STATUS_OPTIONS = [
    
 ]
 
+export const BORROWING_RETURN_TYPE_OPTIONS = [
+    {value: 1, label: 'Retour Prêt', color: 'warning'},
+    {value: 2, label: 'Retour Emprunt', color: 'success'},
+]
+
+
+

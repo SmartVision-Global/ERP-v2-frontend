@@ -423,10 +423,15 @@ const PageStoreLoanBorrowingBorrowingEdit = lazy(
   () => import('src/pages/dashboard/store-management/loan-borrowing/borrowing/edit')
 );
 
-
-
-
-
+const PageStoreLoanBorrowingReturnList = lazy(
+  () => import('src/pages/dashboard/store-management/loan-borrowing/borrowing-return/list')
+);
+const PageStoreLoanBorrowingReturnNew = lazy(
+  () => import('src/pages/dashboard/store-management/loan-borrowing/borrowing-return/new')
+);
+const PageStoreLoanBorrowingReturnEdit = lazy(
+  () => import('src/pages/dashboard/store-management/loan-borrowing/borrowing-return/edit')
+);
 
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
@@ -849,6 +854,9 @@ export const dashboardRoutes = [
               { path: 'borrowing', element: <PageStoreLoanBorrowingBorrowingList /> },
               { path: 'borrowing/new', element: <PageStoreLoanBorrowingBorrowingNew /> },
               { path: 'borrowing/:id/edit', element: <PageStoreLoanBorrowingBorrowingEdit /> },
+              { path: 'borrowing-return', element: <PageStoreLoanBorrowingReturnList /> },
+              { path: 'borrowing-return/new', element: <PageStoreLoanBorrowingReturnNew /> },
+              { path: 'borrowing-return/:id/edit', element: <PageStoreLoanBorrowingReturnEdit /> },
               { path: 'third', element: <PageStoreLoanBorrowingThirdList /> },
               { path: 'third/new', element: <PageStoreLoanBorrowingThirdNew /> },
               { path: 'third/:id/edit', element: <PageStoreLoanBorrowingThirdEdit /> },

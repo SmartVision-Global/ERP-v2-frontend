@@ -15,7 +15,11 @@
         "add_borrowing": "Add Borrowing",
         "edit_borrowing": "Edit Borrowing",
         "new_borrowing": "New Borrowing",
-        "add_products": "Add Products"
+        "add_products": "Add Products",
+        "add_borrowing_return": "Add Borrowing Return",
+        "edit_borrowing_return": "Edit Borrowing Return",
+        "new_borrowing_return": "New Borrowing Return",
+        "borrowing_return": "Borrowing Return"
     },
     "headers": {
         "id": "ID",
@@ -58,7 +62,8 @@
         "nature": "Nature",
         "type": "Type",
         "return_status": "Return Status",
-        "third_created": "Third created"
+        "third_created": "Third created",
+        "loan_borrowing": "Loan Borrowing"
     },
     "actions": {
         "add_stock": "Add Stock",
@@ -78,7 +83,10 @@
         "confirm": "Confirm",
         "cancel": "Cancel",
         "product_list": "Product List",
-        "submit": "Submit"
+        "submit": "Submit",
+        "add_borrowing_return": "Add Borrowing Return",
+        "edit_borrowing_return": "Edit Borrowing Return",
+        "new_borrowing_return": "New Borrowing Return"
     },
     "filters": {
         "search_placeholder": "Search...",
@@ -106,7 +114,9 @@
         "observation": "Observation",
         "nature": "Nature",
         "return_status": "Return Status",
-        "tiers": "Tiers"
+        "tiers": "Tiers",
+        "return_code": "Return Code",
+        "borrowing_loan_code": "Borrowing/Loan Code"
     },
     "dialog": {
         "product_details": "Product Details: {{code}} -- {{designation}}",
