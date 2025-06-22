@@ -186,7 +186,7 @@ export const endpoints = {
   payrolls: '/v1/hr/payroll/preparation/payrolls',
   calculatePayroll: (id) => `/v1/hr/payroll/calculation/payrolls/${id}/calculate`,
   validationPayroll: (id) => `/v1/hr/payroll/calculation/payrolls/${id}/validation`,
-
+  payrollDocument: (id) => `/v1/hr/payroll/calculation/payrolls/${id}/print`,
   // para-tax-declaration
 
   das: '/v1/hr/parafiscal_declaration/das',

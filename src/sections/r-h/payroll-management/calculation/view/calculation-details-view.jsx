@@ -8,15 +8,18 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { DataGrid, gridClasses } from '@mui/x-data-grid';
-import { TextField, FormControl, InputAdornment } from '@mui/material';
+import { Tooltip, TextField, IconButton, FormControl, InputAdornment } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useParams } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 
+import { showError } from 'src/utils/toast-error';
+
 import { CONFIG } from 'src/global-config';
 import { DashboardContent } from 'src/layouts/dashboard';
 import {
+  getPayrollDocument,
   useGetCalculationPayrollMonthsDetails,
   useGetCalculationPayrollMonthsDeducationsCompensations,
 } from 'src/actions/payroll-month';
@@ -91,6 +94,7 @@ export function CalculationDetailsView() {
   const [tableData, setTableData] = useState(payrollMonthsCalculationDetails);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [editedFilters, setEditedFilters] = useState({});
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
@@ -112,6 +116,44 @@ export function CalculationDetailsView() {
 
     setTableData(deleteRows);
   }, [selectedRowIds, tableData]);
+
+  const handleDownloadDocuments = async (payrollId) => {
+    setIsDownloading(true);
+    try {
+      const response = await getPayrollDocument(payrollId);
+      const blob = new Blob([response.data], {
+        type: response.headers['content-type'],
+      });
+      // Extract filename from headers (optional but recommended)
+      const contentDisposition = response.headers['content-disposition'];
+      let fileName = 'downloaded-file';
+
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="?(.+)"?/);
+        if (match?.[1]) {
+          fileName = decodeURIComponent(match[1]);
+        }
+      }
+
+      // Create a temporary download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      setIsDownloading(false);
+    } catch (error) {
+      setIsDownloading(false);
+
+      console.error('Error downloading file:', error);
+      showError(error);
+      // alert('Failed to download file.');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   const columns = [
     { field: 'category', headerName: 'Category', filterable: false },
@@ -289,6 +331,21 @@ export function CalculationDetailsView() {
       minWidth: 100,
       hideable: false,
       renderCell: (params) => <RenderCellNet params={params} href={paths.dashboard.root} />,
+    },
+    {
+      field: 'Actions',
+      headerName: 'Actions',
+      flex: 1,
+      minWidth: 160,
+      hideable: false,
+      align: 'center',
+      renderCell: (params) => (
+        <Tooltip title="Télécharger" enterDelay={100}>
+          <IconButton onClick={() => handleDownloadDocuments(params.row.id)}>
+            <Iconify icon="eva:download-fill" sx={{ color: 'info.main' }} />
+          </IconButton>
+        </Tooltip>
+      ),
     },
   ];
 
