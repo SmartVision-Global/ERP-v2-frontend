@@ -14,17 +14,16 @@ import { useRouter } from 'src/routes/hooks';
 import { useTranslate } from 'src/locales';
 import { useMultiLookups } from 'src/actions/lookups';
 import { useGetStocks } from 'src/actions/stores/raw-materials/stocks';
+import { useGetBorrowing, useGetBorrowingsLookup } from 'src/actions/store-management/borrowing';
 import { BORROWING_NATURE_OPTIONS, BORROWING_TYPE_OPTIONS } from 'src/_mock/stores/raw-materials/data';
 import { createBorrowingReturn, updateBorrowingReturn } from 'src/actions/store-management/borrowing-return';
-
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
 
 const getBorrowingReturnSchema = (t) => zod.object({
-  tier_id: zod.string().min(1, { message: t('form.validations.tier_required') }),
   nature: zod.number(),
-  store_id: zod.string().min(1, { message: t('form.validations.store_required') }),
+  borrowing_id: zod.string().min(1, { message: t('form.validations.borrowing_required') }),
   type: zod.number(),
   observation: zod.string().optional(),
   items: zod.array(zod.object({
@@ -45,14 +44,6 @@ export function BorrowingReturnNewEditForm({ currentBorrowingReturn }) {
   const { t } = useTranslate('store-management-module');
   const [activeStep, setActiveStep] = useState(0);
 
-  const { dataLookups } = useMultiLookups([
-    { entity: 'tiers', url: 'inventory/lookups/tiers' },
-    { entity: 'stores', url: 'settings/lookups/stores' },
-  ]);
-
-  const tiers = dataLookups.tiers || [];
-  const stores = dataLookups.stores || [];
-
   const [filterParams, setFilterParams] = useState({ code: '', supplier_code: '', builder_code: '', designation: '' });
   const { stocks: productOptions, stocksLoading: productsLoading } = useGetStocks(filterParams);
   const [openModalIndex, setOpenModalIndex] = useState(null);
@@ -66,9 +57,8 @@ export function BorrowingReturnNewEditForm({ currentBorrowingReturn }) {
 
   const defaultValues = useMemo(
     () => ({
-      tier_id: currentBorrowingReturn?.tier?.id?.toString() || '',
       nature: currentBorrowingReturn?.nature || (BORROWING_NATURE_OPTIONS.length > 0 ? BORROWING_NATURE_OPTIONS[0].value : null),
-      store_id: currentBorrowingReturn?.store?.id?.toString() || '',
+      borrowing_id: currentBorrowingReturn?.borrowing_id?.toString() || '',
       type: currentBorrowingReturn?.type || (BORROWING_TYPE_OPTIONS.length > 0 ? BORROWING_TYPE_OPTIONS[0].value : null),
       observation: currentBorrowingReturn?.observation || '',
       items: currentBorrowingReturn?.items ? currentBorrowingReturn.items.map(item => ({
@@ -108,6 +98,12 @@ export function BorrowingReturnNewEditForm({ currentBorrowingReturn }) {
     keyName: 'fieldKey',
   });
 
+  const natureValue = watch('nature');
+  const borrowingIdValue = watch('borrowing_id');
+
+  const { data: borrowings } = useGetBorrowingsLookup(natureValue ? { nature: natureValue } : undefined);
+  const { borrowing: selectedBorrowing } = useGetBorrowing(borrowingIdValue);
+
   useEffect(() => {
     if (currentBorrowingReturn) {
       reset(defaultValues);
@@ -115,7 +111,7 @@ export function BorrowingReturnNewEditForm({ currentBorrowingReturn }) {
   }, [currentBorrowingReturn, defaultValues, reset]);
   
   const tabFields = {
-    0: ['tier_id', 'store_id'],
+    0: ['nature', 'type', 'borrowing_id'],
     1: ['items']
   };
 
@@ -203,16 +199,13 @@ export function BorrowingReturnNewEditForm({ currentBorrowingReturn }) {
             <Card>
               <CardHeader 
                 title={STEPS[0]} 
-                subheader="Pour commencer, veuillez selectionner le tiers, le magasin et le type d'action."
+                subheader="Pour commencer, veuillez selectionner la nature, le type d'action et ajouter une observation."
                 sx={{ mb: 3 }} 
               />
               <Divider />
                 <Stack spacing={3} sx={{ p: 3 }}>
                     <Grid container spacing={3}>
-                        <Grid item xs={12} md={6}>
-                            <Field.Lookup name="tier_id" label={t('form.labels.tiers')} data={tiers} />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
+                        <Grid item size={{ xs: 12, md: 6 }}>
                             <Field.Select name="nature" label={t('form.labels.nature')} size="small">
                                 {BORROWING_NATURE_OPTIONS.map((option) => (
                                     <MenuItem key={option.value} value={option.value}>
@@ -221,12 +214,7 @@ export function BorrowingReturnNewEditForm({ currentBorrowingReturn }) {
                                 ))}
                             </Field.Select>
                         </Grid>
-                    </Grid>
-                    <Grid container spacing={3}>
-                        <Grid item xs={12} md={6}>
-                            <Field.Lookup name="store_id" label={t('form.labels.store')} data={stores} />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
+                        <Grid item size={{ xs: 12, md: 6 }}>
                             <Field.Select name="type" label={t('form.labels.action')} size="small">
                                 {BORROWING_TYPE_OPTIONS.map((option) => (
                                     <MenuItem key={option.value} value={option.value}>
@@ -237,10 +225,25 @@ export function BorrowingReturnNewEditForm({ currentBorrowingReturn }) {
                         </Grid>
                     </Grid>
                     <Grid container spacing={3}>
-                        <Grid item xs={12} md={6}>
+                        <Grid item size={{ xs: 12, md: 6 }}>
+                            <Field.Lookup name="borrowing_id" label={t('form.labels.borrowing')} data={borrowings || []} />
+                        </Grid>
+                        
+                    </Grid>
+                    {selectedBorrowing && (
+                        <Box spacing={1} sx={{ mt: 1, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
+                            <Typography variant="subtitle2">{t('views.borrowing_details')}</Typography>
+                            <Typography variant="body2"><strong>{t('form.labels.tiers')}:</strong> {selectedBorrowing.tier?.code ?? 'N/I'}</Typography>
+                            <Typography variant="body2"><strong>{t('form.labels.store')}:</strong> {selectedBorrowing.store?.code ?? 'N/I'}</Typography>
+                            <Typography variant="body2"><strong>{t('form.labels.observation')}:</strong> {selectedBorrowing.observation ?? 'N/I'}</Typography>
+                        </Box>
+                    )}
+                    <Grid container spacing={3}>
+                    <Grid item size={{ xs: 12, md: 6 }}>
                             <Field.Text name="observation" label={t('form.labels.observation')} multiline rows={3} />
                         </Grid>
                     </Grid>
+                    
                 </Stack>
             </Card>
         )}
@@ -267,24 +270,24 @@ export function BorrowingReturnNewEditForm({ currentBorrowingReturn }) {
                     {itemFields.map((field, index) => (
                       <Box key={field.fieldKey} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 2, mb: 2 }}>
                         <Grid container spacing={2}>
-                          <Grid item xs={12} md={4}>
+                          <Grid item size={{ xs: 12, md: 4 }}>
                             <Field.Text name={`items.${index}.code`} label={t('form.labels.code')} InputProps={{ readOnly: true }}  />
                           </Grid>
-                          <Grid item xs={12} md={4}>
+                          <Grid item size={{ xs: 12, md: 4 }}>
                             <Field.Text name={`items.${index}.supplier_code`} label={t('form.labels.supplier_code')} InputProps={{ readOnly: true }} />
                           </Grid>
-                          <Grid item xs={12} md={4}>
+                          <Grid item size={{ xs: 12, md: 4 }}>
                             <Field.Text name={`items.${index}.builder_code`} label={t('form.labels.builder_code')} InputProps={{ readOnly: true }} />
                           </Grid>
                         </Grid>
                         <Grid container spacing={2} sx={{ mt: 2 }}>
-                          <Grid item xs={12} md={4}>
+                          <Grid item size={{ xs: 12, md: 4 }}>
                             <Field.Text name={`items.${index}.designation`} label={t('form.labels.designation')} InputProps={{ readOnly: true }} />
                           </Grid>
-                          <Grid item xs={12} md={4}>
+                          <Grid item size={{ xs: 12, md: 4 }}>
                             <Field.Number name={`items.${index}.in_stock`} label={t('form.labels.in_stock')} disabled />
                           </Grid>
-                          <Grid item xs={12} md={4}>
+                          <Grid item size={{ xs: 12, md: 4 }}>
                             <Box sx={{ display: 'flex', alignItems: 'start', gap: 1 }}>
                               <Box sx={{ width: 36, height: 36, borderRadius: '25%', bgcolor: 'grey.300', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <Typography variant="subtitle2" sx={{ fontSize: '1rem' }}>
@@ -296,7 +299,7 @@ export function BorrowingReturnNewEditForm({ currentBorrowingReturn }) {
                           </Grid>
                         </Grid>
                         <Grid container spacing={2} sx={{ mt: 2 }}>
-                          <Grid item xs={12} md={6}>
+                          <Grid item size={{ xs: 12, md: 6 }}>
                             <Field.Text name={`items.${index}.observation`} label={t('form.labels.observation')} multiline rows={2} />
                           </Grid>
                         </Grid>
