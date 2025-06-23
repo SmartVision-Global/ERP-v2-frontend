@@ -50,8 +50,8 @@ import {
   RenderCellTypeBorrowingReturn,
 } from '../../table-rows';
 import { BORROWING_STATUS_OPTIONS, BORROWING_TYPE_OPTIONS, BORROWING_NATURE_OPTIONS, BORROWING_RETURN_TYPE_OPTIONS } from 'src/_mock/stores/raw-materials/data';
-// import BorrowingProductsList from './borrowing-products-list';
-// import { BorrowingActionDialog } from './borrowing-action-dialog';
+import BorrowingReturnProductsList from './borrowing-return-products-list';
+import { BorrowingActionDialog } from '../../borrowing/view/borrowing-action-dialog';
 
 const HIDE_COLUMNS = { categories: false };
 const HIDE_COLUMNS_TOGGLABLE = [];
@@ -69,6 +69,49 @@ export function BorrowingReturnListView() {
   const [rowCount, setRowCount] = useState(borrowingReturnsCount);
   const [tableData, setTableData] = useState(borrowingReturns);
   const { t } = useTranslate('store-management-module');
+
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [selectedBorrowingReturnForProducts, setSelectedBorrowingReturnForProducts] = useState(null);
+  const [dialogState, setDialogState] = useState({ open: false, action: null, borrowingReturn: null });
+
+  const handleOpenDialog = (borrowingReturn, action) => {
+    setDialogState({ open: true, action, borrowingReturn });
+  };
+
+  const handleCloseDialog = () => {
+    setDialogState({ open: false, action: null, borrowingReturn: null });
+  };
+
+  const handleDialogAction = async (notes) => {
+    const { action, borrowingReturn } = dialogState;
+
+    if (borrowingReturn) {
+      try {
+        if (action === 'confirm') {
+          await confirmBorrowingReturn(borrowingReturn.id, { notes });
+          toast.success(t('messages.borrowing_return_confirmed'));
+        } else if (action === 'cancel') {
+          await cancelBorrowingReturn(borrowingReturn.id, { notes });
+          toast.success(t('messages.borrowing_return_canceled'));
+        }
+        handleCloseDialog();
+        handleReset(); 
+      } catch (error) {
+        console.error(error);
+        toast.error(t('messages.action_failed'));
+      }
+    }
+  };
+
+  const handleOpenDetail = useCallback((row) => {
+    setSelectedBorrowingReturnForProducts(row);
+    setDetailOpen(true);
+  }, []);
+
+  const handleCloseDetail = () => {
+    setDetailOpen(false);
+    setSelectedBorrowingReturnForProducts(null);
+  };
 
   const { dataLookups } = useMultiLookups([
     { entity: 'tiers', url: 'inventory/lookups/tiers' },
@@ -108,15 +151,34 @@ export function BorrowingReturnListView() {
       filterable: false,
       disableColumnMenu: true,
       getActions: (params) => [
-        <GridActionsCellItem
+        ...(params.row.status === 1 ? [<GridActionsLinkItem
           showInMenu
           icon={<Iconify icon="solar:pen-bold" />}
           label={t('actions.edit')}
           href={paths.dashboard.storeManagement.loanBorrowing.editBorrowingReturn(params.row.id)}
+        />] : []),
+        ...(params.row.status === 1 ? [<GridActionsCellItem
+          showInMenu
+          icon={<Iconify icon="eva:checkmark-circle-2-fill" />}
+          label={t('actions.confirm')}
+          onClick={() => handleOpenDialog(params.row, 'confirm')}
+        />] : []),
+        ...([1, 2].includes(params.row.status) ? [<GridActionsCellItem
+            showInMenu
+            icon={<Iconify icon="eva:close-circle-fill" />}
+            label={t('actions.cancel')}
+            onClick={() => handleOpenDialog(params.row, 'cancel')}
+            sx={{ color: 'error.main' }}
+        />] : []),
+        <GridActionsCellItem
+          showInMenu
+          icon={<Iconify icon="humbleicons:view-list" />}
+          label={t('actions.product_list')}
+          onClick={() => handleOpenDetail(params.row)}
         />,
       ],
     },
-  ], [t]);
+  ], [t, handleOpenDetail]);
 
   const tiers = dataLookups.tiers || [];
   const stores = dataLookups.stores || [];
@@ -239,6 +301,51 @@ export function BorrowingReturnListView() {
           />
         </Card>
       </DashboardContent>
+      {selectedBorrowingReturnForProducts && (
+        <Dialog open={detailOpen} onClose={handleCloseDetail} maxWidth="xl" fullWidth>
+          <DialogTitle>{t('dialog.product_list_title')}</DialogTitle>
+          <DialogContent dividers>
+            <BorrowingReturnProductsList id={selectedBorrowingReturnForProducts.id} />
+          </DialogContent>
+          <DialogActions>
+            <Button variant="contained" onClick={handleCloseDetail}>{t('actions.close')}</Button>
+          </DialogActions>
+        </Dialog>
+      )}
+      <BorrowingActionDialog
+        open={dialogState.open}
+        onClose={handleCloseDialog}
+        onAction={handleDialogAction}
+        title={
+          dialogState.action === 'confirm'
+            ? t('dialog.confirm_borrowing_return_title', { code: dialogState.borrowingReturn?.code })
+            : t('dialog.cancel_borrowing_return_title', { code: dialogState.borrowingReturn?.code })
+        }
+        notesLabel={
+          dialogState.action === 'confirm' ? t('dialog.confirm_notes') : t('dialog.cancel_notes')
+        }
+        actionButtonText={t('actions.submit')}
+        actionButtonColor={dialogState.action === 'cancel' ? 'error' : 'primary'}
+      />
     </>
   );
-} 
+}
+
+export const GridActionsLinkItem = forwardRef((props, ref) => {
+  const { href, label, icon, sx } = props;
+
+  return (
+    <MenuItem ref={ref} sx={sx}>
+      <Link
+        component={RouterLink}
+        href={href}
+        underline="none"
+        color="inherit"
+        sx={{ width: 1, display: 'flex', alignItems: 'center' }}
+      >
+        {icon && <ListItemIcon>{icon}</ListItemIcon>}
+        {label}
+      </Link>
+    </MenuItem>
+  );
+}); 
