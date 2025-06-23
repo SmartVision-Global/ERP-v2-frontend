@@ -604,7 +604,14 @@ export function ActifListView() {
               />,
               <GridActionsClickItem
                 showInMenu
-                icon={<Iconify icon="eva:file-text-outline" />}
+                icon={<Iconify icon="eva:checkmark-fill" />}
+                label="ATS"
+                onClick={() => handleOpenATSDialog(params.row.id)}
+                // href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
+              />,
+              <GridActionsClickItem
+                showInMenu
+                icon={<Iconify icon="eva:file-fill" />}
                 label="Contrat de travail"
                 onClick={() => handleGetContract(params.row.id)}
                 // href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
@@ -622,6 +629,13 @@ export function ActifListView() {
               />,
               <GridActionsClickItem
                 showInMenu
+                icon={<Iconify icon="eva:checkmark-fill" />}
+                label="ATS"
+                onClick={() => handleOpenATSDialog(params.row.id)}
+                // href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
+              />,
+              <GridActionsClickItem
+                showInMenu
                 icon={<Iconify icon="eva:file-text-outline" />}
                 label="Attestation de travail"
                 onClick={() => handleGetWorkCertificate(params.row.id)}
@@ -629,7 +643,7 @@ export function ActifListView() {
               />,
               <GridActionsClickItem
                 showInMenu
-                icon={<Iconify icon="eva:file-text-outline" />}
+                icon={<Iconify icon="eva:file-fill" />}
                 label="Contrat de travail"
                 onClick={() => handleGetContract(params.row.id)}
                 // href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
@@ -661,7 +675,7 @@ export function ActifListView() {
               />,
               <GridActionsClickItem
                 showInMenu
-                icon={<Iconify icon="eva:file-text-outline" />}
+                icon={<Iconify icon="eva:file-fill" />}
                 label="Contrat de travail"
                 onClick={() => handleGetContract(params.row.id)}
                 // href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
