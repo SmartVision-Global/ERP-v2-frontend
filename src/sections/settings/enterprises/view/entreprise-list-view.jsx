@@ -22,9 +22,9 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import {
   RenderCellId,
-  RenderCellSite,
   RenderCellAddress,
   RenderCellCreatedAt,
+  RenderCellEnterprise,
   RenderCellDesignation,
 } from '../entreprise-table-row';
 
@@ -74,18 +74,18 @@ export function EntrepriseListView() {
       field: 'name',
       headerName: 'Entreprise',
       flex: 1,
-      minWidth: 160,
+      minWidth: 360,
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellSite params={params} href={paths.dashboard.root} />
+        <RenderCellEnterprise params={params} href={paths.dashboard.root} />
       ),
     },
     {
       field: 'activity',
       headerName: 'Activity',
       flex: 1,
-      width: 110,
+      minWidth: 150,
 
       renderCell: (params) => <RenderCellDesignation params={params} />,
     },
@@ -93,7 +93,7 @@ export function EntrepriseListView() {
       field: 'address',
       headerName: 'Addresse',
       flex: 1,
-      width: 110,
+      minWidth: 280,
 
       renderCell: (params) => <RenderCellAddress params={params} />,
     },
@@ -101,7 +101,7 @@ export function EntrepriseListView() {
       field: 'createdAt',
       headerName: 'Date de création',
       flex: 1,
-      width: 110,
+      minWidth: 110,
 
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
     },

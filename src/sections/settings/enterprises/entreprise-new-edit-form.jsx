@@ -47,8 +47,8 @@ export const NewProductSchema = zod.object({
   rib: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
   image: schemaHelper.file().optional().nullable(),
   certificate: schemaHelper.file().optional().nullable(),
-  photo: zod.string().optional().nullable(),
-  employment_certificate: zod.string().optional().nullable(),
+  logo: zod.string().optional().nullable(),
+  iso_certificate: zod.string().optional().nullable(),
 });
 
 export function EntrepriseNewEditForm({ currentProduct }) {
@@ -81,8 +81,8 @@ export function EntrepriseNewEditForm({ currentProduct }) {
     nis: '',
     rib: '',
     image: null,
-    employment_certificate: '',
-    photo: '',
+    iso_certificate: '',
+    logo: '',
     certificate: null,
   };
 
@@ -109,7 +109,7 @@ export function EntrepriseNewEditForm({ currentProduct }) {
 
     try {
       const response = await uploadMedia(newData);
-      setValue('photo', response?.uuid, { shouldValidate: true });
+      setValue('logo', response?.uuid, { shouldValidate: true });
     } catch (error) {
       console.log('error in upload file', error);
     }
@@ -125,31 +125,33 @@ export function EntrepriseNewEditForm({ currentProduct }) {
 
     try {
       const response = await uploadMedia(newData);
-      setValue('employment_certificate', response?.uuid, { shouldValidate: true });
+      setValue('iso_certificate', response?.uuid, { shouldValidate: true });
     } catch (error) {
       console.log('error in upload file', error);
     }
   };
   const handleRemoveImage = useCallback(() => {
     setValue('image', null);
-    setValue('photo', '');
+    setValue('logo', '');
   }, [setValue]);
 
   const handleRemoveCertificate = useCallback(() => {
-    setValue('employment_certificate', '');
+    setValue('iso_certificate', '');
     setValue('certificate', null);
   }, [setValue]);
   const onSubmit = handleSubmit(async (data) => {
     const updatedData = {
       ...data,
+      logo: data.logo ?? null,
+      iso_certificate: data.iso_certificate ?? null,
       // taxes: includeTaxes ? defaultValues.taxes : data.taxes,
     };
 
     try {
       if (currentProduct) {
-        await updateSociety(currentProduct.id, data);
+        await updateSociety(currentProduct.id, updatedData);
       } else {
-        await createSociety(data);
+        await createSociety(updatedData);
       }
 
       toast.success(currentProduct ? 'Update success!' : 'Create success!');
@@ -304,6 +306,10 @@ export function EntrepriseNewEditForm({ currentProduct }) {
                 maxSize={3145728}
                 onDelete={handleRemoveCertificate}
                 onDrop={onDropCertificate}
+                accept={{
+                  'image/*': [],
+                  'application/pdf': [],
+                }}
               />
             </Stack>
           </Grid>
