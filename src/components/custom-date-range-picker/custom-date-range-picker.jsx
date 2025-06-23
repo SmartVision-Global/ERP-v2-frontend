@@ -32,6 +32,7 @@ export function CustomDateRangePicker({
   PaperProps,
   variant = 'input',
   title = 'Sélectionner un intervale',
+  views,
   ...other
 }) {
   const theme = useTheme();
@@ -81,13 +82,13 @@ export function CustomDateRangePicker({
             <>
               <Box sx={blockStyles}>
                 <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={fr}>
-                  <DateCalendar value={startDate} onChange={onChangeStartDate} />
+                  <DateCalendar value={startDate} onChange={onChangeStartDate} views={views} />
                 </LocalizationProvider>
               </Box>
 
               <Box sx={blockStyles}>
                 <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={fr}>
-                  <DateCalendar value={endDate} onChange={onChangeEndDate} />
+                  <DateCalendar value={endDate} onChange={onChangeEndDate} views={views} />
                 </LocalizationProvider>
               </Box>
             </>

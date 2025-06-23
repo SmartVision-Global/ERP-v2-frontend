@@ -91,6 +91,7 @@ export function ActifAtsDialog({ open, action, content, personalId, onClose, ...
           onClose={rangePicker.onClose}
           selected={rangePicker.selected}
           error={rangePicker.error}
+          views={['month', 'year']}
         />
       </DialogContent>
 
