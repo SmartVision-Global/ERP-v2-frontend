@@ -92,3 +92,12 @@ export async function validatePersonal(id, data) {
   await axios.post(`${ENDPOINT}/${id}/validate`, data);
   mutate(ENDPOINT);
 }
+
+export async function getPersonalDocument(id, type, params) {
+  const response = await axios.get(`${endpoints.personalDocument(id, type)}`, {
+    'content-type': 'application/pdf',
+    responseType: 'blob',
+    params,
+  });
+  return response;
+}

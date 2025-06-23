@@ -14,6 +14,8 @@ import { paths } from 'src/routes/paths';
 import { useParams } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 
+import { usePdfViewer } from 'src/hooks/use-pdf-viewer';
+
 import { showError } from 'src/utils/toast-error';
 
 import { CONFIG } from 'src/global-config';
@@ -87,6 +89,7 @@ export function CalculationDetailsView() {
       limit: PAGE_SIZE,
       offset: 0,
     });
+  const openPdfViewer = usePdfViewer();
 
   const { payrollMonthsDeducationsCompensations } =
     useGetCalculationPayrollMonthsDeducationsCompensations(id);
@@ -94,6 +97,8 @@ export function CalculationDetailsView() {
   const [tableData, setTableData] = useState(payrollMonthsCalculationDetails);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
+  // const [pdfUrl, setPdfUrl] = useState(null);
+
   const [isDownloading, setIsDownloading] = useState(false);
   const [editedFilters, setEditedFilters] = useState({});
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
@@ -116,7 +121,6 @@ export function CalculationDetailsView() {
 
     setTableData(deleteRows);
   }, [selectedRowIds, tableData]);
-
   const handleDownloadDocuments = async (payrollId) => {
     setIsDownloading(true);
     try {
@@ -124,29 +128,54 @@ export function CalculationDetailsView() {
       const blob = new Blob([response.data], {
         type: response.headers['content-type'],
       });
+      openPdfViewer(blob);
+      //     const pdfUrl = URL.createObjectURL(blob);
+
+      //     // 3️⃣ Open new window
+      //     const newWindow = window.open('', '_blank');
+      //     if (!newWindow) return;
+
+      //     const doc = newWindow.document;
+
+      //     // ✅ Clear the head & body if needed
+      //     doc.head.innerHTML = '';
+      //     doc.body.innerHTML = '';
+      //     const style = doc.createElement('style');
+      //     style.textContent = `
+      //   body { margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
+      //   iframe { flex: 1; border: none; width: 100%; }
+      //   button {
+      //     padding: 6px 12px;
+      //     cursor: pointer;
+      //     font-size: 14px;
+      //   }
+      // `;
+      //     doc.head.appendChild(style);
+      //     const iframe = doc.createElement('iframe');
+      //     iframe.src = pdfUrl;
+      //     doc.body.appendChild(iframe);
       // Extract filename from headers (optional but recommended)
-      const contentDisposition = response.headers['content-disposition'];
-      let fileName = 'downloaded-file';
+      // const contentDisposition = response.headers['content-disposition'];
+      // let fileName = 'downloaded-file';
 
-      if (contentDisposition) {
-        const match = contentDisposition.match(/filename="?(.+)"?/);
-        if (match?.[1]) {
-          fileName = decodeURIComponent(match[1]);
-        }
-      }
+      // if (contentDisposition) {
+      //   const match = contentDisposition.match(/filename="?(.+)"?/);
+      //   if (match?.[1]) {
+      //     fileName = decodeURIComponent(match[1]);
+      //   }
+      // }
 
-      // Create a temporary download link
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName;
-      a.click();
-      // Cleanup
-      window.URL.revokeObjectURL(url);
+      // // Create a temporary download link
+      // const url = window.URL.createObjectURL(blob);
+      // const a = document.createElement('a');
+      // a.href = url;
+      // a.download = fileName;
+      // a.click();
+      // // Cleanup
+      // window.URL.revokeObjectURL(url);
       setIsDownloading(false);
     } catch (error) {
       setIsDownloading(false);
-
       console.error('Error downloading file:', error);
       showError(error);
       // alert('Failed to download file.');
@@ -340,8 +369,11 @@ export function CalculationDetailsView() {
       hideable: false,
       align: 'center',
       renderCell: (params) => (
-        <Tooltip title="Télécharger" enterDelay={100}>
-          <IconButton onClick={() => handleDownloadDocuments(params.row.id)}>
+        <Tooltip title="Imprimer" enterDelay={100}>
+          <IconButton
+            onClick={() => handleDownloadDocuments(params.row.id)}
+            disabled={isDownloading}
+          >
             <Iconify icon="eva:download-fill" sx={{ color: 'info.main' }} />
           </IconButton>
         </Tooltip>

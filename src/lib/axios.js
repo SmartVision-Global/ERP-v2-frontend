@@ -98,6 +98,7 @@ export const endpoints = {
   task: 'v1/hr/function/duties_responsibilities',
   careerKnowledges: '/v1/hr/function/career_knowledges',
   personal: '/v1/hr/personal/personals',
+  personalDocument: (id, type) => `/v1/hr/personal/personals/${id}/print/${type}`,
 
   settings: {
     identification: {

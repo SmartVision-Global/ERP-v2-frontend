@@ -1,20 +1,22 @@
 import { z as zod } from 'zod';
+import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Chip, Stack, Divider, CardHeader } from '@mui/material';
+import { Box, Card, Chip, Stack, Divider, CardHeader, Typography } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { showError } from 'src/utils/toast-error';
 
+import { uploadMedia } from 'src/actions/media';
 import { createSociety, updateSociety } from 'src/actions/society';
 
 import { toast } from 'src/components/snackbar';
-import { Form, Field } from 'src/components/hook-form';
+import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
 export const NewProductSchema = zod.object({
   name: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
@@ -43,6 +45,10 @@ export const NewProductSchema = zod.object({
   nif: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
   nis: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
   rib: zod.string().min(1, { message: 'Veuillez remplir ce champ' }),
+  image: schemaHelper.file().optional().nullable(),
+  certificate: schemaHelper.file().optional().nullable(),
+  photo: zod.string().optional().nullable(),
+  employment_certificate: zod.string().optional().nullable(),
 });
 
 export function EntrepriseNewEditForm({ currentProduct }) {
@@ -74,6 +80,10 @@ export function EntrepriseNewEditForm({ currentProduct }) {
     nif: '',
     nis: '',
     rib: '',
+    image: null,
+    employment_certificate: '',
+    photo: '',
+    certificate: null,
   };
 
   const methods = useForm({
@@ -83,11 +93,52 @@ export function EntrepriseNewEditForm({ currentProduct }) {
   });
 
   const {
+    setValue,
     setError,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
+  const onDropImage = async (acceptedFiles) => {
+    const value = acceptedFiles[0];
+    const newData = new FormData();
+    newData.append('type', 'image');
+    newData.append('file', value);
+    newData.append('collection', 'photos');
+    setValue('image', value, { shouldValidate: true });
+
+    try {
+      const response = await uploadMedia(newData);
+      setValue('photo', response?.uuid, { shouldValidate: true });
+    } catch (error) {
+      console.log('error in upload file', error);
+    }
+  };
+
+  const onDropCertificate = async (acceptedFiles) => {
+    const value = acceptedFiles[0];
+    const newData = new FormData();
+    newData.append('type', 'image');
+    newData.append('file', value);
+    newData.append('collection', 'certifications');
+    setValue('certificate', value, { shouldValidate: true });
+
+    try {
+      const response = await uploadMedia(newData);
+      setValue('employment_certificate', response?.uuid, { shouldValidate: true });
+    } catch (error) {
+      console.log('error in upload file', error);
+    }
+  };
+  const handleRemoveImage = useCallback(() => {
+    setValue('image', null);
+    setValue('photo', '');
+  }, [setValue]);
+
+  const handleRemoveCertificate = useCallback(() => {
+    setValue('employment_certificate', '');
+    setValue('certificate', null);
+  }, [setValue]);
   const onSubmit = handleSubmit(async (data) => {
     const updatedData = {
       ...data,
@@ -231,6 +282,30 @@ export function EntrepriseNewEditForm({ currentProduct }) {
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Text name="rib" label="RIB" />
+          </Grid>
+        </Grid>
+        <Grid container spacing={3}>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle2">Logo</Typography>
+              <Field.Upload
+                name="image"
+                maxSize={3145728}
+                onDelete={handleRemoveImage}
+                onDrop={onDropImage}
+              />
+            </Stack>
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle2">logo certaficat iso</Typography>
+              <Field.Upload
+                name="certificate"
+                maxSize={3145728}
+                onDelete={handleRemoveCertificate}
+                onDrop={onDropCertificate}
+              />
+            </Stack>
           </Grid>
         </Grid>
       </Stack>

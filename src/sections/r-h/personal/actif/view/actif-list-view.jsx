@@ -13,10 +13,19 @@ import { TextField, FormControl, InputAdornment } from '@mui/material';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
+import { usePdfViewer } from 'src/hooks/use-pdf-viewer';
+
+import { showError } from 'src/utils/toast-error';
+
 import { CONFIG } from 'src/global-config';
 import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetPersonals, validatePersonal, getFiltredPersonals } from 'src/actions/personal';
+import {
+  useGetPersonals,
+  validatePersonal,
+  getFiltredPersonals,
+  getPersonalDocument,
+} from 'src/actions/personal';
 import {
   COMMUN_SEXE_OPTIONS,
   PRODUCT_STATUS_OPTIONS,
@@ -33,6 +42,7 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { GridActionsClickItem } from 'src/sections/r-h/entries/recovery/view';
 
+import { ActifAtsDialog } from '../actif-ats-dialog';
 import {
   RenderCellId,
   RenderCellSex,
@@ -82,6 +92,8 @@ const PAGE_SIZE = CONFIG.pagination.pageSize;
 
 export function ActifListView() {
   const confirmDialog = useBoolean();
+  const ATSDialog = useBoolean();
+
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: PAGE_SIZE,
@@ -103,6 +115,12 @@ export function ActifListView() {
     confirmDialog.onTrue();
     setSelectedRow(id);
   };
+
+  const handleOpenATSDialog = (id) => {
+    ATSDialog.onTrue();
+    setSelectedRow(id);
+  };
+
   const banks = dataLookups.banks;
   const departments = dataLookups.departments;
   const sites = dataLookups.sites;
@@ -242,6 +260,68 @@ export function ActifListView() {
       }
     />
   );
+  const openPdfViewer = usePdfViewer();
+
+  const handleGetWorkCertificate = async (personalId) => {
+    try {
+      // setIsDownloading(true);
+      const response = await getPersonalDocument(personalId, 'certificate');
+      const blob = new Blob([response.data], {
+        type: response.headers['content-type'],
+      });
+      openPdfViewer(blob);
+      // setIsDownloading(false);
+      // onClose();
+      // Extract filename from headers (optional but recommended)
+      // const contentDisposition = response.headers['content-disposition'];
+      // let fileName = 'downloaded-file';
+
+      // if (contentDisposition) {
+      //   const match = contentDisposition.match(/filename="?(.+)"?/);
+      //   if (match?.[1]) {
+      //     fileName = decodeURIComponent(match[1]);
+      //   }
+      // }
+
+      // // Create a temporary download link
+      // const url = window.URL.createObjectURL(blob);
+      // const a = document.createElement('a');
+      // a.href = url;
+      // a.download = fileName;
+      // a.click();
+      // // Cleanup
+      // window.URL.revokeObjectURL(url);
+      // setIsDownloading(false);
+      // onClose();
+    } catch (error) {
+      // setIsDownloading(false);
+
+      showError(error);
+      console.log('Error in downoloadinf ATS', error);
+    }
+    // finally {
+    //   setIsDownloading(false);
+    // }
+  };
+
+  const handleGetContract = async (personalId) => {
+    try {
+      // setIsDownloading(true);
+      const response = await getPersonalDocument(personalId, 'contract');
+      const blob = new Blob([response.data], {
+        type: response.headers['content-type'],
+      });
+      openPdfViewer(blob);
+    } catch (error) {
+      // setIsDownloading(false);
+
+      showError(error);
+      console.log('Error in downoloadinf ATS', error);
+    }
+    // finally {
+    //   setIsDownloading(false);
+    // }
+  };
 
   const columns = [
     { field: 'category', headerName: 'Category', filterable: false },
@@ -522,6 +602,38 @@ export function ActifListView() {
                 label="Modifier"
                 href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
               />,
+              <GridActionsClickItem
+                showInMenu
+                icon={<Iconify icon="eva:file-text-outline" />}
+                label="Contrat de travail"
+                onClick={() => handleGetContract(params.row.id)}
+                // href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
+              />,
+            ];
+            break;
+
+          case 2:
+            actions = [
+              <GridActionsLinkItem
+                showInMenu
+                icon={<Iconify icon="solar:pen-bold" />}
+                label="Modifier"
+                href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
+              />,
+              <GridActionsClickItem
+                showInMenu
+                icon={<Iconify icon="eva:file-text-outline" />}
+                label="Attestation de travail"
+                onClick={() => handleGetWorkCertificate(params.row.id)}
+                // href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
+              />,
+              <GridActionsClickItem
+                showInMenu
+                icon={<Iconify icon="eva:file-text-outline" />}
+                label="Contrat de travail"
+                onClick={() => handleGetContract(params.row.id)}
+                // href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
+              />,
             ];
             break;
 
@@ -532,6 +644,27 @@ export function ActifListView() {
                 icon={<Iconify icon="solar:pen-bold" />}
                 label="Modifier"
                 href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
+              />,
+              <GridActionsClickItem
+                showInMenu
+                icon={<Iconify icon="eva:checkmark-fill" />}
+                label="ATS"
+                onClick={() => handleOpenATSDialog(params.row.id)}
+                // href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
+              />,
+              <GridActionsClickItem
+                showInMenu
+                icon={<Iconify icon="eva:file-text-outline" />}
+                label="Certificat de travail"
+                onClick={() => handleGetWorkCertificate(params.row.id)}
+                // href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
+              />,
+              <GridActionsClickItem
+                showInMenu
+                icon={<Iconify icon="eva:file-text-outline" />}
+                label="Contrat de travail"
+                onClick={() => handleGetContract(params.row.id)}
+                // href={paths.dashboard.rh.personal.editPersonel(params.row.id)}
               />,
             ];
             break;
@@ -545,6 +678,7 @@ export function ActifListView() {
     columns
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
+  console.log('ATSDialog', ATSDialog);
 
   return (
     <>
@@ -634,6 +768,13 @@ export function ActifListView() {
         </Card>
       </DashboardContent>
       {renderConfirmValidationDialog()}
+      {ATSDialog.value && (
+        <ActifAtsDialog
+          open={ATSDialog.value}
+          onClose={ATSDialog.onFalse}
+          personalId={selectedRow}
+        />
+      )}
     </>
   );
 }
