@@ -184,15 +184,14 @@ export function BorrowingReturnListView() {
   const stores = dataLookups.stores || [];
 
   const FILTERS_OPTIONS = useMemo(() => [
-    { id: 'code', type: 'input', label: t('filters.code') },
-    { id: 'return_code', type: 'input', label: t('filters.return_code') },
-    { id: 'borrowing_loan_code', type: 'input', label: t('filters.borrowing_loan_code') },
-    { id: 'store_id', type: 'select', options: stores || [], label: t('filters.store'), serverData: true },
-    { id: 'tiers', type: 'select', options: tiers || [], label: t('filters.tiers'), serverData: true },
-    { id: 'nature', type: 'select', options: BORROWING_NATURE_OPTIONS, label: t('filters.nature')},
-    { id: 'type', type: 'select', options: BORROWING_RETURN_TYPE_OPTIONS, label: t('filters.type') },
-    { id: 'status', type: 'select', options: BORROWING_STATUS_OPTIONS, label: t('filters.status') },
-    { id: 'created_date_start', type: 'date-range', label: t('filters.creation_date'), operatorMin: 'gte', operatorMax: 'lte', cols: 3, width: 1 },
+      { id: 'code', type: 'input', label: t('filters.code') },
+      { id: 'borrowing_code', type: 'input', label: t('filters.borrowing_loan_code') },
+      { id: 'store_id', type: 'select', options: stores || [], label: t('filters.store'), serverData: true },
+      { id: 'tiers', type: 'select', options: tiers || [], label: t('filters.tiers'), serverData: true },
+      { id: 'nature', type: 'select', options: BORROWING_NATURE_OPTIONS, label: t('filters.nature')},
+      { id: 'type', type: 'select', options: BORROWING_RETURN_TYPE_OPTIONS, label: t('filters.type') },
+      { id: 'status', type: 'select', options: BORROWING_STATUS_OPTIONS, label: t('filters.status') },
+      { id: 'created_date_start', type: 'date-range', label: t('filters.creation_date'), operatorMin: 'gte', operatorMax: 'lte', cols: 3, width: 1 },
   ], [t, tiers, stores]);
 
   const [filterButtonEl, setFilterButtonEl] = useState(null);

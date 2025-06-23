@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { DataGrid } from '@mui/x-data-grid';
 
 import { useTranslate } from 'src/locales';
-import { useGetBorrowingItems } from 'src/actions/store-management/borrowing';
+import { useGetBorrowingReturnItems } from 'src/actions/store-management/borrowing-return';
 
 import { EmptyContent } from 'src/components/empty-content';
 
@@ -12,14 +12,15 @@ import {
   RenderCellDate,
   RenderCellCode,
   RenderCellQuantity,
-  RenderCellSupplierCode,
-  RenderCellLocalCode,
-  RenderCellDesignation
+  RenderCellDesignation,
+  RenderCellWorkshop,
+  RenderCellObservationBorrowingReturnProduct
 } from '../../table-rows';
 
-const BorrowingProductsList = ({ id }) => {
+const BorrowingReturnProductsList = ({ id }) => {
   const { t } = useTranslate('store-management-module');
-  const { items, itemsLoading } = useGetBorrowingItems(id);
+  const { items, itemsLoading } = useGetBorrowingReturnItems(id);
+
   const columns = useMemo(
     () => [
       {
@@ -35,20 +36,7 @@ const BorrowingProductsList = ({ id }) => {
         minWidth: 100,
         renderCell: (params) => <RenderCellCode params={params} />,
       },
-      {
-        field: 'supplier_code',
-        headerName: 'Code fournisseur',
-        flex: 1,
-        minWidth: 120,
-        renderCell: (params) => <RenderCellSupplierCode params={params} />,
-      },
-      {
-        field: 'local_code',
-        headerName: 'Code local',
-        flex: 1,
-        minWidth: 120,
-        renderCell: (params) => <RenderCellLocalCode params={params} />,
-      },
+    
       {
         field: 'designation',
         headerName: 'Désignation',
@@ -70,17 +58,20 @@ const BorrowingProductsList = ({ id }) => {
         renderCell: (params) => <RenderCellQuantity params={params} />,
       },
       {
-        field: 'returned_qte',
-        headerName: 'Qté retourné',
+        field: 'workshop',
+        headerName: 'Atelier',
         flex: 1,
         minWidth: 100,
-      },
-      {
-        field: 'current_qte',
-        headerName: 'Qté actuelle (magasin)',
-        flex: 1,
-        minWidth: 100,
-      },
+        renderCell: (params) => <RenderCellWorkshop params={params} />,
+      }
+    ,
+    {
+      field: 'observation',
+      headerName: 'Observation',
+      flex: 1,
+      minWidth: 100,
+      renderCell: (params) => <RenderCellObservationBorrowingReturnProduct params={params} />,
+    },
       {
         field: 'updated_at',
         headerName: 'Date mise à jour',
@@ -98,9 +89,6 @@ const BorrowingProductsList = ({ id }) => {
 
   return (
     <DataGrid
-    disableRowSelectionOnClick
-            disableColumnMenu
-            paginationMode="server"
       rows={items || []}
       columns={columns}
       loading={itemsLoading}
@@ -113,8 +101,8 @@ const BorrowingProductsList = ({ id }) => {
   );
 };
 
-BorrowingProductsList.propTypes = {
+BorrowingReturnProductsList.propTypes = {
   id: PropTypes.number.isRequired,
 };
 
-export default BorrowingProductsList; 
+export default BorrowingReturnProductsList; 

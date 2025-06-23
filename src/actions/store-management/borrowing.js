@@ -15,6 +15,7 @@ const swrOptions = {
 };
 
 const ENDPOINT = endpoints.stores.borrowings;
+const ENDPOINT_LOOKUP = endpoints.stores.borrowingLookup;
 
 
 // ----------------------------------------------------------------------
@@ -75,13 +76,13 @@ export function useGetBorrowingItems(id, params) {
   const { data, isLoading, error, isValidating } = useSWR(swrKey, fetcher, swrOptions);
   const memoizedValue = useMemo(
     () => ({
-      items: data?.data || [],
+      items: data?.data?.records || [],
       itemsCount: data?.data?.total || 0,
       itemsLoading: isLoading,
       itemsError: error,
       itemsValidating: isValidating,
     }),
-    [data?.data, data?.data?.total, error, isLoading, isValidating]
+    [data?.data, error, isLoading, isValidating]
   );
   return memoizedValue;
 }
@@ -156,4 +157,36 @@ export async function cancelBorrowing(id, data) {
     console.error(`Error canceling borrowing:`, error);
     throw error;
   }
+}
+
+export async function fetchBorrowingsLookup(params) {
+  try {
+    const { data } = await axios.get('v1/inventory/lookups/borrowing', { params });
+    return data;
+  } catch (error) {
+    if (error.response) {
+      throw error.response.data;
+    }
+    throw error;
+  }
+}
+
+
+export function useGetBorrowingsLookup(params) {
+  const url = params ? [`${ENDPOINT_LOOKUP}`, { params }] : `${ENDPOINT_LOOKUP}`;
+
+  const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
+
+  const memoizedValue = useMemo(
+    () => ({
+      data: data?.data?.records || [],
+      dataLoading: isLoading,
+      dataError: error,
+      dataValidating: isValidating,
+      dataEmpty: !isLoading && !isValidating && !data?.data?.records.length,
+    }),
+    [data?.data?.records, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
 }

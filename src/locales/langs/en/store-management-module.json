@@ -171,7 +171,8 @@
             "store_required": "Store is required",
             "product_required": "Product is required",
             "quantity_required": "Quantity is required",
-            "at_least_one_product": "At least one product must be added"
+            "at_least_one_product": "At least one product must be added",
+            "borrowing_required": "Borrowing is required"
         },
         "messages": {
             "stock_updated": "Stock updated",
@@ -257,7 +258,8 @@
             "action": "Action",
             "observation": "Observation",
             "in_stock": "In Stock",
-            "quantity": "Quantity"
+            "quantity": "Quantity",
+            "borrowing": "Borrowing"
         },
         "actions": {
             "save_changes": "Save Changes",

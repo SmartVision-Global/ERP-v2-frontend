@@ -256,7 +256,8 @@
                 "products": "Produits",
                 "in_stock": "En stock",
                 "quantity": "Quantité",
-                "select_product": "Sélectionner un produit"
+                "select_product": "Sélectionner un produit",
+                "borrowing": "Emprunt"
                 
             },
             "actions": {

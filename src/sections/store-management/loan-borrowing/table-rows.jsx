@@ -12,7 +12,10 @@ export function RenderCellId({ params }) {
 }
 
 export function RenderCellCode({ params }) {
-  return <Typography>{params.row.code ?? 'N/I'}</Typography>;
+  return <Box sx={{ display: 'flex', alignItems: 'center', height: '100%',p:1 }}>
+    <Typography>{params.row.code ?? 'N/I'}</Typography>
+    {/* <Typography>{params.row.code ?? 'N/I'}</Typography> */}
+  </Box>;
 }
 
 
@@ -210,3 +213,11 @@ export function RenderCellLoanBorrowing({ params }) {
   return <Typography>{params.row.borrowing?.code ?? 'N/I'}</Typography>;
 }
 
+export function RenderCellWorkshop({ params }) {
+  return <Typography>{params.row.workshop?.name ?? 'N/I'}</Typography>;
+}
+
+export function RenderCellObservationBorrowingReturnProduct({ params }) {
+ 
+  return <Typography>{params.row.return_borrowing?.observation ?? 'N/I'}</Typography>;
+}
