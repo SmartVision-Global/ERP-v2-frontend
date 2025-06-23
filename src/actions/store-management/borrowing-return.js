@@ -62,13 +62,13 @@ export function useGetBorrowingReturnItems(id, params) {
   const { data, isLoading, error, isValidating } = useSWR(swrKey, fetcher, swrOptions);
   const memoizedValue = useMemo(
     () => ({
-      items: data?.data || [],
+      items: data?.data?.records || [],
       itemsCount: data?.data?.total || 0,
       itemsLoading: isLoading,
       itemsError: error,
       itemsValidating: isValidating,
     }),
-    [data?.data, data?.data?.total, error, isLoading, isValidating]
+    [data?.data?.records, data?.data?.total, error, isLoading, isValidating]
   );
   return memoizedValue;
 }

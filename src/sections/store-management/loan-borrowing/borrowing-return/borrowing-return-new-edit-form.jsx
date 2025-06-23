@@ -5,37 +5,35 @@ import { useForm, useFieldArray } from 'react-hook-form';
 
 import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
-import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
-import { Box, Card, Stack, Stepper, Step, StepLabel, StepButton, CardHeader, Typography, MenuItem, Divider, Button, IconButton, Modal, TextField } from '@mui/material';
+import { Box, Card, Stack, Stepper, Step, StepLabel, StepButton, CardHeader, Typography, MenuItem, Divider } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useTranslate } from 'src/locales';
 import { useMultiLookups } from 'src/actions/lookups';
-import { useGetStocks } from 'src/actions/stores/raw-materials/stocks';
-import { useGetBorrowing, useGetBorrowingsLookup } from 'src/actions/store-management/borrowing';
 import { BORROWING_NATURE_OPTIONS, BORROWING_TYPE_OPTIONS } from 'src/_mock/stores/raw-materials/data';
 import { createBorrowingReturn, updateBorrowingReturn } from 'src/actions/store-management/borrowing-return';
+import { useGetBorrowing, useGetBorrowingItems, useGetBorrowingsLookup } from 'src/actions/store-management/borrowing';
+
 import { toast } from 'src/components/snackbar';
-import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
 
 const getBorrowingReturnSchema = (t) => zod.object({
-  nature: zod.number(),
+  nature: zod.number({
+    required_error: t('form.validations.nature_required'),
+  }),
   borrowing_id: zod.string().min(1, { message: t('form.validations.borrowing_required') }),
   type: zod.number(),
   observation: zod.string().optional(),
   items: zod.array(zod.object({
-    product_id: zod.string().nonempty({ message: t('form.validations.product_required') }),
-    quantity: zod.number({ coerce: true }).min(1, { message: t('form.validations.quantity_required') }),
-    designation: zod.string().optional(),
-    in_stock: zod.number({ coerce: true }).optional(),
-    observation: zod.string().optional(),
+    product_id: zod.number().optional(),
     code: zod.string().optional(),
-    unit_measure: zod.any().optional(),
-    supplier_code: zod.string().optional(),
-    builder_code: zod.string().optional(),
+    designation: zod.string().optional(),
+    lot: zod.string().optional(),
+    quantity: zod.number({ coerce: true }).min(1, { message: t('form.validations.quantity_required') }),
+    workshop_id: zod.string().min(1, { message: t('form.validations.workshop_required') }),
+    observation: zod.string().optional(),
   })).min(1, { message: t('form.validations.at_least_one_product') }),
 });
 
@@ -44,9 +42,10 @@ export function BorrowingReturnNewEditForm({ currentBorrowingReturn }) {
   const { t } = useTranslate('store-management-module');
   const [activeStep, setActiveStep] = useState(0);
 
-  const [filterParams, setFilterParams] = useState({ code: '', supplier_code: '', builder_code: '', designation: '' });
-  const { stocks: productOptions, stocksLoading: productsLoading } = useGetStocks(filterParams);
-  const [openModalIndex, setOpenModalIndex] = useState(null);
+  const { dataLookups } = useMultiLookups([
+    { entity: 'workshops', url: 'settings/lookups/workshops' },
+  ]);
+  const workshops = dataLookups.workshops || [];
 
   const STEPS = [
     t('form.steps.transaction_tier'),
@@ -62,15 +61,13 @@ export function BorrowingReturnNewEditForm({ currentBorrowingReturn }) {
       type: currentBorrowingReturn?.type || (BORROWING_TYPE_OPTIONS.length > 0 ? BORROWING_TYPE_OPTIONS[0].value : null),
       observation: currentBorrowingReturn?.observation || '',
       items: currentBorrowingReturn?.items ? currentBorrowingReturn.items.map(item => ({
-        product_id: item.product?.id?.toString() || '',
+        product_id: item.product?.id || undefined,
         code: item.product?.code || '',
         designation: item.product?.designation || '',
-        in_stock: item.product?.quantity || '',
+        lot: item.lot || '',
         quantity: item.quantity?.toString() || '',
+        workshop_id: item.workshop_id || '',
         observation: item.observation || '',
-        unit_measure: item.product?.unit_measure || { designation: '' },
-        supplier_code: item.product?.supplier_code || '',
-        builder_code: item.product?.builder_code || '',
       })) : [],
     }),
     [currentBorrowingReturn]
@@ -92,7 +89,7 @@ export function BorrowingReturnNewEditForm({ currentBorrowingReturn }) {
     formState: { isSubmitting, errors },
   } = methods;
 
-  const { fields: itemFields, append: appendItem, remove: removeItem } = useFieldArray({
+  const { fields: itemFields } = useFieldArray({
     control,
     name: 'items',
     keyName: 'fieldKey',
@@ -103,6 +100,22 @@ export function BorrowingReturnNewEditForm({ currentBorrowingReturn }) {
 
   const { data: borrowings } = useGetBorrowingsLookup(natureValue ? { nature: natureValue } : undefined);
   const { borrowing: selectedBorrowing } = useGetBorrowing(borrowingIdValue);
+  const { items: borrowingItems } = useGetBorrowingItems(borrowingIdValue);
+
+  useEffect(() => {
+    if (borrowingItems) {
+      const formattedItems = borrowingItems.map(item => ({
+        product_id: item.product?.id,
+        code: item.product?.code || '',
+        designation: item.product?.designation || '',
+        lot: item.lot || '',
+        quantity: '',
+        workshop_id: '',
+        observation: '',
+      }));
+      setValue('items', formattedItems);
+    }
+  }, [borrowingItems, setValue]);
 
   useEffect(() => {
     if (currentBorrowingReturn) {
@@ -139,41 +152,24 @@ export function BorrowingReturnNewEditForm({ currentBorrowingReturn }) {
     }
   };
 
-  const handleSelectProduct = (row) => {
-    const idx = openModalIndex;
-    setValue(`items.${idx}.product_id`, row.id.toString());
-    setValue(`items.${idx}.code`, row.code);
-    setValue(`items.${idx}.designation`, row.designation);
-    setValue(`items.${idx}.unit_measure`, row.unit_measure || { designation: '' });
-    setValue(`items.${idx}.in_stock`, row.quantity || 0);
-    setValue(`items.${idx}.supplier_code`, row.supplier_code || '');
-    setValue(`items.${idx}.builder_code`, row.builder_code || '');
-    setOpenModalIndex(null);
+  const onFormError = (formErrors) => {
+    console.error('Validation Errors:', formErrors);
+    toast.error('Please correct the validation errors before submitting.');
   };
-
-  const productColumns = [
-    { field: 'id', headerName: 'ID', width: 70 },
-    { field: 'code', headerName: 'Code', flex: 1, minWidth: 150 },
-    { field: 'supplier_code', headerName: 'Supplier Code', flex: 1, minWidth: 150 },
-    { field: 'builder_code', headerName: 'Builder Code', flex: 1, minWidth: 150 },
-    { field: 'designation', headerName: 'Designation', flex: 1.5, minWidth: 150 },
-    { field: 'quantity', headerName: 'Quantity', type: 'number', width: 100 },
-    {
-      field: 'actions', type: 'actions', headerName: '', width: 80,
-      getActions: (params) => [
-        <GridActionsCellItem
-          icon={<Iconify icon="eva:plus-fill" />}
-          label="Add"
-          onClick={() => handleSelectProduct(params.row)}
-          color="primary"
-        />
-      ],
-    },
-  ];
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const payload = { ...data, items: data.items.map(item => ({ product_id: item.product_id, quantity: Number(item.quantity), observation: item.observation, in_stock: Number(item.in_stock) })) };
+      const payload = { 
+        ...data, 
+        items: data.items.map(item => ({ 
+          product_id: item.product_id, 
+          lot: item.lot,
+          quantity: Number(item.quantity), 
+          workshop_id: item.workshop_id,
+          observation: item.observation, 
+        })) 
+      };
+      console.log('payload', payload);
       if (currentBorrowingReturn) {
         await updateBorrowingReturn(currentBorrowingReturn.id, payload);
         toast.success(t('form.messages.borrowing_return_updated'));
@@ -191,7 +187,7 @@ export function BorrowingReturnNewEditForm({ currentBorrowingReturn }) {
       }
       toast.error(error?.message || t('form.messages.operation_failed'));
     }
-  });
+  }, onFormError);
 
   const renderTabContent = () => (
     <Box sx={{ mt: 3 }}>
@@ -228,7 +224,6 @@ export function BorrowingReturnNewEditForm({ currentBorrowingReturn }) {
                         <Grid item size={{ xs: 12, md: 6 }}>
                             <Field.Lookup name="borrowing_id" label={t('form.labels.borrowing')} data={borrowings || []} />
                         </Grid>
-                        
                     </Grid>
                     {selectedBorrowing && (
                         <Box spacing={1} sx={{ mt: 1, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
@@ -243,7 +238,6 @@ export function BorrowingReturnNewEditForm({ currentBorrowingReturn }) {
                             <Field.Text name="observation" label={t('form.labels.observation')} multiline rows={3} />
                         </Grid>
                     </Grid>
-                    
                 </Stack>
             </Card>
         )}
@@ -256,16 +250,7 @@ export function BorrowingReturnNewEditForm({ currentBorrowingReturn }) {
                 />
                 <Divider />
                 <Stack spacing={3} sx={{ p: 3 }}>
-                  <Stack direction="row" alignItems="center" spacing={1}>
-                    <Typography variant="subtitle2">{t('views.add_products')}</Typography>
-                    <IconButton color="primary" onClick={() => {
-                      appendItem({ product_id: '', code: '', designation: '', in_stock: '', quantity: '', observation: '', unit_measure: { designation: '' }, supplier_code: '', builder_code: '' });
-                      setOpenModalIndex(itemFields.length);
-                    }}>
-                      <Iconify icon="eva:plus-fill" />
-                    </IconButton>
-                  </Stack>
-                  {!!errors.items && <Typography color="error" sx={{ mt: 2 }}>{errors.items.message}</Typography>}
+                  {!!errors.items && !Array.isArray(errors.items) && <Typography color="error" sx={{ mt: 2 }}>{errors.items.message}</Typography>}
                   <Box sx={{ mt: 2 }}>
                     {itemFields.map((field, index) => (
                       <Box key={field.fieldKey} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 2, mb: 2 }}>
@@ -274,56 +259,30 @@ export function BorrowingReturnNewEditForm({ currentBorrowingReturn }) {
                             <Field.Text name={`items.${index}.code`} label={t('form.labels.code')} InputProps={{ readOnly: true }}  />
                           </Grid>
                           <Grid item size={{ xs: 12, md: 4 }}>
-                            <Field.Text name={`items.${index}.supplier_code`} label={t('form.labels.supplier_code')} InputProps={{ readOnly: true }} />
-                          </Grid>
-                          <Grid item size={{ xs: 12, md: 4 }}>
-                            <Field.Text name={`items.${index}.builder_code`} label={t('form.labels.builder_code')} InputProps={{ readOnly: true }} />
-                          </Grid>
-                        </Grid>
-                        <Grid container spacing={2} sx={{ mt: 2 }}>
-                          <Grid item size={{ xs: 12, md: 4 }}>
                             <Field.Text name={`items.${index}.designation`} label={t('form.labels.designation')} InputProps={{ readOnly: true }} />
                           </Grid>
                           <Grid item size={{ xs: 12, md: 4 }}>
-                            <Field.Number name={`items.${index}.in_stock`} label={t('form.labels.in_stock')} disabled />
-                          </Grid>
-                          <Grid item size={{ xs: 12, md: 4 }}>
-                            <Box sx={{ display: 'flex', alignItems: 'start', gap: 1 }}>
-                              <Box sx={{ width: 36, height: 36, borderRadius: '25%', bgcolor: 'grey.300', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <Typography variant="subtitle2" sx={{ fontSize: '1rem' }}>
-                                  {watch(`items.${index}.unit_measure`)?.designation || ''}
-                                  </Typography>
-                              </Box>
-                              <Field.Number name={`items.${index}.quantity`} label={t('form.labels.quantity')} />
-                            </Box>
+                            <Field.Text name={`items.${index}.lot`} label={t('form.labels.lot')} InputProps={{ readOnly: true }} />
                           </Grid>
                         </Grid>
                         <Grid container spacing={2} sx={{ mt: 2 }}>
                           <Grid item size={{ xs: 12, md: 6 }}>
+                            <Field.Number name={`items.${index}.quantity`} label={t('form.labels.quantity')} />
+                            
+                          </Grid>
+                          <Grid item size={{ xs: 12, md: 6 }}>
+                            <Field.Lookup name={`items.${index}.workshop_id`} label={t('form.labels.workshop')} data={workshops} />
+                            
+                          </Grid>
+                        </Grid>
+                        <Grid container spacing={2} sx={{ mt: 2 }}>
+                          <Grid item size={{ xs: 12 }}>
                             <Field.Text name={`items.${index}.observation`} label={t('form.labels.observation')} multiline rows={2} />
                           </Grid>
                         </Grid>
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                          <IconButton color="error" onClick={() => removeItem(index)}><Iconify icon="eva:trash-2-outline" /></IconButton>
-                        </Box>
                       </Box>
                     ))}
                   </Box>
-                  <Modal open={openModalIndex !== null} onClose={() => setOpenModalIndex(null)}>
-                    <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: 'background.paper', p: 3, width: '80%', maxHeight: '80%', overflow: 'auto' }}>
-                      <Typography variant="h6" mb={2}>{t('form.labels.select_product')}</Typography>
-                      <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-                        <TextField label="Code" size="small" value={filterParams.code} onChange={(e) => setFilterParams((prev) => ({ ...prev, code: e.target.value }))} />
-                        <TextField label="Supplier Code" size="small" value={filterParams.supplier_code} onChange={(e) => setFilterParams((prev) => ({ ...prev, supplier_code: e.target.value }))} />
-                        <TextField label="Builder Code" size="small" value={filterParams.builder_code} onChange={(e) => setFilterParams((prev) => ({ ...prev, builder_code: e.target.value }))} />
-                        <TextField label="Designation" size="small" value={filterParams.designation} onChange={(e) => setFilterParams((prev) => ({ ...prev, designation: e.target.value }))} />
-                      </Box>
-                      <DataGrid autoHeight rows={productOptions} columns={productColumns} loading={productsLoading} pageSizeOptions={[5, 10,20,50,100]} />
-                      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                        <Button onClick={() => setOpenModalIndex(null)}>{t('actions.cancel')}</Button>
-                      </Box>
-                    </Box>
-                  </Modal>
                 </Stack>
             </Card>
         )}
@@ -331,7 +290,7 @@ export function BorrowingReturnNewEditForm({ currentBorrowingReturn }) {
   );
 
   const renderNavigationButtons = () => (
-    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3 }}>
+    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3, mb: 3 }}>
       {activeStep > 0 && (
         <LoadingButton variant="outlined" onClick={handlePreviousStep}>
           {t('form.actions.previous_step')}
