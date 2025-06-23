@@ -338,7 +338,7 @@ export function BorrowingNewEditForm({ currentBorrowing }) {
   );
 
   const renderNavigationButtons = () => (
-    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3 }}>
+    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3, mb:3 }}>
       {activeStep > 0 && (
         <LoadingButton variant="outlined" onClick={handlePreviousStep}>
           {t('form.actions.previous_step')}
