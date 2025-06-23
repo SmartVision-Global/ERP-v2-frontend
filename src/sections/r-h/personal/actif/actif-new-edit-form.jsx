@@ -698,6 +698,10 @@ export function ActifNewEditForm({ currentProduct }) {
                 maxSize={3145728}
                 onDelete={handleRemoveCertificate}
                 onDrop={onDropCertificate}
+                accept={{
+                  'image/*': [],
+                  'application/pdf': [],
+                }}
               />
             </Stack>
           </Grid>
