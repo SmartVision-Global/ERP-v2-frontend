@@ -57,7 +57,7 @@ export function RHFSelect({ name, children, helperText, slotProps = {}, ...other
 }
 
 // THIS IS A LOOKUP SELECT WITH A SEARCH BAR
-export function RHFSelectSearch({ name, children, helperText, slotProps = {}, onSearch, ...other }) {
+export function RHFSelectSearch({ name, children, helperText, slotProps = {}, onSearch, loading, ...other }) {
   const { control } = useFormContext();
 
   const labelId = `${name}-select`;
@@ -104,7 +104,8 @@ export function RHFSelectSearch({ name, children, helperText, slotProps = {}, on
               />
             </ListSubheader>
           )}
-          {children}
+          {loading && <MenuItem disabled>Loading...</MenuItem>}
+          {!loading && children}
         </TextField>
       )}
     />

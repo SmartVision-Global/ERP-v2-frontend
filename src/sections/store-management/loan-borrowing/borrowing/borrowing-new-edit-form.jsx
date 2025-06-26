@@ -46,29 +46,10 @@ export function BorrowingNewEditForm({ currentBorrowing }) {
   const { t } = useTranslate('store-management-module');
   const [activeStep, setActiveStep] = useState(0);
 
-  const [debouncedTierSearch, setDebouncedTierSearch] = useState('');
-
-  const debouncedSetTierSearch = useMemo(
-    () =>
-      debounce((value) => {
-        setDebouncedTierSearch(value);
-      }, 500),
-    []
-  );
-
-  const handleTierSearch = useCallback(
-    (value) => {
-      debouncedSetTierSearch(value);
-    },
-    [debouncedSetTierSearch]
-  );
-
   const { dataLookups } = useMultiLookups([
-    { entity: 'tiers', url: 'inventory/lookups/tiers', params: { search: debouncedTierSearch } },
     { entity: 'stores', url: 'settings/lookups/stores' },
   ]);
 
-  const tiers = dataLookups.tiers || [];
   const stores = dataLookups.stores || [];
 
   const [filterParams, setFilterParams] = useState({ code: '', supplier_code: '', builder_code: '', designation: '' });
@@ -238,9 +219,7 @@ export function BorrowingNewEditForm({ currentBorrowing }) {
                 <Stack spacing={3} sx={{ p: 3 }}>
                     <Grid container spacing={3}>
                         <Grid size={{ xs: 12, md: 6 }}>
-                            {/* <Field.Lookup name="tier_id" label={t('form.labels.tiers')} data={tiers} onSearch={handleTierSearch} /> */}
-                            <Field.LookupSearch name="tier_id" label={t('form.labels.tiers')} data={tiers} onSearch={handleTierSearch} />
-                            
+                            <Field.LookupSearch name="tier_id" label={t('form.labels.tiers')} url="inventory/lookups/tiers" />
                         </Grid>
                         <Grid size={{ xs: 12, md: 6 }}>
                             <Field.Select name="nature" label={t('form.labels.nature')} size="small">

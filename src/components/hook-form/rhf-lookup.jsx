@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { debounce } from 'lodash';
 
-import { Box, Chip, Select, Checkbox, MenuItem, InputLabel, FormControl } from '@mui/material';
+import { Box, Chip, Select, Checkbox, MenuItem, InputLabel, FormControl, ListSubheader, TextField } from '@mui/material';
 
 import { Field } from '../hook-form';
 import { HelperText } from './help-text';
+import { useGetLookups } from 'src/actions/lookups';
+import { RHFSelectSearch } from './rhf-select';
 
 export function RHFLookup({ name, label, data, disabled }) {
   return (
@@ -18,15 +21,33 @@ export function RHFLookup({ name, label, data, disabled }) {
   );
 }
 
-export function RHFLookupSearch({ name, label, data, disabled, onSearch }) {
+export function RHFLookupSearch({ name, label, url, ...other }) {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const debouncedSetSearchTerm = useMemo(
+    () =>
+      debounce((value) => {
+        setSearchTerm(value);
+      }, 500),
+    []
+  );
+
+  const { data: options, dataLoading } = useGetLookups(url, { search: searchTerm });
+
   return (
-    <Field.SelectSearch name={name} label={label} size="small" disabled={disabled} onSearch={onSearch}>
-      {data.map((item) => (
+    <RHFSelectSearch
+      name={name}
+      label={label}
+      loading={dataLoading}
+      onSearch={debouncedSetSearchTerm}
+      {...other}
+    >
+      {options.map((item) => (
         <MenuItem key={`${item.value}`} value={`${item.value}`}>
           {item.text}
         </MenuItem>
       ))}
-    </Field.SelectSearch>
+    </RHFSelectSearch>
   );
 }
 
