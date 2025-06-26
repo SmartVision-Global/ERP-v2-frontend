@@ -210,7 +210,7 @@ export const NewProductSchema = zod
         });
       }
     }
-    if (data.payment_type !== '2') {
+    if (String(data.payment_type) !== '2') {
       if (!data.rib) {
         ctx.addIssue({
           code: zod.ZodIssueCode.custom,
@@ -534,7 +534,7 @@ export function ActifNewEditForm({ currentProduct }) {
       hours_per_month: data.hours_per_month,
       declaration_date: data.declaration_date,
       service_start: data.service_start,
-      service_end: null,
+      service_end: data.service_end,
       contract_type: data.contract_type,
       contract_probation: data.contract_probation,
       pea_rate: 0,
@@ -1066,7 +1066,7 @@ export function ActifNewEditForm({ currentProduct }) {
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.DatePicker name="from_date" label="Du" />
           </Grid>
-          {values.contract_type !== '2' && (
+          {String(values.contract_type) !== '2' && (
             <Grid size={{ xs: 12, md: 6 }}>
               <Field.DatePicker name="to_date" label="Au" />
             </Grid>
@@ -1083,7 +1083,7 @@ export function ActifNewEditForm({ currentProduct }) {
               ))}
             </Field.Select>
           </Grid>
-          {values.payment_type !== '2' && (
+          {String(values.payment_type) !== '2' && (
             <>
               <Grid size={{ xs: 12, md: 6 }}>
                 <Field.Text name="rib" label="RIB" />

@@ -17,7 +17,7 @@ export function PersonalEditView({ personal }) {
         links={[
           { name: 'Ressources humaine', href: paths.dashboard.root },
           { name: 'Personnels', href: paths.dashboard.rh.personal },
-          { name: personal?.name },
+          { name: personal?.first_name?.fr },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />

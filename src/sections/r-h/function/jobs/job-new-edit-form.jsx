@@ -70,6 +70,10 @@ export const NewProductSchema = zod.object({
   action_id: zod.string().optional().nullable(),
   careerKnowledges: zod.array(zod.string()),
   dutiesResponsibilities: zod.array(zod.string()),
+  // content: schemaHelper
+  //   .editor()
+  //   .min(100, { message: 'Content must be at least 100 characters' })
+  //   .max(500, { message: 'Content must be less than 500 characters' }),
 });
 
 export function JobNewEditForm({ currentProduct }) {
@@ -265,6 +269,7 @@ export function JobNewEditForm({ currentProduct }) {
       <Stack spacing={3} sx={{ p: 3 }}>
         <Field.Text name="name" label="Libellé" />
         <Field.Text name="designation" label="Designation" multiline rows={3} />
+        {/* <Field.Editor name="content" sx={{ maxHeight: 480 }} /> */}
       </Stack>
     </Card>
   );
