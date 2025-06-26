@@ -18,6 +18,18 @@ export function RHFLookup({ name, label, data, disabled }) {
   );
 }
 
+export function RHFLookupSearch({ name, label, data, disabled, onSearch }) {
+  return (
+    <Field.SelectSearch name={name} label={label} size="small" disabled={disabled} onSearch={onSearch}>
+      {data.map((item) => (
+        <MenuItem key={`${item.value}`} value={`${item.value}`}>
+          {item.text}
+        </MenuItem>
+      ))}
+    </Field.SelectSearch>
+  );
+}
+
 export function RHFLookupMultiSelect({
   name,
   chip,

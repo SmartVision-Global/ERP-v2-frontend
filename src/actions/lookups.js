@@ -11,6 +11,7 @@ const swrOptions = {
 };
 
 export function useMultiLookups(entities = []) {
+  console.log('multi lookups', entities);
   const results = entities.map((entity) => ({
     key: entity.entity,
     // eslint-disable-next-line react-hooks/rules-of-hooks

@@ -9,6 +9,7 @@ import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
+import { ListSubheader } from '@mui/material';
 
 import { HelperText } from './help-text';
 
@@ -22,7 +23,7 @@ export function RHFSelect({ name, children, helperText, slotProps = {}, ...other
   const baseSlotProps = {
     select: {
       sx: { textTransform: 'capitalize' },
-      MenuProps: {
+      MenuProps: {      
         slotProps: {
           paper: {
             sx: [{ maxHeight: 220 }],
@@ -48,6 +49,61 @@ export function RHFSelect({ name, children, helperText, slotProps = {}, ...other
           slotProps={merge(baseSlotProps, slotProps)}
           {...other}
         >
+          {children}
+        </TextField>
+      )}
+    />
+  );
+}
+
+// THIS IS A LOOKUP SELECT WITH A SEARCH BAR
+export function RHFSelectSearch({ name, children, helperText, slotProps = {}, onSearch, ...other }) {
+  const { control } = useFormContext();
+
+  const labelId = `${name}-select`;
+
+  const baseSlotProps = {
+    select: {
+      sx: { textTransform: 'capitalize' },
+      MenuProps: {
+        autoFocus: false,
+        slotProps: {
+          paper: {
+            sx: [{ maxHeight: 220 }],
+          },
+        },
+      },
+    },
+    htmlInput: { id: labelId },
+    inputLabel: { htmlFor: labelId },
+  };
+
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field, fieldState: { error } }) => (
+        <TextField
+          {...field}
+          select
+          fullWidth
+          error={!!error}
+          helperText={error?.message ?? helperText}
+          slotProps={merge(baseSlotProps, slotProps)}
+          {...other}
+        >
+          {onSearch && (
+            <ListSubheader sx={{ p: 1, position: 'sticky', top: -8, zIndex: 1, bgcolor: 'background.paper' }}>
+              <TextField
+                size="small"
+                placeholder="Search..."
+                fullWidth
+                onChange={(e) => onSearch(e.target.value)}
+                onClick={(e) => e.stopPropagation()}
+                onKeyDown={(e) => e.stopPropagation()}
+              />
+            </ListSubheader>
+          )}
           {children}
         </TextField>
       )}
