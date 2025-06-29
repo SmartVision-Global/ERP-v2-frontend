@@ -19,7 +19,9 @@
         "add_borrowing_return": "Add Borrowing Return",
         "edit_borrowing_return": "Edit Borrowing Return",
         "new_borrowing_return": "New Borrowing Return",
-        "borrowing_return": "Borrowing Return"
+        "borrowing_return": "Borrowing Return",
+        "non_moving_products": "Non Moving Products"
+        
     },
     "headers": {
         "id": "ID",
@@ -63,7 +65,8 @@
         "type": "Type",
         "return_status": "Return Status",
         "third_created": "Third created",
-        "loan_borrowing": "Loan Borrowing"
+        "loan_borrowing": "Loan Borrowing",
+        "site": "Site"
     },
     "actions": {
         "add_stock": "Add Stock",
@@ -116,7 +119,11 @@
         "return_status": "Return Status",
         "tiers": "Tiers",
         "return_code": "Return Code",
-        "borrowing_loan_code": "Borrowing/Loan Code"
+        "borrowing_loan_code": "Borrowing/Loan Code",
+        "local_code": "Local Code",
+        "site": "Site",
+        "last_exit": "Last Exit",
+        "last_consumption": "Last Consumption"
     },
     "dialog": {
         "product_details": "Product Details: {{code}} -- {{designation}}",

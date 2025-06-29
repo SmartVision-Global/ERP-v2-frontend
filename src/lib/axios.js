@@ -139,6 +139,7 @@ export const endpoints = {
     operations: '/v1/inventory/product-history',
     third: '/v1/inventory/tiers',
     borrowings: '/v1/inventory/borrowings',
+    nonMovingProducts: '/v1/inventory/non-moving-products',
     borrowingLookup: '/v1/inventory/lookups/borrowing',
     borrowingReturns: '/v1/inventory/borrowing-returns',
     storageArea: '/v1/inventory/storage-areas',

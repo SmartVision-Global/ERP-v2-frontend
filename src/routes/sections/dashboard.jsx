@@ -395,6 +395,10 @@ const PageStoreTransferSlipEdit = lazy(
   () => import('src/pages/dashboard/store-management/transfer-slip/edit')
 );
 
+const PageStoreNonMovingProductsList = lazy(
+  () => import('src/pages/dashboard/store-management/non-moving-products/list')
+);
+
 // store mangement
 // operations
 const PageStoreOperationsList = lazy(
@@ -846,6 +850,7 @@ export const dashboardRoutes = [
                 path: 'transfer-slip/:id/edit',
                 element: <PageStoreTransferSlipEdit product_type={1} />,
               },
+              { path: 'non-moving-products', element: <PageStoreNonMovingProductsList product_type={1}/> },
             ],
           },
           {

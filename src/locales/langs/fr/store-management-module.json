@@ -20,7 +20,8 @@
             "add_borrowing_return": "Ajouter retour emprunt",
             "edit_borrowing_return": "Modifier retour emprunt",
             "new_borrowing_return": "Nouveau retour emprunt",
-            "borrowing_return": "Retour emprunt"
+            "borrowing_return": "Retour emprunt",
+            "non_moving_products": "Produits immobiles"
         },
         "headers": {
             "id": "ID",
@@ -71,7 +72,8 @@
             "qte": "Qté",
             "returned_qte": "Qté retourné",
             "current_qte": "Qté actuelle (magasin)",
-            "loan_borrowing": "Emprunt/Prêt"
+            "loan_borrowing": "Emprunt/Prêt",
+            "site": "Site"
         },
         "actions": {
             "add_stock": "Ajouter Stock",
@@ -125,7 +127,11 @@
             "return_status": "Statut de retour",
             "tiers": "Tiers",
             "return_code": "Code de retour",
-            "borrowing_loan_code": "Code emprunt/prêt"
+            "borrowing_loan_code": "Code emprunt/prêt",
+            "local_code": "Code local",
+            "site": "Site",
+            "last_exit": "Dernière sortie",
+            "last_consumption": "Dernière consommation"
         },
         "dialog": {
             "product_details": "Détails produit: {{code}} -- {{designation}}",

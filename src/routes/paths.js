@@ -255,7 +255,9 @@ export const paths = {
         newTransferSlip: `${ROOTS.DASHBOARD}/store-management/raw-material/transfer-slip/new`,
         editTransferSlip: (id) =>
           `${ROOTS.DASHBOARD}/store-management/raw-material/transfer-slip/${id}/edit`,
+        nonMovingProducts: `${ROOTS.DASHBOARD}/store-management/raw-material/non-moving-products`,
       },
+
       loanBorrowing: {
         root: `${ROOTS.DASHBOARD}/store-management`,
         third: `${ROOTS.DASHBOARD}/store-management/third`,

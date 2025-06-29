@@ -90,6 +90,10 @@ export const navData = [
                 title: 'Bons de transfert',
                 path: paths.dashboard.storeManagement.rawMaterial.transferSlips,
               },
+              {
+                title: 'Produits non mouvementé',
+                path: paths.dashboard.storeManagement.rawMaterial.nonMovingProducts,
+              },
             ],
             
         
