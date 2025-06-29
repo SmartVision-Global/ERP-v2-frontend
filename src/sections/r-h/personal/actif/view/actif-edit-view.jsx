@@ -2,6 +2,7 @@ import { paths } from 'src/routes/paths';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
+import { LoadingScreen } from 'src/components/loading-screen';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { ActifNewEditForm } from '../actif-new-edit-form';
@@ -21,7 +22,7 @@ export function PersonalEditView({ personal }) {
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
-
+      {!personal && <LoadingScreen />}
       {personal && <ActifNewEditForm currentProduct={personal} />}
     </DashboardContent>
   );

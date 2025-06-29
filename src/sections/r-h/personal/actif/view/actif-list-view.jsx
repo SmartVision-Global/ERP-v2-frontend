@@ -692,7 +692,6 @@ export function ActifListView() {
     columns
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
-  console.log('ATSDialog', ATSDialog);
 
   return (
     <>
