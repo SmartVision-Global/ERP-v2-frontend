@@ -56,131 +56,131 @@ export const navData = [
       },
       // { title: 'Two', path: paths.dashboard.two, icon: ICONS.ecommerce },
       // { title: 'Three', path: paths.dashboard.three, icon: ICONS.analytics },
-      {
-        title: 'Gestion magasinage',
-        path: '/dashboard/store',
-        icon: ICONS.warehouse,
-        children: [
-          {
-            title: 'Matières premières',
-            path: paths.dashboard.storeManagement.root,
-            children: [
-              { title: 'Stocks', path: paths.dashboard.storeManagement.rawMaterial.root },
-              {
-                title: 'Suivie des produits',
-                path: paths.dashboard.storeManagement.rawMaterial.operations,
-              },
-              {
-                title: 'Lieu de stockage',
-                path: paths.dashboard.storeManagement.rawMaterial.storageArea,
-              },
-              {
-                title: 'Entrée de stock',
-                path: paths.dashboard.storeManagement.rawMaterial.initialStorage,
-              },
-              {
-                title: 'Bon de sortie',
-                path: paths.dashboard.storeManagement.rawMaterial.exitSlips,
-              },
-              {
-                title: 'Intégrations',
-                path: paths.dashboard.storeManagement.rawMaterial.integrations,
-              },
-              {
-                title: 'Bons de transfert',
-                path: paths.dashboard.storeManagement.rawMaterial.transferSlips,
-              },
-            ],
-          },
-          // {
-          //   title: 'Pièces de rechange',
-          //   path: paths.dashboard.storeManagement.root.root,
-          //   children: [
-          //     { title: 'Stocks', path: paths.dashboard.storeManagement.rawMaterial.root },
-          //     {
-          //       title: 'Lieu de stockage',
-          //       path: paths.dashboard.storeManagement.rawMaterial.storageArea,
-          //     },
-          //     {
-          //       title: 'Entrée de stock',
-          //       path: paths.dashboard.storeManagement.rawMaterial.initialStorage,
-          //     },
-          //     {
-          //       title: 'Bon de sortie',
-          //       path: paths.dashboard.storeManagement.rawMaterial.exitSlip,
-          //     },
-          //     {
-          //       title: 'Intégrations',
-          //       path: paths.dashboard.storeManagement.rawMaterial.integrations,
-          //     },
-          //     {
-          //       title: 'Bons de transfert',
-          //       path: paths.dashboard.storeManagement.rawMaterial.transferSlips,
-          //     },
-          //   ],
-          // },
-          // {
-          //   title: 'Outillage',
-          //   path: paths.dashboard.storeManagement.root.root,
-          //   children: [
-          //     { title: 'Stocks', path: paths.dashboard.storeManagement.rawMaterial.root },
-          //     {
-          //       title: 'Lieu de stockage',
-          //       path: paths.dashboard.storeManagement.rawMaterial.storageArea,
-          //     },
-          //     {
-          //       title: 'Entrée de stock',
-          //       path: paths.dashboard.storeManagement.rawMaterial.initialStorage,
-          //     },
-          //     {
-          //       title: 'Bon de sortie',
-          //       path: paths.dashboard.storeManagement.rawMaterial.exitSlip,
-          //     },
-          //     {
-          //       title: 'Intégrations',
-          //       path: paths.dashboard.storeManagement.rawMaterial.integrations,
-          //     },
-          //     {
-          //       title: 'Bons de transfert',
-          //       path: paths.dashboard.storeManagement.rawMaterial.transferSlips,
-          //     },
-          //   ],
-          // },
-          // {
-          //   title: 'Fournitures',
-          //   path: paths.dashboard.storeManagement.root.root,
-          //   children: [
-          //     { title: 'Stocks', path: paths.dashboard.storeManagement.rawMaterial.root },
-          //     {
-          //       title: 'Lieu de stockage',
-          //       path: paths.dashboard.storeManagement.rawMaterial.storageArea,
-          //     },
-          //     {
-          //       title: 'Entrée de stock',
-          //       path: paths.dashboard.storeManagement.rawMaterial.initialStorage,
-          //     },
-          //     {
-          //       title: 'Bon de sortie',
-          //       path: paths.dashboard.storeManagement.rawMaterial.exitSlip,
-          //     },
-          //     {
-          //       title: 'Intégrations',
-          //       path: paths.dashboard.storeManagement.rawMaterial.integrations,
-          //     },
-          //     {
-          //       title: 'Bons de transfert',
-          //       path: paths.dashboard.storeManagement.rawMaterial.transferSlips,
-          //     },
-          //   ],
-          // },
-        ],
-      },
-      {
-        title: 'Expression de besoins',
-        path: paths.dashboard.expressionOfNeeds.root,
-        icon: ICONS.plus,
-        children: [{ title: 'B.E.B', path: paths.dashboard.expressionOfNeeds.beb.root }],
-      },
+      // {
+      //   title: 'Gestion magasinage',
+      //   path: '/dashboard/store',
+      //   icon: ICONS.warehouse,
+      //   children: [
+      //     {
+      //       title: 'Matières premières',
+      //       path: paths.dashboard.storeManagement.root,
+      //       children: [
+      //         { title: 'Stocks', path: paths.dashboard.storeManagement.rawMaterial.root },
+      //         {
+      //           title: 'Suivie des produits',
+      //           path: paths.dashboard.storeManagement.rawMaterial.operations,
+      //         },
+      //         {
+      //           title: 'Lieu de stockage',
+      //           path: paths.dashboard.storeManagement.rawMaterial.storageArea,
+      //         },
+      //         {
+      //           title: 'Entrée de stock',
+      //           path: paths.dashboard.storeManagement.rawMaterial.initialStorage,
+      //         },
+      //         {
+      //           title: 'Bon de sortie',
+      //           path: paths.dashboard.storeManagement.rawMaterial.exitSlips,
+      //         },
+      //         {
+      //           title: 'Intégrations',
+      //           path: paths.dashboard.storeManagement.rawMaterial.integrations,
+      //         },
+      //         {
+      //           title: 'Bons de transfert',
+      //           path: paths.dashboard.storeManagement.rawMaterial.transferSlips,
+      //         },
+      //       ],
+      //     },
+      //     // {
+      //     //   title: 'Pièces de rechange',
+      //     //   path: paths.dashboard.storeManagement.root.root,
+      //     //   children: [
+      //     //     { title: 'Stocks', path: paths.dashboard.storeManagement.rawMaterial.root },
+      //     //     {
+      //     //       title: 'Lieu de stockage',
+      //     //       path: paths.dashboard.storeManagement.rawMaterial.storageArea,
+      //     //     },
+      //     //     {
+      //     //       title: 'Entrée de stock',
+      //     //       path: paths.dashboard.storeManagement.rawMaterial.initialStorage,
+      //     //     },
+      //     //     {
+      //     //       title: 'Bon de sortie',
+      //     //       path: paths.dashboard.storeManagement.rawMaterial.exitSlip,
+      //     //     },
+      //     //     {
+      //     //       title: 'Intégrations',
+      //     //       path: paths.dashboard.storeManagement.rawMaterial.integrations,
+      //     //     },
+      //     //     {
+      //     //       title: 'Bons de transfert',
+      //     //       path: paths.dashboard.storeManagement.rawMaterial.transferSlips,
+      //     //     },
+      //     //   ],
+      //     // },
+      //     // {
+      //     //   title: 'Outillage',
+      //     //   path: paths.dashboard.storeManagement.root.root,
+      //     //   children: [
+      //     //     { title: 'Stocks', path: paths.dashboard.storeManagement.rawMaterial.root },
+      //     //     {
+      //     //       title: 'Lieu de stockage',
+      //     //       path: paths.dashboard.storeManagement.rawMaterial.storageArea,
+      //     //     },
+      //     //     {
+      //     //       title: 'Entrée de stock',
+      //     //       path: paths.dashboard.storeManagement.rawMaterial.initialStorage,
+      //     //     },
+      //     //     {
+      //     //       title: 'Bon de sortie',
+      //     //       path: paths.dashboard.storeManagement.rawMaterial.exitSlip,
+      //     //     },
+      //     //     {
+      //     //       title: 'Intégrations',
+      //     //       path: paths.dashboard.storeManagement.rawMaterial.integrations,
+      //     //     },
+      //     //     {
+      //     //       title: 'Bons de transfert',
+      //     //       path: paths.dashboard.storeManagement.rawMaterial.transferSlips,
+      //     //     },
+      //     //   ],
+      //     // },
+      //     // {
+      //     //   title: 'Fournitures',
+      //     //   path: paths.dashboard.storeManagement.root.root,
+      //     //   children: [
+      //     //     { title: 'Stocks', path: paths.dashboard.storeManagement.rawMaterial.root },
+      //     //     {
+      //     //       title: 'Lieu de stockage',
+      //     //       path: paths.dashboard.storeManagement.rawMaterial.storageArea,
+      //     //     },
+      //     //     {
+      //     //       title: 'Entrée de stock',
+      //     //       path: paths.dashboard.storeManagement.rawMaterial.initialStorage,
+      //     //     },
+      //     //     {
+      //     //       title: 'Bon de sortie',
+      //     //       path: paths.dashboard.storeManagement.rawMaterial.exitSlip,
+      //     //     },
+      //     //     {
+      //     //       title: 'Intégrations',
+      //     //       path: paths.dashboard.storeManagement.rawMaterial.integrations,
+      //     //     },
+      //     //     {
+      //     //       title: 'Bons de transfert',
+      //     //       path: paths.dashboard.storeManagement.rawMaterial.transferSlips,
+      //     //     },
+      //     //   ],
+      //     // },
+      //   ],
+      // },
+      // {
+      //   title: 'Expression de besoins',
+      //   path: paths.dashboard.expressionOfNeeds.root,
+      //   icon: ICONS.plus,
+      //   children: [{ title: 'B.E.B', path: paths.dashboard.expressionOfNeeds.beb.root }],
+      // },
       {
         title: 'Resssources humaines',
         path: '/dashboard/humain-ressource',
@@ -202,7 +202,7 @@ export const navData = [
             path: paths.dashboard.rh.personal.root,
             children: [
               { title: 'Liste', path: paths.dashboard.rh.personal.root },
-              { title: 'Dossier', path: paths.dashboard.rh.personal.documents },
+              // { title: 'Dossier', path: paths.dashboard.rh.personal.documents },
               // { title: 'Bloque', path: paths.dashboard.rh.personal.bloc },
               // { title: 'DAS', path: paths.dashboard.rh.personal.das },
             ],
@@ -356,21 +356,21 @@ export const navData = [
           //
         ],
       },
-      {
-        title: 'Achat et approvisionnement',
-        path: '/dashboard/purchase-supply',
-        icon: ICONS.order,
-        children: [
-          {
-            title: "Demande d'achat",
-            path: paths.dashboard.purchaseSupply.purchaseOrder.root,
-          },
-          {
-            title: 'Traitement DA',
-            path: paths.dashboard.purchaseSupply.processingDa.root,
-          },
-        ],
-      },
+      // {
+      //   title: 'Achat et approvisionnement',
+      //   path: '/dashboard/purchase-supply',
+      //   icon: ICONS.order,
+      //   children: [
+      //     {
+      //       title: "Demande d'achat",
+      //       path: paths.dashboard.purchaseSupply.purchaseOrder.root,
+      //     },
+      //     {
+      //       title: 'Traitement DA',
+      //       path: paths.dashboard.purchaseSupply.processingDa.root,
+      //     },
+      //   ],
+      // },
       {
         title: 'Paramètres',
         path: '/dashboard/settings',
