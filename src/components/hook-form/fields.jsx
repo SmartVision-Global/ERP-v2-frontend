@@ -4,12 +4,12 @@ import { RHFTimePicker } from './rhf-time-picker';
 import { RHFNumberField } from './rhf-number-field';
 import { RHFNumberInput } from './rhf-number-input';
 import { RHFRotationDays } from './rhf-rotation-days';
-import { RHFSelect, RHFMultiSelect, RHFSelectSearch } from './rhf-select';
 import { RHFSwitch, RHFMultiSwitch } from './rhf-switch';
-import { RHFLookup, RHFLookupMultiSelect, RHFLookupSearch } from './rhf-lookup';
 import { RHFCheckbox, RHFMultiCheckbox } from './rhf-checkbox';
 import { RHFMultiCheckboxLookup } from './rhf-multicheckbox-lookup';
 import { RHFUpload, RHFUploadBox, RHFUploadAvatar } from './rhf-upload';
+import { RHFSelect, RHFMultiSelect, RHFSelectSearch } from './rhf-select';
+import { RHFLookup, RHFLookupMultiSelect, RHFLookupSearch } from './rhf-lookup';
 import { RHFDatePicker, RHFDateTimePicker, RHFMobileDateTimePicker } from './rhf-date-picker';
 
 // ----------------------------------------------------------------------

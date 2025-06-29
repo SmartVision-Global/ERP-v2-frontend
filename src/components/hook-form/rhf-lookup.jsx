@@ -1,12 +1,13 @@
-import React, { useMemo, useState } from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
 import { debounce } from 'lodash';
+import React, { useMemo, useState } from 'react';
+import { Controller, useFormContext, useWatch } from 'react-hook-form';
 
 import { Box, Chip, Select, Checkbox, MenuItem, InputLabel, FormControl, ListSubheader, TextField } from '@mui/material';
 
+import { useGetLookups } from 'src/actions/lookups';
+
 import { Field } from '../hook-form';
 import { HelperText } from './help-text';
-import { useGetLookups } from 'src/actions/lookups';
 import { RHFSelectSearch } from './rhf-select';
 
 export function RHFLookup({ name, label, data, disabled }) {
@@ -22,6 +23,13 @@ export function RHFLookup({ name, label, data, disabled }) {
 }
 
 export function RHFLookupSearch({ name, label, url, ...other }) {
+  const { control } = useFormContext();
+
+  const selectedValue = useWatch({
+    control,
+    name,
+  });
+
   const [searchTerm, setSearchTerm] = useState('');
 
   const debouncedSetSearchTerm = useMemo(
@@ -32,11 +40,15 @@ export function RHFLookupSearch({ name, label, url, ...other }) {
     []
   );
 
-  const { data: options, dataLoading } = useGetLookups(url, { search: searchTerm });
+  const { data: options, dataLoading } = useGetLookups(url, {
+    search: searchTerm,
+    selected_value: selectedValue,
+  });
 
   return (
     <RHFSelectSearch
       name={name}
+      size="small"
       label={label}
       loading={dataLoading}
       onSearch={debouncedSetSearchTerm}
