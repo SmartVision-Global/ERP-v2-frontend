@@ -1,8 +1,10 @@
 import { Helmet } from 'react-helmet-async';
 
+import { Box } from '@mui/material';
+
 import { CONFIG } from 'src/global-config';
 
-import { BlankView } from 'src/sections/blank/view';
+import { Image } from 'src/components/image';
 
 // ----------------------------------------------------------------------
 
@@ -14,8 +16,14 @@ export default function Page() {
       <Helmet>
         <title> {metadata.title}</title>
       </Helmet>
-
-      <BlankView title="Page one" />
+      {/* <BlankView title="Page one" /> */}
+      <Box
+        sx={{
+          height: '650px',
+        }}
+      >
+        <Image src="/logo/logo-svt-2.jpg" sx={{ width: 1, height: 1 }} />
+      </Box>
     </>
   );
 }
