@@ -100,21 +100,3 @@ export async function fetchNonMovingProductsLookup(params) {
 }
 
 
-export function useGetNonMovingProductsLookup(params) {
-  const url = params ? [`${ENDPOINT_LOOKUP}`, { params }] : `${ENDPOINT_LOOKUP}`;
-
-  const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
-
-  const memoizedValue = useMemo(
-    () => ({
-      data: data?.data?.records || [],
-      dataLoading: isLoading,
-      dataError: error,
-      dataValidating: isValidating,
-      dataEmpty: !isLoading && !isValidating && !data?.data?.records.length,
-    }),
-    [data?.data?.records, error, isLoading, isValidating]
-  );
-
-  return memoizedValue;
-}

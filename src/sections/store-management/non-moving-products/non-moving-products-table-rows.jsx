@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 
 import { fDate, fTime } from 'src/utils/format-time';
 
-import { THIRD_STATUS_OPTIONS, THIRD_TYPE_OPTIONS, BORROWING_NATURE_OPTIONS, BORROWING_TYPE_OPTIONS, BORROWING_STATUS_OPTIONS, BORROWING_RETURN_STATUS_OPTIONS, BORROWING_RETURN_TYPE_OPTIONS } from 'src/_mock/stores/raw-materials/data';
+import {  THIRD_TYPE_OPTIONS, BORROWING_NATURE_OPTIONS, BORROWING_TYPE_OPTIONS, BORROWING_STATUS_OPTIONS, BORROWING_RETURN_STATUS_OPTIONS, BORROWING_RETURN_TYPE_OPTIONS, NON_MOVING_PRODUCTS_STATUS_OPTIONS } from 'src/_mock/stores/raw-materials/data';
 
 import { Label } from 'src/components/label';
 // Custom cell renderers for StockListView
@@ -12,10 +12,7 @@ export function RenderCellId({ params }) {
 }
 
 export function RenderCellCode({ params }) {
-  return <Box sx={{ display: 'flex', alignItems: 'center', height: '100%',p:1 }}>
-    <Typography>{params.row.code ?? 'N/I'}</Typography>
-    {/* <Typography>{params.row.code ?? 'N/I'}</Typography> */}
-  </Box>;
+  return <Typography>{params.row.code ?? 'N/I'}</Typography>;
 }
 
 
@@ -32,7 +29,7 @@ export function RenderCellQuantity({ params }) {
 }
 
 export function RenderCellStatus({ params }) {
-  const status = THIRD_STATUS_OPTIONS.find(option => option.value == params.row.status);
+  const status = NON_MOVING_PRODUCTS_STATUS_OPTIONS.find(option => option.value == params.row.status);
   const color = status?.color ?? 'default';
   const label = status?.label ?? 'N/I';
   return <Label variant="soft" color={color}>{label}</Label>;
@@ -94,7 +91,9 @@ export function RenderCellDate({ params }) {
 }
 
 export function RenderCellOperation({ params }) {
-  return <Label variant="soft" color="default">{params.row.nature}</Label>;
+  const nature = BORROWING_NATURE_OPTIONS.find(option => option.value == params.row.nature);
+  const color = nature?.color ?? 'default';
+  return  <Label variant="soft" color={color}>{params.row.nature}</Label>
 }
 
 export function RenderCellProduct({ params }) {
@@ -114,8 +113,16 @@ export function RenderCellSource({ params }) {
   return <Typography>{params.row.store?.name?? 'N/I'}</Typography>;
 }
 
+export function RenderCellSourceStore({ params }) {
+  return <Typography>{params.row.source_store?.code?? 'N/I'}</Typography>;
+}
+
+export function RenderCellExitQuantity({ params }) {
+  return <Typography>{params.row.destination_quantity?? 'N/I'}</Typography>;
+}
+
 export function RenderCellDestination({ params }) {
-  return <Typography>{params.row.destination_store?.name?? 'N/I'}</Typography>;
+  return <Typography>{params.row.destination_store?.code?? 'N/I'}</Typography>;
 }
 
 export function RenderCellCreatedDate({ params }) {
@@ -135,6 +142,10 @@ export function RenderCellObservation({ params }) {
 
 export function RenderCellTiers({ params }) {
   return <Typography>{params.row.tier?.code ?? 'N/I'}</Typography>;
+}
+
+export function RenderCellLot({ params }) {
+  return <Typography>{params.row.lot ?? 'N/I'}</Typography>;
 }
 
 

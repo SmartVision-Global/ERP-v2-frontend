@@ -63,8 +63,11 @@ export const BORROWING_RETURN_TYPE_OPTIONS = [
 
 
 export const NON_MOVING_PRODUCTS_STATUS_OPTIONS = [
-    {value: '1', label: 'Actif', color: 'success'},
-    {value: '2', label: 'Bloquer', color: 'error'},
+    {value: '1', label: 'Bloquer', color: 'error'},
+    {value: '2', label: 'Actif', color: 'success'},
 ]
 
-
+export const OPERATION_OPTIONS = [
+    {value: '1', label: 'Entrée', color: 'success'},
+    {value: '2', label: 'Sortie', color: 'error'},
+]

@@ -4,7 +4,7 @@ import { useMemo, useState, useEffect, forwardRef, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
-import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, gridClasses } from '@mui/x-data-grid';
 import {
   FormControl,
   TextField,
@@ -52,7 +52,7 @@ import {
   RenderCellSupplierCode,
 } from './non-moving-products-table-rows';
 import { NON_MOVING_PRODUCTS_STATUS_OPTIONS } from 'src/_mock/stores/raw-materials/data';
-import BorrowingProductsList from './non-moving-products-products-list';
+import NonMovingProductsHistoryList from './non-moving-products-history-list';
 
 
 // ----------------------------------------------------------------------
@@ -64,7 +64,7 @@ const HIDE_COLUMNS_TOGGLABLE = [];
 // ----------------------------------------------------------------------
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 
-export function NonMovingProductsListView({ isSelectionDialog = false, componentsProps, onSearch }) {
+export function NonMovingProductsListView({ isSelectionDialog = false, componentsProps, onSearch, product_type }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
@@ -73,6 +73,7 @@ export function NonMovingProductsListView({ isSelectionDialog = false, component
   const { nonMovingProducts, nonMovingProductsLoading, nonMovingProductsCount } = useGetNonMovingProducts({
     limit: paginationModel.pageSize,
     offset: 0,
+    product_type: product_type,
   });
   const [rowCount, setRowCount] = useState(nonMovingProductsCount);
   const [tableData, setTableData] = useState(nonMovingProducts);
@@ -88,18 +89,17 @@ export function NonMovingProductsListView({ isSelectionDialog = false, component
   ]);
 
   const [detailOpen, setDetailOpen] = useState(false);
-  const [selectedBorrowingForProducts, setSelectedBorrowingForProducts] = useState(null);
-
- 
+  const [selectedNonMovingProductsHistory, setSelectedNonMovingProductsHistory] =
+    useState(null);
 
   const handleOpenDetail = useCallback((row) => {
-    setSelectedBorrowingForProducts(row);
+    setSelectedNonMovingProductsHistory(row);
     setDetailOpen(true);
   }, []);
 
   const handleCloseDetail = () => {
     setDetailOpen(false);
-    setSelectedBorrowingForProducts(null);
+    setSelectedNonMovingProductsHistory(null);
   };
 
   const columns = useMemo(() => [
@@ -109,7 +109,7 @@ export function NonMovingProductsListView({ isSelectionDialog = false, component
       width: 80,
       renderCell: (params) => <RenderCellId params={params} />,
     },
-    { field: 'code', headerName: t('headers.code'), flex: 1, minWidth: 100, renderCell: (params) => <RenderCellCode params={params} /> },
+    { field: 'code', headerName: t('headers.code'), flex: 1, minWidth: 150, renderCell: (params) => <RenderCellCode params={params} /> },
     { field: 'supplier_code', headerName: t('headers.supplier_code'), flex: 1, minWidth: 100, renderCell: (params) => <RenderCellSupplierCode params={params} /> },
     { field: 'local_code', headerName: t('headers.local_code'), flex: 1, minWidth: 100, renderCell: (params) => <RenderCellLocalCode params={params} /> },
     { field: 'designation', headerName: t('headers.designation'), flex: 1, minWidth: 100, renderCell: (params) => <RenderCellDesignation params={params} /> },
@@ -362,16 +362,16 @@ export function NonMovingProductsListView({ isSelectionDialog = false, component
               panel: { anchorEl: filterButtonEl },
               columnsManagement: { getTogglableColumns },
             }}
-            
+            sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
           />
           
         </Card>
       </DashboardContent>
-      {selectedBorrowingForProducts && (
+      {selectedNonMovingProductsHistory && (
         <Dialog open={detailOpen} onClose={handleCloseDetail} maxWidth="xl" fullWidth>
-          <DialogTitle>{t('dialog.product_list_title')}</DialogTitle>
-          <DialogContent dividers>
-            <BorrowingProductsList id={selectedBorrowingForProducts.id} />
+          {/* <DialogTitle>{t('dialog.product_list_title')}</DialogTitle> */}
+          <DialogContent dividers sx={{ p: 2 }}>
+            <NonMovingProductsHistoryList id={selectedNonMovingProductsHistory.id} />
           </DialogContent>
           <DialogActions>
             <Button variant="contained" onClick={handleCloseDetail}>{t('actions.close')}</Button>
