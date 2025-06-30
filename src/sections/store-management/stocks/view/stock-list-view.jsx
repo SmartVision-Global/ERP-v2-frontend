@@ -52,6 +52,10 @@ import {
   RenderCellConsumption,
   RenderCellSubFamilies,
   RenderCellCreatedDate,
+  RenderCellStatus,
+  RenderCellStore,
+  RenderCellType,
+  RenderCellWorkshop
 } from '../stock-table-row';
 
 // ----------------------------------------------------------------------
@@ -72,8 +76,9 @@ const columns = (t) => [
   { field: 'supplier_code', headerName: t('headers.supplier_code'), flex: 1, minWidth: 120 },
   { field: 'builder_code', headerName: t('headers.builder_code'), flex: 1, minWidth: 120 },
   { field: 'designation', headerName: t('headers.designation'), flex: 1.5, minWidth: 120 },
+  { field: 'store', headerName: t('headers.store'), flex: 1, minWidth: 100 , renderCell: (params) => <RenderCellStore params={params} />},
   { field: 'quantity', headerName: t('headers.quantity'), type: 'number', width: 100, minWidth: 100 },
-  { field: 'status', headerName: t('headers.status'), width: 100, minWidth: 100 },
+  { field: 'status', headerName: t('headers.status'), width: 100, minWidth: 100, renderCell: (params) => <RenderCellStatus params={params} /> },
   {
     field: 'unit_measure',
     headerName: t('headers.unit'),
@@ -81,6 +86,7 @@ const columns = (t) => [
     minWidth: 60,
     renderCell: (params) => <RenderCellUnit params={params} />,
   },
+  { field: 'type', headerName: t('headers.type'), width: 100, minWidth: 100, renderCell: (params) => <RenderCellType params={params} /> },
   {
     field: 'alert',
     headerName: t('headers.alert_quantity'),
@@ -98,33 +104,51 @@ const columns = (t) => [
     headerClassName: 'min-column',
     cellClassName: 'min-column',
   },
+
   {
-    field: 'consumption',
-    headerName: t('headers.daily_consumption'),
-    headerClassName: 'consumption-column',
-    cellClassName: 'consumption-column',
-    renderHeader: () => (
-      <div
-        style={{ whiteSpace: 'normal', lineHeight: 1.2, textAlign: 'center', fontWeight: 'bold' }}
-      >
-        {t('headers.daily_consumption')}
-      </div>
-    ),
+    field: 'max',
+    headerName: t('headers.max'),
     type: 'number',
-    width: 150,
-    minWidth: 120,
-    renderCell: (params) => <RenderCellConsumption params={params} />,
+    width: 70,
+    minWidth: 70,
+    headerClassName: 'max-column',
+    cellClassName: 'max-column',
   },
-  {
-    field: 'unknown2',
-    headerName: t('headers.consumption_day'),
-    type: 'number',
-    width: 150,
-    minWidth: 120,
-    renderCell: () => <RenderCellUnknown2 />,
-    headerClassName: 'unknown2-column',
-    cellClassName: 'unknown2-column',
-  },
+  
+  // {
+  //   field: 'consumption',
+  //   headerName: t('headers.daily_consumption'),
+  //   headerClassName: 'consumption-column',
+  //   cellClassName: 'consumption-column',
+  //   renderHeader: () => (
+  //     <div
+  //       style={{ whiteSpace: 'normal', lineHeight: 1.2, textAlign: 'center', fontWeight: 'bold' }}
+  //     >
+  //       {t('headers.daily_consumption')}
+  //     </div>
+  //   ),
+  //   type: 'number',
+  //   width: 150,
+  //   minWidth: 120,
+  //   renderCell: (params) => <RenderCellConsumption params={params} />,
+  // },
+  // {
+  //   field: 'unknown2',
+  //   headerName: t('headers.consumption_day'),
+  //   type: 'number',
+  //   width: 150,
+  //   minWidth: 120,
+  //   renderCell: () => <RenderCellUnknown2 />,
+  //   headerClassName: 'unknown2-column',
+  //   cellClassName: 'unknown2-column',
+  //   renderHeader: () => (
+  //     <div
+  //       style={{ whiteSpace: 'normal', lineHeight: 1.2, textAlign: 'center', fontWeight: 'bold' }}
+  //     >
+  //       {t('headers.consumption_day')}
+  //     </div>
+  //   ),
+  // },
   {
     field: 'family',
     headerName: t('headers.family'),
@@ -145,6 +169,13 @@ const columns = (t) => [
     flex: 1,
     minWidth: 150,
     renderCell: (params) => <RenderCellCategory params={params} />,
+  },
+  {
+    field: 'workshop',
+    headerName: t('headers.workshop'),
+    flex: 1,
+    minWidth: 150,
+    renderCell: (params) => <RenderCellWorkshop params={params} />,
   },
   {
     field: 'location',
@@ -213,6 +244,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
     { entity: 'categories', url: 'settings/lookups/categories', params: { group: 1 } },
     { entity: 'families', url: 'settings/lookups/families', params: { group: 1 } },
     { entity: 'stores', url: 'settings/lookups/stores' },
+    { entity: 'workshops', url: 'settings/lookups/workshops' },
   ]);
 
   const measurementUnits = dataLookups.measurementUnits || [];
@@ -220,6 +252,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
   const families = dataLookups.families || [];
   // const subFamilies = families.length > 0 ? families.find((f) => f?.id.toString() === selectedParent)?.children || [] : [];
   const stores = dataLookups.stores || [];
+  const workshops = dataLookups.workshops || [];
 
   const columns_ = useMemo(() => columns(t), [t]);
 
@@ -227,11 +260,13 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
     { id: 'store', type: 'select', options: stores, label: t('filters.store'), serverData: true },
     { id: 'code', type: 'input', label: t('filters.code') },
     { id: 'supplier_code', type: 'input', label: t('filters.supplier_code') },
+    { id: 'builder_code', type: 'input', label: t('filters.builder_code') },
     { id: 'designation', type: 'input', label: t('filters.designation') },
     { id: 'status', type: 'select', options: PRODUCT_STATUS_OPTIONS, label: t('filters.status') },
     { id: 'unit_measure_id', type: 'select', options: measurementUnits, label: t('filters.unit'), serverData: true },
     { id: 'category', type: 'select', options: categories, label: t('filters.category'), serverData: true },
     { id: 'family', type: 'select', options: families, label: t('filters.family'), serverData: true },
+    { id: 'workshop_id', type: 'select', options: workshops, label: t('filters.workshop'), serverData: true },
     { id: 'image', type: 'select', options: IMAGE_OPTIONS, label: t('filters.image') },
     {
       id: 'created_date_start',
@@ -611,6 +646,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
               [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' },
               '& .alert-column': { backgroundColor: '#FFEFCE' },
               '& .min-column': { backgroundColor: '#FCD1D1' },
+              '& .max-column': { backgroundColor: '#f4a4a4' },
               '& .consumption-column': { backgroundColor: '#BFDEFF' },
               '& .unknown2-column': { backgroundColor: '#C7F1E5' },
             }}

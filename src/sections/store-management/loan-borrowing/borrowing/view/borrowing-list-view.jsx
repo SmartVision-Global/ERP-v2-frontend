@@ -4,7 +4,7 @@ import { useMemo, useState, useEffect, forwardRef, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
-import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, gridClasses } from '@mui/x-data-grid';
 import {
   FormControl,
   TextField,
@@ -378,7 +378,7 @@ export function BorrowingListView({ isSelectionDialog = false, componentsProps, 
               panel: { anchorEl: filterButtonEl },
               columnsManagement: { getTogglableColumns },
             }}
-            
+            sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
           />
           
         </Card>

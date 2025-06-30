@@ -34,6 +34,7 @@
         "unit": "Unit",
         "alert_quantity": "Alert Quantity",
         "min": "Min",
+        "max": "Max",
         "daily_consumption": "Daily Consumption Forecast",
         "consumption_day": "Consumption Day Forecast",
         "family": "Family",
@@ -66,7 +67,9 @@
         "return_status": "Return Status",
         "third_created": "Third created",
         "loan_borrowing": "Loan Borrowing",
-        "site": "Site"
+        "site": "Site",
+        "workshop": "Workshop"
+        
     },
     "actions": {
         "add_stock": "Add Stock",
@@ -96,6 +99,9 @@
         "store": "Store",
         "code": "Code",
         "supplier_code": "Supplier Code",
+        "builder_code": "Builder Code",
+        "workshop": "Workshop",
+        "last_purchase": "Last Purchase",
         "designation": "Designation",
         "status": "Status",
         "unit": "Unit",

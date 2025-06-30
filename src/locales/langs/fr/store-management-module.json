@@ -34,6 +34,7 @@
             "unit": "Unité",
             "alert_quantity": "Quantité Alerte",
             "min": "Min",
+            "max": "Max",
             "daily_consumption": "Consommation journalière prévisionnelle",
             "consumption_day": "Journée de consommation prévisionnelle",
             "family": "Famille",
@@ -73,7 +74,8 @@
             "returned_qte": "Qté retourné",
             "current_qte": "Qté actuelle (magasin)",
             "loan_borrowing": "Emprunt/Prêt",
-            "site": "Site"
+            "site": "Site",
+            "workshop": "Atelier"
         },
         "actions": {
             "add_stock": "Ajouter Stock",
@@ -103,7 +105,10 @@
             "search_placeholder": "Rechercher...",
             "store": "Magasin",
             "code": "Code",
-            "supplier_code": "Code fournisseur",
+            "supplier_code": "Code Local",
+            "workshop": "Atelier",
+            "last_purchase": "Dernière achat",
+            "builder_code": "Code constructeur",
             "designation": "Désignation",
             "status": "Etat",
             "unit": "Unité",

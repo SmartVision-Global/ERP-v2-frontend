@@ -179,8 +179,8 @@ export function NonMovingProductsListView({ isSelectionDialog = false, component
       { id: 'category_id', type: 'select', options: categories || [], label: t('filters.category'), serverData: true },
       {
         id: 'last_purchase',
-        type: 'date-range',
-        label: t('filters.creation_date'),
+        type: 'date',
+        label: t('filters.last_purchase'),
         operatorMin: 'gte',
         operatorMax: 'lte',
         cols: 3,
@@ -188,7 +188,7 @@ export function NonMovingProductsListView({ isSelectionDialog = false, component
       },
       {
         id: 'last_exit',
-        type: 'date-range',
+        type: 'date',
         label: t('filters.last_exit'),
         operatorMin: 'gte',
         operatorMax: 'lte',
@@ -197,7 +197,7 @@ export function NonMovingProductsListView({ isSelectionDialog = false, component
       },
       {
         id: 'last_consumption',
-        type: 'date-range',
+        type: 'date',
         label: t('filters.last_consumption'),
         operatorMin: 'gte',
         operatorMax: 'lte',
