@@ -445,6 +445,10 @@ export const navData = [
             title: 'Magasins',
             path: paths.dashboard.settings.store.root,
           },
+          {
+            title: 'Circuit de validation',
+            path: paths.dashboard.settings.validationCircuit.root,
+          },
         ],
       },
     ],

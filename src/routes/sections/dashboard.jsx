@@ -309,6 +309,12 @@ const SettingsGeneralSettings = lazy(
 const SettingsStoreList = lazy(() => import('src/pages/dashboard/settings/stores/list'));
 const SettingsStoreNew = lazy(() => import('src/pages/dashboard/settings/stores/new'));
 
+const SettingsValidationCircuitList = lazy(
+  () => import('src/pages/dashboard/settings/validation-circuit/list')
+);
+
+
+
 const SettingsIdentificationGlobalSettings = lazy(
   () => import('src/pages/dashboard/settings/identification-parameters/global-settings/list')
 );
@@ -744,6 +750,13 @@ export const dashboardRoutes = [
             children: [
               { index: true, element: <SettingsStoreList /> },
               { path: 'new', element: <SettingsStoreNew /> },
+            ],
+          },
+          {
+            path: 'validation-circuit',
+            children: [
+              { index: true, element: <SettingsValidationCircuitList /> },
+              // { path: 'new', element: <SettingsValidationCircuitNew /> },
             ],
           },
           {
