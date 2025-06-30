@@ -1,4 +1,4 @@
-import { useState, forwardRef, useCallback } from 'react';
+import { useState, useEffect, forwardRef, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -9,7 +9,11 @@ import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Tooltip, MenuItem, IconButton, ListItemIcon } from '@mui/material';
 
-import { useGetDeductionsCompensationsByContributoryImposable } from 'src/actions/deduction-conpensation';
+import { CONFIG } from 'src/global-config';
+import {
+  getFiltredDeductionsCompensations,
+  useGetDeductionsCompensationsByContributoryImposable,
+} from 'src/actions/deduction-conpensation';
 
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
@@ -20,20 +24,35 @@ import { SearchNotFound } from 'src/components/search-not-found';
 // ----------------------------------------------------------------------
 
 const HIDE_COLUMNS = { category: false };
+const PAGE_SIZE = CONFIG.pagination.pageSize;
+const TYPE = {
+  1: 'Retenues',
+  2: 'Indemnités',
+};
+const CONTRIBUTORY_IMPOSABLE = {
+  1: 'COTISABLE - IMPOSABLE',
+  2: 'NON COTISABLE - IMPOSABLE',
+
+  3: 'NON COTISABLE - NON IMPOSABLE',
+};
 
 export function ProductListDialog({
   open,
   action,
   onClose,
-  selected,
   onSelect,
   title = 'Address book',
   type,
 }) {
-  const { deductionsCompensations, deductionsCompensationsLoading } =
+  const { deductionsCompensations, deductionsCompensationsLoading, deductionsCompensationsCount } =
     useGetDeductionsCompensationsByContributoryImposable(type);
+  const [rowCount, setRowCount] = useState(deductionsCompensationsCount);
+  const [tableData, setTableData] = useState(deductionsCompensations);
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: PAGE_SIZE,
+  });
   const [searchAddress, setSearchAddress] = useState('');
-  // const [selectedRowIds, setSelectedRowIds] = useState([]);
 
   const dataFiltered = applyFilter({ inputData: deductionsCompensations, query: searchAddress });
 
@@ -50,17 +69,9 @@ export function ProductListDialog({
     },
     [onSelect]
   );
-  const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
-  const TYPE = {
-    1: 'Retenues',
-    2: 'Indemnités',
-  };
-  const CONTRIBUTORY_IMPOSABLE = {
-    1: 'COTISABLE - IMPOSABLE',
-    2: 'NON COTISABLE - IMPOSABLE',
 
-    3: 'NON COTISABLE - NON IMPOSABLE',
-  };
+  const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
+
   const columns = [
     // { field: 'category', headerName: 'Category', filterable: false },
     {
@@ -174,17 +185,42 @@ export function ProductListDialog({
     // },
   ];
 
+  useEffect(() => {
+    if (deductionsCompensations.length) {
+      setTableData(deductionsCompensations);
+      setRowCount(deductionsCompensationsCount);
+    }
+  }, [deductionsCompensations, deductionsCompensationsCount]);
+
+  const handlePaginationModelChange = async (newModel) => {
+    try {
+      const newData = {
+        contributory_imposable: type,
+        limit: newModel.pageSize,
+        offset: newModel.page * newModel.pageSize,
+      };
+      const response = await getFiltredDeductionsCompensations(newData);
+      setTableData(response.data?.data?.records);
+      setPaginationModel(newModel);
+    } catch (error) {
+      console.log('error in pagination search request', error);
+    }
+  };
+
   const renderList = () => (
     <Scrollbar sx={{ p: 4, maxHeight: 480 }}>
       <DataGrid
-        disableColumnSorting
         disableRowSelectionOnClick
         disableColumnMenu
-        rows={dataFiltered}
+        rows={tableData}
+        rowCount={rowCount}
         columns={columns}
         loading={deductionsCompensationsLoading}
         getRowHeight={() => 'auto'}
-        pageSizeOptions={[2, 10, 20, { value: -1, label: 'All' }]}
+        paginationModel={paginationModel}
+        paginationMode="server"
+        onPaginationModelChange={(model) => handlePaginationModelChange(model)}
+        pageSizeOptions={[PAGE_SIZE, 10, 20, { value: -1, label: 'All' }]}
         columnVisibilityModel={columnVisibilityModel}
         onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
         slots={{

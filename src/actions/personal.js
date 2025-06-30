@@ -84,13 +84,13 @@ export async function updatePersonal(id, data) {
   mutate(ENDPOINT);
 }
 
-export async function validatePersonal(id, data) {
+export async function validatePersonal(id, data, params) {
   /**
    * Work on server
    */
   // const data = { directionData };
   await axios.post(`${ENDPOINT}/${id}/validate`, data);
-  mutate(ENDPOINT);
+  mutate([ENDPOINT, { params }]);
 }
 
 export async function getPersonalDocument(id, type, params) {

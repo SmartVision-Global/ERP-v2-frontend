@@ -1,4 +1,3 @@
-import { useBoolean } from 'minimal-shared/hooks';
 import { useState, useEffect, forwardRef, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
@@ -16,13 +15,11 @@ import { RouterLink } from 'src/routes/components';
 import { MONTHS } from 'src/_mock';
 import { CONFIG } from 'src/global-config';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetCalculationPayrollMonths } from 'src/actions/payroll-month';
+import { getFiltredPayrolls, useGetCalculationPayrollMonths } from 'src/actions/payroll-month';
 
-import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import {
@@ -71,19 +68,23 @@ const FILTERS_OPTIONS = [
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 
 export function CalculationListView() {
-  const confirmDialog = useBoolean();
-
-  const { payrollMonthsCalculation, payrollMonthsCalculationLoading } =
-    useGetCalculationPayrollMonths({
-      limit: PAGE_SIZE,
-      offset: 0,
-    });
+  const {
+    payrollMonthsCalculation,
+    payrollMonthsCalculationLoading,
+    payrollMonthsCalculationCount,
+  } = useGetCalculationPayrollMonths({
+    limit: PAGE_SIZE,
+    offset: 0,
+  });
 
   const [tableData, setTableData] = useState(payrollMonthsCalculation);
-  const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState({});
-
+  const [rowCount, setRowCount] = useState(payrollMonthsCalculationCount);
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: PAGE_SIZE,
+  });
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
@@ -91,19 +92,60 @@ export function CalculationListView() {
       setTableData(payrollMonthsCalculation);
     }
   }, [payrollMonthsCalculation]);
-  const handleReset = () => {
-    setEditedFilters({});
+
+  useEffect(() => {
+    if (payrollMonthsCalculation.length) {
+      setTableData(payrollMonthsCalculation);
+      setRowCount(payrollMonthsCalculationCount);
+    }
+  }, [payrollMonthsCalculation, payrollMonthsCalculationCount]);
+
+  const handleReset = useCallback(async () => {
+    try {
+      const response = await getFiltredPayrolls({
+        limit: PAGE_SIZE,
+        offset: 0,
+      });
+      setEditedFilters({});
+      setPaginationModel({
+        page: 0,
+        pageSize: PAGE_SIZE,
+      });
+
+      setTableData(response.data?.data?.records);
+      setRowCount(response.data?.data?.total);
+    } catch (error) {
+      console.log('error in reset', error);
+    }
+  }, []);
+
+  const handleFilter = useCallback(
+    async (data) => {
+      try {
+        const response = await getFiltredPayrolls(data);
+        setTableData(response.data?.data?.records);
+        setRowCount(response.data?.data?.total);
+      } catch (error) {
+        console.log('Error in search filters tasks', error);
+      }
+    },
+
+    []
+  );
+  const handlePaginationModelChange = async (newModel) => {
+    try {
+      const newData = {
+        ...editedFilters,
+        limit: newModel.pageSize,
+        offset: newModel.page * newModel.pageSize,
+      };
+      const response = await getFiltredPayrolls(newData);
+      setTableData(response.data?.data?.records);
+      setPaginationModel(newModel);
+    } catch (error) {
+      console.log('error in pagination search request', error);
+    }
   };
-
-  const dataFiltered = tableData;
-
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
-
-    toast.success('Delete success!');
-
-    setTableData(deleteRows);
-  }, [selectedRowIds, tableData]);
 
   const columns = [
     { field: 'category', headerName: 'Category', filterable: false },
@@ -280,119 +322,100 @@ export function CalculationListView() {
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
 
-  const renderConfirmDialog = () => (
-    <ConfirmDialog
-      open={confirmDialog.value}
-      onClose={confirmDialog.onFalse}
-      title="Delete"
-      content={
-        <>
-          Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
-        </>
-      }
-      action={
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => {
-            handleDeleteRows();
-            confirmDialog.onFalse();
-          }}
-        >
-          Delete
-        </Button>
-      }
-    />
-  );
-
   return (
-    <>
-      <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-        <CustomBreadcrumbs
-          heading="Calcul de la paie"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Ressources humaine', href: paths.dashboard.root },
-            { name: 'Calcul de la paie' },
-          ]}
-          action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.rh.payrollManagement.newCalculation}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              Ajouter
-            </Button>
-          }
-          sx={{ mb: { xs: 3, md: 5 } }}
-        />
+    <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+      <CustomBreadcrumbs
+        heading="Calcul de la paie"
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Ressources humaine', href: paths.dashboard.root },
+          { name: 'Calcul de la paie' },
+        ]}
+        action={
+          <Button
+            component={RouterLink}
+            href={paths.dashboard.rh.payrollManagement.newCalculation}
+            variant="contained"
+            startIcon={<Iconify icon="mingcute:add-line" />}
+          >
+            Ajouter
+          </Button>
+        }
+        sx={{ mb: { xs: 3, md: 5 } }}
+      />
 
-        <Card
-          sx={{
-            flexGrow: { md: 1 },
-            display: { md: 'flex' },
-            flexDirection: { md: 'column' },
-          }}
-        >
-          <TableToolbarCustom
+      <Card
+        sx={{
+          flexGrow: { md: 1 },
+          display: { md: 'flex' },
+          flexDirection: { md: 'column' },
+        }}
+      >
+        {/* <TableToolbarCustom
             filterOptions={FILTERS_OPTIONS}
             filters={editedFilters}
             setFilters={setEditedFilters}
             onReset={handleReset}
-          />
-          <Box paddingX={4} paddingY={2} sx={{}}>
-            <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
-              <TextField
-                fullWidth
-                // value={currentFilters.name}
-                // onChange={handleFilterName}
-                placeholder="Search "
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-                size="small"
-              />
-            </FormControl>
-          </Box>
-          <DataGrid
-            // checkboxSelection
-            disableRowSelectionOnClick
-            disableColumnMenu
-            rows={dataFiltered}
-            columns={columns}
-            loading={payrollMonthsCalculationLoading}
-            getRowHeight={() => 'auto'}
-            getRowId={(row) => row.payroll_month_id}
-            pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
-            initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-            onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
-            columnVisibilityModel={columnVisibilityModel}
-            onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
-            // disableColumnFilter
-            slots={{
-              // toolbar: CustomToolbarCallback,
-              noRowsOverlay: () => <EmptyContent />,
-              noResultsOverlay: () => <EmptyContent title="No results found" />,
-            }}
-            slotProps={{
-              toolbar: { setFilterButtonEl },
-              panel: { anchorEl: filterButtonEl },
-              columnsManagement: { getTogglableColumns },
-            }}
-            sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
-          />
-        </Card>
-      </DashboardContent>
-
-      {renderConfirmDialog()}
-    </>
+          /> */}
+        <TableToolbarCustom
+          filterOptions={FILTERS_OPTIONS}
+          filters={editedFilters}
+          setFilters={setEditedFilters}
+          onReset={handleReset}
+          handleFilter={handleFilter}
+          setPaginationModel={setPaginationModel}
+          paginationModel={paginationModel}
+          // isRefresh
+        />
+        <Box paddingX={4} paddingY={2} sx={{}}>
+          <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
+            <TextField
+              fullWidth
+              // value={currentFilters.name}
+              // onChange={handleFilterName}
+              placeholder="Search "
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+              size="small"
+            />
+          </FormControl>
+        </Box>
+        <DataGrid
+          disableRowSelectionOnClick
+          disableColumnMenu
+          disableColumnSorting
+          getRowId={(row) => row.payroll_month_id}
+          rows={tableData}
+          rowCount={rowCount}
+          columns={columns}
+          loading={payrollMonthsCalculationLoading}
+          getRowHeight={() => 'auto'}
+          paginationModel={paginationModel}
+          paginationMode="server"
+          onPaginationModelChange={(model) => handlePaginationModelChange(model)}
+          pageSizeOptions={[2, 10, 20, { value: -1, label: 'All' }]}
+          columnVisibilityModel={columnVisibilityModel}
+          onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
+          slots={{
+            noRowsOverlay: () => <EmptyContent />,
+            noResultsOverlay: () => <EmptyContent title="No results found" />,
+          }}
+          slotProps={{
+            toolbar: { setFilterButtonEl },
+            panel: { anchorEl: filterButtonEl },
+            columnsManagement: { getTogglableColumns },
+          }}
+          sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
+        />
+      </Card>
+    </DashboardContent>
   );
 }
 

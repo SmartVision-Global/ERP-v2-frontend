@@ -288,7 +288,7 @@ export function WorkProgramsListView() {
           heading="List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            // { name: 'Ressources humaine', href: paths.dashboard.root },
+            { name: 'Ressources humaine', href: paths.dashboard.root },
             { name: 'Programmes de travail' },
           ]}
           action={

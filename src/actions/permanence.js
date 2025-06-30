@@ -80,7 +80,7 @@ export async function updatePermanency(id, data) {
    */
   // const data = { directionData };
   await axios.patch(`${ENDPOINT}/${id}`, data);
-  //   mutate(endpoints.site);
+  mutate(ENDPOINT);
 }
 
 export async function validatePermanency(id, data, params) {

@@ -251,7 +251,14 @@ export function ActifListView() {
           color="info"
           onClick={async () => {
             // handleDeleteRows();
-            await validatePersonal(selectedRow, { message: 'validation' });
+            await validatePersonal(
+              selectedRow,
+              { message: 'validation' },
+              {
+                limit: paginationModel.pageSize,
+                offset: paginationModel.page * paginationModel.pageSize,
+              }
+            );
             confirmDialog.onFalse();
           }}
         >

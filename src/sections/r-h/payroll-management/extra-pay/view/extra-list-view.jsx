@@ -15,25 +15,21 @@ import { RouterLink } from 'src/routes/components';
 import { MONTHS } from 'src/_mock';
 import { CONFIG } from 'src/global-config';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { useGetPayrollMonths, getFiltredPayrollMonths } from 'src/actions/payroll-month';
+import { useGetExtraPayrollMonths, getFiltredExtraPayrollMonths } from 'src/actions/payroll-month';
 
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
+import { RenderCellHoliday, RenderCellDaysWorked } from '../extra-details-table-row';
 import {
-  RenderCellId,
-  RenderCellPP,
-  RenderCellPRC,
-  RenderCellPRI,
   RenderCellYear,
   RenderCellMonth,
-  RenderCellStatus,
   RenderCellCompany,
-  RenderCellMaxPoint,
-  RenderCellMinPoint,
-  RenderCellCreatedAt,
+  RenderCellAbsences,
+  RenderCellExtraPayNet,
+  RenderCellExtraSalary,
 } from '../extra-table-row';
 
 // ----------------------------------------------------------------------
@@ -101,27 +97,28 @@ export function ExtraListView() {
     page: 0,
     pageSize: PAGE_SIZE,
   });
-  const { payrollMonths, payrollMonthsLoading, payrollMonthsCount } = useGetPayrollMonths({
-    limit: PAGE_SIZE,
-    offset: 0,
-  });
-  const [rowCount, setRowCount] = useState(payrollMonthsCount);
+  const { extraPayrollMonths, extraPayrollMonthsLoading, extraPayrollMonthsCount } =
+    useGetExtraPayrollMonths({
+      limit: PAGE_SIZE,
+      offset: 0,
+    });
+  const [rowCount, setRowCount] = useState(extraPayrollMonthsCount);
 
-  const [tableData, setTableData] = useState(payrollMonths);
+  const [tableData, setTableData] = useState(extraPayrollMonths);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   useEffect(() => {
-    if (payrollMonths.length) {
-      setTableData(payrollMonths);
-      setRowCount(payrollMonthsCount);
+    if (extraPayrollMonths.length) {
+      setTableData(extraPayrollMonths);
+      setRowCount(extraPayrollMonthsCount);
     }
-  }, [payrollMonths, payrollMonthsCount]);
+  }, [extraPayrollMonths, extraPayrollMonthsCount]);
   const handleReset = useCallback(async () => {
     try {
-      const response = await getFiltredPayrollMonths({
+      const response = await getFiltredExtraPayrollMonths({
         limit: PAGE_SIZE,
         offset: 0,
       });
@@ -141,7 +138,7 @@ export function ExtraListView() {
   const handleFilter = useCallback(
     async (data) => {
       try {
-        const response = await getFiltredPayrollMonths(data);
+        const response = await getFiltredExtraPayrollMonths(data);
         setTableData(response.data?.data?.records);
         setRowCount(response.data?.data?.total);
       } catch (error) {
@@ -153,17 +150,12 @@ export function ExtraListView() {
   );
   const handlePaginationModelChange = async (newModel) => {
     try {
-      // const newEditedInput = editedFilters.filter((item) => item.value !== '');
-      // const result = newEditedInput.reduce((acc, item) => {
-      //   acc[item.field] = item.value;
-      //   return acc;
-      // }, {});
       const newData = {
         ...editedFilters,
         limit: newModel.pageSize,
         offset: newModel.page * newModel.pageSize,
       };
-      const response = await getFiltredPayrollMonths(newData);
+      const response = await getFiltredExtraPayrollMonths(newData);
       setTableData(response.data?.data?.records);
       setPaginationModel(newModel);
     } catch (error) {
@@ -173,14 +165,7 @@ export function ExtraListView() {
 
   const columns = [
     { field: 'category', headerName: 'Category', filterable: false },
-    {
-      field: 'id',
-      headerName: 'ID',
-      flex: 1,
-      minWidth: 70,
-      hideable: false,
-      renderCell: (params) => <RenderCellId params={params} href={paths.dashboard.root} />,
-    },
+
     {
       field: 'company',
       headerName: 'Societé',
@@ -205,64 +190,52 @@ export function ExtraListView() {
 
       renderCell: (params) => <RenderCellYear params={params} />,
     },
+    {
+      field: 'abs',
+      headerName: 'Absences',
+      //   flex: 0.5,
+      flex: 1,
+      minWidth: 100,
+      hideable: false,
+      renderCell: (params) => <RenderCellAbsences params={params} href={paths.dashboard.root} />,
+    },
 
     {
-      field: 'pp',
-      headerName: 'Prime de présence',
+      field: 'total_days_worked',
+      headerName: 'Jours travaillées',
+      //   flex: 0.5,
       flex: 1,
       minWidth: 100,
       hideable: false,
-      renderCell: (params) => <RenderCellPP params={params} href={paths.dashboard.root} />,
+      renderCell: (params) => <RenderCellDaysWorked params={params} href={paths.dashboard.root} />,
     },
     {
-      field: 'prc',
-      headerName: 'PRC',
+      field: 'total_holiday',
+      headerName: 'Congées',
+      //   flex: 0.5,
       flex: 1,
       minWidth: 100,
       hideable: false,
-      renderCell: (params) => <RenderCellPRC params={params} href={paths.dashboard.root} />,
+      renderCell: (params) => <RenderCellHoliday params={params} href={paths.dashboard.root} />,
     },
     {
-      field: 'pri',
-      headerName: 'PRI',
+      field: 'total_extra_salary',
+      headerName: 'Salaires de base',
+      //   flex: 0.5,
       flex: 1,
       minWidth: 100,
       hideable: false,
-      renderCell: (params) => <RenderCellPRI params={params} href={paths.dashboard.root} />,
+      renderCell: (params) => <RenderCellExtraSalary params={params} href={paths.dashboard.root} />,
     },
     {
-      field: 'max_point',
-      headerName: 'Point Maximum',
+      field: 'total_extra_pay_net',
+      headerName: 'Net a payer',
+      //   flex: 0.5,
       flex: 1,
       minWidth: 100,
       hideable: false,
-      renderCell: (params) => <RenderCellMaxPoint params={params} href={paths.dashboard.root} />,
+      renderCell: (params) => <RenderCellExtraPayNet params={params} href={paths.dashboard.root} />,
     },
-    {
-      field: 'min_point',
-      headerName: 'Point Plus Bas',
-      flex: 1,
-      minWidth: 100,
-      hideable: false,
-      renderCell: (params) => <RenderCellMinPoint params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'status',
-      headerName: 'Etat',
-      flex: 1,
-      minWidth: 100,
-      hideable: false,
-      renderCell: (params) => <RenderCellStatus params={params} href={paths.dashboard.root} />,
-    },
-    {
-      field: 'created_at',
-      headerName: 'Date de Création',
-      flex: 1,
-      minWidth: 160,
-      hideable: false,
-      renderCell: (params) => <RenderCellCreatedAt params={params} href={paths.dashboard.root} />,
-    },
-
     {
       type: 'actions',
       field: 'actions',
@@ -279,7 +252,9 @@ export function ExtraListView() {
           icon={<Iconify icon="ci:user-01" />}
           label="Details"
           // href={paths.dashboard.product.details(params.row.id)}
-          href={paths.dashboard.rh.payrollManagement.extraDetails(params.row.id)}
+          href={paths.dashboard.rh.payrollManagement.extraDetails(
+            params.row.extra_payroll_month_id
+          )}
         />,
         // <GridActionsLinkItem
         //   showInMenu
@@ -356,12 +331,14 @@ export function ExtraListView() {
           </FormControl>
         </Box>
         <DataGrid
+          disableColumnSorting
           disableRowSelectionOnClick
           disableColumnMenu
+          getRowId={(row) => `${row.enterprise}_${row.month}`}
           rows={tableData}
           rowCount={rowCount}
           columns={columns}
-          loading={payrollMonthsLoading}
+          loading={extraPayrollMonthsLoading}
           getRowHeight={() => 'auto'}
           paginationModel={paginationModel}
           paginationMode="server"

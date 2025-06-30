@@ -6,7 +6,7 @@ import { ZoneCreateView } from 'src/sections/r-h/rh-settings/zones/view/zone-cre
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Create a new zone | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `Ajouter une zone | Dashboard - ${CONFIG.appName}` };
 
 export default function Page() {
   return (

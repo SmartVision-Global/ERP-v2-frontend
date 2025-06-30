@@ -16,10 +16,11 @@ import { showError } from 'src/utils/toast-error';
 import { CONFIG } from 'src/global-config';
 import { DashboardContent } from 'src/layouts/dashboard';
 import {
-  deletePersonalPayroll,
-  getFiltredAttachedPersonals,
-  useGetPayrollMonthsPersonalAttached,
-} from 'src/actions/payroll-month-personal';
+  cancelExtraPayroll,
+  validateExtraPayroll,
+  useGetExtraPayrollMonth,
+  getFiltredExtraPayrollMonth,
+} from 'src/actions/payroll-month';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
@@ -32,16 +33,13 @@ import { MONTHS } from '../extra-table-row';
 import {
   RenderCellId,
   RenderCellUser,
-  RenderCellDelay,
   RenderCellStatus,
   RenderCellAbsence,
   RenderCellHoliday,
   RenderCellDaysWorked,
-  RenderCellOvertime50,
-  RenderCellOvertime75,
-  RenderCellOvertime100,
-  RenderCellDaysPerMonth,
-  RenderCellHoursPerMonth,
+  RenderCellEnterprise,
+  RenderCellExtraSalary,
+  RenderCellExtraPayNet,
 } from '../extra-details-table-row';
 
 // ----------------------------------------------------------------------
@@ -72,44 +70,73 @@ export function ExtraDetailsView({ month }) {
     page: 0,
     pageSize: PAGE_SIZE,
   });
-  const {
-    payrollMonthsAttachedPersonals,
-    payrollMonthsAttachedPersonalsLoading,
-    payrollMonthsAttachedPersonalsCount,
-  } = useGetPayrollMonthsPersonalAttached(month.id, {
-    limit: PAGE_SIZE,
-    offset: 0,
-  });
+  const { extraPayrollMonth, extraPayrollMonthLoading, extraPayrollMonthCount } =
+    useGetExtraPayrollMonth(month, {
+      limit: PAGE_SIZE,
+      offset: 0,
+    });
 
-  const [rowCount, setRowCount] = useState(payrollMonthsAttachedPersonalsCount);
-  const [tableData, setTableData] = useState(payrollMonthsAttachedPersonals);
+  const [rowCount, setRowCount] = useState(extraPayrollMonthCount);
+  const [tableData, setTableData] = useState(extraPayrollMonth);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState({});
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
-  const handleDeleteRow = useCallback(
-    async (id) => {
+  const handleValidateRow = useCallback(
+    async (row) => {
       try {
-        await deletePersonalPayroll(id, month.id, { limit: PAGE_SIZE, offset: 0 });
-        toast.success('Delete success!');
+        await validateExtraPayroll(
+          {
+            absence: row.absence,
+            days_worked: row.days_worked,
+            enterprise: row.enterprise,
+            extra_pay_net: row.extra_pay_net,
+            extra_payroll_month_id: row.extra_payroll_month_id,
+            extra_salary: row.extra_salary,
+            holiday: row.holiday,
+            month: row.month,
+            personal_id: row.personal_id,
+            year: row.year,
+          },
+          {
+            limit: paginationModel.pageSize,
+            offset: paginationModel.page * paginationModel.pageSize,
+          }
+        );
+        toast.success('Paie validé!');
       } catch (error) {
         showError(error);
       }
     },
-    [month?.id]
+    [paginationModel.pageSize, paginationModel.page]
+  );
+
+  const handleCancelRow = useCallback(
+    async (id) => {
+      try {
+        await cancelExtraPayroll(month, id, {
+          limit: paginationModel.pageSize,
+          offset: paginationModel.page * paginationModel.pageSize,
+        });
+        toast.success('Paie annulée!');
+      } catch (error) {
+        showError(error);
+      }
+    },
+    [month, paginationModel.pageSize, paginationModel.page]
   );
 
   useEffect(() => {
-    if (payrollMonthsAttachedPersonals) {
-      setTableData(payrollMonthsAttachedPersonals);
-      setRowCount(payrollMonthsAttachedPersonalsCount);
+    if (extraPayrollMonth) {
+      setTableData(extraPayrollMonth);
+      setRowCount(extraPayrollMonthCount);
     }
-  }, [payrollMonthsAttachedPersonals, payrollMonthsAttachedPersonalsCount]);
+  }, [extraPayrollMonth, extraPayrollMonthCount]);
 
   const handleReset = useCallback(async () => {
     try {
-      const response = await getFiltredAttachedPersonals(month.id, {
+      const response = await getFiltredExtraPayrollMonth(month, {
         limit: PAGE_SIZE,
         offset: 0,
       });
@@ -124,12 +151,12 @@ export function ExtraDetailsView({ month }) {
     } catch (error) {
       console.log('error in reset', error);
     }
-  }, [month?.id]);
+  }, [month]);
 
   const handleFilter = useCallback(
     async (data) => {
       try {
-        const response = await getFiltredAttachedPersonals(month.id, data);
+        const response = await getFiltredExtraPayrollMonth(month, data);
         setTableData(response.data?.data?.records);
         setRowCount(response.data?.data?.total);
       } catch (error) {
@@ -137,7 +164,7 @@ export function ExtraDetailsView({ month }) {
       }
     },
 
-    [month?.id]
+    [month]
   );
   const handlePaginationModelChange = async (newModel) => {
     try {
@@ -146,7 +173,7 @@ export function ExtraDetailsView({ month }) {
         limit: newModel.pageSize,
         offset: newModel.page * newModel.pageSize,
       };
-      const response = await getFiltredAttachedPersonals(month?.id, newData);
+      const response = await getFiltredExtraPayrollMonth(month?.id, newData);
       setTableData(response.data?.data?.records);
       setPaginationModel(newModel);
     } catch (error) {
@@ -173,21 +200,14 @@ export function ExtraDetailsView({ month }) {
       renderCell: (params) => <RenderCellUser params={params} />,
     },
     {
-      field: 'days_per_month',
-      headerName: 'Jours par mois',
+      field: 'enterprise',
+      headerName: 'Societé',
       flex: 1,
-      minWidth: 160,
+      minWidth: 260,
       hideable: false,
-      renderCell: (params) => <RenderCellDaysPerMonth params={params} />,
+      renderCell: (params) => <RenderCellEnterprise params={params} />,
     },
-    {
-      field: 'hours_per_month',
-      headerName: 'Heures par mois',
-      flex: 1,
-      minWidth: 160,
-      hideable: false,
-      renderCell: (params) => <RenderCellHoursPerMonth params={params} />,
-    },
+
     {
       field: 'days_worked',
       headerName: 'Jours travaillés',
@@ -204,14 +224,7 @@ export function ExtraDetailsView({ month }) {
       hideable: false,
       renderCell: (params) => <RenderCellAbsence params={params} />,
     },
-    {
-      field: 'delay',
-      headerName: 'Retard',
-      flex: 1,
-      minWidth: 160,
-      hideable: false,
-      renderCell: (params) => <RenderCellDelay params={params} />,
-    },
+
     {
       field: 'holiday',
       headerName: 'Congé',
@@ -221,29 +234,22 @@ export function ExtraDetailsView({ month }) {
       renderCell: (params) => <RenderCellHoliday params={params} />,
     },
     {
-      field: 'recuperated_hour_50',
-      headerName: 'Heure 50%',
+      field: 'extra_salary',
+      headerName: 'Salaire',
       flex: 1,
       minWidth: 160,
       hideable: false,
-      renderCell: (params) => <RenderCellOvertime50 params={params} />,
+      renderCell: (params) => <RenderCellExtraSalary params={params} />,
     },
     {
-      field: 'recuperated_hour_75',
-      headerName: 'Heure 75%',
+      field: 'extra_pay_net',
+      headerName: 'Net a payer',
       flex: 1,
       minWidth: 160,
       hideable: false,
-      renderCell: (params) => <RenderCellOvertime75 params={params} />,
+      renderCell: (params) => <RenderCellExtraPayNet params={params} />,
     },
-    {
-      field: 'recuperated_hour_100',
-      headerName: 'Heure 100%',
-      flex: 1,
-      minWidth: 160,
-      hideable: false,
-      renderCell: (params) => <RenderCellOvertime100 params={params} />,
-    },
+
     {
       field: 'status',
       headerName: 'Status',
@@ -258,15 +264,28 @@ export function ExtraDetailsView({ month }) {
       flex: 1,
       minWidth: 160,
       hideable: false,
-      renderCell: (params) => (
-        <Stack direction="row" spacing={1}>
-          <Tooltip title="Valider">
-            <IconButton onClick={() => handleDeleteRow(params.row.id)}>
-              <Iconify icon="eva:checkmark-fill" sx={{ color: 'success.main' }} />
-            </IconButton>
-          </Tooltip>
-        </Stack>
-      ),
+      renderCell: (params) => {
+        if (params.row.id) {
+          return (
+            <Stack direction="row" spacing={1}>
+              <Tooltip title="Annuler la validation">
+                <IconButton onClick={() => handleCancelRow(params.row.id)}>
+                  <Iconify icon="iwwa:delete" sx={{ color: 'error.main' }} />
+                </IconButton>
+              </Tooltip>
+            </Stack>
+          );
+        }
+        return (
+          <Stack direction="row" spacing={1}>
+            <Tooltip title="Valider">
+              <IconButton onClick={() => handleValidateRow(params.row)}>
+                <Iconify icon="eva:checkmark-fill" sx={{ color: 'success.main' }} />
+              </IconButton>
+            </Tooltip>
+          </Stack>
+        );
+      },
     },
   ];
 
@@ -280,9 +299,10 @@ export function ExtraDetailsView({ month }) {
       <CustomBreadcrumbs
         heading="Extra paie"
         links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
           { name: 'Ressources humaine', href: paths.dashboard.root },
           { name: 'Mois extra paie', href: paths.dashboard.rh.payrollManagement.extra },
-          { name: MONTHS[month?.month] },
+          { name: MONTHS[month] },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
@@ -328,10 +348,12 @@ export function ExtraDetailsView({ month }) {
         <DataGrid
           disableRowSelectionOnClick
           disableColumnMenu
+          disableColumnSorting
           rows={tableData}
+          getRowId={(row) => `${row.enterprise}_${row.month}`}
           rowCount={rowCount}
           columns={columns}
-          loading={payrollMonthsAttachedPersonalsLoading}
+          loading={extraPayrollMonthLoading}
           getRowHeight={() => 'auto'}
           paginationModel={paginationModel}
           paginationMode="server"
