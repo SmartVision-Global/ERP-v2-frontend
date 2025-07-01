@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
-import { ValidationCircuitListView } from 'src/sections/settings/validation-circuit/view';
+// import { ValidationCircuitListView } from 'src/sections/settings/validation-circuit/view';
 
 // ----------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ export default function Page() {
         <title> {metadata.title}</title>
       </Helmet>
 
-      <ValidationCircuitListView />
+      {/* <ValidationCircuitListView /> */}
     </>
   );
 }
