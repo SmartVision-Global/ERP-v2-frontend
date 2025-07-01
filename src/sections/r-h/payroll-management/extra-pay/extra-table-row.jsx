@@ -41,6 +41,9 @@ export function RenderCellAbsences({ params }) {
 export function RenderCellDaysWorked({ params }) {
   return <Typography variant="body2">{params.row?.total_days_worked}</Typography>;
 }
+export function RenderCellHoliday({ params, href }) {
+  return <Typography>{params.row.total_holiday}</Typography>;
+}
 
 export function RenderCellExtraPayNet({ params }) {
   return <Typography variant="body2">{params.row?.total_extra_pay_net}</Typography>;
