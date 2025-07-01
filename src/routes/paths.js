@@ -43,6 +43,8 @@ export const paths = {
   // DASHBOARD
   dashboard: {
     root: ROOTS.DASHBOARD,
+    // two: `${ROOTS.DASHBOARD}/two`,
+    // three: `${ROOTS.DASHBOARD}/three`,
     rh: {
       personal: {
         root: `${ROOTS.DASHBOARD}/humain-ressource/personal`,
@@ -212,6 +214,16 @@ export const paths = {
         newDac: `${ROOTS.DASHBOARD}/humain-ressource/para-tax-declaration/dac/new`,
       },
     },
+    purchaseSupply: {
+      purchaseOrder: {
+        root: `${ROOTS.DASHBOARD}/purchase-supply/purchase-order`,
+        newPurchaseOrder: `${ROOTS.DASHBOARD}/purchase-supply/purchase-order/new`,
+        editPurchaseOrder: (id) => `${ROOTS.DASHBOARD}/purchase-supply/purchase-order/${id}/edit`,
+      },
+      processingDa: {
+        root: `${ROOTS.DASHBOARD}/purchase-supply/processing-da`,
+      },
+    },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
       new: `${ROOTS.DASHBOARD}/user/new`,
@@ -223,6 +235,71 @@ export const paths = {
       demo: {
         edit: `${ROOTS.DASHBOARD}/user/${1}/edit`,
       },
+    },
+    storeManagement: {
+      root: `${ROOTS.DASHBOARD}/store-management`,
+      rawMaterial: {
+        root: `${ROOTS.DASHBOARD}/store-management/raw-material`,
+        stocks: `${ROOTS.DASHBOARD}/store-management/raw-material`,
+        newStock: `${ROOTS.DASHBOARD}/store-management/raw-material/new`,
+        editStock: (id) => `${ROOTS.DASHBOARD}/store-management/raw-material/${id}/edit`,
+
+        operations: `${ROOTS.DASHBOARD}/store-management/raw-material/operations`,
+
+        storageArea: `${ROOTS.DASHBOARD}/store-management/raw-material/storage-area`,
+        newStorageArea: `${ROOTS.DASHBOARD}/store-management/raw-material/storage-area/new`,
+        initialStorage: `${ROOTS.DASHBOARD}/store-management/raw-material/initial-storage`,
+        newInitialStorage: `${ROOTS.DASHBOARD}/store-management/raw-material/initial-storage/new`,
+        exitSlips: `${ROOTS.DASHBOARD}/store-management/raw-material/exit-slip`,
+        newExitSlip: `${ROOTS.DASHBOARD}/store-management/raw-material/exit-slip/new`,
+        editExitSlip: (id) =>
+          `${ROOTS.DASHBOARD}/store-management/raw-material/exit-slips/${id}/edit`,
+        integrations: `${ROOTS.DASHBOARD}/store-management/raw-material/integrations`,
+        newIntegration: `${ROOTS.DASHBOARD}/store-management/raw-material/integrations/new`,
+        editIntegration: (id) =>
+          `${ROOTS.DASHBOARD}/store-management/raw-material/integrations/${id}/edit`,
+        transferSlips: `${ROOTS.DASHBOARD}/store-management/raw-material/transfer-slip`,
+        newTransferSlip: `${ROOTS.DASHBOARD}/store-management/raw-material/transfer-slip/new`,
+        editTransferSlip: (id) =>
+          `${ROOTS.DASHBOARD}/store-management/raw-material/transfer-slip/${id}/edit`,
+      },
+    },
+    store: {
+      // rawMaterials: {
+      root: `${ROOTS.DASHBOARD}/store/raw-materials`,
+      //   // stocks: `${ROOTS.DASHBOARD}/store/raw-materials/stocks`,
+      //   newStock: `${ROOTS.DASHBOARD}/store/raw-materials/stocks/new`,
+      //   editStock: (id) => `${ROOTS.DASHBOARD}/store/raw-materials/stocks/${id}/edit`,
+      //   storageArea: `${ROOTS.DASHBOARD}/store/raw-materials/storage-area`,
+      //   newStorageArea: `${ROOTS.DASHBOARD}/store/raw-materials/storage-area/new`,
+      //   initialStorage: `${ROOTS.DASHBOARD}/store/raw-materials/initial-storage`,
+      //   newInitialStorage: `${ROOTS.DASHBOARD}/store/raw-materials/initial-storage/new`,
+      //   exitSlip: `${ROOTS.DASHBOARD}/store/raw-materials/exit-slip`,
+      //   newExitSlip: `${ROOTS.DASHBOARD}/store/raw-materials/exit-slip/new`,
+      //   editExitSlip: (id) => `${ROOTS.DASHBOARD}/store/raw-materials/exit-slip/${id}/edit`,
+      //   integrations: `${ROOTS.DASHBOARD}/store/raw-materials/integrations`,
+      //   newIntegration: `${ROOTS.DASHBOARD}/store/raw-materials/integrations/new`,
+      //   editIntegration: (id) => `${ROOTS.DASHBOARD}/store/raw-materials/integrations/${id}/edit`,
+      //   transferSlip: `${ROOTS.DASHBOARD}/store/raw-materials/transfer-slip`,
+      //   newTransferSlip: `${ROOTS.DASHBOARD}/store/raw-materials/transfer-slip/new`,
+      //   editTransferSlip: (id) => `${ROOTS.DASHBOARD}/store/raw-materials/transfer-slip/${id}/edit`,
+      // },
+      spareParts: {
+        root: `${ROOTS.DASHBOARD}/store/spare-parts`,
+        list: `${ROOTS.DASHBOARD}/store/spare-parts/list`,
+        settings: `${ROOTS.DASHBOARD}/store/spare-parts/settings`,
+      },
+      tools: `${ROOTS.DASHBOARD}/store/tools`,
+      supplies: `${ROOTS.DASHBOARD}/store/supplies`,
+    },
+    expressionOfNeeds: {
+      root: `${ROOTS.DASHBOARD}/expression-of-needs`,
+      beb: {
+        root: `${ROOTS.DASHBOARD}/expression-of-needs/beb`,
+        new: `${ROOTS.DASHBOARD}/expression-of-needs/beb/new`,
+        edit: (id) => `${ROOTS.DASHBOARD}/expression-of-needs/beb/${id}/edit`,
+      },
+      bmb: {},
     },
 
     settings: {
@@ -270,6 +347,11 @@ export const paths = {
         tools: `${ROOTS.DASHBOARD}/settings/identification/tools`,
         supplies: `${ROOTS.DASHBOARD}/settings/identification/supplies`,
       },
+    },
+    group: {
+      root: `${ROOTS.DASHBOARD}/group`,
+      five: `${ROOTS.DASHBOARD}/group/five`,
+      six: `${ROOTS.DASHBOARD}/group/six`,
     },
   },
 };
