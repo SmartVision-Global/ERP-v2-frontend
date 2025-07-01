@@ -22,12 +22,13 @@ import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { RenderCellHoliday, RenderCellDaysWorked } from '../extra-details-table-row';
 import {
   RenderCellYear,
   RenderCellMonth,
   RenderCellCompany,
+  RenderCellHoliday,
   RenderCellAbsences,
+  RenderCellDaysWorked,
   RenderCellExtraPayNet,
   RenderCellExtraSalary,
 } from '../extra-table-row';

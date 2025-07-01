@@ -37,7 +37,7 @@ export function RenderCellDaysPerMonth({ params, href }) {
 export function RenderCellDaysWorked({ params, href }) {
   return (
     <Box>
-      <Typography>{params.row.total_days_worked}</Typography>
+      <Typography>{params.row.days_worked}</Typography>
     </Box>
   );
 }
@@ -53,7 +53,7 @@ export function RenderCellAbsence({ params, href }) {
 export function RenderCellHoliday({ params, href }) {
   return (
     <Box>
-      <Typography>{params.row.total_holiday}</Typography>
+      <Typography>{params.row.holiday}</Typography>
     </Box>
   );
 }
