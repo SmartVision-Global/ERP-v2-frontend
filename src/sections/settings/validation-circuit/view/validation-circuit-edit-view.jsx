@@ -1,13 +1,15 @@
 import { useState } from 'react';
+
 import { Button } from '@mui/material';
-import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 
 import { paths } from 'src/routes/paths';
 
-import { Iconify } from 'src/components/iconify';
 import { DashboardContent } from 'src/layouts/dashboard';
+
+import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
+
 import { StepCard } from '../step-card';
 import { ValidationRequestDialog } from '../validation-request-dialog';
 
@@ -15,6 +17,8 @@ import { ValidationRequestDialog } from '../validation-request-dialog';
 
 export function ValidationCircuitEditView({ validationCircuit }) {
   const [openForm, setOpenForm] = useState(false);
+
+  console.log('Validation circuit edit view', validationCircuit);
 
   return (
     <DashboardContent>

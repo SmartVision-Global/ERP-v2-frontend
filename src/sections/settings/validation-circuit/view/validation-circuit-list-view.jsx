@@ -1,36 +1,38 @@
 import { paths } from 'src/routes/paths';
 
+import { useTranslate } from 'src/locales';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useGetValidationCircuit } from 'src/actions/settings/validation-circuit';
 
 import { EmptyContent } from 'src/components/empty-content';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { ParamsList } from '../params-list';
+import { ValidationCircuitList } from '../validation-circuit-list';
+
 
 // ----------------------------------------------------------------------
 
 export function ValidationCircuitListView() {
-  const { validationCircuit } = useGetValidationCircuit('transfer_slip');
-  console.log('validation circuits params list view global settings', validationCircuit);
+  const { validationCircuit, validationCircuitsEmpty } = useGetValidationCircuit('transfer_slip');
+  const { t } = useTranslate('settings-module');
 
-  const notFound = !validationCircuit;
+  const notFound = validationCircuitsEmpty;
 
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="List"
+        heading={t('views.list')}
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: "Circuits de validation", href: paths.dashboard.settings.validationCircuit.root },
-          { name: 'List' },
+          { name: t('views.dashboard'), href: paths.dashboard.root },
+          { name: t('views.validation_circuit'), href: paths.dashboard.settings.validationCircuit.root },
+          { name: t('views.list') },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
       {notFound && <EmptyContent filled sx={{ py: 10 }} />}
-
-      <ParamsList data={validationCircuit} />
+      {!notFound && <ValidationCircuitList data={validationCircuit} />}
+      
     </DashboardContent>
   );
 }

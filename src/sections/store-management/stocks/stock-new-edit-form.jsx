@@ -245,7 +245,7 @@ export function StockNewEditForm({ currentStock, product_type }) {
       router.push(pathConfig.root);
     } catch (error) {
       console.error(error);
-      if (error && error.errors) {
+      if (error && error?.errors) {
         Object.entries(error.errors).forEach(([key, value]) => {
           setError(key, { type: 'manual', message: value[0] });
         });

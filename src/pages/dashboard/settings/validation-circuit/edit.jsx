@@ -16,7 +16,7 @@ export default function Page() {
 
   const { validationCircuit } = useGetValidationCircuit(target_action);
 
-  console.log('validationCircuit', validationCircuit);
+  console.log('Validation circuit edit page', validationCircuit);
 
   return (
     <>

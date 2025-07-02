@@ -1,23 +1,20 @@
 import Box from '@mui/material/Box';
 
-import { createEntity, updateEntity } from 'src/actions/settings/identification/global';
-
-import { ParamItem } from './param-item';
+import { ValidationCircuitItem } from './validation-circuit-item';
 
 // ----------------------------------------------------------------------
 
 // Configuration for all parameter types
-const PARAMETERS_CONFIG = [
+const VALIDATION_CIRCUIT_CONFIG = [
   {
     key: 'transfer_slip',
     title: 'Transfer Slip',
     uuid: '1',
-    canAdd: true,
   }
   
 ];
 
-export function ParamsList({ data }) {
+export function ValidationCircuitList({ data }) {
   return (
     <Box
       sx={{
@@ -26,16 +23,13 @@ export function ParamsList({ data }) {
         gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
       }}
     >
-      {PARAMETERS_CONFIG.map((config) => (
-        <ParamItem
+      {VALIDATION_CIRCUIT_CONFIG.map((config) => (
+        <ValidationCircuitItem
           key={config.key}
           name={config.key}
           title={config.title}
           data={data}
           uuid={config.uuid}
-          canAdd={config.canAdd}
-          onCreate={(itemData) => createEntity(config.key, itemData)}
-          onUpdate={(id, itemData) => updateEntity(config.key, id, itemData)}
         />
       ))}
     </Box>

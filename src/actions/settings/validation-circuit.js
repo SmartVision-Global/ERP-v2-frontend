@@ -95,7 +95,7 @@ export async function createEntity(data) {
     console.error(`No endpoint found for entity type`);
     return;
   }
-  console.log('createEntity data', data);
+  
   try {
     await axios.post(endpoint, data);
     mutate(endpoints.stores.list);

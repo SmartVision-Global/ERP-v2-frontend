@@ -13,13 +13,16 @@ import {
   IconButton,
   Typography,
 } from '@mui/material';
-import Grid from '@mui/material/Grid2';
 
+import { createEntity } from 'src/actions/settings/validation-circuit';
+import { VALIDATION_CIRCUIT_TYPE_OPTIONS } from 'src/_mock/settings/validation-circuit';
+
+import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
 
 const ValidationRequestSchema = zod.object({
-  target_action: zod.string(),
+  target_action: zod.string().min(1, { message: 'Target action is required' }),
   type: zod.string().min(1, { message: 'Type is required' }),
   steps: zod
     .array(
@@ -30,23 +33,19 @@ const ValidationRequestSchema = zod.object({
           .number({ coerce: true })
           .min(1, { message: 'Required approvals must be at least 1' }),
         order: zod.number({ coerce: true }).min(1, { message: 'Order must be at least 1' }),
-        users: zod.array(zod.number()).min(1, { message: 'At least one user must be selected' }),
+        users: zod.array(zod.string()).min(1, { message: 'At least one user must be selected' }),
       })
     )
     .min(1, { message: 'At least one step is required' }),
 });
 
-const TYPE_OPTIONS = [
-  { label: 'Sequential', value: 'sequential' },
-  { label: 'Parallel', value: 'parallel' },
-];
 
 // Mock users for now.
 const MOCK_USERS = [
-    { value: 1, label: 'User 1' },
-    { value: 2, label: 'User 2' },
-    { value: 3, label: 'User 3' },
-    { value: 4, label: 'User 4' },
+    { value: 1, text: 'User 1' },
+    { value: 2, text: 'User 2' },
+    { value: 3, text: 'User 3' },
+    { value: 4, text: 'User 4' },
 ]
 
 export function ValidationRequestNewEditForm({ targetAction, onEnd, onCancel }) {
@@ -64,7 +63,8 @@ export function ValidationRequestNewEditForm({ targetAction, onEnd, onCancel }) 
   const {
     control,
     handleSubmit,
-    formState: { isSubmitting },
+    setError,
+    formState: { isSubmitting, errors },
   } = methods;
 
   const { fields, append, remove } = useFieldArray({
@@ -76,9 +76,18 @@ export function ValidationRequestNewEditForm({ targetAction, onEnd, onCancel }) 
     try {
       console.log('SUBMITTING DATA', data);
       // await createValidationCircuit(data);
+      await createEntity(data);
+      toast.success('Validation circuit created successfully');
+      
       onEnd();
     } catch (error) {
       console.error(error);
+      if (error && error.errors) {
+        Object.entries(error.errors).forEach(([key, value]) => {
+          setError(key, { type: 'manual', message: value[0] });
+        });
+      }
+      toast.error(error?.message || 'Operation failed');
     }
   });
 
@@ -97,7 +106,7 @@ export function ValidationRequestNewEditForm({ targetAction, onEnd, onCancel }) 
       <Stack spacing={3} sx={{ p: 1 }}>
       
         <Field.Select name="type" label="Type" size="small">
-          {TYPE_OPTIONS.map((option) => (
+          {VALIDATION_CIRCUIT_TYPE_OPTIONS.map((option) => (
             <MenuItem key={option.value} value={option.value}>
               {option.label}
             </MenuItem>
@@ -113,11 +122,26 @@ export function ValidationRequestNewEditForm({ targetAction, onEnd, onCancel }) 
           </Button>
         </Stack>
 
+          {!!errors.steps && <Typography color="error" sx={{ mt: 2 }}>{errors.steps.message}</Typography>}
         <Stack spacing={3}>
           {fields.map((item, index) => (
-            <Card key={item.id} sx={{ p: 2, position: 'relative' }}>
-              <IconButton onClick={() => remove(index)} sx={{ position: 'absolute', top: 8, right: 8 }}>
-                <Iconify icon="eva:close-fill" />
+            <Card
+              key={item.id}
+              sx={{
+                p: 2,
+                pt: 5,
+                position: 'relative',
+                border: '1px solid',
+                borderColor: 'grey.500',
+                boxShadow: 1,
+              }}
+            >
+              <IconButton
+                color="error"
+                onClick={() => remove(index)}
+                sx={{ position: 'absolute', top: 8, right: 8 }}
+              >
+                <Iconify icon="solar:trash-bin-trash-bold" />
               </IconButton>
               <Stack spacing={2} sx={{ mt: 2 }}>
                 <Field.Text name={`steps.${index}.name`} label="Name" />
@@ -127,13 +151,7 @@ export function ValidationRequestNewEditForm({ targetAction, onEnd, onCancel }) 
                   multiline
                   rows={2}
                 />
-                <Field.Select name={`steps.${index}.users`} label="Users" multiple>
-                  {MOCK_USERS.map((user) => (
-                    <MenuItem key={user.value} value={user.value}>
-                      {user.label}
-                    </MenuItem>
-                  ))}
-                </Field.Select>
+                <Field.LookupMultiSelect name={`steps.${index}.users`} label="Users" options={MOCK_USERS} />
                 <Field.Number
                   name={`steps.${index}.required_approvals`}
                   label="Required Approvals"
