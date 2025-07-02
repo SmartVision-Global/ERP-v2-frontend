@@ -313,6 +313,9 @@ const SettingsValidationCircuitList = lazy(
   () => import('src/pages/dashboard/settings/validation-circuit/list')
 );
 
+const SettingsValidationCircuitEdit = lazy(
+  () => import('src/pages/dashboard/settings/validation-circuit/edit')
+);
 
 
 const SettingsIdentificationGlobalSettings = lazy(
@@ -756,6 +759,7 @@ export const dashboardRoutes = [
             path: 'validation-circuit',
             children: [
               { index: true, element: <SettingsValidationCircuitList /> },
+              { path: ':target_action', element: <SettingsValidationCircuitEdit /> },
               // { path: 'new', element: <SettingsValidationCircuitNew /> },
             ],
           },

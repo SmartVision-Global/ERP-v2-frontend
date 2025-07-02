@@ -349,8 +349,7 @@ export const paths = {
       },
       validationCircuit: {
         root: `${ROOTS.DASHBOARD}/settings/validation-circuit`,
-        newValidationCircuit: `${ROOTS.DASHBOARD}/settings/validation-circuit/new`,
-        editValidationCircuit: (id) => `${ROOTS.DASHBOARD}/settings/validation-circuit/${id}/edit`,
+        details: (target_action) => `${ROOTS.DASHBOARD}/settings/validation-circuit/${target_action}`,
       },
       identification: {
         root: `${ROOTS.DASHBOARD}/settings/identification`,

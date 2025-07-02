@@ -131,6 +131,7 @@ export const endpoints = {
         list: '/v1/settings/return-patterns',
       },
     },
+    validationCircuits: '/v1/settings/validation-circuits',
   },
   // gestion magasinage
   stores: {
