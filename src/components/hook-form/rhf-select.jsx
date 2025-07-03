@@ -1,4 +1,5 @@
 import { merge } from 'es-toolkit';
+import React, { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import Box from '@mui/material/Box';
@@ -57,8 +58,17 @@ export function RHFSelect({ name, children, helperText, slotProps = {}, ...other
 }
 
 // THIS IS A LOOKUP SELECT WITH A SEARCH BAR
-export function RHFSelectSearch({ name, children, helperText, slotProps = {}, onSearch, loading, ...other }) {
+export function RHFSelectSearch({
+  name,
+  children,
+  helperText,
+  slotProps = {},
+  onSearch,
+  loading,
+  ...other
+}) {
   const { control } = useFormContext();
+  const [inputValue, setInputValue] = useState('');
 
   const labelId = `${name}-select`;
 
@@ -78,36 +88,89 @@ export function RHFSelectSearch({ name, children, helperText, slotProps = {}, on
     inputLabel: { htmlFor: labelId },
   };
 
+  const handleInputChange = (e) => {
+    const val = e.target.value;
+    setInputValue(val);
+    if (onSearch) {
+      onSearch(val);
+    }
+  };
+
   return (
     <Controller
       name={name}
       control={control}
-      render={({ field, fieldState: { error } }) => (
-        <TextField
-          {...field}
-          select
-          fullWidth
-          error={!!error}
-          helperText={error?.message ?? helperText}
-          slotProps={merge(baseSlotProps, slotProps)}
-          {...other}
-        >
-          {onSearch && (
-            <ListSubheader sx={{ p: 1, position: 'sticky', top: -8, zIndex: 1, bgcolor: 'background.paper' }}>
-              <TextField
-                size="small"
-                placeholder="Search..."
-                fullWidth
-                onChange={(e) => onSearch(e.target.value)}
-                onClick={(e) => e.stopPropagation()}
-                onKeyDown={(e) => e.stopPropagation()}
-              />
-            </ListSubheader>
-          )}
-          {loading && <MenuItem disabled>Loading...</MenuItem>}
-          {!loading && children}
-        </TextField>
-      )}
+      render={({ field, fieldState: { error } }) => {
+        const options = React.Children.toArray(children).map((child) => ({
+          value: child.props.value,
+          text: child.props.children,
+        }));
+
+        const valueInOptions = options.some((opt) => opt.value === field.value);
+
+        const handleOpen = () => {
+          if (field.value) {
+            const selectedOption = options.find((o) => o.value === field.value);
+            if (selectedOption) {
+              setInputValue(selectedOption.text);
+              if (onSearch) {
+                onSearch(selectedOption.text);
+              }
+            }
+          } else {
+            setInputValue('');
+            if (onSearch) {
+              onSearch('');
+            }
+          }
+        };
+
+        const finalSlotProps = merge({}, baseSlotProps, slotProps, {
+          select: {
+            onOpen: handleOpen,
+            MenuProps: {
+              disableAutoFocusItem: true,
+            },
+          },
+        });
+
+        return (
+          <TextField
+            {...field}
+            value={valueInOptions ? field.value : ''}
+            select
+            fullWidth
+            error={!!error}
+            helperText={error?.message ?? helperText}
+            slotProps={finalSlotProps}
+            {...other}
+          >
+            {onSearch && (
+              <ListSubheader
+                sx={{
+                  p: 1,
+                  position: 'sticky',
+                  top: -8,
+                  zIndex: 1,
+                  bgcolor: 'background.paper',
+                }}
+              >
+                <TextField
+                  size="small"
+                  placeholder="Search..."
+                  fullWidth
+                  value={inputValue}
+                  onChange={handleInputChange}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                />
+              </ListSubheader>
+            )}
+            {loading && <MenuItem disabled>Loading...</MenuItem>}
+            {!loading && children}
+          </TextField>
+        );
+      }}
     />
   );
 }
