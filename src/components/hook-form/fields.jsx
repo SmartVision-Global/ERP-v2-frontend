@@ -7,7 +7,6 @@ import { RHFNumberInput } from './rhf-number-input';
 import { RHFRotationDays } from './rhf-rotation-days';
 import { RHFSwitch, RHFMultiSwitch } from './rhf-switch';
 import { RHFContractEditor } from './rhf-contract-editor';
-import { RHFLookup, RHFLookupMultiSelect } from './rhf-lookup';
 import { RHFCheckbox, RHFMultiCheckbox } from './rhf-checkbox';
 import { RHFMultiCheckboxLookup } from './rhf-multicheckbox-lookup';
 import { RHFUpload, RHFUploadBox, RHFUploadAvatar } from './rhf-upload';
