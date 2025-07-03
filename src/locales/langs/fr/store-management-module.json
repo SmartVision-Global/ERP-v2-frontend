@@ -7,7 +7,21 @@
             "add_stock": "Ajouter stock",
             "store_management": "Gestion magasinage",
             "edit_stock": "Modifier : {{code}}",
-            "product_tracking": "Suivi des produits"
+            "product_tracking": "Suivi des produits",
+            "add_third": "Ajouter Tier",
+            "edit_third": "Modifier Tier",
+            "new_third": "Nouveau Tier",
+            "loan_borrowing": "Prêt-emprunt",
+            "borrowing": "Emprunt",
+            "add_borrowing": "Ajouter emprunt",
+            "edit_borrowing": "Modifier emprunt",
+            "new_borrowing": "Nouveau emprunt",
+            "add_products": "Ajouter produits",
+            "add_borrowing_return": "Ajouter retour emprunt",
+            "edit_borrowing_return": "Modifier retour emprunt",
+            "new_borrowing_return": "Nouveau retour emprunt",
+            "borrowing_return": "Retour emprunt",
+            "non_moving_products": "Produits immobiles"
         },
         "headers": {
             "id": "ID",
@@ -20,6 +34,7 @@
             "unit": "Unité",
             "alert_quantity": "Quantité Alerte",
             "min": "Min",
+            "max": "Max",
             "daily_consumption": "Consommation journalière prévisionnelle",
             "consumption_day": "Journée de consommation prévisionnelle",
             "family": "Famille",
@@ -27,6 +42,7 @@
             "category": "Catégorie",
             "location": "Emplacement",
             "created_date": "Date de création",
+            "updated_at": "Date de mise à jour",
             "actions": " ",
             "operation": "Opération",
             "product": "Produit",
@@ -43,7 +59,23 @@
             "tier": "Tier",
             "date": "Date",
             "actual_quantity": "Quantité Actuelle",
-            "exit_quantity": "Quantité de sortie"
+            "exit_quantity": "Quantité de sortie",
+            "observation": "Observation",
+            "tiers": "Tiers",
+            "store": "Magasin",
+            "nature": "Nature",
+            "type": "Type",
+            "return_status": "Statut de retour",
+            "invalid_email": "Adresse e-mail invalide",
+            "invalid_url": "URL invalide",
+            "tier_required": "Tier est requis",
+            "store_required": "Magasin est requis",
+            "qte": "Qté",
+            "returned_qte": "Qté retourné",
+            "current_qte": "Qté actuelle (magasin)",
+            "loan_borrowing": "Emprunt/Prêt",
+            "site": "Site",
+            "workshop": "Atelier"
         },
         "actions": {
             "add_stock": "Ajouter Stock",
@@ -55,13 +87,28 @@
             "excel": "Excel",
             "csv": "CSV",
             "pdf": "PDF",
-            "close": "Fermer"
+            "close": "Fermer",
+            "previous_step": "Étape précédente",
+            "next_step": "Étape suivante",
+            "validate": "Valider",
+            "add_borrowing": "Ajouter emprunt",
+            "confirm": "Confirmer",
+            "cancel": "Annuler",
+            "submit": "Oui",
+            "product_list": "Liste des produits",
+            "add_borrowing_return": "Ajouter retour emprunt",
+            "edit_borrowing_return": "Modifier retour emprunt",
+            "new_borrowing_return": "Nouveau retour emprunt"
+            
         },
         "filters": {
             "search_placeholder": "Rechercher...",
             "store": "Magasin",
             "code": "Code",
-            "supplier_code": "Code fournisseur",
+            "supplier_code": "Code Local",
+            "workshop": "Atelier",
+            "last_purchase": "Dernière achat",
+            "builder_code": "Code constructeur",
             "designation": "Désignation",
             "status": "Etat",
             "unit": "Unité",
@@ -77,7 +124,19 @@
             "lot": "Lot",
             "pmp": "PMP",
             "measure_unit": "Unité de mesure",
-            "tier": "Tier"
+            "tier": "Tier",
+            "full_name": "Nom complet",
+            "type": "Type",
+            "observation": "Observation",
+            "nature": "Nature",
+            "return_status": "Statut de retour",
+            "tiers": "Tiers",
+            "return_code": "Code de retour",
+            "borrowing_loan_code": "Code emprunt/prêt",
+            "local_code": "Code local",
+            "site": "Site",
+            "last_exit": "Dernière sortie",
+            "last_consumption": "Dernière consommation"
         },
         "dialog": {
             "product_details": "Détails produit: {{code}} -- {{designation}}",
@@ -89,10 +148,25 @@
             "creation_date": "Date de création",
             "catalog": "Catalogue",
             "view_pdf": "Voir PDF",
-            "image": "Image"
+            "image": "Image",
+            "confirm_borrowing_title": "Confirmation de l'emprunt {code}",
+            "cancel_borrowing_title": "Annulation de l'emprunt {code}",
+            "confirm_notes": "Notes de confirmation",
+            "cancel_notes": "Notes d'annulation",
+            "product_list_title": "Liste des produits"
         },
         "messages":{
-            "no_results": "Aucun résultat trouvé"
+            "no_results": "Aucun résultat trouvé",
+            "stock_updated": "Stock mis à jour",
+            "stock_created": "Stock créé",
+            "operation_failed": "L'opération a échoué",
+            "third_updated": "Tier mis à jour",
+            "third_created": "Tier créé",
+            "borrowing_updated": "Emprunt mis à jour",
+            "borrowing_created": "Emprunt créé",
+            "borrowing_confirmed": "Emprunt confirmé avec succès",
+            "borrowing_canceled": "Emprunt annulé avec succès",
+            "action_failed": "Échec de l'action"
         },
         "form": {
             "validations": {
@@ -111,12 +185,22 @@
                 "type_required": "Type est requis",
                 "location_required": "Emplacement est requis",
                 "douan_required": "Douane est requise",
-                "position_required": "Position est requise"
+                "position_required": "Position est requise",
+                "code_required": "Le code est requis",
+                "address_required": "L'adresse est requise",
+                "invalid_email": "Adresse e-mail invalide",
+                "invalid_url": "URL invalide",
+                "tier_required": "Tier est requis",
+                "store_required": "Magasin est requis"
             },
             "messages": {
                 "stock_updated": "Stock mis à jour",
                 "stock_created": "Stock créé",
-                "operation_failed": "L'opération a échoué"
+                "operation_failed": "L'opération a échoué",
+                "third_updated": "Tier mis à jour",
+                "third_created": "Tier créé",
+                "borrowing_updated": "Emprunt mis à jour",
+                "borrowing_created": "Emprunt créé"
             },
             "sections": {
                 "details": "Détails",
@@ -124,7 +208,13 @@
                 "dimensions": "Dimensions",
                 "conditioning": "Conditionnement",
                 "storage": "Stockage",
-                "fees": "Frais"
+                "fees": "Frais",
+                "rib": "RIB",
+                "tiers": "Tiers",
+                "store": "Magasin",
+                "nature": "Nature",
+                "observation": "Observation",
+                "action": "Action"
             },
             "labels": {
                 "builder_code": "Code constructeur",
@@ -148,12 +238,59 @@
                 "location": "Emplacement",
                 "add_storage": "Ajouter",
                 "douan": "Douane",
-                "position": "Position"
+                "position": "Position",
+                "code": "Code",
+                "full_name": "Nom et prénom",
+                "phone_number": "Numéro de téléphone",
+                "mobile_number": "Numéro de portable",
+                "city": "Ville",
+                "country": "Pays",
+                "address": "Adresse",
+                "comment": "Commentaire",
+                "fax": "Fax",
+                "email": "Email",
+                "website": "Site web",
+                "sold": "Solde",
+                "sold_p": "Solde P",
+                "trade_registry": "Registre de commerce",
+                "idfiscale": "ID Fiscale",
+                "art_imposition": "Article d'imposition",
+                "nis": "NIS",
+                "bank": "Banque",
+                "account_number": "Numéro de compte",
+                "rib": "RIB",
+                "tiers": "Tiers",
+                "store": "Magasin",
+                "nature": "Nature",
+                "observation": "Observation",
+                "action": "Action",
+                "products": "Produits",
+                "in_stock": "En stock",
+                "quantity": "Quantité",
+                "select_product": "Sélectionner un produit",
+                "borrowing": "Emprunt"
+                
             },
             "actions": {
                 "save_changes": "Enregistrer les modifications",
-                "create_stock": "Créer le stock"
+                "create_stock": "Créer le stock",
+                "save": "Enregistrer",
+                "add": "Ajouter"
+            },
+            "steps": {
+                "identification": "Identification du produit",
+                "parametrage1": "Paramétrage du produit 1",
+                "parametrage2": "Paramétrage du produit 2",
+                "transaction_tier": "Niveau de transaction",
+                "products": "Produits"
             }
+        },
+        "dialogs": {
+            "confirm_borrowing_title": "Confirmation de l'emprunt {code}",
+            "cancel_borrowing_title": "Annulation de l'emprunt {code}",
+            "confirm_notes": "Notes de confirmation",
+            "cancel_notes": "Notes d'annulation",
+            "product_list_title": "Liste des produits"
         }
     
 } 

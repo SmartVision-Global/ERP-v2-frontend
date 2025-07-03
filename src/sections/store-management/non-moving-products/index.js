@@ -1,0 +1,1 @@
+export * from './non-moving-products-list-view';

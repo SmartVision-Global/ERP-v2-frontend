@@ -132,12 +132,18 @@ export const endpoints = {
         list: '/v1/settings/return-patterns',
       },
     },
+    validationCircuits: '/v1/settings/validation-circuits',
   },
   // gestion magasinage
   stores: {
     // raw materials stocks : product_type=1,
     list: '/v1/inventory/products',
     operations: '/v1/inventory/product-history',
+    third: '/v1/inventory/tiers',
+    borrowings: '/v1/inventory/borrowings',
+    nonMovingProducts: '/v1/inventory/non-moving-products',
+    borrowingLookup: '/v1/inventory/lookups/borrowing',
+    borrowingReturns: '/v1/inventory/borrowing-returns',
     storageArea: '/v1/inventory/storage-areas',
     initialStorage: '/v1/inventory/initial-storages',
     exitSlip: '/v1/inventory/exit-slips',
@@ -194,4 +200,14 @@ export const endpoints = {
   das: '/v1/hr/parafiscal_declaration/das',
   dasDetails: '/v1/hr/parafiscal_declaration/das/details',
   dasDetailsDownload: '/v1/hr/parafiscal_declaration/das/download',
+
+  lookups: {
+    stores: 'settings/lookups/stores',
+    tiers: 'inventory/lookups/tiers',
+    sites:'settings/lookups/sites',
+    measurement_units:'settings/lookups/measurement-units',
+    families:'settings/lookups/families',
+    categories:'settings/lookups/categories',
+    workshops:'settings/lookups/workshops',
+  },
 };

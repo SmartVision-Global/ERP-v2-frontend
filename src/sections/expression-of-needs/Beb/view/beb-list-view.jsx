@@ -18,8 +18,8 @@ import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
+import { endpoints } from 'src/lib/axios';
 import { CONFIG } from 'src/global-config';
-import { useMultiLookups } from 'src/actions/lookups';
 import {
   PRODUCT_STATUS_OPTIONS,
 } from 'src/_mock';
@@ -73,18 +73,14 @@ export function BebListView() {
   const [rowCount, setRowCount] = useState(bebsCount);
   const [tableData, setTableData] = useState(bebs);
 
-  const { dataLookups } = useMultiLookups([
-    { entity: 'sites', url: 'settings/lookups/sites' },
-  ]);
-
-  const sites = dataLookups.sites || [];
 
   const FILTERS_OPTIONS = [
     { id: 'code', type: 'input', label: 'Code' },
     { id: 'supplier_code', type: 'input', label: 'Supplier Code' },
     { id: 'designation', type: 'input', label: 'Designation' },
     { id: 'status', type: 'select', options: PRODUCT_STATUS_OPTIONS, label: 'Etat' },
-    { id: 'site', type: 'select', options: sites, label: 'Site', serverData: true },
+    // { id: 'site', type: 'select', options: sites, label: 'Site', serverData: true },
+    { id: 'site_id', type: 'lookup', label: 'Site', url: endpoints.lookups.sites},
     { id: 'type', type: 'select', options: PRODUCT_TYPE_OPTIONS, label: 'Type' },
     {id:'nature', type:'select', options:BEB_NATURE_OPTIONS, label:'Nature'},
     {id:'priority', type:'select', options:PRIORITY_OPTIONS, label:'Priorité'},

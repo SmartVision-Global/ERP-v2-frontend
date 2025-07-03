@@ -89,8 +89,6 @@ export function StoreListView() {
   const confirmDialog = useBoolean();
 
   const { stores, storesLoading } = useGetStores({ limit: 10, offset: 0 });
-  console.log('StoreListView')
-  console.log('stores', stores);
 
   const [tableData, setTableData] = useState(stores);
   const [selectedRowIds, setSelectedRowIds] = useState([]);

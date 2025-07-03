@@ -22,9 +22,22 @@ export function RenderCellBuilderCode({ params }) {
   return <Typography>{params.row.builder_code}</Typography>;
 }
 
+export function RenderCellStore({ params }) {
+  return <Typography>{params.row.store?.name ?? 'N/I'}</Typography>;
+}
+
+export function RenderCellType({ params }) {
+  return <Typography>{params.row.type?.name ?? 'N/I'}</Typography>;
+}
+
 export function RenderCellDesignation({ params }) {
   return <Typography>{params.row.designation}</Typography>;
 }
+
+export function RenderCellWorkshop({ params }) {
+  return <Typography>{params.row.workshop?.name ?? 'N/I'}</Typography>;
+}
+
 
 export function RenderCellQuantity({ params }) {
   return <Typography>{params.row.quantity}</Typography>;
@@ -32,7 +45,7 @@ export function RenderCellQuantity({ params }) {
 
 export function RenderCellStatus({ params }) {
   // Adjust label color logic as needed
-  return <Label variant="soft" color="default">{params.row.status}</Label>;
+  return <Label variant="soft" color="default">{params.row.status} N/I</Label>;
 }
 
 export function RenderCellUnit({ params }) {
