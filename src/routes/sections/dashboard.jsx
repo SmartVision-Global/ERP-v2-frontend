@@ -14,6 +14,8 @@ import { AuthGuard } from 'src/auth/guard';
 import { usePathname } from '../hooks';
 
 const IndexPage = lazy(() => import('src/pages/dashboard/one'));
+// const TwoPage = lazy(() => import('src/pages/dashboard/two'));
+
 const PageRhList = lazy(() => import('src/pages/dashboard/r-h/personal/actif/list'));
 const PageRhDocumentsList = lazy(() => import('src/pages/dashboard/r-h/personal/documents/list'));
 const PageRhBloqueList = lazy(() => import('src/pages/dashboard/r-h/personal/block/list'));
@@ -66,6 +68,17 @@ const PageRhSettingsZonesNew = lazy(() => import('src/pages/dashboard/r-h/rh-set
 
 const PageRhSettingsZonesEdit = lazy(
   () => import('src/pages/dashboard/r-h/rh-settings/zones/edit')
+);
+
+const PageRhSettingsContractsList = lazy(
+  () => import('src/pages/dashboard/r-h/rh-settings/contract/list')
+);
+const PageRhSettingsContractsNew = lazy(
+  () => import('src/pages/dashboard/r-h/rh-settings/contract/new')
+);
+
+const PageRhSettingsContractsEdit = lazy(
+  () => import('src/pages/dashboard/r-h/rh-settings/contract/edit')
 );
 
 const PageRhSettingsJobProgramsList = lazy(
@@ -186,18 +199,22 @@ const PageRhTreatmentLocationAssignmentEdit = lazy(
 const PageRhTreatmentPromotionDemotion = lazy(
   () => import('src/pages/dashboard/r-h/treatment/promotion-demotion/list')
 );
+
 const PageRhTreatmentPromotionDemotionNew = lazy(
   () => import('src/pages/dashboard/r-h/treatment/promotion-demotion/new')
 );
+
 const PageRhTreatmentPromotionDemotionEdit = lazy(
   () => import('src/pages/dashboard/r-h/treatment/promotion-demotion/edit')
 );
 const PageRhTreatmentRenewalContract = lazy(
   () => import('src/pages/dashboard/r-h/treatment/renewal-contract/list')
 );
+
 const PageRhTreatmentRenewalContractNew = lazy(
   () => import('src/pages/dashboard/r-h/treatment/renewal-contract/new')
 );
+
 const PageRhTreatmentRenewalContractEdit = lazy(
   () => import('src/pages/dashboard/r-h/treatment/renewal-contract/edit')
 );
@@ -262,6 +279,15 @@ const PageRhPayrollManagementPreparationDetails = lazy(
 const PageRhPayrollManagementPreparationEdit = lazy(
   () => import('src/pages/dashboard/r-h/payroll-management/preparation/edit')
 );
+
+const PageRhPayrollManagementExtraPayList = lazy(
+  () => import('src/pages/dashboard/r-h/payroll-management/exptra-pay/list')
+);
+
+const PageRhPayrollManagementExtraPayDetails = lazy(
+  () => import('src/pages/dashboard/r-h/payroll-management/exptra-pay/details')
+);
+
 // ============== purchase_Supply ==================
 //purchase Order
 const PagePurchaseOrder = lazy(
@@ -474,6 +500,8 @@ export const dashboardRoutes = [
     element: CONFIG.auth.skip ? dashboardLayout() : <AuthGuard>{dashboardLayout()}</AuthGuard>,
     children: [
       { element: <IndexPage />, index: true },
+      // { path: 'two', element: <TwoPage /> },
+
       {
         path: 'humain-ressource',
         children: [
@@ -546,6 +574,10 @@ export const dashboardRoutes = [
               { path: 'agencies', element: <PageRhSettingsAgenciesList /> },
               { path: 'agencies/new', element: <PageRhSettingsAgenciesNew /> },
               { path: 'agencies/:id/edit', element: <PageRhSettingsAgenciesEdit /> },
+
+              { path: 'contracts', element: <PageRhSettingsContractsList /> },
+              { path: 'contracts/new', element: <PageRhSettingsContractsNew /> },
+              { path: 'contracts/edit', element: <PageRhSettingsContractsEdit /> },
             ],
           },
           {
@@ -675,6 +707,11 @@ export const dashboardRoutes = [
               {
                 path: 'preparation/:id/edit',
                 element: <PageRhPayrollManagementPreparationEdit />,
+              },
+              { path: 'extra', element: <PageRhPayrollManagementExtraPayList /> },
+              {
+                path: 'extra/:id/details',
+                element: <PageRhPayrollManagementExtraPayDetails />,
               },
             ],
           },

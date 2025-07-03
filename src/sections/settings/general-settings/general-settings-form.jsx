@@ -1,33 +1,31 @@
 import { z } from 'zod';
 import { toast } from 'sonner';
+import { useForm } from 'react-hook-form';
 import React, { useState, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import {
   Box,
-  Button,
   Step,
-  StepLabel,
-  Stepper,
-  TextField,
+  Grid,
+  Button,
   Select,
+  Stepper,
   MenuItem,
-  FormControl,
+  StepLabel,
+  TextField,
   InputLabel,
   Typography,
-  Grid,
+  FormControl,
 } from '@mui/material';
 
 import { useGetSites } from 'src/actions/site';
 import { useGetStores } from 'src/actions/store';
-import { useGetGeneralSettings, createGeneralSetting } from 'src/actions/generalSettings';
+import { createGeneralSetting, useGetGeneralSettings } from 'src/actions/generalSettings';
 import {
   useGetGeneralSettingsInfo,
   createGeneralSettingsInfo,
 } from 'src/actions/generalSettingsInfo.js';
-
-import { Field } from 'src/components/hook-form';
 
 const steps = ['Paramètre général', 'Paramétrage Produit fini', 'Paramétrage Panneau technique'];
 
@@ -198,7 +196,7 @@ export default function GeneralSettingsForm() {
             site_id: siteId,
             store_id: consumptionStore?.id || null,
             nature: 1,
-            type: type,
+            type,
           });
 
           const productionStore = data.production
@@ -209,7 +207,7 @@ export default function GeneralSettingsForm() {
             site_id: siteId,
             store_id: productionStore?.id || null,
             nature: 2,
-            type: type,
+            type,
           });
         });
 

@@ -98,6 +98,7 @@ export const endpoints = {
   task: 'v1/hr/function/duties_responsibilities',
   careerKnowledges: '/v1/hr/function/career_knowledges',
   personal: '/v1/hr/personal/personals',
+  personalDocument: (id, type) => `/v1/hr/personal/personals/${id}/print/${type}`,
 
   settings: {
     identification: {
@@ -178,6 +179,10 @@ export const endpoints = {
   endContract: '/v1/hr/treatment/personal_end_services',
   // payroll
   payrollMonth: '/v1/hr/payroll/preparation/payroll_months',
+  extraPayrollMonth: '/v1/hr/payroll/calculation/extra_payrolls',
+  extraPayrollMonthById: (id) => `/v1/hr/payroll/calculation/extra_payrolls/month/${id}`,
+  validateExtraPayrolls: '/v1/hr/payroll/calculation/extra_payrolls/validation',
+
   payrollMonthCalculation: '/v1/hr/payroll/calculation/payrolls',
   payrollMonthCalculationDetails: (id) => `/v1/hr/payroll/calculation/${id}/payrolls/details`,
 

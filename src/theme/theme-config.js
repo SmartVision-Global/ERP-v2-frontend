@@ -7,7 +7,7 @@ export const themeConfig = {
   direction: 'ltr',
   defaultMode: 'light',
   modeStorageKey: 'theme-mode',
-  classesPrefix: 'minimal',
+  classesPrefix: 'erp_svt',
   /** **************************************
    * Typography
    *************************************** */

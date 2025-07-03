@@ -138,7 +138,7 @@ export function WorkshopListView() {
         heading="List"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          // { name: 'Ressources humaine', href: paths.dashboard.root },
+          { name: 'Parametres', href: paths.dashboard.root },
           { name: 'Ateliers' },
         ]}
         action={

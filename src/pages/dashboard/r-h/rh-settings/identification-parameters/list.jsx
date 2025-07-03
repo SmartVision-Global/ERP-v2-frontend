@@ -6,7 +6,7 @@ import { ParamsListView } from 'src/sections/r-h/rh-settings/identification-para
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Product list | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `Parametres d'identification | Dashboard - ${CONFIG.appName}` };
 
 export default function Page() {
   return (

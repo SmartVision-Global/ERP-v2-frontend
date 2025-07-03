@@ -1,3 +1,4 @@
+import { RHFEditor } from './rhf-editor';
 import { RHFTextField } from './rhf-text-field';
 import { RHFRadioGroup } from './rhf-radio-group';
 import { RHFTimePicker } from './rhf-time-picker';
@@ -5,6 +6,8 @@ import { RHFNumberField } from './rhf-number-field';
 import { RHFNumberInput } from './rhf-number-input';
 import { RHFRotationDays } from './rhf-rotation-days';
 import { RHFSwitch, RHFMultiSwitch } from './rhf-switch';
+import { RHFContractEditor } from './rhf-contract-editor';
+import { RHFLookup, RHFLookupMultiSelect } from './rhf-lookup';
 import { RHFCheckbox, RHFMultiCheckbox } from './rhf-checkbox';
 import { RHFMultiCheckboxLookup } from './rhf-multicheckbox-lookup';
 import { RHFUpload, RHFUploadBox, RHFUploadAvatar } from './rhf-upload';
@@ -41,4 +44,6 @@ export const Field = {
   // THIS IS A LOOKUP SELECT WITH A SEARCH BAR
   LookupSearch: RHFLookupSearch,
   SelectSearch: RHFSelectSearch,
+  Editor: RHFEditor,
+  ContractEditor: RHFContractEditor,
 };

@@ -255,6 +255,8 @@ export const navData = [
               },
               { title: 'Taux CNAS', path: paths.dashboard.rh.rhSettings.cnasRate },
               { title: 'Agences', path: paths.dashboard.rh.rhSettings.agencies },
+
+              { title: 'Contrats', path: paths.dashboard.rh.rhSettings.contracts },
             ],
           },
           // Demandes
@@ -342,6 +344,10 @@ export const navData = [
               {
                 title: 'Calcul de la paie',
                 path: paths.dashboard.rh.payrollManagement.calculation,
+              },
+              {
+                title: 'Extra paie',
+                path: paths.dashboard.rh.payrollManagement.extra,
               },
             ],
           },

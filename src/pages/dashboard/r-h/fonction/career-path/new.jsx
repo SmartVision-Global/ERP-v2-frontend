@@ -6,7 +6,7 @@ import { CareerCreateView } from 'src/sections/r-h/function/career-path/view';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Create a new personnel | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `Ajouter parcour professionnel | Dashboard - ${CONFIG.appName}` };
 
 export default function Page() {
   return (

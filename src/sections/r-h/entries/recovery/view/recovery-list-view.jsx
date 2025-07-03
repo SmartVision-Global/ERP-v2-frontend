@@ -825,10 +825,10 @@ export const GridActionsLinkItem = forwardRef((props, ref) => {
 });
 
 export const GridActionsClickItem = forwardRef((props, ref) => {
-  const { onClick, label, icon, sx } = props;
+  const { onClick, label, icon, disabled = false, sx } = props;
 
   return (
-    <MenuItem ref={ref} sx={sx} onClick={onClick}>
+    <MenuItem ref={ref} sx={sx} onClick={onClick} disabled={disabled}>
       {icon && <ListItemIcon>{icon}</ListItemIcon>}
       {label}
     </MenuItem>

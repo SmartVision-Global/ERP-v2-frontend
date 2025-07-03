@@ -1,16 +1,41 @@
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
 import { Typography } from '@mui/material';
 import ListItemText from '@mui/material/ListItemText';
 
-import { RouterLink } from 'src/routes/components';
-
 import { fDate, fTime } from 'src/utils/format-time';
+
+import { Image } from 'src/components/image';
 
 // ----------------------------------------------------------------------
 
-export function RenderCellSite({ params }) {
-  return <Typography variant="body2">{params.row?.name}</Typography>;
+export function RenderCellEnterprise({ params, href }) {
+  return (
+    <Box
+      sx={{
+        py: 0.5,
+        gap: 1,
+        width: 1,
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
+      <Image
+        alt={params.row?.name}
+        src={params.row?.logo?.url}
+        variant="rounded"
+        sx={{ width: 64, height: 64, borderRadius: 1 }}
+      />
+
+      <ListItemText
+        primary={<Typography fontSize={12}>{params.row.name}</Typography>}
+        // secondary={`${params.row.first_name?.ar} ${params.row.last_name?.ar}`}
+        slotProps={{
+          primary: { noWrap: true },
+          // secondary: { sx: { color: 'text.disabled', fontSize: 12 } },
+        }}
+      />
+    </Box>
+  );
 }
 
 export function RenderCellDesignation({ params }) {
@@ -34,27 +59,8 @@ export function RenderCellCreatedAt({ params }) {
 
 export function RenderCellId({ params, href }) {
   return (
-    <Box
-      sx={{
-        py: 2,
-        gap: 2,
-        width: 1,
-        display: 'flex',
-        alignItems: 'center',
-      }}
-    >
-      <ListItemText
-        primary={
-          <Link component={RouterLink} href={href} color="inherit">
-            {params.row?.id}
-          </Link>
-        }
-        // secondary={params.row.category}
-        slotProps={{
-          primary: { noWrap: true },
-          secondary: { sx: { color: 'text.disabled' } },
-        }}
-      />
-    </Box>
+    <Typography fontSize={12} fontWeight={600}>
+      {params.row?.id}
+    </Typography>
   );
 }

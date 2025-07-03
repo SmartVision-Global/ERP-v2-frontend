@@ -1,5 +1,5 @@
-import useSWR from 'swr';
 import { useMemo } from 'react';
+import useSWR, { mutate } from 'swr';
 
 // import { fetcher, endpoints } from 'src/lib/axios';
 import axios, { fetcher, endpoints } from 'src/lib/axios';
@@ -35,6 +35,74 @@ export function useGetPayrollMonths(params) {
   );
 
   return memoizedValue;
+}
+
+export function useGetExtraPayrollMonths(params) {
+  // const url = endpoints.function;
+  const url = params ? [endpoints.extraPayrollMonth, { params }] : endpoints.extraPayrollMonth;
+
+  const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
+
+  const memoizedValue = useMemo(
+    () => ({
+      extraPayrollMonths: data?.data?.records || [],
+      extraPayrollMonthsCount: data?.data?.total || 0,
+      extraPayrollMonthsLoading: isLoading,
+      extraPayrollMonthsError: error,
+      extraPayrollMonthsValidating: isValidating,
+      extraPayrollMonthsEmpty: !isLoading && !isValidating && !data?.data?.records.length,
+    }),
+    [data?.data?.records, data?.data?.total, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
+
+export async function getFiltredExtraPayrollMonths(params) {
+  const response = await axios.get(`${endpoints.extraPayrollMonth}`, {
+    params,
+  });
+  return response;
+}
+
+export function useGetExtraPayrollMonth(id, params) {
+  // const url = endpoints.function;
+  const url = params
+    ? [endpoints.extraPayrollMonthById(id), { params }]
+    : endpoints.extraPayrollMonthById(id);
+
+  const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
+
+  const memoizedValue = useMemo(
+    () => ({
+      extraPayrollMonth: data?.data?.records || [],
+      extraPayrollMonthCount: data?.data?.total || 0,
+      extraPayrollMonthLoading: isLoading,
+      extraPayrollMonthError: error,
+      extraPayrollMonthValidating: isValidating,
+      extraPayrollMonthEmpty: !isLoading && !isValidating && !data?.data?.records.length,
+    }),
+    [data?.data?.records, data?.data?.total, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
+
+export async function getFiltredExtraPayrollMonth(id, params) {
+  const response = await axios.get(`${endpoints.extraPayrollMonthById(id)}`, {
+    params,
+  });
+  return response;
+}
+
+export async function validateExtraPayroll(body, params) {
+  await axios.post(`${endpoints.validateExtraPayrolls}`, body);
+  mutate([endpoints.extraPayrollMonthById(body.extra_payroll_month_id), { params }]);
+}
+
+export async function cancelExtraPayroll(monthId, id, params) {
+  await axios.delete(`${endpoints.extraPayrollMonth}/${id}`);
+  mutate([endpoints.extraPayrollMonthById(monthId), { params }]);
 }
 
 export function useGetCalculationPayrollMonths(params) {
@@ -87,6 +155,13 @@ export function useGetCalculationPayrollMonthsDetails(id, params) {
 // ----------------------------------------------------------------------
 export async function getFiltredPayrollMonths(params) {
   const response = await axios.get(`${ENDPOINT}`, {
+    params,
+  });
+  return response;
+}
+
+export async function getFiltredPayrolls(params) {
+  const response = await axios.get(`${endpoints.payrollMonthCalculation}`, {
     params,
   });
   return response;

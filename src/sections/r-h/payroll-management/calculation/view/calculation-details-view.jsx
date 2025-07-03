@@ -1,10 +1,8 @@
-import { useBoolean } from 'minimal-shared/hooks';
-import { useState, useEffect, forwardRef, useCallback } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
-import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { DataGrid, gridClasses } from '@mui/x-data-grid';
@@ -13,6 +11,8 @@ import { Tooltip, TextField, IconButton, FormControl, InputAdornment } from '@mu
 import { paths } from 'src/routes/paths';
 import { useParams } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
+
+import { usePdfViewer } from 'src/hooks/use-pdf-viewer';
 
 import { showError } from 'src/utils/toast-error';
 
@@ -24,11 +24,9 @@ import {
   useGetCalculationPayrollMonthsDeducationsCompensations,
 } from 'src/actions/payroll-month';
 
-import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import {
@@ -81,19 +79,19 @@ const PAGE_SIZE = CONFIG.pagination.pageSize;
 export function CalculationDetailsView() {
   const { id = '' } = useParams();
 
-  const confirmDialog = useBoolean();
   const { payrollMonthsCalculationDetails, payrollMonthsCalculationDetailsLoading } =
     useGetCalculationPayrollMonthsDetails(id, {
       limit: PAGE_SIZE,
       offset: 0,
     });
+  const openPdfViewer = usePdfViewer();
 
   const { payrollMonthsDeducationsCompensations } =
     useGetCalculationPayrollMonthsDeducationsCompensations(id);
 
   const [tableData, setTableData] = useState(payrollMonthsCalculationDetails);
-  const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
+
   const [isDownloading, setIsDownloading] = useState(false);
   const [editedFilters, setEditedFilters] = useState({});
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
@@ -109,14 +107,6 @@ export function CalculationDetailsView() {
     setEditedFilters({});
   };
 
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
-
-    toast.success('Delete success!');
-
-    setTableData(deleteRows);
-  }, [selectedRowIds, tableData]);
-
   const handleDownloadDocuments = async (payrollId) => {
     setIsDownloading(true);
     try {
@@ -124,29 +114,54 @@ export function CalculationDetailsView() {
       const blob = new Blob([response.data], {
         type: response.headers['content-type'],
       });
+      openPdfViewer(blob);
+      //     const pdfUrl = URL.createObjectURL(blob);
+
+      //     // 3️⃣ Open new window
+      //     const newWindow = window.open('', '_blank');
+      //     if (!newWindow) return;
+
+      //     const doc = newWindow.document;
+
+      //     // ✅ Clear the head & body if needed
+      //     doc.head.innerHTML = '';
+      //     doc.body.innerHTML = '';
+      //     const style = doc.createElement('style');
+      //     style.textContent = `
+      //   body { margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
+      //   iframe { flex: 1; border: none; width: 100%; }
+      //   button {
+      //     padding: 6px 12px;
+      //     cursor: pointer;
+      //     font-size: 14px;
+      //   }
+      // `;
+      //     doc.head.appendChild(style);
+      //     const iframe = doc.createElement('iframe');
+      //     iframe.src = pdfUrl;
+      //     doc.body.appendChild(iframe);
       // Extract filename from headers (optional but recommended)
-      const contentDisposition = response.headers['content-disposition'];
-      let fileName = 'downloaded-file';
+      // const contentDisposition = response.headers['content-disposition'];
+      // let fileName = 'downloaded-file';
 
-      if (contentDisposition) {
-        const match = contentDisposition.match(/filename="?(.+)"?/);
-        if (match?.[1]) {
-          fileName = decodeURIComponent(match[1]);
-        }
-      }
+      // if (contentDisposition) {
+      //   const match = contentDisposition.match(/filename="?(.+)"?/);
+      //   if (match?.[1]) {
+      //     fileName = decodeURIComponent(match[1]);
+      //   }
+      // }
 
-      // Create a temporary download link
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName;
-      a.click();
-      // Cleanup
-      window.URL.revokeObjectURL(url);
+      // // Create a temporary download link
+      // const url = window.URL.createObjectURL(blob);
+      // const a = document.createElement('a');
+      // a.href = url;
+      // a.download = fileName;
+      // a.click();
+      // // Cleanup
+      // window.URL.revokeObjectURL(url);
       setIsDownloading(false);
     } catch (error) {
       setIsDownloading(false);
-
       console.error('Error downloading file:', error);
       showError(error);
       // alert('Failed to download file.');
@@ -340,8 +355,11 @@ export function CalculationDetailsView() {
       hideable: false,
       align: 'center',
       renderCell: (params) => (
-        <Tooltip title="Télécharger" enterDelay={100}>
-          <IconButton onClick={() => handleDownloadDocuments(params.row.id)}>
+        <Tooltip title="Imprimer" enterDelay={100}>
+          <IconButton
+            onClick={() => handleDownloadDocuments(params.row.id)}
+            disabled={isDownloading}
+          >
             <Iconify icon="eva:download-fill" sx={{ color: 'info.main' }} />
           </IconButton>
         </Tooltip>
@@ -354,118 +372,78 @@ export function CalculationDetailsView() {
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
 
-  const renderConfirmDialog = () => (
-    <ConfirmDialog
-      open={confirmDialog.value}
-      onClose={confirmDialog.onFalse}
-      title="Delete"
-      content={
-        <>
-          Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
-        </>
-      }
-      action={
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => {
-            handleDeleteRows();
-            confirmDialog.onFalse();
-          }}
-        >
-          Delete
-        </Button>
-      }
-    />
-  );
-
   return (
-    <>
-      <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-        <CustomBreadcrumbs
-          heading="Détails du calcul de la paie"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Ressources humaine', href: paths.dashboard.root },
-            { name: 'Détails du calcul de la paie' },
-          ]}
-          // action={
-          //   <Button
-          //     component={RouterLink}
-          //     href={paths.dashboard.rh.payrollManagement.newCalculation}
-          //     variant="contained"
-          //     startIcon={<Iconify icon="mingcute:add-line" />}
-          //   >
-          //     Ajouter
-          //   </Button>
-          // }
-          sx={{ mb: { xs: 3, md: 5 } }}
+    <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+      <CustomBreadcrumbs
+        heading="Détails du calcul de la paie"
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Ressources humaine', href: paths.dashboard.root },
+          { name: 'Détails du calcul de la paie' },
+        ]}
+        sx={{ mb: { xs: 3, md: 5 } }}
+      />
+
+      <Card
+        sx={{
+          flexGrow: { md: 1 },
+          display: { md: 'flex' },
+          flexDirection: { md: 'column' },
+        }}
+      >
+        <TableToolbarCustom
+          // filterOptions={FILTERS_OPTIONS}
+          filters={editedFilters}
+          setFilters={setEditedFilters}
+          onReset={handleReset}
         />
-
-        <Card
-          sx={{
-            flexGrow: { md: 1 },
-            display: { md: 'flex' },
-            flexDirection: { md: 'column' },
+        <Box paddingX={4} paddingY={2} sx={{}}>
+          <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
+            <TextField
+              fullWidth
+              // value={currentFilters.name}
+              // onChange={handleFilterName}
+              placeholder="Search "
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+              size="small"
+            />
+          </FormControl>
+        </Box>
+        <DataGrid
+          // checkboxSelection
+          disableRowSelectionOnClick
+          disableColumnMenu
+          rows={tableData}
+          columns={columns}
+          loading={payrollMonthsCalculationDetailsLoading}
+          getRowHeight={() => 'auto'}
+          pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
+          initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
+          columnVisibilityModel={columnVisibilityModel}
+          onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
+          // disableColumnFilter
+          slots={{
+            // toolbar: CustomToolbarCallback,
+            noRowsOverlay: () => <EmptyContent />,
+            noResultsOverlay: () => <EmptyContent title="No results found" />,
           }}
-        >
-          <TableToolbarCustom
-            // filterOptions={FILTERS_OPTIONS}
-            filters={editedFilters}
-            setFilters={setEditedFilters}
-            onReset={handleReset}
-          />
-          <Box paddingX={4} paddingY={2} sx={{}}>
-            <FormControl sx={{ flexShrink: 0, width: { xs: 1, md: 0.5 } }} size="small">
-              <TextField
-                fullWidth
-                // value={currentFilters.name}
-                // onChange={handleFilterName}
-                placeholder="Search "
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-                size="small"
-              />
-            </FormControl>
-          </Box>
-          <DataGrid
-            // checkboxSelection
-            disableRowSelectionOnClick
-            disableColumnMenu
-            rows={tableData}
-            columns={columns}
-            loading={payrollMonthsCalculationDetailsLoading}
-            getRowHeight={() => 'auto'}
-            pageSizeOptions={[5, 10, 20, { value: -1, label: 'All' }]}
-            initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-            onRowSelectionModelChange={(newSelectionModel) => setSelectedRowIds(newSelectionModel)}
-            columnVisibilityModel={columnVisibilityModel}
-            onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
-            // disableColumnFilter
-            slots={{
-              // toolbar: CustomToolbarCallback,
-              noRowsOverlay: () => <EmptyContent />,
-              noResultsOverlay: () => <EmptyContent title="No results found" />,
-            }}
-            slotProps={{
-              toolbar: { setFilterButtonEl },
-              panel: { anchorEl: filterButtonEl },
-              columnsManagement: { getTogglableColumns },
-            }}
-            sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
-          />
-        </Card>
-      </DashboardContent>
-
-      {renderConfirmDialog()}
-    </>
+          slotProps={{
+            toolbar: { setFilterButtonEl },
+            panel: { anchorEl: filterButtonEl },
+            columnsManagement: { getTogglableColumns },
+          }}
+          sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
+        />
+      </Card>
+    </DashboardContent>
   );
 }
 

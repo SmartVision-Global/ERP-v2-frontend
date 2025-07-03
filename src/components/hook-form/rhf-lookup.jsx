@@ -14,7 +14,7 @@ export function RHFLookup({ name, label, data, disabled }) {
   return (
     <Field.Select name={name} label={label} size="small" disabled={disabled}>
       {data.map((item) => (
-        <MenuItem key={`${item.value}`} value={`${item.value}`}>
+        <MenuItem key={String(item.value)} value={String(item.value)}>
           {item.text}
         </MenuItem>
       ))}
@@ -114,8 +114,8 @@ export function RHFLookupMultiSelect({
               size="small"
               multiple
               displayEmpty={!!placeholder}
-              // label={label}
-
+              labelId={labelId}
+              label={label}
               renderValue={(selected) => {
                 const selectedItems = options.filter(
                   (item) => selected.includes(`${item.value}`) || selected.includes(item.value)

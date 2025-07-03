@@ -101,6 +101,10 @@ export const paths = {
         agencies: `${ROOTS.DASHBOARD}/humain-ressource/settings/agencies`,
         newAgencies: `${ROOTS.DASHBOARD}/humain-ressource/settings/agencies/new`,
         editAgencies: (id) => `${ROOTS.DASHBOARD}/humain-ressource/settings/agencies/${id}/edit`,
+
+        contracts: `${ROOTS.DASHBOARD}/humain-ressource/settings/contracts`,
+        newContract: `${ROOTS.DASHBOARD}/humain-ressource/settings/contracts/new`,
+        editContract: `${ROOTS.DASHBOARD}/humain-ressource/settings/contracts/edit`,
       },
       demandes: {
         root: `${ROOTS.DASHBOARD}/humain-ressource/demandes`,
@@ -192,6 +196,10 @@ export const paths = {
           `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/preparation/${id}/edit`,
         preparationDetails: (id) =>
           `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/preparation/${id}/details`,
+
+        extra: `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/extra`,
+        extraDetails: (id) =>
+          `${ROOTS.DASHBOARD}/humain-ressource/payroll-management/extra/${id}/details`,
       },
       paraTaxDeclaration: {
         root: `${ROOTS.DASHBOARD}/humain-ressource/para-tax-declaration/das`,

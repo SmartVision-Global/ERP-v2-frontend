@@ -58,12 +58,14 @@ export function useGetDeductionsCompensationsByContributoryImposable(contributor
   const memoizedValue = useMemo(
     () => ({
       deductionsCompensations: data?.data?.records || [],
+      deductionsCompensationsCount: data?.data?.total || [],
+
       deductionsCompensationsLoading: isLoading,
       deductionsCompensationsError: error,
       deductionsCompensationsValidating: isValidating,
       deductionsCompensationsEmpty: !isLoading && !isValidating && !data?.data?.records.length,
     }),
-    [data?.data?.records, error, isLoading, isValidating]
+    [data?.data?.records, data?.data?.total, error, isLoading, isValidating]
   );
 
   return memoizedValue;

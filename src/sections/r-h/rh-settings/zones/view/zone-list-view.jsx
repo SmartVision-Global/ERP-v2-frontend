@@ -228,7 +228,7 @@ export function ZoneListView() {
           heading="List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            // { name: 'Ressources humaine', href: paths.dashboard.root },
+            { name: 'Ressources humaine', href: paths.dashboard.root },
             { name: 'Zones' },
           ]}
           action={

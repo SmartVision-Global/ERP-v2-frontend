@@ -89,7 +89,7 @@ export const NewProductSchema = zod
     spouse_phone: zod.string().optional(),
 
     // Education
-    education: zod.string().optional(),
+    careerKnowledges: zod.array(zod.string().or(zod.number())).optional(),
     speciality: zod.string().optional(),
 
     // Emplacement et Structure Organisationnelle
@@ -157,7 +157,7 @@ export const NewProductSchema = zod
     bank_id: zod.string().optional().nullable(),
   })
   .superRefine((data, ctx) => {
-    if (data.family_situation === '3') {
+    if (String(data.family_situation) === '3') {
       if (!data.children) {
         ctx.addIssue({
           code: zod.ZodIssueCode.custom,
@@ -201,7 +201,7 @@ export const NewProductSchema = zod
         });
       }
     }
-    if (data.contract_type !== '2') {
+    if (String(data.contract_type) !== '2') {
       if (!data.to_date) {
         ctx.addIssue({
           code: zod.ZodIssueCode.custom,
@@ -210,7 +210,7 @@ export const NewProductSchema = zod
         });
       }
     }
-    if (data.payment_type !== '2') {
+    if (String(data.payment_type) !== '2') {
       if (!data.rib) {
         ctx.addIssue({
           code: zod.ZodIssueCode.custom,
@@ -230,7 +230,7 @@ export const NewProductSchema = zod
 
 export function ActifNewEditForm({ currentProduct }) {
   const router = useRouter();
-  const { dataLookups } = useMultiLookups([
+  const { dataLookups, dataLoading } = useMultiLookups([
     { entity: 'subsidiaries', url: 'hr/lookups/identification/subsidiary' },
     { entity: 'directions', url: 'hr/lookups/identification/direction' },
     { entity: 'sites', url: 'settings/lookups/sites' },
@@ -244,7 +244,7 @@ export function ActifNewEditForm({ currentProduct }) {
     { entity: 'enterprises', url: 'settings/lookups/enterprises' },
     { entity: 'jobs', url: 'hr/lookups/jobs' },
     { entity: 'salary_categories', url: 'hr/lookups/identification/salary_category' },
-    { entity: 'salary_grids', url: 'hr/lookups/salary_grids' },
+    // { entity: 'salary_grids', url: 'hr/lookups/salary_grids' },
     { entity: 'salary_scale_levels', url: 'hr/lookups/identification/salary_scale_level' },
     { entity: 'agencies', url: 'hr/lookups/agencies' },
     { entity: 'banks', url: 'hr/lookups/identification/bank' },
@@ -316,7 +316,7 @@ export function ActifNewEditForm({ currentProduct }) {
     spouse_phone: '',
 
     // Education
-    education: '',
+    careerKnowledges: [],
     speciality: '',
 
     // Emplacement et Structure Organisationnelle
@@ -357,12 +357,14 @@ export function ActifNewEditForm({ currentProduct }) {
     rib: '',
     bank_id: '',
   };
-
+  const formattedNation = nationalities?.map((nat) => ({
+    value: String(nat.value),
+    text: nat.text,
+  }));
   const methods = useForm({
     resolver: zodResolver(NewProductSchema),
     defaultValues,
     values: {
-      ...currentProduct,
       firstname_fr: currentProduct?.first_name?.fr || '',
       firstname_ar: currentProduct?.first_name?.ar || '',
       lastname_fr: currentProduct?.last_name?.fr || '',
@@ -379,7 +381,7 @@ export function ActifNewEditForm({ currentProduct }) {
       social_security_number: currentProduct?.social_security_number || '',
       national_number: currentProduct?.national_number || '',
       act_of_birth_number: currentProduct?.act_of_birth_number || '',
-      family_situation: currentProduct?.family_situation || '1',
+      family_situation: currentProduct?.family_situation?.toString() || '1',
       birth_date: currentProduct?.birth_date || null,
       father_firstname_fr: currentProduct?.first_name_father?.fr || '',
       father_firstname_ar: currentProduct?.first_name_father?.ar || '',
@@ -387,7 +389,7 @@ export function ActifNewEditForm({ currentProduct }) {
       mother_firstname_ar: currentProduct?.first_name_mother?.ar || '',
       mother_lastname_fr: currentProduct?.last_name_mother?.fr || '',
       mother_lastname_ar: currentProduct?.last_name_mother?.ar || '',
-      nationality_id: currentProduct?.nationality_id?.toString() || '',
+      nationality_id: currentProduct?.nationality_id ? String(currentProduct?.nationality_id) : '',
       subsidiary_id: currentProduct?.subsidiary_id?.toString() || '',
       direction_id: currentProduct?.direction_id?.toString() || '',
       site_id: currentProduct?.site_id?.toString() || '',
@@ -425,6 +427,7 @@ export function ActifNewEditForm({ currentProduct }) {
       contract_probation: currentProduct?.contract_probation || 0,
       payment_type: currentProduct?.payment_type || '1',
       rib: currentProduct?.rib || '',
+      careerKnowledges: currentProduct?.careerKnowledges || [],
     },
   });
 
@@ -470,12 +473,16 @@ export function ActifNewEditForm({ currentProduct }) {
     }
   };
   const values = watch();
-  const { data: salaryGrids } = useGetLookups('hr/lookups/salary_grids', {
-    salary_category: values.salary_category_id || null,
-    rung: values.rung_id || null,
-    salary_scale_level: values.salary_scale_level_id || null,
-    job: values.job_id || null,
-  });
+
+  const { data: salaryGrids, dataLoading: loadingSalaryGrids } = useGetLookups(
+    'hr/lookups/salary_grids',
+    {
+      salary_category: values.salary_category_id || null,
+      rung: values.rung_id || null,
+      salary_scale_level: values.salary_scale_level_id || null,
+      job: values.job_id || null,
+    }
+  );
 
   const handleRemoveImage = useCallback(() => {
     setValue('image', null);
@@ -509,32 +516,32 @@ export function ActifNewEditForm({ currentProduct }) {
       spouse_phone: data.spouse_phone,
       children: data.children,
       minor_children: data.minor_children,
-      subsidiary_id: parseInt(data.subsidiary_id),
-      direction_id: parseInt(data.direction_id),
-      division_id: parseInt(data.division_id),
-      department_id: parseInt(data.department_id),
-      section_id: parseInt(data.section_id),
-      site_id: parseInt(data.site_id),
-      workshop_id: parseInt(data.workshop_id),
-      machine_id: parseInt(data.machine_id),
-      enterprise_id: parseInt(data.enterprise_id),
-      job_id: parseInt(data.job_id),
-      salary_grid_id: parseInt(data.salary_grid_id),
-      rate_id: parseInt(data.rate_id),
-      agency_id: parseInt(data.agency_id),
-      nationality_id: parseInt(data.nationality_id),
-      zone_id: parseInt(data.zone_id),
+      subsidiary_id: data.subsidiary_id,
+      direction_id: data.direction_id,
+      division_id: data.division_id,
+      department_id: data.department_id,
+      section_id: data.section_id,
+      site_id: data.site_id,
+      workshop_id: data.workshop_id,
+      machine_id: data.machine_id,
+      enterprise_id: data.enterprise_id,
+      job_id: data.job_id,
+      salary_grid_id: data.salary_grid_id,
+      rate_id: data.rate_id,
+      agency_id: data.agency_id,
+      nationality_id: data.nationality_id,
+      zone_id: data.zone_id,
       job_regime: data.job_regime,
       allowed_overtime: data.allowed_overtime,
       allowed_exit_voucher: data.allowed_exit_voucher,
       pea_exist: data.pea_exist,
-      salary_supplemental: parseInt(data.salary_supplemental),
+      salary_supplemental: data.salary_supplemental,
       payroll_calculation: data.payroll_calculation,
       days_per_month: data.days_per_month,
       hours_per_month: data.hours_per_month,
       declaration_date: data.declaration_date,
       service_start: data.service_start,
-      service_end: null,
+      service_end: data.service_end,
       contract_type: data.contract_type,
       contract_probation: data.contract_probation,
       pea_rate: 0,
@@ -547,6 +554,7 @@ export function ActifNewEditForm({ currentProduct }) {
       address: { fr: data.adressFr, ar: data.adressAr },
       photo: data.photo ?? null,
       employment_certificate: data.employment_certificate ?? null,
+      careerKnowledges: data.careerKnowledges,
     };
 
     try {
@@ -612,9 +620,11 @@ export function ActifNewEditForm({ currentProduct }) {
               ))}
             </Field.Select>
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="nationality_id" label="Nationalité" data={nationalities} />
-          </Grid>
+          {!dataLoading && (
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Lookup name="nationality_id" label="Nationalité" data={formattedNation} />
+            </Grid>
+          )}
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.Text name="phone" label="Téléphone" />
           </Grid>
@@ -698,6 +708,10 @@ export function ActifNewEditForm({ currentProduct }) {
                 maxSize={3145728}
                 onDelete={handleRemoveCertificate}
                 onDrop={onDropCertificate}
+                accept={{
+                  'image/*': [],
+                  'application/pdf': [],
+                }}
               />
             </Stack>
           </Grid>
@@ -723,6 +737,8 @@ export function ActifNewEditForm({ currentProduct }) {
       </Stack>
     </Card>
   );
+  console.log('vvvv', values);
+
   const renderFamilyInformation = () => (
     <Card>
       <CardHeader title="Informations Familiales" sx={{ mb: 3 }} />
@@ -794,20 +810,20 @@ export function ActifNewEditForm({ currentProduct }) {
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="education" label="Niveau d’études" data={careerKnowledges} />
-            {/* {EDUCATION_LEVEL_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select> */}
+        {!dataLoading && (
+          <Grid container spacing={3}>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.LookupMultiSelect
+                name="careerKnowledges"
+                label="Niveau d’études"
+                options={careerKnowledges}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Text name="speciality" label="Spécialité" />
+            </Grid>
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="speciality" label="Spécialité" />
-          </Grid>
-        </Grid>
+        )}
       </Stack>
     </Card>
   );
@@ -822,109 +838,38 @@ export function ActifNewEditForm({ currentProduct }) {
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="subsidiary_id" label="Filiale" data={subsidiaries} />
-            {/* <Field.Select name="subsidiary_id" label="Filiale" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select> */}
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="direction_id" label="Direction" data={directions} />
+        {!dataLoading && (
+          <Grid container spacing={3}>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Lookup name="subsidiary_id" label="Filiale" data={subsidiaries} />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Lookup name="direction_id" label="Direction" data={directions} />
+            </Grid>
 
-            {/* <Field.Select name="direction_id" label="Direction" size="small">
-              {PRODUCT_DEPARTEMENT_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select> */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Lookup name="site_id" label="Site" data={sites} />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Lookup name="division_id" label="Division" data={divisions} />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Lookup name="department_id" label="Departement" data={departments} />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Lookup name="section_id" label="Sections" data={sections} />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Lookup name="workshop_id" label="Atelier" data={workshops} />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Lookup name="machine_id" label="Machine" data={machines} />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Lookup name="zone_id" label="Zone" data={zones} />
+            </Grid>
           </Grid>
-          {/* <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="lieu" label="Lieu" />
-          </Grid> */}
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="site_id" label="Site" data={sites} />
-
-            {/* <Field.Select name="site_id" label="Site" size="small">
-              {PRODUCT_SITE_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select> */}
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="division_id" label="Division" data={divisions} />
-
-            {/* <Field.Select name="division_id" label="Division" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select> */}
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="department_id" label="Departement" data={departments} />
-
-            {/* <Field.Select name="department_id" label="Departement" size="small">
-              {COMMUN_SERVICE_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select> */}
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="section_id" label="Sections" data={sections} />
-
-            {/* <Field.Select name="section_id" label="Sections" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select> */}
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="workshop_id" label="Atelier" data={workshops} />
-
-            {/* <Field.Select name="workshop_id" label="Atelier" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select> */}
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="machine_id" label="Machine" data={machines} />
-
-            {/* <Field.Select name="machine_id" label="Machine" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select> */}
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="zone_id" label="Zone" data={zones} />
-
-            {/* <Field.Select name="zone_id" label="Zone" size="small">
-              {USER_STATUS_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select> */}
-          </Grid>
-        </Grid>
+        )}
       </Stack>
     </Card>
   );
@@ -936,109 +881,112 @@ export function ActifNewEditForm({ currentProduct }) {
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="enterprise_id" label="Societé" data={enterprises} />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="job_id" label="Function" data={jobs} />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup
-              name="salary_category_id"
-              label="Catégorie socio-professionnelle"
-              data={salaryCategories}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="rung_id" label="Échelons" data={rungs} />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup
-              name="salary_scale_level_id"
-              label="Niveau de grille salariale"
-              data={salaryScaleLevels}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="salary_grid_id" label="Net à payer" data={salaryGrids} />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text
-              name="salary_supplemental"
-              label="Complément Salaire"
-              placeholder="0"
-              type="number"
-              slotProps={{ inputLabel: { shrink: true } }}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select name="job_regime" label="Régime de travail" size="small">
-              {PRODUCT_TEAM_TYPE_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select>
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="agency_id" label="Agences" data={agencies} />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Switch
-              name="allowed_overtime"
-              labelPlacement="start"
-              label="Peut effectuer des heures supplémentaires"
-              sx={{ display: 'flex', justifyContent: 'space-between' }}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Switch
-              name="allowed_exit_voucher"
-              labelPlacement="start"
-              label="Peut effectuer des prélèvements du stock"
-              sx={{ display: 'flex', justifyContent: 'space-between' }}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Switch
-              name="pea_exist"
-              labelPlacement="start"
-              label="Indemnité d'expérience professionnelle"
-              sx={{ display: 'flex', justifyContent: 'space-between' }}
-            />
-          </Grid>
-          {/* <Grid size={{ xs: 12, md: 6 }} /> */}
+        {!dataLoading && (
+          <Grid container spacing={3}>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Lookup name="enterprise_id" label="Societé" data={enterprises} />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Lookup name="job_id" label="Function" data={jobs} />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Lookup
+                name="salary_category_id"
+                label="Catégorie socio-professionnelle"
+                data={salaryCategories}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Lookup name="rung_id" label="Échelons" data={rungs} />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Lookup
+                name="salary_scale_level_id"
+                label="Niveau de grille salariale"
+                data={salaryScaleLevels}
+              />
+            </Grid>
+            {!loadingSalaryGrids && (
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Field.Lookup name="salary_grid_id" label="Net à payer" data={salaryGrids} />
+              </Grid>
+            )}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Text
+                name="salary_supplemental"
+                label="Complément Salaire"
+                placeholder="0"
+                type="number"
+                slotProps={{ inputLabel: { shrink: true } }}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Select name="job_regime" label="Régime de travail" size="small">
+                {PRODUCT_TEAM_TYPE_OPTIONS.map((status) => (
+                  <MenuItem key={status.value} value={status.value}>
+                    {status.label}
+                  </MenuItem>
+                ))}
+              </Field.Select>
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Lookup name="agency_id" label="Agences" data={agencies} />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Switch
+                name="allowed_overtime"
+                labelPlacement="start"
+                label="Peut effectuer des heures supplémentaires"
+                sx={{ display: 'flex', justifyContent: 'space-between' }}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Switch
+                name="allowed_exit_voucher"
+                labelPlacement="start"
+                label="Peut effectuer des prélèvements du stock"
+                sx={{ display: 'flex', justifyContent: 'space-between' }}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Switch
+                name="pea_exist"
+                labelPlacement="start"
+                label="Indemnité d'expérience professionnelle"
+                sx={{ display: 'flex', justifyContent: 'space-between' }}
+              />
+            </Grid>
 
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Lookup name="rate_id" label="Regime de cotisation" data={rates} />
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Lookup name="rate_id" label="Regime de cotisation" data={rates} />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Select
+                name="payroll_calculation"
+                label="Méthode de calcul de la paie"
+                size="small"
+              >
+                {COMMUN_CALCULATION_METHOD_OPTIONS.map((status) => (
+                  <MenuItem key={status.value} value={status.value}>
+                    {status.label}
+                  </MenuItem>
+                ))}
+              </Field.Select>
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Number name="days_per_month" label="Jours par mois" type="number" />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.Number name="hours_per_month" label="Heures par mois" type="number" />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.DatePicker name="declaration_date" label="Date déclaration" />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Field.DatePicker name="service_start" label="Date entrée" />
+            </Grid>
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Select
-              name="payroll_calculation"
-              label="Méthode de calcul de la paie"
-              size="small"
-            >
-              {COMMUN_CALCULATION_METHOD_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </Field.Select>
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Number name="days_per_month" label="Jours par mois" type="number" />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Number name="hours_per_month" label="Heures par mois" type="number" />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.DatePicker name="declaration_date" label="Date déclaration" />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Field.DatePicker name="service_start" label="Date entrée" />
-          </Grid>
-        </Grid>
+        )}
       </Stack>
     </Card>
   );
@@ -1062,7 +1010,7 @@ export function ActifNewEditForm({ currentProduct }) {
           <Grid size={{ xs: 12, md: 6 }}>
             <Field.DatePicker name="from_date" label="Du" />
           </Grid>
-          {values.contract_type !== '2' && (
+          {String(values.contract_type) !== '2' && (
             <Grid size={{ xs: 12, md: 6 }}>
               <Field.DatePicker name="to_date" label="Au" />
             </Grid>
@@ -1079,14 +1027,16 @@ export function ActifNewEditForm({ currentProduct }) {
               ))}
             </Field.Select>
           </Grid>
-          {values.payment_type !== '2' && (
+          {String(values.payment_type) !== '2' && (
             <>
               <Grid size={{ xs: 12, md: 6 }}>
                 <Field.Text name="rib" label="RIB" />
               </Grid>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <Field.Lookup name="bank_id" label="Banque" data={banks} />
-              </Grid>
+              {!dataLoading && (
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Field.Lookup name="bank_id" label="Banque" data={banks} />
+                </Grid>
+              )}
             </>
           )}
         </Grid>

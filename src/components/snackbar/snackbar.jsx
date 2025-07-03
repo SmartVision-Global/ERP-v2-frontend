@@ -18,7 +18,7 @@ export function Snackbar() {
         position="top-right"
         className={snackbarClasses.root}
         toastOptions={{
-          unstyled: true,
+          // unstyled: true,
           classNames: {
             toast: snackbarClasses.toast,
             icon: snackbarClasses.icon,
