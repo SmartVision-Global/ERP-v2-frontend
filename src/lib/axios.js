@@ -200,4 +200,14 @@ export const endpoints = {
   das: '/v1/hr/parafiscal_declaration/das',
   dasDetails: '/v1/hr/parafiscal_declaration/das/details',
   dasDetailsDownload: '/v1/hr/parafiscal_declaration/das/download',
+
+  lookups: {
+    stores: 'settings/lookups/stores',
+    tiers: 'inventory/lookups/tiers',
+    sites:'settings/lookups/sites',
+    measurement_units:'settings/lookups/measurement-units',
+    families:'settings/lookups/families',
+    categories:'settings/lookups/categories',
+    workshops:'settings/lookups/workshops',
+  },
 };

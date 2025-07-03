@@ -6,7 +6,7 @@ import { MenuItem, TextField, ListSubheader } from '@mui/material';
 
 import { useGetLookups } from 'src/actions/lookups';
 
-export function SelectSearch({ name, label, url, value, onChange, ...other }) {
+export function SelectSearch({ name, label, url, value, onChange, params, ...other }) {
   const [inputValue, setInputValue] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -27,6 +27,7 @@ export function SelectSearch({ name, label, url, value, onChange, ...other }) {
   const { data: options, dataLoading } = useGetLookups(url, {
     search: searchTerm,
     selected_value: value,
+    ...params,
   });
 
  

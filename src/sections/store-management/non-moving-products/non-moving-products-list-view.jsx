@@ -20,6 +20,7 @@ import {
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
+import { endpoints } from 'src/lib/axios';
 
 import { CONFIG } from 'src/global-config';
 import { useMultiLookups } from 'src/actions/lookups';
@@ -53,7 +54,6 @@ import {
 } from './non-moving-products-table-rows';
 import { NON_MOVING_PRODUCTS_STATUS_OPTIONS } from 'src/_mock/stores/raw-materials/data';
 import NonMovingProductsHistoryList from './non-moving-products-history-list';
-
 
 // ----------------------------------------------------------------------
 
@@ -152,22 +152,15 @@ export function NonMovingProductsListView({ isSelectionDialog = false, component
   ], [t, handleOpenDetail]);
 
 
-
-  const stores = dataLookups.stores || [];
-  const measure_units = dataLookups.measure_units || [];
-  const sites = dataLookups.sites || [];
-  const families = dataLookups.families || [];
-  const categories = dataLookups.categories || [];
-
   const FILTERS_OPTIONS = useMemo(
     () => [
-      { id: 'site_id', type: 'select', options: sites || [], label: t('filters.site'), serverData: true },
-      { id: 'store_id', type: 'select', options: stores || [], label: t('filters.store'), serverData: true },
+      { id: 'site_id', type: 'lookup', label: t('filters.site'), url: endpoints.lookups.sites},
+      { id: 'store_id', type: 'lookup', label: t('filters.store'), url: endpoints.lookups.stores},
       { id: 'code', type: 'input', label: t('filters.code') },
       { id: 'supplier_code', type: 'input', label: t('filters.supplier_code') },
       { id: 'local_code', type: 'input', label: t('filters.local_code') },
       { id: 'designation', type: 'input', label: t('filters.designation') },
-      { id: 'unit_measure_id', type: 'select', options: measure_units || [], serverData: true, label: t('filters.measure_unit') },
+      { id: 'unit_measure_id', type: 'lookup', label: t('filters.measure_unit'), url: endpoints.lookups.measurement_units},
       {
         id: 'status',
         type: 'select',
@@ -175,8 +168,8 @@ export function NonMovingProductsListView({ isSelectionDialog = false, component
         label: t('filters.status'),
       },
       
-      { id: 'family_id', type: 'select', options: families || [], label: t('filters.family'), serverData: true },
-      { id: 'category_id', type: 'select', options: categories || [], label: t('filters.category'), serverData: true },
+      { id: 'family_id', type: 'lookup', label: t('filters.family'), url: endpoints.lookups.families},
+      { id: 'category_id', type: 'lookup', label: t('filters.category'), url: endpoints.lookups.categories},
       {
         id: 'last_purchase',
         type: 'date',
@@ -215,7 +208,7 @@ export function NonMovingProductsListView({ isSelectionDialog = false, component
         width: 1,
       },
     ],
-    [t, stores, families, categories]
+    [t]
   );
 
   const [filterButtonEl, setFilterButtonEl] = useState(null);

@@ -22,7 +22,6 @@ import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { CONFIG } from 'src/global-config';
-import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { PRODUCT_STATUS_OPTIONS, IMAGE_OPTIONS } from 'src/_mock';
 import { useGetOperations, getFiltredOperations } from 'src/actions/store-management/operation';
@@ -112,19 +111,6 @@ export function OperationsListView({ isSelectionDialog = false, componentsProps,
       breadcrumbName: t('views.stocks'),
     };
   }, [product_type, t]);
-
-  const { dataLookups } = useMultiLookups([
-    { entity: 'measurementUnits', url: 'settings/lookups/measurement-units' },
-    { entity: 'categories', url: 'settings/lookups/categories', params: { group: 1 } },
-    { entity: 'families', url: 'settings/lookups/families', params: { group: 1 } },
-    { entity: 'stores', url: 'settings/lookups/stores' },
-  ]);
-
-  const measurementUnits = dataLookups.measurementUnits || [];
-  const categories = dataLookups.categories || [];
-  const families = dataLookups.families || [];
-  // const subFamilies = families.length > 0 ? families.find((f) => f?.id.toString() === selectedParent)?.children || [] : [];
-  const stores = dataLookups.stores || [];
 
   const columns_ = useMemo(() => columns(t), [t]);
 

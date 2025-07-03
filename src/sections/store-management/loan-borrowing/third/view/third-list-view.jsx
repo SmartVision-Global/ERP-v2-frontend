@@ -305,11 +305,7 @@ export function ThirdListView({ isSelectionDialog = false, componentsProps, onSe
               columnsManagement: { getTogglableColumns },
             }}
             sx={{
-              [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' },
-              '& .alert-column': { backgroundColor: '#FFEFCE' },
-              '& .min-column': { backgroundColor: '#FCD1D1' },
-              '& .consumption-column': { backgroundColor: '#BFDEFF' },
-              '& .unknown2-column': { backgroundColor: '#C7F1E5' },
+              [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' }
             }}
           />
           

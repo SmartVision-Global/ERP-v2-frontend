@@ -20,9 +20,10 @@ import {
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
+import { endpoints } from 'src/lib/axios';
 
 import { CONFIG } from 'src/global-config';
-import { useMultiLookups } from 'src/actions/lookups';
+// import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useGetBorrowings, getFiltredBorrowings, confirmBorrowing, cancelBorrowing } from 'src/actions/store-management/borrowing';
 
@@ -72,11 +73,11 @@ export function BorrowingListView({ isSelectionDialog = false, componentsProps, 
   const [tableData, setTableData] = useState(borrowings);
   const { t } = useTranslate('store-management-module');
 
-  const { dataLookups } = useMultiLookups([
+  // const { dataLookups } = useMultiLookups([
    
-    { entity: 'tiers', url: 'inventory/lookups/tiers' },
-    { entity: 'stores', url: 'settings/lookups/stores' },
-  ]);
+  //   { entity: 'tiers', url: 'inventory/lookups/tiers' },
+  //   { entity: 'stores', url: 'settings/lookups/stores' },
+  // ]);
 
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedBorrowingForProducts, setSelectedBorrowingForProducts] = useState(null);
@@ -184,16 +185,17 @@ export function BorrowingListView({ isSelectionDialog = false, componentsProps, 
   ], [t, handleOpenDetail]);
 
 
-  const tiers = dataLookups.tiers || [];
-  const stores = dataLookups.stores || [];
+  // const tiers = dataLookups.tiers || [];
+  // const stores = dataLookups.stores || [];
 
   const FILTERS_OPTIONS = useMemo(
     () => [
       { id: 'code', type: 'input', label: t('filters.code') },
       { id: 'observation', type: 'input', label: t('filters.observation') },
-      { id: 'tiers', type: 'select', options: tiers || [], label: t('filters.tiers'), serverData: true },
+      // { id: 'tiers', type: 'select', options: tiers || [], label: t('filters.tiers'), serverData: true },
+      { id: 'tier_id', type: 'lookup', label: t('filters.tiers'), url: endpoints.lookups.tiers},
       // { id: 'store_id', type: 'select', options: stores || [], label: t('filters.store'), serverData: true },
-      { id: 'store_id', type: 'lookup', label: t('filters.store'), url: 'settings/lookups/stores' },
+      { id: 'store_id', type: 'lookup', label: t('filters.store'), url: endpoints.lookups.stores},
       { id: 'nature', type: 'select', options: BORROWING_NATURE_OPTIONS, label: t('filters.nature')},
       {
         id: 'type',
@@ -223,7 +225,8 @@ export function BorrowingListView({ isSelectionDialog = false, componentsProps, 
         width: 1,
       },
     ],
-    [t, tiers, stores]
+    [t]
+    // [t, tiers, stores]
   );
 
   const [filterButtonEl, setFilterButtonEl] = useState(null);

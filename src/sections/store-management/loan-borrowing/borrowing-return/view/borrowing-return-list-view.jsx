@@ -20,9 +20,9 @@ import {
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
+import { endpoints } from 'src/lib/axios';
 
 import { CONFIG } from 'src/global-config';
-import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { useGetBorrowingReturns, getFiltredBorrowingReturns, confirmBorrowingReturn, cancelBorrowingReturn } from 'src/actions/store-management/borrowing-return';
 
@@ -36,20 +36,16 @@ import { useTranslate } from 'src/locales';
 import {
   RenderCellId,
   RenderCellCreatedDate,
-  RenderCellStatus,
-  RenderCellType,
   RenderCellCode,
   RenderCellObservation,
   RenderCellTiers,
   RenderCellStore,
   RenderCellNature,
-  RenderCellTypeBorrowing,
   RenderCellStatusBorrowing,
-  RenderCellReturnStatusBorrowing,
   RenderCellLoanBorrowing,
   RenderCellTypeBorrowingReturn,
 } from '../../table-rows';
-import { BORROWING_STATUS_OPTIONS, BORROWING_TYPE_OPTIONS, BORROWING_NATURE_OPTIONS, BORROWING_RETURN_TYPE_OPTIONS } from 'src/_mock/stores/raw-materials/data';
+import { BORROWING_STATUS_OPTIONS,  BORROWING_NATURE_OPTIONS, BORROWING_RETURN_TYPE_OPTIONS } from 'src/_mock/stores/raw-materials/data';
 import BorrowingReturnProductsList from './borrowing-return-products-list';
 import { BorrowingActionDialog } from '../../borrowing/view/borrowing-action-dialog';
 
@@ -113,10 +109,7 @@ export function BorrowingReturnListView() {
     setSelectedBorrowingReturnForProducts(null);
   };
 
-  const { dataLookups } = useMultiLookups([
-    { entity: 'tiers', url: 'inventory/lookups/tiers' },
-    { entity: 'stores', url: 'settings/lookups/stores' },
-  ]);
+
 
   const columns = useMemo(() => [
     {
@@ -180,19 +173,16 @@ export function BorrowingReturnListView() {
     },
   ], [t, handleOpenDetail]);
 
-  const tiers = dataLookups.tiers || [];
-  const stores = dataLookups.stores || [];
-
   const FILTERS_OPTIONS = useMemo(() => [
       { id: 'code', type: 'input', label: t('filters.code') },
       { id: 'borrowing_code', type: 'input', label: t('filters.borrowing_loan_code') },
-      { id: 'store_id', type: 'select', options: stores || [], label: t('filters.store'), serverData: true },
-      { id: 'tiers', type: 'select', options: tiers || [], label: t('filters.tiers'), serverData: true },
+      { id: 'store_id', type: 'lookup', label: t('filters.store'), url: endpoints.lookups.stores},
+      { id: 'tiers', type: 'lookup', label: t('filters.tiers'), url: endpoints.lookups.tiers},
       { id: 'nature', type: 'select', options: BORROWING_NATURE_OPTIONS, label: t('filters.nature')},
       { id: 'type', type: 'select', options: BORROWING_RETURN_TYPE_OPTIONS, label: t('filters.type') },
       { id: 'status', type: 'select', options: BORROWING_STATUS_OPTIONS, label: t('filters.status') },
       { id: 'created_date_start', type: 'date-range', label: t('filters.creation_date'), operatorMin: 'gte', operatorMax: 'lte', cols: 3, width: 1 },
-  ], [t, tiers, stores]);
+  ], [t]);
 
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState({});
@@ -297,6 +287,7 @@ export function BorrowingReturnListView() {
               panel: { anchorEl: filterButtonEl },
               columnsManagement: { getTogglableColumns },
             }}
+            sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
           />
         </Card>
       </DashboardContent>

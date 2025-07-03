@@ -182,6 +182,7 @@ export function TableToolbarCustom({
                   name={item.id}
                   label={item.label}
                   url={item.url}
+                  params={item?.params || {}}
                   value={filters[item.id] || ''}
                   onChange={(e) => getInput(e, item.type)}
                   size="small"

@@ -29,9 +29,9 @@ import {
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
+import { endpoints } from 'src/lib/axios';
 
 import { CONFIG } from 'src/global-config';
-import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { PRODUCT_STATUS_OPTIONS, IMAGE_OPTIONS } from 'src/_mock';
 import { useGetStocks, getFiltredStocks } from 'src/actions/store-management/stocks';
@@ -239,34 +239,37 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
     };
   }, [product_type, t]);
 
-  const { dataLookups } = useMultiLookups([
-    { entity: 'measurementUnits', url: 'settings/lookups/measurement-units' },
-    { entity: 'categories', url: 'settings/lookups/categories', params: { group: 1 } },
-    { entity: 'families', url: 'settings/lookups/families', params: { group: 1 } },
-    { entity: 'stores', url: 'settings/lookups/stores' },
-    { entity: 'workshops', url: 'settings/lookups/workshops' },
-  ]);
+  // const { dataLookups } = useMultiLookups([
+  //   { entity: 'measurementUnits', url: 'settings/lookups/measurement-units' },
+  //   { entity: 'categories', url: 'settings/lookups/categories', params: { group: 1 } },
+  //   { entity: 'families', url: 'settings/lookups/families', params: { group: 1 } },
+  //   { entity: 'stores', url: 'settings/lookups/stores' },
+  //   { entity: 'workshops', url: 'settings/lookups/workshops' },
+  // ]);
 
-  const measurementUnits = dataLookups.measurementUnits || [];
-  const categories = dataLookups.categories || [];
-  const families = dataLookups.families || [];
+  
+  // const families = dataLookups.families || [];
   // const subFamilies = families.length > 0 ? families.find((f) => f?.id.toString() === selectedParent)?.children || [] : [];
-  const stores = dataLookups.stores || [];
-  const workshops = dataLookups.workshops || [];
+
 
   const columns_ = useMemo(() => columns(t), [t]);
 
   const FILTERS_OPTIONS = useMemo(() => [
-    { id: 'store', type: 'select', options: stores, label: t('filters.store'), serverData: true },
+    // { id: 'store', type: 'select', options: stores, label: t('filters.store'), serverData: true },
+    { id: 'store_id', type: 'lookup', label: t('filters.store'), url: endpoints.lookups.stores},
     { id: 'code', type: 'input', label: t('filters.code') },
     { id: 'supplier_code', type: 'input', label: t('filters.supplier_code') },
     { id: 'builder_code', type: 'input', label: t('filters.builder_code') },
     { id: 'designation', type: 'input', label: t('filters.designation') },
     { id: 'status', type: 'select', options: PRODUCT_STATUS_OPTIONS, label: t('filters.status') },
-    { id: 'unit_measure_id', type: 'select', options: measurementUnits, label: t('filters.unit'), serverData: true },
-    { id: 'category', type: 'select', options: categories, label: t('filters.category'), serverData: true },
-    { id: 'family', type: 'select', options: families, label: t('filters.family'), serverData: true },
-    { id: 'workshop_id', type: 'select', options: workshops, label: t('filters.workshop'), serverData: true },
+    // { id: 'unit_measure_id', type: 'select', options: measurementUnits, label: t('filters.unit'), serverData: true },
+    { id: 'unit_measure_id', type: 'lookup', label: t('filters.unit'), url: endpoints.lookups.measurement_units},
+    // { id: 'category', type: 'select', options: categories, label: t('filters.category'), serverData: true },
+    { id: 'category_id', type: 'lookup', label: t('filters.category'), url: endpoints.lookups.categories, params: {group: product_type}},
+    // { id: 'family', type: 'select', options: families, label: t('filters.family'), serverData: true },
+    { id: 'family_id', type: 'lookup', label: t('filters.family'), url: endpoints.lookups.families, params: {group: product_type}},
+    // { id: 'workshop_id', type: 'select', options: workshops, label: t('filters.workshop'), serverData: true },
+    { id: 'workshop_id', type: 'lookup', label: t('filters.workshop'), url: endpoints.lookups.workshops},
     { id: 'image', type: 'select', options: IMAGE_OPTIONS, label: t('filters.image') },
     {
       id: 'created_date_start',
@@ -277,7 +280,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
       cols: 3,
       width: 1,
     },
-  ], [stores, measurementUnits, categories, families, t]);
+  ], [t]);
 
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState({});
