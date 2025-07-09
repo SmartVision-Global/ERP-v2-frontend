@@ -14,6 +14,7 @@ import {
   Typography,
 } from '@mui/material';
 
+import { useMultiLookups } from 'src/actions/lookups';
 import { createEntity } from 'src/actions/settings/validation-circuit';
 import { VALIDATION_CIRCUIT_TYPE_OPTIONS } from 'src/_mock/settings/validation-circuit';
 
@@ -54,6 +55,12 @@ export function ValidationRequestNewEditForm({ targetAction, onEnd, onCancel }) 
     type: 'sequential',
     steps: [],
   };
+
+  const { dataLookups } = useMultiLookups([
+    { entity: 'users', url:'settings/lookups/users',}
+  ]);
+
+  const { users } = dataLookups;
 
   const methods = useForm({
     resolver: zodResolver(ValidationRequestSchema),
@@ -151,7 +158,7 @@ export function ValidationRequestNewEditForm({ targetAction, onEnd, onCancel }) 
                   multiline
                   rows={2}
                 />
-                <Field.LookupMultiSelect name={`steps.${index}.users`} label="Users" options={MOCK_USERS} />
+                <Field.LookupMultiSelect name={`steps.${index}.users`} label="Users" options={users} />
                 <Field.Number
                   name={`steps.${index}.required_approvals`}
                   label="Required Approvals"

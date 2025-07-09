@@ -2,7 +2,9 @@
     "views": {
         "dashboard": "Dashboard",
         "validation_circuit": "Validation Circuit",
-        "list": "List"
+        "list": "List",
+        "human_resources": "Human Resources",
+        "zones": "Zones"
     },
     "text":{
         "required_approvals": "Required approvals"
@@ -53,7 +55,6 @@
         "loan_borrowing": "Loan Borrowing",
         "site": "Site",
         "workshop": "Workshop"
-        
     },
     "actions": {
         "add_stock": "Add Stock",
@@ -76,7 +77,9 @@
         "submit": "Submit",
         "add_borrowing_return": "Add Borrowing Return",
         "edit_borrowing_return": "Edit Borrowing Return",
-        "new_borrowing_return": "New Borrowing Return"
+        "new_borrowing_return": "New Borrowing Return",
+        "add": "Add",
+        "delete": "Delete"
     },
     "filters": {
         "search_placeholder": "Search...",
@@ -113,7 +116,10 @@
         "local_code": "Local Code",
         "site": "Site",
         "last_exit": "Last Exit",
-        "last_consumption": "Last Consumption"
+        "last_consumption": "Last Consumption",
+        "validator": "Validator",
+        "creation_start_date": "Creation start date",
+        "creation_end_date": "Creation end date"
     },
     "dialog": {
         "product_details": "Product Details: {{code}} -- {{designation}}",
@@ -130,7 +136,9 @@
         "cancel_borrowing_title": "Cancel Borrowing: {{code}}",
         "confirm_notes": "Confirmation Notes",
         "cancel_notes": "Cancellation Notes",
-        "product_list_title": "Product List"
+        "product_list_title": "Product List",
+        "delete_title": "Delete",
+        "delete_content": "Are you sure want to delete <strong> {{count}} </strong> items?"
     },
     "messages":{
         "no_results": "No results found",
@@ -140,7 +148,8 @@
         "third_updated": "Third updated",
         "third_created": "Third created",
         "borrowing_updated": "Borrowing updated",
-        "borrowing_created": "Borrowing created"
+        "borrowing_created": "Borrowing created",
+        "delete_success": "Delete success!"
     },
     "form": {
         "validations": {
@@ -271,7 +280,6 @@
             "transaction_tier": "Transaction Tier",
             "products": "Products",
             "cancel": "Cancel"
-           
         },
         "steps": {
             "identification": "Product Identification",

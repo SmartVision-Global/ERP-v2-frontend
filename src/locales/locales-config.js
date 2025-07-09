@@ -2,7 +2,7 @@
 
 export const fallbackLng = 'en';
 export const languages = ['en', 'fr', 'vi', 'cn', 'ar'];
-export const defaultNS = ['common', 'store-management-module', 'settings-module'];
+export const defaultNS = ['common', 'store-management-module', 'settings-module', 'purchase-supply-module'];
 
 // ----------------------------------------------------------------------
 
