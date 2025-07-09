@@ -4,12 +4,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useFieldArray } from 'react-hook-form';
 
 import Grid from '@mui/material/Grid2';
+import { LoadingButton } from '@mui/lab';
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
-import { Box, Button, Stepper, Step, StepLabel, MenuItem, IconButton, Typography, Stack, Modal, TextField, InputAdornment } from '@mui/material';
+import { Box, Button, Stepper, Step, StepLabel, MenuItem, IconButton, Typography, Stack, Modal, TextField, InputAdornment, StepButton, Card, CardHeader, Divider } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { endpoints } from 'src/lib/axios';
+import { useTranslate } from 'src/locales';
 import { useMultiLookups } from 'src/actions/lookups';
 import { useGetStocks } from 'src/actions/stores/raw-materials/stocks';
 import { createEntity, updateEntity } from 'src/actions/purchase-supply/purchase-order/order';
@@ -22,38 +25,38 @@ import { Form, Field } from 'src/components/hook-form';
 import { BebSelectList } from '../beb-select-list';
 
 // Validation schema for the order's first tab
-const orderSchema = z.object({
+const getOrderSchema = (t) => z.object({
   eon_voucher_id: z.string().optional(),
   selectedBEB: z.any().optional(),
-  status_id: z.string().nonempty({ message: 'Le statut est requis' }),
-  site_id: z.string().nonempty({ message: 'Site is required' }),
-  personal_id: z.string().nonempty({ message: 'Personnel is required' }),
-  type: z.string().nonempty({ message: 'Type is required' }),
-  priority: z.string().nonempty({ message: 'Priorité is required' }),
+  status_id: z.string().nonempty({ message: t('form.validations.status_required') }),
+  site_id: z.string().nonempty({ message: t('form.validations.site_required') }),
+  personal_id: z.string().nonempty({ message: t('form.validations.personal_required') }),
+  type: z.string().nonempty({ message: t('form.validations.type_required') }),
+  priority: z.string().nonempty({ message: t('form.validations.priority_required') }),
   observation: z.string().optional(),
   items: z.array(z.object({
-    product_id: z.string().nonempty({ message: 'Produit est requis' }),
-    purchased_quantity: z.number({ coerce: true }).min(1, { message: 'Quantité est requise' }),
-    requested_date: z.string().nonempty({ message: 'Date de besoins est requise' }),
+    product_id: z.string().nonempty({ message: t('form.validations.product_required') }),
+    purchased_quantity: z.number({ coerce: true }).min(1, { message: t('form.validations.quantity_required') }),
+    requested_date: z.string().nonempty({ message: t('form.validations.date_required') }),
     designation: z.string().optional(),
     supplier_code: z.string().optional(),
     current_quantity: z.number({ coerce: true }).optional(),
     observation: z.string().optional(),
     code: z.string().optional(),
     unit_measure: z.any().optional(),
-  })).nonempty({ message: 'Produit est requis' }),
+  })).nonempty({ message: t('form.validations.at_least_one_product') }),
 });
 
 // BEB Request Form with two tabs: Informations and Produits
 export function PurchaseOrderNewEditForm({ initialData }) {
-  console.log('initialData', initialData);
   const router = useRouter();
-  const [currentTab, setCurrentTab] = useState(0);
+  const { t } = useTranslate('purchase-supply-module');
+  const [activeStep, setActiveStep] = useState(0);
   const { dataLookups, dataLoading } = useMultiLookups([
-    { entity: 'persons', url: 'hr/lookups/personals' },
+    { entity: 'personals', url: 'hr/lookups/personals' },
     { entity: 'sites', url: 'settings/lookups/sites' },
   ]);
-  const personals = dataLookups.persons || [];
+  const personals = dataLookups.personals || [];
   const sites = dataLookups.sites || [];
   
   // Product selection filters and data
@@ -73,24 +76,26 @@ export function PurchaseOrderNewEditForm({ initialData }) {
   };
   // Columns for product selection grid
   const productColumns = [
-    { field: 'id', headerName: 'ID', width: 70 },
-    { field: 'code', headerName: 'Code', flex: 1, minWidth: 150 },
-    { field: 'supplier_code', headerName: 'Supplier Code', flex: 1, minWidth: 150 },
-    { field: 'builder_code', headerName: 'Builder Code', flex: 1, minWidth: 150 },
-    { field: 'designation', headerName: 'Designation', flex: 1.5, minWidth: 150 },
-    { field: 'quantity', headerName: 'Quantity', type: 'number', width: 100 },
+    { field: 'id', headerName: t('headers.id'), width: 70 },
+    { field: 'code', headerName: t('headers.code'), flex: 1, minWidth: 150 },
+    { field: 'supplier_code', headerName: t('headers.supplier_code'), flex: 1, minWidth: 150 },
+    { field: 'builder_code', headerName: t('form.labels.builder_code'), flex: 1, minWidth: 150 },
+    { field: 'designation', headerName: t('headers.designation'), flex: 1.5, minWidth: 150 },
+    { field: 'quantity', headerName: t('headers.current_quantity'), type: 'number', width: 100 },
     {
       field: 'actions', type: 'actions', headerName: '', width: 80,
       getActions: (params) => [
         <GridActionsCellItem
           icon={<Iconify icon="eva:plus-fill" />}
-          label="Add"
+          label={t('form.actions.add')}
           onClick={() => handleSelectProduct(params.row)}
           color="primary"
         />
       ],
     },
   ];
+
+  const orderSchema = getOrderSchema(t);
 
   const methods = useForm({
     resolver: zodResolver(orderSchema),
@@ -119,7 +124,7 @@ export function PurchaseOrderNewEditForm({ initialData }) {
     },
   });
 
-  const { handleSubmit, reset, control, register, setValue, watch } = methods;
+  const { handleSubmit, reset, control, register, setValue, watch, trigger, formState: { isSubmitting, errors } } = methods;
   const { fields: itemFields, append: appendItem, remove: removeItem } = useFieldArray({
     control,
     name: 'items',
@@ -127,20 +132,44 @@ export function PurchaseOrderNewEditForm({ initialData }) {
   });
   const [openModalIndex, setOpenModalIndex] = useState(null);
 
-  const handleTabChange = (event, newValue) => {
-    setCurrentTab(newValue);
+  const STEPS = [t('form.steps.information'), t('form.steps.products')];
+
+  const tabFields = {
+    0: ['site_id', 'personal_id', 'type', 'priority', 'status_id'],
+    1: ['items'],
+  };
+
+  const handleNextStep = async () => {
+    const fieldsToValidate = tabFields[activeStep];
+    const isValid = await trigger(fieldsToValidate);
+    if (isValid) {
+      setActiveStep(activeStep + 1);
+    }
+  };
+
+  const handlePreviousStep = () => {
+    setActiveStep(activeStep - 1);
+  };
+
+  const handleStepClick = (step) => async () => {
+    if (step > activeStep) {
+      const fieldsToValidate = tabFields[activeStep];
+      const isValid = await trigger(fieldsToValidate);
+      if (isValid) {
+        setActiveStep(step);
+      }
+    } else {
+      setActiveStep(step);
+    }
   };
 
   // Move to next tab or submit at the last tab
-  const handleFormSubmit = async (data) => {
+  const onSubmit = handleSubmit(async (data) => {
     console.log('data', data);
-    if (currentTab === 0) {
-      setCurrentTab(1);
-    } else {
-      if (data.requested_date) data.requested_date = data.requested_date.split('T')[0];
-      try {
-        // transform items to backend format
-        const payload = {
+    if (data.requested_date) data.requested_date = data.requested_date.split('T')[0];
+    try {
+      // transform items to backend format
+      const payload = {
           ...data,
           items: data.items.map((item) => ({
             product_id: item.product_id,
@@ -151,20 +180,19 @@ export function PurchaseOrderNewEditForm({ initialData }) {
             requested_date: item.requested_date,
           })),
         };
-        console.log('payload', payload);
+       
         if (initialData?.id) {
           await updateEntity('purchase_order', initialData.id, payload);
-          toast.success('Order updated');
+          toast.success(t('form.messages.order_updated'));
         } else {
           await createEntity('purchase_order', payload);
-          toast.success('Order created');
+          toast.success(t('form.messages.order_created'));
         }
         router.push(paths.dashboard.purchaseSupply.purchaseOrder.root);
       } catch (error) {
-        toast.error(error?.message || 'Creation failed');
+        toast.error(error?.message || t('form.messages.operation_failed'));
       }
-    }
-  };
+    });
 
   useEffect(() => {
     if (initialData && !dataLoading && sites.length > 0 && personals.length > 0) {
@@ -202,43 +230,51 @@ export function PurchaseOrderNewEditForm({ initialData }) {
     }
   }, [initialData, dataLoading, sites, personals, reset]);
 
+  const renderNavigationButtons = () => (
+    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3, mb:3 }}>
+      {activeStep > 0 && (
+        <LoadingButton variant="outlined" onClick={handlePreviousStep}>
+          {t('form.actions.previous_step')}
+        </LoadingButton>
+      )}
+      {activeStep < STEPS.length - 1 && (
+        <LoadingButton variant="contained" onClick={handleNextStep}>
+          {t('form.actions.next_step')}
+        </LoadingButton>
+      )}
+      {activeStep === STEPS.length - 1 && (
+        <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+          {t('form.actions.validate')}
+        </LoadingButton>
+      )}
+    </Box>
+  );
+
   return (
-    <Form methods={methods} onSubmit={handleSubmit(handleFormSubmit, (errors) => {
-      const flattenErrors = (obj) =>
-        Object.values(obj || {}).reduce((acc, val) => {
-          if (val?.message) acc.push(val.message);
-          else if (val != null && typeof val === 'object') acc.push(...flattenErrors(val));
-          return acc;
-        }, []);
-      const messages = flattenErrors(errors);
-      messages.forEach((msg) => toast.error(msg));
-    })}>
+    <Form methods={methods} onSubmit={onSubmit}>
       <input type="hidden" {...register('eon_voucher_id')} />
-      <Stepper activeStep={currentTab} alternativeLabel sx={{ mb: 3 }}>
-        <Step key="Informations">
-          <StepLabel onClick={() => setCurrentTab(0)} style={{ cursor: 'pointer' }}>
-            Informations
-          </StepLabel>
-        </Step>
-        <Step key="Produits">
-          <StepLabel onClick={() => setCurrentTab(1)} style={{ cursor: 'pointer' }}>
-            Produits
-          </StepLabel>
-        </Step>
+      <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 3 }}>
+        {STEPS.map((label, index) => (
+            <Step key={label}>
+                <StepButton onClick={handleStepClick(index)}>
+                    <StepLabel>{label}</StepLabel>
+                </StepButton>
+            </Step>
+        ))}
       </Stepper>
 
-      {currentTab === 0 && (
+      {activeStep === 0 && (
        
         <Box>
-        <Typography variant="h6" sx={{ mb: 2 }}>Information globale sur la demande d&apos;achat</Typography>
+        <Typography variant="h6" sx={{ mb: 2 }}>{t('form.labels.global_info_purchase_request')}</Typography>
         <Grid container spacing={3}>
       
           
           <Grid size={{ xs: 12, md: 6 }}>
-              <Field.Lookup name="site_id" label="Site" data={sites} />
+              <Field.LookupSearch name="site_id" label={t('form.labels.site')} url="settings/lookups/sites" />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-              <Field.Select name="type" label="Type" size="small" disabled={!!initialData}>
+              <Field.Select name="type" label={t('form.labels.type')} size="small">
                 {PRODUCT_TYPE_OPTIONS.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.label}
@@ -247,7 +283,7 @@ export function PurchaseOrderNewEditForm({ initialData }) {
               </Field.Select>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-              <Field.Select name="priority" label="Priorité" size="small">
+              <Field.Select name="priority" label={t('form.labels.priority')} size="small">
                 {PRIORITY_OPTIONS.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.label}
@@ -257,14 +293,14 @@ export function PurchaseOrderNewEditForm({ initialData }) {
           </Grid>
 
           <Grid size={{ xs: 12 }}>
-            <BebSelectList disabled={!!initialData}/>
+            <BebSelectList />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-              <Field.Lookup name="personal_id" label="Personnel" data={personals}  disabled={!!initialData}/>
+              <Field.LookupSearch name="personal_id" label={t('form.labels.personal')} url={endpoints.lookups.personals} />
           </Grid>
           
           <Grid size={{ xs: 12, md: 6 }}>
-              <Field.Select name="status_id" label="Statut" size="small">
+              <Field.Select name="status_id" label={t('form.labels.status')} size="small">
                 {TWO_STATUS_OPTIONS.map((opt) => (
                   <MenuItem key={opt.value} value={`${opt.value}`}>{opt.label}</MenuItem>
                 ))}
@@ -273,156 +309,162 @@ export function PurchaseOrderNewEditForm({ initialData }) {
           <Grid size={{ xs: 12, md: 6 }}>
               <Field.Text
                 name="observation"
-                label="Observations"
+                label={t('form.labels.observations')}
                 multiline
                 rows={3}
               />
-            </Grid>
-
-            <Grid size={{ xs: 12, md: 12 }} display="flex" justifyContent="flex-end">
-              <Button onClick={() => setCurrentTab(1)} variant="contained">
-                ÉTAPE SUIVANTE
-              </Button>
             </Grid>
           </Grid>
           </Box>
        
       )}
 
-      {currentTab === 1 && (
-        <Box>
-          <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 3 }}>
-            <Typography variant="subtitle2">Produits</Typography>
-            <IconButton color="primary" onClick={() => {
-              appendItem({
-                product_id: '',
-                code: '',
-                supplier_code: '',
-                designation: '',
-                current_quantity: '',
-                purchased_quantity: '',
-                observation: '',
-                unit_measure: { designation: '' },
-                requested_date: new Date().toISOString().split('T')[0],
-              });
-              setOpenModalIndex(itemFields.length);
-            }}>
-              <Iconify icon="eva:plus-fill" />
-            </IconButton>
-      </Stack>
-          <Box sx={{ mt: 2 }}>
-            {itemFields.map((field, index) => (
-              <Box key={field.fieldKey} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 2, mb: 2 }}>
-                {/* First row: Code, Code Fournisseur, Désignation, Quantité actuelle */}
-                <Grid container spacing={2}>
-                  <Grid size={{ xs: 12, md: 3 }}>
-                    <Field.Text
-                      name={`items.${index}.code`}
-                      label="Code"
-                      InputProps={{ readOnly: true }}
-                      onClick={() => setOpenModalIndex(index)}
-                    />
+      {activeStep === 1 && (
+        <Card>
+          <CardHeader 
+            title={STEPS[1]}
+            subheader={t('form.labels.products_subheader')} 
+            sx={{ mb: 3 }} 
+          />
+          <Divider />
+          <Stack spacing={3} sx={{ p: 3 }}>
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <Typography variant="subtitle2">{t('form.labels.add_products')}</Typography>
+              <IconButton color="primary" onClick={() => {
+                appendItem({
+                  product_id: '',
+                  code: '',
+                  supplier_code: '',
+                  designation: '',
+                  current_quantity: '',
+                  purchased_quantity: '',
+                  observation: '',
+                  unit_measure: { designation: '' },
+                  requested_date: new Date().toISOString().split('T')[0],
+                });
+                setOpenModalIndex(itemFields.length);
+              }}>
+                <Iconify icon="eva:plus-fill" />
+              </IconButton>
+            </Stack>
+            {!!errors.items && <Typography color="error" sx={{ mt: 2 }}>{errors.items.message}</Typography>}
+            <Box sx={{ mt: 2 }}>
+              {itemFields.map((field, index) => (
+                <Box key={field.fieldKey} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 2, mb: 2 }}>
+                  <Grid container spacing={2}>
+                    <Grid size={{ xs: 12, md: 4 }}>
+                      <Field.Text
+                        name={`items.${index}.code`}
+                        label={t('form.labels.code')}
+                        InputProps={{ readOnly: true }}
+                        onClick={() => setOpenModalIndex(index)}
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 4 }}>
+                      <Field.Text
+                        name={`items.${index}.supplier_code`}
+                        label={t('form.labels.supplier_code')}
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 4 }}>
+                      <Field.Text
+                        name={`items.${index}.designation`}
+                        label={t('form.labels.designation')}
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Grid>
                   </Grid>
-                  <Grid size={{ xs: 12, md: 3 }}>
-                    <Field.Text
-                      name={`items.${index}.supplier_code`}
-                      label="Code Fournisseur"
-                      InputProps={{ readOnly: true }}
-                    />
+
+                  <Grid container spacing={2} sx={{ mt: 2 }}>
+                    <Grid size={{ xs: 12, md: 4 }}>
+                      <Field.Number
+                        name={`items.${index}.current_quantity`}
+                        label={t('form.labels.current_quantity')}
+                        disabled
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 4 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'start', gap: 1 }}>
+                        <Box sx={{ width: 36, height: 36, borderRadius: '25%', bgcolor: 'grey.300', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Typography variant="subtitle2" sx={{ fontSize: '1rem' }}>
+                            {watch(`items.${index}.unit_measure`)?.designation || ''}
+                          </Typography>
+                        </Box>
+                        <Field.Number name={`items.${index}.purchased_quantity`} label={t('form.labels.quantity_to_buy')} />
+                      </Box>
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 4 }}>
+                      <Field.DatePicker
+                        name={`items.${index}.requested_date`}
+                        label={t('form.labels.needs_date')}
+                        disablePast
+                        slotProps={{ textField: { size: 'small' } }}
+                      />
+                    </Grid>
                   </Grid>
-                  <Grid size={{ xs: 12, md: 3 }}>
-                    <Field.Text
-                      name={`items.${index}.designation`}
-                      label="Désignation"
-                      InputProps={{ readOnly: true }}
-                    />
+                  
+                  <Grid container spacing={2} sx={{ mt: 2 }}>
+                    <Grid size={{ xs: 12, md:6 }}>
+                      <Field.Text name={`items.${index}.observation`} label={t('form.labels.observation')} multiline rows={2} />
+                    </Grid>
                   </Grid>
-                  <Grid size={{ xs: 12, md: 3 }}>
-                    <Field.Number
-                      name={`items.${index}.current_quantity`}
-                      label="Quantité actuelle"
-                      InputProps={{ readOnly: true }}
-                    />
-                  </Grid>
-                </Grid>
-                {/* Second row: Quantité A acheter and Observation */}
-                <Grid container spacing={2} sx={{ mt: 2 }}>
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Field.Number name={`items.${index}.purchased_quantity`} label="Quantité à acheter" />
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Field.DatePicker
-                      name={`items.${index}.requested_date`}
-                      label="Date de besoins"
-                      disablePast
-                      slotProps={{ textField: { size: 'small' } }}
-                    />
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Field.Text name={`items.${index}.observation`} label="Observation" multiline rows={2} />
-                  </Grid>
-                </Grid>
+
+                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                    <IconButton color="error" onClick={() => removeItem(index)}>
+                      <Iconify icon="eva:trash-2-outline" />
+                    </IconButton>
+                  </Box>
+                </Box>
+              ))}
+            </Box>
+            <Modal open={openModalIndex !== null} onClose={() => setOpenModalIndex(null)}>
+              <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: 'background.paper', p: 3, width: '80%', maxHeight: '80%', overflow: 'auto' }}>
+                <Typography variant="h6" mb={2}>{t('form.labels.select_product')}</Typography>
+                <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                  <TextField
+                    label={t('form.labels.code')}
+                    size="small"
+                    value={filterParams.code}
+                    onChange={(e) => setFilterParams((prev) => ({ ...prev, code: e.target.value }))}
+                  />
+                  <TextField
+                    label={t('form.labels.supplier_code')}
+                    size="small"
+                    value={filterParams.supplier_code}
+                    onChange={(e) => setFilterParams((prev) => ({ ...prev, supplier_code: e.target.value }))}
+                  />
+                  <TextField
+                    label={t('form.labels.builder_code')}
+                    size="small"
+                    value={filterParams.builder_code}
+                    onChange={(e) => setFilterParams((prev) => ({ ...prev, builder_code: e.target.value }))}
+                  />
+                  <TextField
+                    label={t('form.labels.designation')}
+                    size="small"
+                    value={filterParams.designation}
+                    onChange={(e) => setFilterParams((prev) => ({ ...prev, designation: e.target.value }))}
+                  />
+                </Box>
+                <DataGrid
+                  autoHeight
+                  rows={productOptions}
+                  columns={productColumns}
+                  loading={productsLoading}
+                  pageSizeOptions={[5, 10]}
+                  pageSize={5}
+                  disableColumnMenu
+                />
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                  <IconButton color="error" onClick={() => removeItem(index)}>
-                    <Iconify icon="eva:trash-2-outline" />
-                  </IconButton>
+                  <Button onClick={() => setOpenModalIndex(null)}>{t('form.actions.cancel')}</Button>
                 </Box>
               </Box>
-            ))}
-          </Box>
-          <Modal open={openModalIndex !== null} onClose={() => setOpenModalIndex(null)}>
-            <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: 'background.paper', p: 3, width: '80%', maxHeight: '80%', overflow: 'auto' }}>
-              <Typography variant="h6" mb={2}>Sélectionner un produit</Typography>
-              <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-                <TextField
-                  label="Code"
-                  size="small"
-                  value={filterParams.code}
-                  onChange={(e) => setFilterParams((prev) => ({ ...prev, code: e.target.value }))}
-                />
-                <TextField
-                  label="Supplier Code"
-                  size="small"
-                  value={filterParams.supplier_code}
-                  onChange={(e) => setFilterParams((prev) => ({ ...prev, supplier_code: e.target.value }))}
-                />
-                <TextField
-                  label="Builder Code"
-                  size="small"
-                  value={filterParams.builder_code}
-                  onChange={(e) => setFilterParams((prev) => ({ ...prev, builder_code: e.target.value }))}
-                />
-                <TextField
-                  label="Designation"
-                  size="small"
-                  value={filterParams.designation}
-                  onChange={(e) => setFilterParams((prev) => ({ ...prev, designation: e.target.value }))}
-                />
-              </Box>
-              <DataGrid
-                autoHeight
-                rows={productOptions}
-                columns={productColumns}
-                loading={productsLoading}
-                pageSizeOptions={[5, 10]}
-                pageSize={5}
-                disableColumnMenu
-              />
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                <Button onClick={() => setOpenModalIndex(null)}>Annuler</Button>
-              </Box>
-            </Box>
-          </Modal>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-            <Button onClick={() => setCurrentTab(0)} variant="outlined" sx={{ mr: 1 }}>
-              ÉTAPE PRÉCÉDENTE
-            </Button>
-            <Button type="submit" variant="contained">
-              VALIDER
-            </Button>
-          </Box>
-        </Box>
+            </Modal>
+          </Stack>
+        </Card>
       )}
+       {renderNavigationButtons()}
     </Form>
   );
 }

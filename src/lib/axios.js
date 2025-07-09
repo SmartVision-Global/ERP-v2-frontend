@@ -209,5 +209,6 @@ export const endpoints = {
     families:'settings/lookups/families',
     categories:'settings/lookups/categories',
     workshops:'settings/lookups/workshops',
+    personals:'hr/lookups/personals',
   },
 };

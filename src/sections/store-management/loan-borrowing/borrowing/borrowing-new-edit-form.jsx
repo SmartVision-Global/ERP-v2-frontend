@@ -11,6 +11,7 @@ import { Box, Card, Stack, Stepper, Step, StepLabel, StepButton, CardHeader, Typ
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { endpoints } from 'src/lib/axios';
 import { useTranslate } from 'src/locales';
 import { useMultiLookups } from 'src/actions/lookups';
 import { useGetStocks } from 'src/actions/stores/raw-materials/stocks';
@@ -218,7 +219,7 @@ export function BorrowingNewEditForm({ currentBorrowing }) {
                 <Stack spacing={3} sx={{ p: 3 }}>
                     <Grid container spacing={3}>
                         <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.LookupSearch name="tier_id" label={t('form.labels.tiers')} url="inventory/lookups/tiers" />
+                            <Field.LookupSearch name="tier_id" label={t('form.labels.tiers')} url={endpoints.lookups.tiers} />
                         </Grid>
                         <Grid size={{ xs: 12, md: 6 }}>
                             <Field.Select name="nature" label={t('form.labels.nature')} size="small">
@@ -232,7 +233,7 @@ export function BorrowingNewEditForm({ currentBorrowing }) {
                     </Grid>
                     <Grid container spacing={3}>
                         <Grid size={{ xs: 12, md: 6 }}>
-                            <Field.Lookup name="store_id" label={t('form.labels.store')} data={stores} />
+                            <Field.LookupSearch name="store_id" label={t('form.labels.store')} url={endpoints.lookups.stores} />
                         </Grid>
                         <Grid size={{ xs: 12, md: 6 }}>
                             <Field.Select name="type" label={t('form.labels.action')} size="small">
