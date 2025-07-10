@@ -223,6 +223,11 @@ export const paths = {
       processingDa: {
         root: `${ROOTS.DASHBOARD}/purchase-supply/processing-da`,
       },
+      supplier:{
+        root: `${ROOTS.DASHBOARD}/purchase-supply/supplier`,
+        new: `${ROOTS.DASHBOARD}/purchase-supply/supplier/new`,
+        edit: (id) => `${ROOTS.DASHBOARD}/purchase-supply/supplier/${id}/edit`,
+      }
     },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,

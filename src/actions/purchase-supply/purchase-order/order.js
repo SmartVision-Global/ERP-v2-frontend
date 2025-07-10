@@ -52,6 +52,8 @@ export async function getFiltredPurchaseOrders(params) {
   return response;
 }
 
+
+
 export function useGetPurchaseOrder(id) {
   const url = id ? `${ENDPOINT}/${id}` : '';
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
@@ -84,15 +86,23 @@ export function useGetPurchaseOrderItems(id, params) {
   const { data, isLoading, error, isValidating } = useSWR(swrKey, fetcher, swrOptions);
   const memoizedValue = useMemo(
     () => ({
-      items: data?.data || [],
+      items: data?.data?.records || [],
       itemsCount: data?.data?.total || 0,
       itemsLoading: isLoading,
       itemsError: error,
       itemsValidating: isValidating,
     }),
-    [data?.data, data?.data?.total, error, isLoading, isValidating]
+    [data?.data?.records, data?.data?.total, error, isLoading, isValidating]
   );
   return memoizedValue;
+}
+
+export async function getFiltredPurchaseOrderItems(id, params) {
+  const url = id ? ENDPOINT_ITEMS(id) : null;
+  const response = await axios.get(url, {
+    params,
+  });
+  return response;
 }
 
 // ----------------------------------------------------------------------

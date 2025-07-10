@@ -1,0 +1,125 @@
+{
+    "views": {
+        "list": "List",
+        "purchase_and_supply": "Purchase and Supply",
+        "purchase_request": "Purchase Request"
+    },
+    "text":{
+        
+    },
+    "headers": {
+        "id": "ID",
+        "code": "Code",
+        "time": "Time",
+        "status": "Status",
+        "type": "Type",
+        "eon_voucher": "E.O.N. Voucher",
+        "site": "Site",
+        "priority": "Priority",
+        "observations": "Observations",
+        "created_date": "Creation Date",
+        "photo": "Photo",
+        "supplier_code": "Supplier Code",
+        "local_code": "Local Code",
+        "designation": "Designation",
+        "unit": "Unit",
+        "quantity_to_purchase": "Quantity to purchase",
+        "requested_quantity": "Requested quantity",
+        "remaining_quantity": "Remaining quantity",
+        "processing": "Processing",
+        "current_quantity": "Current quantity",
+        "processing_date": "Processing date"
+    },
+    "actions": {
+        "purchase_request": "Purchase Request",
+        "close": "Close",
+        "validate": "Validate",
+        "edit": "Edit",
+        "confirm_order": "Confirm Order",
+        "cancel_order": "Cancel Order",
+        "product_list": "Product List",
+        "yes": "Yes"
+    },
+    "filters": {
+        "code": "Code",
+        "eon_voucher": "E.O.N. Voucher",
+        "status": "Status",
+        "type": "Type",
+        "site": "Site",
+        "priority": "Priority",
+        "requester": "Requester",
+        "created_by": "Created by",
+        "processed_by": "Processed by",
+        "date": "Date",
+        "search_placeholder": "Search..."
+    },
+    "dialog": {
+        "product_list_title": "Product List",
+        "confirm_purchase_order_title": "Confirm Purchase Order: {{code}}",
+        "cancel_purchase_order_title": "Cancel Purchase Order: {{code}}",
+        "confirm_notes": "Confirmation Notes",
+        "cancel_notes": "Cancellation Notes",
+        "validate_recovery_title": "Validate Recovery"
+    },
+    "messages":{
+        "confirm_success": "Purchase order confirmed successfully",
+        "cancel_success": "Purchase order cancelled successfully",
+        "action_failed": "Action failed",
+        "no_results": "No results found",
+        "no_image": "No image",
+        "order_updated": "Order updated successfully",
+        "order_created": "Order created successfully",
+        "operation_failed": "Operation failed"
+    },
+    "form": {
+        "validations": {
+            "status_required": "Status is required",
+            "site_required": "Site is required",
+            "personal_required": "Personal is required",
+            "type_required": "Type is required",
+            "priority_required": "Priority is required",
+            "product_required": "Product is required",
+            "quantity_required": "Quantity is required",
+            "date_required": "Date is required",
+            "at_least_one_product": "At least one product is required"
+        },
+        "messages": {
+            
+        },
+        "sections": {
+           
+        },
+        "labels": {
+            "message": "Message",
+            "global_info_purchase_request": "Global information about the purchase request",
+            "site": "Site",
+            "personal": "Personal",
+            "type": "Type",
+            "priority": "Priority",
+            "status": "Status",
+            "observations": "Observations",
+            "add_products": "Add products",
+            "products_subheader": "Please fill in the product table, the table must contain at least one product.",
+            "code": "Code",
+            "supplier_code": "Supplier Code",
+            "designation": "Designation",
+            "current_quantity": "Current quantity",
+            "quantity_to_buy": "Quantity to buy",
+            "needs_date": "Needs date",
+            "observation": "Observation",
+            "select_product": "Select a product",
+            "builder_code": "Builder Code"
+        },
+        "actions": {
+            "previous_step": "Previous Step",
+            "next_step": "Next Step",
+            "validate": "Validate",
+            "add": "Add",
+            "cancel": "Cancel"
+        },
+        "steps": {
+            "information": "Information",
+            "products": "Products"
+        }
+    }
+} 

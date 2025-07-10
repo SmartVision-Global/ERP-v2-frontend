@@ -2,7 +2,7 @@
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
 import { useBoolean } from 'minimal-shared/hooks';
-import { useState, useEffect, forwardRef, useCallback } from 'react';
+import { useState, useEffect, forwardRef, useCallback, useMemo } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -11,7 +11,16 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { DataGrid, GridActionsCellItem, gridClasses } from '@mui/x-data-grid';
-import { TextField, FormControl, InputAdornment, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import {
+  TextField,
+  FormControl,
+  InputAdornment,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  styled,
+} from '@mui/material';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -20,8 +29,17 @@ import { CONFIG } from 'src/global-config';
 import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
 // import { ORDER_STATUS_OPTIONS } from 'src/_mock';
-import { PRODUCT_TYPE_OPTIONS, PRIORITY_OPTIONS, ORDER_STATUS_OPTIONS } from 'src/_mock/expression-of-needs/Beb/Beb';
-import { useGetPurchaseOrders, getFiltredPurchaseOrders, confirmPurchaseOrder, cancelPurchaseOrder } from 'src/actions/purchase-supply/purchase-order/order';
+import {
+  PRODUCT_TYPE_OPTIONS,
+  PRIORITY_OPTIONS,
+  ORDER_STATUS_OPTIONS,
+} from 'src/_mock/expression-of-needs/Beb/Beb';
+import {
+  useGetPurchaseOrders,
+  getFiltredPurchaseOrders,
+  confirmPurchaseOrder,
+  cancelPurchaseOrder,
+} from 'src/actions/purchase-supply/purchase-order/order';
 
 import { Iconify } from 'src/components/iconify';
 import { toast } from 'src/components/snackbar';
@@ -31,6 +49,7 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { GridActionsClickItem } from 'src/sections/r-h/entries/recovery/view';
+import { useTranslate } from 'src/locales';
 
 import {
   RenderCellId,
@@ -42,7 +61,7 @@ import {
   RenderCellBEB,
   RenderCellPriority,
   RenderCellCode,
-} from '../order-table-row';
+} from '../../table-rows';
 import UtilsButton from 'src/components/custom-buttons/utils-button';
 import OrderProductsList from './OrderProductsList';
 import { OrderActionDialog } from './order-action-dialog';
@@ -53,18 +72,39 @@ const HIDE_COLUMNS = { category: false };
 
 const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
+const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
+  // Pin the actions column to the right
+  '& .MuiDataGrid-columnHeader[data-field="actions"]': {
+    position: 'sticky',
+    right: 0,
+    backgroundColor: theme.palette.grey[200],
+    zIndex: theme.zIndex.appBar,
+  },
+  '& .MuiDataGrid-cell[data-field="actions"]': {
+    position: 'sticky',
+    right: 0,
+    backgroundColor: theme.palette.grey[200],
+    zIndex: 1,
+    borderLeft: `1px solid ${theme.palette.divider}`,
+  },
+}));
+
 // ----------------------------------------------------------------------
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 
 export function OrderPurchaseList() {
   const confirmDialog = useBoolean();
+  const { t } = useTranslate('purchase-supply-module');
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: PAGE_SIZE,
   });
   const [selectedRow, setSelectedRow] = useState('');
-  const { purchaseOrders, purchaseOrdersLoading, purchaseOrdersCount } = useGetPurchaseOrders({ limit: PAGE_SIZE, offset: 0 });
-  console.log('purchaseOrders', purchaseOrders);
+  const { purchaseOrders, purchaseOrdersLoading, purchaseOrdersCount } = useGetPurchaseOrders({
+    limit: PAGE_SIZE,
+    offset: 0,
+  });
+
   const [rowCount, setRowCount] = useState(0);
 
   const { dataLookups } = useMultiLookups([{ entity: 'sites', url: 'settings/lookups/sites' }]);
@@ -75,24 +115,26 @@ export function OrderPurchaseList() {
 
   const sites = dataLookups.sites;
 
-  const FILTERS_OPTIONS = [
-    
-    { id: 'code', type: 'input', label: 'Code', inputType: 'string' },
-    { id: 'beb', type: 'input', label: 'B.E.B', inputType: 'string' },
-    { id: 'status', type: 'select', options: ORDER_STATUS_OPTIONS, label: 'Etat' },
-    {
-      id: 'type',
-      type: 'select',
-      options: PRODUCT_TYPE_OPTIONS,
-      label: 'Type',
-    },
-    { id: 'site_id', type: 'select', options: sites, label: 'Site', serverData: true },
-    { id: 'priority', type: 'select', options: PRIORITY_OPTIONS, label: 'Priorité' },
-    { id: 'personal_id', type: 'input', label: 'Demandeur', inputType: 'string' },
-    { id: 'created_by', type: 'input', label: 'Créee par', inputType: 'string' },
-    { id: 'treat_by', type: 'input', label: 'Traiter par', inputType: 'string' },
-    { id: 'created_at', type: 'date-range', label: 'Date', cols: 3 },
-  ];
+  const FILTERS_OPTIONS = useMemo(
+    () => [
+      { id: 'code', type: 'input', label: t('filters.code'), inputType: 'string' },
+      { id: 'beb', type: 'input', label: t('filters.eon_voucher'), inputType: 'string' },
+      { id: 'status', type: 'select', options: ORDER_STATUS_OPTIONS, label: t('filters.status') },
+      {
+        id: 'type',
+        type: 'select',
+        options: PRODUCT_TYPE_OPTIONS,
+        label: t('filters.type'),
+      },
+      { id: 'site_id', type: 'select', options: sites, label: t('filters.site'), serverData: true },
+      { id: 'priority', type: 'select', options: PRIORITY_OPTIONS, label: t('filters.priority') },
+      { id: 'personal_id', type: 'input', label: t('filters.requester'), inputType: 'string' },
+      { id: 'created_by', type: 'input', label: t('filters.created_by'), inputType: 'string' },
+      { id: 'treat_by', type: 'input', label: t('filters.processed_by'), inputType: 'string' },
+      { id: 'created_at', type: 'date-range', label: t('filters.date'), cols: 3 },
+    ],
+    [t, sites]
+  );
   const [tableData, setTableData] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState({});
@@ -145,7 +187,7 @@ export function OrderPurchaseList() {
       const newData = {
         ...editedFilters,
         limit: newModel.pageSize,
-        offset: newModel.page,
+        offset: newModel.page * newModel.pageSize,
       };
       const response = await getFiltredOrder(newData);
       setTableData(response.data?.data?.records);
@@ -170,16 +212,16 @@ export function OrderPurchaseList() {
       try {
         if (action === 'confirm') {
           await confirmPurchaseOrder(order.id, { notes });
-          toast.success("Demande d'achat confirmée avec succès");
+          toast.success(t('messages.confirm_success'));
         } else if (action === 'cancel') {
           await cancelPurchaseOrder(order.id, { notes });
-          toast.success("Demande d'achat annulée avec succès");
+          toast.success(t('messages.cancel_success'));
         }
         handleCloseDialog();
         handleReset();
       } catch (error) {
         console.error(error);
-        toast.error(`Échec de l'action`);
+        toast.error(t('messages.action_failed'));
       }
     }
   };
@@ -229,7 +271,7 @@ export function OrderPurchaseList() {
     );
     const ws = XLSX.utils.json_to_sheet(exportData);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Demande d'achat");
+    XLSX.utils.book_append_sheet(wb, ws, t('views.purchase_request'));
     XLSX.writeFile(wb, 'Demande_da.xlsx');
   };
 
@@ -252,14 +294,25 @@ export function OrderPurchaseList() {
     doc.autoTable({ head: [header], body: rows });
     doc.save('Demande_da.pdf');
   };
+
+  const handleOpenDetail = useCallback((row) => {
+    setSelectedOrderForProducts(row);
+    setDetailOpen(true);
+  }, []);
+
+  const handleCloseDetail = () => {
+    setDetailOpen(false);
+    setSelectedOrderForProducts(null);
+  };
+
   const renderConfirmValidationDialog = () => (
     <ConfirmDialog
       open={confirmDialog.value}
       onClose={confirmDialog.onFalse}
-      title="Valider récupération"
+      title={t('dialog.validate_recovery_title')}
       content={
         <Box my={2}>
-          <TextField label="Message" fullWidth multiline rows={3} />
+          <TextField label={t('form.labels.message')} fullWidth multiline rows={3} />
         </Box>
       }
       action={
@@ -272,86 +325,135 @@ export function OrderPurchaseList() {
             confirmDialog.onFalse();
           }}
         >
-          Valider
+          {t('actions.validate')}
         </Button>
       }
     />
   );
 
-  const columns = [
-    { field: 'id', headerName: 'ID', flex: 1, minWidth: 50, renderCell: (params) => <RenderCellId params={params} /> },
-    { field: 'code', headerName: 'Code', flex: 1, minWidth: 100 },
-    { field: 'created_time', headerName: 'Temps', flex: 1, minWidth: 100 },
-    { field: 'status', headerName: 'Etat', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellStatus params={params} /> },
-    { field: 'type', headerName: 'Type', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellType params={params} /> },
-    { field: 'eon_voucher', headerName: 'B.E.B', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellCode params={params} /> },
-    { field: 'site', headerName: 'Site', flex: 1, minWidth: 150, renderCell: (params) => <RenderCellSite params={params} /> },
-    { field: 'priority', headerName: 'Priorité', flex: 1, minWidth: 120, renderCell: (params) => <RenderCellPriority params={params} /> },
-    { field: 'observations', headerName: 'Observations', flex: 1, minWidth: 200 },
-    { field: 'created_at', headerName: 'Date de création', flex: 1, minWidth: 150, renderCell: (params) => <RenderCellCreatedAt params={params} /> },
-    {
-      type: 'actions',
-      field: 'actions',
-      headerName: ' ',
-      align: 'right',
-      headerAlign: 'right',
-      width: 50,
-      sortable: false,
-      filterable: false,
-      disableColumnMenu: true,
-      getActions: (params) => [
-        ...(params.row.status === 1 ? [<GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:pen-bold" />}
-          label="Modifier"
-          href={paths.dashboard.purchaseSupply.purchaseOrder.editPurchaseOrder(params.row.id)}
-        />] : []),
-        ...(params.row.status === 1 ? [<GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="eva:checkmark-circle-2-fill" />}
-          label="Confirmer la commande"
-          onClick={() => handleOpenDialog(params.row, 'confirm')}
-        />] : []),
-        ...([1, 2].includes(params.row.status) ? [<GridActionsCellItem
-            showInMenu
-            icon={<Iconify icon="eva:close-circle-fill" />}
-            label="Annuler la commande"
-            onClick={() => handleOpenDialog(params.row, 'cancel')}
-            sx={{ color: 'error.main' }}
-        />] : []),
-        <GridActionsCellItem
+  const columns = useMemo(
+    () => [
+      {
+        field: 'id',
+        headerName: t('headers.id'),
+        flex: 1,
+        minWidth: 50,
+        renderCell: (params) => <RenderCellId params={params} />,
+      },
+      { field: 'code', headerName: t('headers.code'), flex: 1, minWidth: 100 },
+      { field: 'created_time', headerName: t('headers.time'), flex: 1, minWidth: 100 },
+      {
+        field: 'status',
+        headerName: t('headers.status'),
+        flex: 1,
+        minWidth: 120,
+        renderCell: (params) => <RenderCellStatus params={params} />,
+      },
+      {
+        field: 'type',
+        headerName: t('headers.type'),
+        flex: 1,
+        minWidth: 120,
+        renderCell: (params) => <RenderCellType params={params} />,
+      },
+      {
+        field: 'eon_voucher',
+        headerName: t('headers.eon_voucher'),
+        flex: 1,
+        minWidth: 120,
+        renderCell: (params) => <RenderCellCode params={params} />,
+      },
+      {
+        field: 'site',
+        headerName: t('headers.site'),
+        flex: 1,
+        minWidth: 150,
+        renderCell: (params) => <RenderCellSite params={params} />,
+      },
+      {
+        field: 'priority',
+        headerName: t('headers.priority'),
+        flex: 1,
+        minWidth: 120,
+        renderCell: (params) => <RenderCellPriority params={params} />,
+      },
+      { field: 'observations', headerName: t('headers.observations'), flex: 1, minWidth: 200 },
+      {
+        field: 'created_at',
+        headerName: t('headers.created_date'),
+        flex: 1,
+        minWidth: 150,
+        renderCell: (params) => <RenderCellCreatedAt params={params} />,
+      },
+      {
+        type: 'actions',
+        field: 'actions',
+        headerName: ' ',
+        align: 'right',
+        headerAlign: 'right',
+        width: 50,
+        sortable: false,
+        filterable: false,
+        disableColumnMenu: true,
+        getActions: (params) => [
+          ...(params.row.status === 1
+            ? [
+                <GridActionsLinkItem
                   showInMenu
-                  icon={<Iconify icon="humbleicons:view-list" />}
-                  label="liste des produits"
-                  onClick={() => handleOpenDetail(params.row)}
+                  icon={<Iconify icon="solar:pen-bold" />}
+                  label={t('actions.edit')}
+                  href={paths.dashboard.purchaseSupply.purchaseOrder.editPurchaseOrder(
+                    params.row.id
+                  )}
                 />,
-      ],
-    },
-  ];
+              ]
+            : []),
+          ...(params.row.status === 1
+            ? [
+                <GridActionsCellItem
+                  showInMenu
+                  icon={<Iconify icon="eva:checkmark-circle-2-fill" />}
+                  label={t('actions.confirm_order')}
+                  onClick={() => handleOpenDialog(params.row, 'confirm')}
+                />,
+              ]
+            : []),
+          ...([1, 2].includes(params.row.status)
+            ? [
+                <GridActionsCellItem
+                  showInMenu
+                  icon={<Iconify icon="eva:close-circle-fill" />}
+                  label={t('actions.cancel_order')}
+                  onClick={() => handleOpenDialog(params.row, 'cancel')}
+                  sx={{ color: 'error.main' }}
+                />,
+              ]
+            : []),
+          <GridActionsCellItem
+            showInMenu
+            icon={<Iconify icon="humbleicons:view-list" />}
+            label={t('actions.product_list')}
+            onClick={() => handleOpenDetail(params.row)}
+          />,
+        ],
+      },
+    ],
+    [t, handleOpenDetail]
+  );
 
   const getTogglableColumns = () =>
     columns
       .filter((column) => !HIDE_COLUMNS_TOGGLABLE.includes(column.field))
       .map((column) => column.field);
 
-  const handleOpenDetail = useCallback((row) => {
-    setSelectedOrderForProducts(row);
-    setDetailOpen(true);
-  }, []);
-
-  const handleCloseDetail = () => {
-    setDetailOpen(false);
-    setSelectedOrderForProducts(null);
-  };
-
   return (
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <CustomBreadcrumbs
-          heading="List"
+          heading={t('views.list')}
           links={[
-            { name: 'Achat et Approvisionnement', href: paths.dashboard.root },
-            { name: 'Liste', href: paths.dashboard.purchaseSupply.purchaseOrder.root },
+            { name: t('views.purchase_and_supply'), href: paths.dashboard.root },
+            { name: t('views.list'), href: paths.dashboard.purchaseSupply.purchaseOrder.root },
           ]}
           action={
             <Box sx={{ gap: 1, display: 'flex' }}>
@@ -361,7 +463,7 @@ export function OrderPurchaseList() {
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >
-                Demande d&#39;achats
+                {t('actions.purchase_request')}
               </Button>
               <UtilsButton
                 exportToCsv={exportToCsv}
@@ -395,7 +497,7 @@ export function OrderPurchaseList() {
                 fullWidth
                 // value={currentFilters.name}
                 // onChange={handleFilterName}
-                placeholder="Search "
+                placeholder={t('filters.search_placeholder')}
                 slotProps={{
                   input: {
                     startAdornment: (
@@ -409,7 +511,7 @@ export function OrderPurchaseList() {
               />
             </FormControl>
           </Box>
-          <DataGrid
+          <StyledDataGrid
             disableRowSelectionOnClick
             disableColumnMenu
             rows={tableData}
@@ -425,7 +527,7 @@ export function OrderPurchaseList() {
             onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
             slots={{
               noRowsOverlay: () => <EmptyContent />,
-              noResultsOverlay: () => <EmptyContent title="No results found" />,
+              noResultsOverlay: () => <EmptyContent title={t('messages.no_results')} />,
             }}
             slotProps={{
               toolbar: { setFilterButtonEl },
@@ -438,12 +540,14 @@ export function OrderPurchaseList() {
       </DashboardContent>
       {selectedOrderForProducts && (
         <Dialog open={detailOpen} onClose={handleCloseDetail} maxWidth="xl" fullWidth>
-          <DialogTitle>liste des produits</DialogTitle>
+          <DialogTitle>{t('dialog.product_list_title')}</DialogTitle>
           <DialogContent dividers>
             <OrderProductsList id={selectedOrderForProducts.id} />
           </DialogContent>
           <DialogActions>
-            <Button variant="contained" onClick={handleCloseDetail}>Fermer</Button>
+            <Button variant="contained" onClick={handleCloseDetail}>
+              {t('actions.close')}
+            </Button>
           </DialogActions>
         </Dialog>
       )}
@@ -454,13 +558,13 @@ export function OrderPurchaseList() {
         order={dialogState.order}
         title={
           dialogState.action === 'confirm'
-            ? `Confirmation du demande d'achat ${dialogState.order?.code}`
-            : `Annulation du demande d'achat ${dialogState.order?.code}`
+            ? t('dialog.confirm_purchase_order_title', { code: dialogState.order?.code })
+            : t('dialog.cancel_purchase_order_title', { code: dialogState.order?.code })
         }
         notesLabel={
-          dialogState.action === 'confirm' ? 'Notes de confirmation' : "Notes d'annulation"
+          dialogState.action === 'confirm' ? t('dialog.confirm_notes') : t('dialog.cancel_notes')
         }
-        actionButtonText="Oui"
+        actionButtonText={t('actions.yes')}
         actionButtonColor={dialogState.action === 'cancel' ? 'error' : 'primary'}
       />
       {renderConfirmValidationDialog()}

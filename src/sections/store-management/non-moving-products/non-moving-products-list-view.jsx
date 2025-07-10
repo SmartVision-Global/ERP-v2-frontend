@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  styled,
 } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
@@ -60,6 +61,25 @@ import NonMovingProductsHistoryList from './non-moving-products-history-list';
 const HIDE_COLUMNS = { categories: false };
 
 const HIDE_COLUMNS_TOGGLABLE = [];
+
+// ----------------------------------------------------------------------
+
+const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
+  // Pin the actions column to the right
+  '& .MuiDataGrid-columnHeader[data-field="actions"]': {
+    position: 'sticky',
+    right: 0,
+    backgroundColor: theme.palette.grey[200],
+    zIndex: theme.zIndex.appBar,
+  },
+  '& .MuiDataGrid-cell[data-field="actions"]': {
+    position: 'sticky',
+    right: 0,
+    backgroundColor: theme.palette.grey[200],
+    zIndex: 1,
+    borderLeft: `1px solid ${theme.palette.divider}`,
+  },
+}));
 
 // ----------------------------------------------------------------------
 const PAGE_SIZE = CONFIG.pagination.pageSize;
@@ -331,7 +351,7 @@ export function NonMovingProductsListView({ isSelectionDialog = false, component
               />
             </FormControl>
           </Box>
-          <DataGrid
+          <StyledDataGrid
            
             disableRowSelectionOnClick
             disableColumnMenu

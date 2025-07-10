@@ -304,6 +304,11 @@ const PageProcessingDa = lazy(
   () => import('src/pages/dashboard/purchase-supply/processing-da/list')
 );
 
+//Local
+const PageLocalSupplier = lazy(
+  () => import('src/pages/dashboard/purchase-supply/local/supplier/list')
+);
+
 // Account
 const AccountGeneralPage = lazy(() => import('src/pages/dashboard/user/account/general'));
 const AccountChangePasswordPage = lazy(
@@ -740,6 +745,7 @@ export const dashboardRoutes = [
           { path: 'purchase-order/new', element: <PageNewPurchaseOrder /> },
           { path: 'purchase-order/:id/edit', element: <PagePurchaseOrderEdit /> },
           { path: 'processing-da', element: <PageProcessingDa /> },
+          { path: 'supplier', element: <PageLocalSupplier /> },
         ],
       },
       {
