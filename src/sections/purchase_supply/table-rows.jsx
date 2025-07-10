@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
-import { Avatar, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import ListItemText from '@mui/material/ListItemText';
 
 import { RouterLink } from 'src/routes/components';
@@ -8,16 +8,13 @@ import { RouterLink } from 'src/routes/components';
 import { fCurrency } from 'src/utils/format-number';
 import { fDate, fTime } from 'src/utils/format-time';
 
-import { PRODUCT_TYPE_OPTIONS, STATUS_OPTIONS, PRIORITY_OPTIONS, ORDER_STATUS_OPTIONS } from 'src/_mock/expression-of-needs/Beb/Beb';
+import {
+  PRODUCT_TYPE_OPTIONS,
+  PRIORITY_OPTIONS,
+  ORDER_STATUS_OPTIONS,
+} from 'src/_mock/expression-of-needs/Beb/Beb';
 
 import { Label } from 'src/components/label';
-
-const STATUS = {
-  1: 'En cours',
-  2: 'Actif',
-  3: 'Bloquer',
-};
-const ORDER_TYPE = {};
 
 export function RenderCellId({ params, href }) {
   return (
@@ -36,7 +33,6 @@ export function RenderCellId({ params, href }) {
             {params.row.id}
           </Link>
         }
-        // secondary={params.row.category}
         slotProps={{
           primary: { noWrap: true },
           secondary: { sx: { color: 'text.disabled' } },
@@ -63,11 +59,14 @@ export function RenderCellTemp({ params }) {
   );
 }
 export function RenderCellStatus({ params }) {
-  // Adjust label color logic as needed
-  const status = ORDER_STATUS_OPTIONS.find(option => option.value == params.row.status);
+  const status = ORDER_STATUS_OPTIONS.find((option) => option.value == params.row.status);
   const color = status ? status.color : 'default';
   const label = status ? status.label : 'N/I';
-  return <Label variant="soft" color={color}>{label}</Label>;
+  return (
+    <Label variant="soft" color={color}>
+      {label}
+    </Label>
+  );
 }
 export function RenderCellBEB({ params }) {
   return fCurrency(params.row.beb);
@@ -77,19 +76,64 @@ export function RenderCellSite({ params }) {
 }
 
 export function RenderCellType({ params }) {
-  const type = PRODUCT_TYPE_OPTIONS.find(option => option.value == params.row.type);
+  const type = PRODUCT_TYPE_OPTIONS.find((option) => option.value == params.row.type);
   const color = type ? type.color : 'default';
   const label = type ? type.label : 'N/I';
-  return <Label variant="soft" color={color}>{label}</Label>;
+  return (
+    <Label variant="soft" color={color}>
+      {label}
+    </Label>
+  );
 }
 
-export function RenderCellCode({params}){
+export function RenderCellSupplierType({ params }) {
+    if (!Array.isArray(params.row.type)) {
+        const type = PRODUCT_TYPE_OPTIONS.find((option) => option.value == params.row.type);
+        const color = type ? type.color : 'default';
+        const label = type ? type.label : 'N/I';
+        return (
+            <Label variant="soft" color={color}>
+            {label}
+            </Label>
+        );
+    }
+
+    return (
+      <Box sx={{ display: 'flex', gap: 0.5 }}>
+        {params.row.type.map((typeId) => {
+          const type = PRODUCT_TYPE_OPTIONS.find((option) => option.value == typeId);
+          const color = type ? type.color : 'default';
+          const label = type ? type.label : 'N/A';
+          return (
+            <Label key={typeId} variant="soft" color={color}>
+              {label}
+            </Label>
+          );
+        })}
+      </Box>
+    );
+  }
+
+export function RenderCellCode({ params }) {
   return <Typography fontSize={14}>{params.row.eon_voucher?.code}</Typography>;
 }
 
 export function RenderCellPriority({ params }) {
-  const priority = PRIORITY_OPTIONS.find(option => option.value == params.row.priority);
+  const priority = PRIORITY_OPTIONS.find((option) => option.value == params.row.priority);
   const color = priority ? priority.color : 'default';
   const label = priority ? priority.label : 'N/I';
-  return <Label variant="soft" color={color}>{label}</Label>;
+  return (
+    <Label variant="soft" color={color}>
+      {label}
+    </Label>
+  );
 }
+
+
+// supplier
+
+export function RenderCellName({ params }) {
+  return <Typography fontSize={14}>{params.row.name}</Typography>;
+}
+
+

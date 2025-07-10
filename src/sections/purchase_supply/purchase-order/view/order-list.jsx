@@ -61,7 +61,7 @@ import {
   RenderCellBEB,
   RenderCellPriority,
   RenderCellCode,
-} from '../order-table-row';
+} from '../../table-rows';
 import UtilsButton from 'src/components/custom-buttons/utils-button';
 import OrderProductsList from './OrderProductsList';
 import { OrderActionDialog } from './order-action-dialog';
@@ -187,7 +187,7 @@ export function OrderPurchaseList() {
       const newData = {
         ...editedFilters,
         limit: newModel.pageSize,
-        offset: newModel.page,
+        offset: newModel.page * newModel.pageSize,
       };
       const response = await getFiltredOrder(newData);
       setTableData(response.data?.data?.records);

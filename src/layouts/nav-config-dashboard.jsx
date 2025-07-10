@@ -394,6 +394,16 @@ export const navData = [
             title: 'Traitement DA',
             path: paths.dashboard.purchaseSupply.processingDa.root,
           },
+          {
+            title:'Local',
+            path:paths.dashboard.purchaseSupply.supplier.root,
+            children:[
+              {
+                title:'Fournisseurs',
+                path:paths.dashboard.purchaseSupply.supplier.root,
+              }
+            ]
+          }
         ],
       },
       {

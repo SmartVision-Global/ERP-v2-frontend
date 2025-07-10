@@ -163,6 +163,9 @@ export const endpoints = {
       items: (id) => `/v1/purchases/purchase-requests/${id}/items`,
       confirm: (id) => `/v1/purchases/purchase-requests/${id}/confirme`,
     },
+    supplier: {
+      list: '/v1/purchases/suppliers',
+    },
   },
 
   // new:''
