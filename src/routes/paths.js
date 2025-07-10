@@ -245,6 +245,7 @@ export const paths = {
         editStock: (id) => `${ROOTS.DASHBOARD}/store-management/raw-material/${id}/edit`,
 
         operations: `${ROOTS.DASHBOARD}/store-management/raw-material/operations`,
+        
 
         storageArea: `${ROOTS.DASHBOARD}/store-management/raw-material/storage-area`,
         newStorageArea: `${ROOTS.DASHBOARD}/store-management/raw-material/storage-area/new`,
@@ -262,6 +263,21 @@ export const paths = {
         newTransferSlip: `${ROOTS.DASHBOARD}/store-management/raw-material/transfer-slip/new`,
         editTransferSlip: (id) =>
           `${ROOTS.DASHBOARD}/store-management/raw-material/transfer-slip/${id}/edit`,
+        nonMovingProducts: `${ROOTS.DASHBOARD}/store-management/raw-material/non-moving-products`,
+      },
+
+      loanBorrowing: {
+        root: `${ROOTS.DASHBOARD}/store-management`,
+        third: `${ROOTS.DASHBOARD}/store-management/third`,
+        newThird: `${ROOTS.DASHBOARD}/store-management/third/new`,
+        editThird: (id) => `${ROOTS.DASHBOARD}/store-management/third/${id}/edit`,
+        borrowing: `${ROOTS.DASHBOARD}/store-management/borrowing`,
+        newBorrowing: `${ROOTS.DASHBOARD}/store-management/borrowing/new`,
+        editBorrowing: (id) => `${ROOTS.DASHBOARD}/store-management/borrowing/${id}/edit`,
+        
+        borrowingReturn: `${ROOTS.DASHBOARD}/store-management/borrowing-return`,
+        newBorrowingReturn: `${ROOTS.DASHBOARD}/store-management/borrowing-return/new`,
+        editBorrowingReturn: (id) => `${ROOTS.DASHBOARD}/store-management/borrowing-return/${id}/edit`,
       },
     },
     store: {
@@ -338,6 +354,10 @@ export const paths = {
       store: {
         root: `${ROOTS.DASHBOARD}/settings/store`,
         newStore: `${ROOTS.DASHBOARD}/settings/store/new`,
+      },
+      validationCircuit: {
+        root: `${ROOTS.DASHBOARD}/settings/validation-circuit`,
+        details: (target_action) => `${ROOTS.DASHBOARD}/settings/validation-circuit/${target_action}`,
       },
       identification: {
         root: `${ROOTS.DASHBOARD}/settings/identification`,

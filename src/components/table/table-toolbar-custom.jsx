@@ -18,6 +18,7 @@ import {
 import { fDate } from 'src/utils/format-time';
 
 import { Iconify } from '../iconify';
+import { SelectSearch } from '../select-search';
 import { useDateRangePicker, CustomDateRangePicker } from '../custom-date-range-picker';
 
 export function TableToolbarCustom({
@@ -175,6 +176,17 @@ export function TableToolbarCustom({
                     ))}
                   </Select>
                 </>
+              )}
+              {item.type === 'lookup' && (
+                <SelectSearch
+                  name={item.id}
+                  label={item.label}
+                  url={item.url}
+                  params={item?.params || {}}
+                  value={filters[item.id] || ''}
+                  onChange={(e) => getInput(e, item.type)}
+                  size="small"
+                />
               )}
               {item.type === 'date' && (
                 <DatePicker

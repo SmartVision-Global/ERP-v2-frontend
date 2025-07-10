@@ -63,7 +63,7 @@ export const navData = [
         children: [
           {
             title: 'Matières premières',
-            path: paths.dashboard.storeManagement.root,
+            path: paths.dashboard.storeManagement.rawMaterial.root,
             children: [
               { title: 'Stocks', path: paths.dashboard.storeManagement.rawMaterial.root },
               {
@@ -90,7 +90,32 @@ export const navData = [
                 title: 'Bons de transfert',
                 path: paths.dashboard.storeManagement.rawMaterial.transferSlips,
               },
+              {
+                title: 'Produits non mouvementé',
+                path: paths.dashboard.storeManagement.rawMaterial.nonMovingProducts,
+              },
             ],
+            
+        
+          },
+          {
+            title:'Prêt Emprunt',
+            path:paths.dashboard.storeManagement.loanBorrowing.root,
+            children:[
+              {
+                title:'Prêt Emprunt'	,
+                path:paths.dashboard.storeManagement.loanBorrowing.borrowing,
+              },
+              {
+                title:'Retour Emprunt',
+                path:paths.dashboard.storeManagement.loanBorrowing.borrowingReturn,
+              },
+              {
+                title:'Tiers',
+                path:paths.dashboard.storeManagement.loanBorrowing.third,
+              },
+              
+            ]
           },
           // {
           //   title: 'Pièces de rechange',
@@ -425,6 +450,10 @@ export const navData = [
           {
             title: 'Magasins',
             path: paths.dashboard.settings.store.root,
+          },
+          {
+            title: 'Circuit de validation',
+            path: paths.dashboard.settings.validationCircuit.root,
           },
         ],
       },
