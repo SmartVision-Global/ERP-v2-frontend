@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
-import { OrderPurchaseCreate } from 'src/sections/purchase_supply/purchase-order/view/order-create';
+import { CommandOrderCreate } from 'src/sections/purchase_supply/local/command-order/view';
 
 // ----------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ export default function Page() {
         <title> {metadata.title}</title>
       </Helmet>
 
-      <OrderPurchaseCreate />
+      <CommandOrderCreate />
     </>
   );
 }
