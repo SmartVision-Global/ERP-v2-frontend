@@ -2,7 +2,9 @@
     "views": {
         "list": "List",
         "purchase_and_supply": "Purchase and Supply",
-        "purchase_request": "Purchase Request"
+        "purchase_request": "Purchase Request",
+        "add_supplier": "Add Supplier",
+        "suppliers": "Suppliers"
     },
     "text":{
         
@@ -28,10 +30,15 @@
         "remaining_quantity": "Remaining quantity",
         "processing": "Processing",
         "current_quantity": "Current quantity",
-        "processing_date": "Processing date"
+        "processing_date": "Processing date",
+        "name": "Name",
+        "address": "Address",
+        "supplier": "Supplier",
+        "exercise_start_date": "Exercise Start Date"
     },
     "actions": {
         "purchase_request": "Purchase Request",
+        "add_supplier": "Add Supplier",
         "close": "Close",
         "validate": "Validate",
         "edit": "Edit",
@@ -51,7 +58,8 @@
         "created_by": "Created by",
         "processed_by": "Processed by",
         "date": "Date",
-        "search_placeholder": "Search..."
+        "search_placeholder": "Search...",
+        "name": "Name"
     },
     "dialog": {
         "product_list_title": "Product List",

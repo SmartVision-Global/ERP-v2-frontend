@@ -1,3 +1,3 @@
 export * from './supplier-list-view';
-export * from './order-create';
+export * from './supplier-create-view';
 export * from './order-new-edit-form';

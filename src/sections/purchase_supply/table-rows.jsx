@@ -8,6 +8,7 @@ import { RouterLink } from 'src/routes/components';
 import { fCurrency } from 'src/utils/format-number';
 import { fDate, fTime } from 'src/utils/format-time';
 
+import { SUPPLIER_STATUS_OPTIONS } from 'src/_mock/purchase/data';
 import {
   PRODUCT_TYPE_OPTIONS,
   PRIORITY_OPTIONS,
@@ -137,3 +138,21 @@ export function RenderCellName({ params }) {
 }
 
 
+export function RenderCellSupplier({ params }) {
+  return <Typography fontSize={14}>{params.row.code}</Typography>;
+}
+
+export function RenderCellExerciseStartDate({ params }) {
+  return <span>{fDate(params.row.created_at)}</span>;
+}
+
+export function RenderCellSupplierStatus({ params }) {
+    const status = SUPPLIER_STATUS_OPTIONS.find((option) => option.value == params.row.status); 
+    const color = status ? status.color : 'default';
+    const label = status ? status.label : 'N/I';
+    return (
+        <Label variant="soft" color={color}>
+            {label}
+        </Label>
+    );
+}

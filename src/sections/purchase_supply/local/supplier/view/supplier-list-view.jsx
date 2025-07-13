@@ -8,8 +8,11 @@ import { useState, useEffect, forwardRef, useCallback, useMemo } from 'react';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
+import Stack from '@mui/material/Stack';
+import Grid from '@mui/material/Grid2';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
+import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { DataGrid, GridActionsCellItem, gridClasses } from '@mui/x-data-grid';
@@ -29,23 +32,23 @@ import { RouterLink } from 'src/routes/components';
 
 import { CONFIG } from 'src/global-config';
 import {
-  PRODUCT_TYPE_OPTIONS,
   ORDER_STATUS_OPTIONS,
 } from 'src/_mock/expression-of-needs/Beb/Beb';
 import {
   useGetSuppliers,
   getFiltredSuppliers,
 } from 'src/actions/purchase-supply/supplier';
+import { SUPPLIER_STATUS_OPTIONS } from 'src/_mock/purchase/data';
 
 import { Iconify } from 'src/components/iconify';
-import { toast } from 'src/components/snackbar';
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { useTranslate } from 'src/locales';
 import UtilsButton from 'src/components/custom-buttons/utils-button';
-import { RenderCellStatus, RenderCellSupplierType, RenderCellId, RenderCellName } from '../../../table-rows';
+import { RenderCellSupplierStatus, RenderCellSupplierType, RenderCellId, RenderCellName, RenderCellSupplier, RenderCellExerciseStartDate } from '../../../table-rows';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { SupplierDetails } from './supplier-details-view';
 
 // ----------------------------------------------------------------------
 
@@ -90,8 +93,8 @@ export function SupplierListView() {
   const FILTERS_OPTIONS = useMemo(
     () => [
       { id: 'name', type: 'input', label: t('filters.name'), inputType: 'string' },
-      { id: 'address', type: 'input', label: t('filters.address'), inputType: 'string' },
-      // Add status and type filters when options are available
+      { id: 'code', type: 'input', label: 'Supplier', inputType: 'string' },
+      { id: 'status', type: 'select', label: 'Status', options: SUPPLIER_STATUS_OPTIONS },
     ],
     [t]
   );
@@ -262,9 +265,16 @@ export function SupplierListView() {
       {
         field: 'id',
         headerName: t('headers.id'),
-        flex: 1,
-        minWidth: 50,
+        // flex: 1,
+        width: 50,
         renderCell: (params) => <RenderCellId params={params} />,
+      },
+      {
+        field: 'supplier',
+        headerName: t('headers.supplier'),
+        flex: 1,
+        minWidth: 100,
+        renderCell: (params) => <RenderCellSupplier params={params} />,
       },
       { field: 'name', headerName: t('headers.name'), flex: 1, minWidth: 150 , renderCell: (params) => <RenderCellName params={params} />},
       { 
@@ -272,16 +282,23 @@ export function SupplierListView() {
         headerName: t('headers.status'), 
         flex: 1, 
         minWidth: 120,
-        renderCell: (params) => <RenderCellStatus params={params} />,
+        renderCell: (params) => <RenderCellSupplierStatus params={params} />,
       },
       { 
         field: 'type', 
         headerName: t('headers.type'), 
         flex: 1, 
-        minWidth: 120,
+        minWidth: 150,
         renderCell: (params) => <RenderCellSupplierType params={params} />,
       },
-      { field: 'address', headerName: t('headers.address'), flex: 1, minWidth: 200 },
+      { field: 'address', headerName: t('headers.address'), flex: 1, minWidth: 150 },
+      {
+        field: 'created_at',
+        headerName: t('headers.exercise_start_date'),
+        flex: 1,
+        minWidth: 120,
+        renderCell: (params) => <RenderCellExerciseStartDate params={params} />,
+      },
       {
         type: 'actions',
         field: 'actions',
@@ -320,10 +337,11 @@ export function SupplierListView() {
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <CustomBreadcrumbs
-          heading={t('views.supplier_list')}
+          heading={t('views.list')}
           links={[
             { name: t('views.purchase_and_supply'), href: paths.dashboard.root },
             { name: t('views.suppliers'), href: paths.dashboard.purchaseSupply.supplier.root },
+            { name: t('views.list') },
           ]}
           action={
             <Box sx={{ gap: 1, display: 'flex' }}>
@@ -333,7 +351,7 @@ export function SupplierListView() {
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >
-                {t('actions.new_supplier')}
+                {t('actions.add_supplier')}
               </Button>
               <UtilsButton exportToCsv={exportToCsv} exportToExcel={exportToExcel} exportToPdf={exportToPdf} />
             </Box>
@@ -406,14 +424,7 @@ export function SupplierListView() {
         <Dialog open={detailOpen} onClose={handleCloseDetail} maxWidth="md" fullWidth>
           <DialogTitle>{t('dialog.supplier_details_title')}</DialogTitle>
           <DialogContent dividers>
-             <Typography>ID: {selectedSupplier.id}</Typography>
-             <Typography>Name: {selectedSupplier.name}</Typography>
-             <Typography>Address: {selectedSupplier.address}</Typography>
-             <Typography>City: {selectedSupplier.city}</Typography>
-             <Typography>Country: {selectedSupplier.country}</Typography>
-             <Typography>Email: {selectedSupplier.email}</Typography>
-             <Typography>Phone: {selectedSupplier.mobile}</Typography>
-             <Typography>Website: {selectedSupplier.web_site}</Typography>
+             <SupplierDetails supplier={selectedSupplier} />
           </DialogContent>
           <DialogActions>
             <Button variant="contained" onClick={handleCloseDetail}>
