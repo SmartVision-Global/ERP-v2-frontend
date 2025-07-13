@@ -401,6 +401,10 @@ export const navData = [
               {
                 title:'Fournisseurs',
                 path:paths.dashboard.purchaseSupply.supplier.root,
+              },
+              {
+                title:'Bon de commande',
+                path:paths.dashboard.purchaseSupply.commandOrder.root,
               }
             ]
           }
