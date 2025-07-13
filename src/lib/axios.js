@@ -166,6 +166,11 @@ export const endpoints = {
     supplier: {
       list: '/v1/purchases/suppliers',
     },
+    commandOrder: {
+      list: '/v1/purchases/purchase-orders',
+      items: (id) => `/v1/purchases/purchase-orders/${id}/items`,
+      confirm: (id) => `/v1/purchases/purchase-orders/${id}/confirme`,
+    },
   },
 
   // new:''
@@ -213,5 +218,7 @@ export const endpoints = {
     categories:'settings/lookups/categories',
     workshops:'settings/lookups/workshops',
     personals:'hr/lookups/personals',
+    suppliers:'purchases/lookups/suppliers',
+    services:'settings/lookups/services',
   },
 };

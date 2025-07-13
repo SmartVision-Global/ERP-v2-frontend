@@ -24,22 +24,25 @@ import {
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
+import { endpoints } from 'src/lib/axios';
 
 import { CONFIG } from 'src/global-config';
 import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
-// import { ORDER_STATUS_OPTIONS } from 'src/_mock';
 import {
   PRODUCT_TYPE_OPTIONS,
-  PRIORITY_OPTIONS,
-  ORDER_STATUS_OPTIONS,
 } from 'src/_mock/expression-of-needs/Beb/Beb';
 import {
-  useGetPurchaseOrders,
-  getFiltredPurchaseOrders,
-  confirmPurchaseOrder,
-  cancelPurchaseOrder,
-} from 'src/actions/purchase-supply/purchase-order/order';
+  COMMAND_ORDER_STATUS_OPTIONS,
+  PAYMENT_METHOD_OPTIONS,
+  BILLING_STATUS_OPTIONS,
+} from 'src/_mock/purchase/data';
+import {
+  useGetCommandOrders,
+  getFiltredCommandOrders,
+  confirmCommandOrder,
+  cancelCommandOrder,
+} from 'src/actions/purchase-supply/command-order/command-order';
 
 import { Iconify } from 'src/components/iconify';
 import { toast } from 'src/components/snackbar';
@@ -54,14 +57,26 @@ import { useTranslate } from 'src/locales';
 import {
   RenderCellId,
   RenderCellSite,
-  RenderCellStatus,
+  RenderCellCommandOrderStatus,
   RenderCellTemp,
   RenderCellCreatedAt,
   RenderCellType,
   RenderCellBEB,
   RenderCellPriority,
   RenderCellCode,
-} from '../../table-rows';
+  RenderCellSupplierName,
+  RenderCellService,
+  RenderCellHT,
+  RenderCellDiscount,
+  RenderCellTVA,
+  RenderCellTax,
+  RenderCellStamp,
+  RenderCellTTC,
+  RenderCellPaymentMethod,
+  RenderCellProforma,
+  RenderCellDeliveryDate,
+  RenderCellBilled,
+} from '../../../table-rows';
 import UtilsButton from 'src/components/custom-buttons/utils-button';
 import OrderProductsList from './OrderProductsList';
 import { OrderActionDialog } from './order-action-dialog';
@@ -92,7 +107,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 // ----------------------------------------------------------------------
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 
-export function OrderPurchaseList() {
+export function CommandOrderListView() {
   const confirmDialog = useBoolean();
   const { t } = useTranslate('purchase-supply-module');
   const [paginationModel, setPaginationModel] = useState({
@@ -100,40 +115,62 @@ export function OrderPurchaseList() {
     pageSize: PAGE_SIZE,
   });
   const [selectedRow, setSelectedRow] = useState('');
-  const { purchaseOrders, purchaseOrdersLoading, purchaseOrdersCount } = useGetPurchaseOrders({
+  const { commandOrders, commandOrdersLoading, commandOrdersCount } = useGetCommandOrders({
     limit: PAGE_SIZE,
     offset: 0,
   });
 
   const [rowCount, setRowCount] = useState(0);
 
-  const { dataLookups } = useMultiLookups([{ entity: 'sites', url: 'settings/lookups/sites' }]);
   const handleOpenValidateConfirmDialog = (id) => {
     confirmDialog.onTrue();
     setSelectedRow(id);
   };
 
-  const sites = dataLookups.sites;
-
   const FILTERS_OPTIONS = useMemo(
     () => [
       { id: 'code', type: 'input', label: t('filters.code'), inputType: 'string' },
-      { id: 'beb', type: 'input', label: t('filters.eon_voucher'), inputType: 'string' },
-      { id: 'status', type: 'select', options: ORDER_STATUS_OPTIONS, label: t('filters.status') },
+      {
+        id: 'supplier_id',
+        type: 'lookup',
+        label: t('filters.supplier'),
+        url: endpoints.lookups.suppliers,
+      },
+      { id: 'site_id', type: 'lookup', label: t('filters.site'), url: endpoints.lookups.sites },
       {
         id: 'type',
         type: 'select',
         options: PRODUCT_TYPE_OPTIONS,
         label: t('filters.type'),
       },
-      { id: 'site_id', type: 'select', options: sites, label: t('filters.site'), serverData: true },
-      { id: 'priority', type: 'select', options: PRIORITY_OPTIONS, label: t('filters.priority') },
-      { id: 'personal_id', type: 'input', label: t('filters.requester'), inputType: 'string' },
-      { id: 'created_by', type: 'input', label: t('filters.created_by'), inputType: 'string' },
-      { id: 'treat_by', type: 'input', label: t('filters.processed_by'), inputType: 'string' },
+      {
+        id: 'status',
+        type: 'select',
+        options: COMMAND_ORDER_STATUS_OPTIONS,
+        label: t('filters.status'),
+      },
+      {
+        id: 'service_id',
+        type: 'lookup',
+        label: t('filters.service'),
+        url: endpoints.lookups.services,
+      },
+      {
+        id: 'payment_method',
+        type: 'select',
+        options: PAYMENT_METHOD_OPTIONS,
+        label: t('filters.payment_mode'),
+      },
+      {
+        id: 'billed',
+        type: 'select',
+        options: BILLING_STATUS_OPTIONS,
+        label: t('filters.billing'),
+      },
+      { id: 'delivery_date', type: 'date', label: t('filters.delivery_date') },
       { id: 'created_at', type: 'date-range', label: t('filters.date'), cols: 3 },
     ],
-    [t, sites]
+    [t]
   );
   const [tableData, setTableData] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
@@ -147,13 +184,13 @@ export function OrderPurchaseList() {
   const [dialogState, setDialogState] = useState({ open: false, action: null, order: null });
 
   useEffect(() => {
-    setTableData(purchaseOrders);
-    setRowCount(purchaseOrdersCount);
-  }, [purchaseOrders, purchaseOrdersCount]);
+    setTableData(commandOrders);
+    setRowCount(commandOrdersCount);
+  }, [commandOrders, commandOrdersCount]);
 
   const handleReset = useCallback(async () => {
     try {
-      const response = await getFiltredPurchaseOrders({
+      const response = await getFiltredCommandOrders({
         limit: PAGE_SIZE,
         offset: 0,
       });
@@ -172,7 +209,7 @@ export function OrderPurchaseList() {
   const handleFilter = useCallback(
     async (data) => {
       try {
-        const response = await getFiltredPurchaseOrders(data);
+        const response = await getFiltredCommandOrders(data);
         setTableData(response.data?.data?.records);
         setRowCount(response.data?.data?.total);
       } catch (error) {
@@ -189,7 +226,7 @@ export function OrderPurchaseList() {
         limit: newModel.pageSize,
         offset: newModel.page * newModel.pageSize,
       };
-      const response = await getFiltredOrder(newData);
+      const response = await getFiltredCommandOrders(newData);
       setTableData(response.data?.data?.records);
       setPaginationModel(newModel);
     } catch (error) {
@@ -211,10 +248,10 @@ export function OrderPurchaseList() {
     if (order) {
       try {
         if (action === 'confirm') {
-          await confirmPurchaseOrder(order.id, { notes });
+          await confirmCommandOrder(order.id, { notes });
           toast.success(t('messages.confirm_success'));
         } else if (action === 'cancel') {
-          await cancelPurchaseOrder(order.id, { notes });
+          await cancelCommandOrder(order.id, { notes });
           toast.success(t('messages.cancel_success'));
         }
         handleCloseDialog();
@@ -341,13 +378,26 @@ export function OrderPurchaseList() {
         renderCell: (params) => <RenderCellId params={params} />,
       },
       { field: 'code', headerName: t('headers.code'), flex: 1, minWidth: 100 },
-      { field: 'created_time', headerName: t('headers.time'), flex: 1, minWidth: 100 },
+      {
+        field: 'created_at',
+        headerName: t('headers.created_date'),
+        flex: 1,
+        minWidth: 150,
+        renderCell: (params) => <RenderCellCreatedAt params={params} />,
+      },
       {
         field: 'status',
         headerName: t('headers.status'),
         flex: 1,
         minWidth: 120,
-        renderCell: (params) => <RenderCellStatus params={params} />,
+        renderCell: (params) => <RenderCellCommandOrderStatus params={params} />,
+      },
+      {
+        field: 'supplier',
+        headerName: t('headers.supplier'),
+        flex: 1,
+        minWidth: 150,
+        renderCell: (params) => <RenderCellSupplierName params={params} />,
       },
       {
         field: 'type',
@@ -357,13 +407,6 @@ export function OrderPurchaseList() {
         renderCell: (params) => <RenderCellType params={params} />,
       },
       {
-        field: 'eon_voucher',
-        headerName: t('headers.eon_voucher'),
-        flex: 1,
-        minWidth: 120,
-        renderCell: (params) => <RenderCellCode params={params} />,
-      },
-      {
         field: 'site',
         headerName: t('headers.site'),
         flex: 1,
@@ -371,20 +414,83 @@ export function OrderPurchaseList() {
         renderCell: (params) => <RenderCellSite params={params} />,
       },
       {
-        field: 'priority',
-        headerName: t('headers.priority'),
-        flex: 1,
-        minWidth: 120,
-        renderCell: (params) => <RenderCellPriority params={params} />,
-      },
-      { field: 'observations', headerName: t('headers.observations'), flex: 1, minWidth: 200 },
-      {
-        field: 'created_at',
-        headerName: t('headers.created_date'),
+        field: 'service',
+        headerName: t('headers.service'),
         flex: 1,
         minWidth: 150,
-        renderCell: (params) => <RenderCellCreatedAt params={params} />,
+        renderCell: (params) => <RenderCellService params={params} />,
       },
+      {
+        field: 'ht',
+        headerName: t('headers.ht'),
+        flex: 1,
+        minWidth: 100,
+        renderCell: (params) => <RenderCellHT params={params} />,
+      },
+      {
+        field: 'remise',
+        headerName: t('headers.discount'),
+        flex: 1,
+        minWidth: 100,
+        renderCell: (params) => <RenderCellDiscount params={params} />,
+      },
+      {
+        field: 'tva',
+        headerName: t('headers.tva'),
+        flex: 1,
+        minWidth: 100,
+        renderCell: (params) => <RenderCellTVA params={params} />,
+      },
+      {
+        field: 'tax',
+        headerName: t('headers.tax'),
+        flex: 1,
+        minWidth: 100,
+        renderCell: (params) => <RenderCellTax params={params} />,
+      },
+      {
+        field: 'stamp',
+        headerName: t('headers.stamp'),
+        flex: 1,
+        minWidth: 100,
+        renderCell: (params) => <RenderCellStamp params={params} />,
+      },
+      {
+        field: 'ttc',
+        headerName: t('headers.ttc'),
+        flex: 1,
+        minWidth: 120,
+        renderCell: (params) => <RenderCellTTC params={params} />,
+      },
+      {
+        field: 'payment_method',
+        headerName: t('headers.payment_method'),
+        flex: 1,
+        minWidth: 150,
+        renderCell: (params) => <RenderCellPaymentMethod params={params} />,
+      },
+      {
+        field: 'proforma',
+        headerName: t('headers.proforma'),
+        flex: 1,
+        minWidth: 100,
+        renderCell: (params) => <RenderCellProforma params={params} />,
+      },
+      {
+        field: 'delivery_dates',
+        headerName: t('headers.delivery_date'),
+        flex: 1,
+        minWidth: 150,
+        renderCell: (params) => <RenderCellDeliveryDate params={params} />,
+      },
+      {
+        field: 'billed',
+        headerName: t('headers.billed'),
+        flex: 1,
+        minWidth: 120,
+        renderCell: (params) => <RenderCellBilled params={params} />,
+      },
+      { field: 'observation', headerName: t('headers.observations'), flex: 1, minWidth: 200 },
       {
         type: 'actions',
         field: 'actions',
@@ -459,11 +565,11 @@ export function OrderPurchaseList() {
             <Box sx={{ gap: 1, display: 'flex' }}>
               <Button
                 component={RouterLink}
-                href={paths.dashboard.purchaseSupply.purchaseOrder.newPurchaseOrder}
+                href={paths.dashboard.purchaseSupply.commandOrder.new}
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >
-                {t('actions.purchase_request')}
+                {t('actions.command_order')}
               </Button>
               <UtilsButton
                 exportToCsv={exportToCsv}
@@ -517,7 +623,7 @@ export function OrderPurchaseList() {
             rows={tableData}
             rowCount={rowCount}
             columns={columns}
-            loading={purchaseOrdersLoading}
+            loading={commandOrdersLoading}
             getRowHeight={() => 'auto'}
             paginationModel={paginationModel}
             paginationMode="server"

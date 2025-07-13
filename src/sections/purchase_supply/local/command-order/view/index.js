@@ -1,3 +1,3 @@
-export * from './order-list';
+export * from './command-order-list-view';
 export * from './order-create';
 export * from './order-new-edit-form';

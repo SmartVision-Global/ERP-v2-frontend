@@ -34,7 +34,18 @@
         "name": "Name",
         "address": "Address",
         "supplier": "Supplier",
-        "exercise_start_date": "Exercise Start Date"
+        "exercise_start_date": "Exercise Start Date",
+        "service": "Service",
+        "ht": "HT",
+        "discount": "Discount",
+        "tva": "TVA",
+        "tax": "Tax",
+        "stamp": "Stamp",
+        "ttc": "TTC",
+        "payment_method": "Payment Method",
+        "proforma": "Proforma",
+        "delivery_date": "Delivery Date",
+        "billed": "Billed"
     },
     "actions": {
         "purchase_request": "Purchase Request",
@@ -46,7 +57,8 @@
         "cancel_order": "Cancel Order",
         "product_list": "Product List",
         "yes": "Yes",
-        "details": "Details"
+        "details": "Details",
+        "command_order": "Command Order"
     },
     "filters": {
         "code": "Code",
@@ -60,7 +72,12 @@
         "processed_by": "Processed by",
         "date": "Date",
         "search_placeholder": "Search...",
-        "name": "Name"
+        "name": "Name",
+        "payment_mode": "Payment Mode",
+        "billing": "Billing",
+        "service": "Service",
+        "delivery_date": "Delivery Date",
+        "supplier": "Supplier"
     },
     "dialog": {
         "product_list_title": "Product List",
