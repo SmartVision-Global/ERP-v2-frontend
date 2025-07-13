@@ -45,7 +45,8 @@
         "confirm_order": "Confirm Order",
         "cancel_order": "Cancel Order",
         "product_list": "Product List",
-        "yes": "Yes"
+        "yes": "Yes",
+        "details": "Details"
     },
     "filters": {
         "code": "Code",

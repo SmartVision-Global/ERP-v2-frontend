@@ -319,7 +319,7 @@ export function SupplierListView() {
           <GridActionsCellItem
             showInMenu
             icon={<Iconify icon="humbleicons:view-list" />}
-            label={t('actions.display_details')}
+            label={t('actions.details')}
             onClick={() => handleOpenDetail(params.row)}
           />,
         ],
