@@ -107,7 +107,9 @@
             "product_required": "Product is required",
             "quantity_required": "Quantity is required",
             "date_required": "Date is required",
-            "at_least_one_product": "At least one product is required"
+            "at_least_one_product": "At least one product is required",
+            "supplier_required": "Supplier is required",
+            "service_required": "Service is required"
         },
         "messages": {
             
@@ -118,6 +120,7 @@
         "labels": {
             "message": "Message",
             "global_info_purchase_request": "Global information about the purchase request",
+            "global_info_command_order": "Global information about the command order",
             "site": "Site",
             "personal": "Personal",
             "type": "Type",
@@ -134,7 +137,11 @@
             "needs_date": "Needs date",
             "observation": "Observation",
             "select_product": "Select a product",
-            "builder_code": "Builder Code"
+            "builder_code": "Builder Code",
+            "supplier": "Supplier",
+            "service": "Service",
+            "payment_method": "Payment Method",
+            "billing": "Billing"
         },
         "actions": {
             "previous_step": "Previous Step",
