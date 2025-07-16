@@ -61,7 +61,6 @@ const getOrderSchema = (t) =>
           purchased_quantity: z
             .number({ coerce: true })
             .min(1, { message: t('form.validations.quantity_required') }),
-          requested_date: z.string().nonempty({ message: t('form.validations.date_required') }),
           designation: z.string().optional(),
           supplier_code: z.string().optional(),
           current_quantity: z.number({ coerce: true }).optional(),
@@ -91,7 +90,6 @@ export function CommandOrderNewEditForm({ initialData }) {
         current_quantity: row.quantity || 0,
         purchased_quantity: '',
         observation: '',
-        requested_date: new Date().toISOString().split('T')[0],
       });
     } else {
       const idx = openModalIndex;
@@ -126,7 +124,6 @@ export function CommandOrderNewEditForm({ initialData }) {
             purchased_quantity: item.purchased_quantity?.toString() || '',
             observation: item.observation || '',
             unit_measure: item.unit_measure || { designation: '' },
-            requested_date: item.requested_date?.split('T')[0] || new Date().toISOString().split('T')[0],
           }))
         : [],
     },
@@ -174,7 +171,6 @@ export function CommandOrderNewEditForm({ initialData }) {
   // Move to next tab or submit at the last tab
   const onSubmit = handleSubmit(async (data) => {
     console.log('data', data);
-    if (data.requested_date) data.requested_date = data.requested_date.split('T')[0];
     try {
       // transform items to backend format
       const payload = {
@@ -185,7 +181,6 @@ export function CommandOrderNewEditForm({ initialData }) {
             designation: item.designation,
             purchased_quantity: Number(item.purchased_quantity),
             observation: item.observation,
-            requested_date: item.requested_date,
           })),
         };
        
@@ -221,8 +216,6 @@ export function CommandOrderNewEditForm({ initialData }) {
               purchased_quantity: item.purchased_quantity?.toString() || '',
               observation: item.observation || '',
               unit_measure: item.unit_measure || { designation: '' },
-              requested_date:
-                item.requested_date?.split('T')[0] || new Date().toISOString().split('T')[0],
             }))
           : [],
       });
@@ -397,18 +390,10 @@ export function CommandOrderNewEditForm({ initialData }) {
                     />
                   </Box>
                 </Grid>
-                <Grid size={{ xs: 12, md: 4 }}>
-                  <Field.DatePicker
-                    name={`items.${index}.requested_date`}
-                    label={t('form.labels.needs_date')}
-                    disablePast
-                    slotProps={{ textField: { size: 'small' } }}
-                  />
-                </Grid>
               </Grid>
 
               <Grid container spacing={2} sx={{ mt: 2 }}>
-                <Grid size={{ xs: 12, md: 6 }}>
+                <Grid size={{ xs: 12, md: 12 }}>
                   <Field.Text
                     name={`items.${index}.observation`}
                     label={t('form.labels.observation')}
