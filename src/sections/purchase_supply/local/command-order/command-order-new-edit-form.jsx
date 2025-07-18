@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import React, { useState, useEffect, Fragment } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 
 import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
@@ -68,7 +68,7 @@ const getOrderSchema = (t) =>
       .nonempty({ message: t('form.validations.payment_method_required') }),
     discount: z.number({ coerce: true }).min(0).optional(),
     tax: z.number({ coerce: true }).min(0).optional(),
-    tva_percentage: z.number({ coerce: true }).min(0).optional(),
+    tva_percentage: z.number({ coerce: true }).min(0, { message: t('form.validations.tva_percentage_invalid') }).max(100, { message: t('form.validations.tva_percentage_invalid') }).optional(),
     items: z
       .array(
         z.object({
@@ -88,7 +88,6 @@ const getOrderSchema = (t) =>
           charges: z
             .array(
               z.object({
-                nature: z.string().nonempty({ message: 'Nature is required' }),
                 designation: z.string().optional(),
                 quantity: z.number({ coerce: true }).min(1),
                 price: z.number({ coerce: true }).min(0),
@@ -97,12 +96,52 @@ const getOrderSchema = (t) =>
               })
             )
             .optional(),
+        }).refine((data) => data.price >= data.discount, {
+          message: t('form.validations.discount_superior_to_price'),
+          path: ['discount'],
         })
       )
       .nonempty({ message: t('form.validations.at_least_one_product') }),
   });
 
-function ItemRow({ control, index, field, removeItem, t, watch }) {
+function ChargeRow({ control, itemIndex, chargeIndex, removeCharge, t }) {
+  const price = Number(useWatch({ control, name: `items.${itemIndex}.charges.${chargeIndex}.price` })) || 0;
+  const discount = Number(useWatch({ control, name: `items.${itemIndex}.charges.${chargeIndex}.discount` })) || 0;
+  const quantity = Number(useWatch({ control, name: `items.${itemIndex}.charges.${chargeIndex}.quantity` })) || 0;
+  const htDiscount = (price - discount) * quantity;
+
+  return (
+    <TableRow>
+      <TableCell>
+        <Field.Text name={`items.${itemIndex}.charges.${chargeIndex}.designation`} />
+      </TableCell>
+      <TableCell>
+        <Field.Number name={`items.${itemIndex}.charges.${chargeIndex}.quantity`} />
+      </TableCell>
+      <TableCell>
+        <Field.Number name={`items.${itemIndex}.charges.${chargeIndex}.price`} />
+      </TableCell>
+      <TableCell>
+        <Field.Number name={`items.${itemIndex}.charges.${chargeIndex}.discount`} />
+      </TableCell>
+      <TableCell>{htDiscount.toFixed(2)}</TableCell>
+      <TableCell>
+        <Field.Text
+          name={`items.${itemIndex}.charges.${chargeIndex}.observation`}
+          multiline
+          rows={1}
+        />
+      </TableCell>
+      <TableCell>
+        <IconButton color="error" onClick={() => removeCharge(chargeIndex)}>
+          <Iconify icon="eva:trash-2-outline" />
+        </IconButton>
+      </TableCell>
+    </TableRow>
+  );
+}
+
+function ItemRow({ control, index, field, removeItem, t, watch, setValue }) {
   const [expanded, setExpanded] = useState(false);
 
   const {
@@ -113,6 +152,17 @@ function ItemRow({ control, index, field, removeItem, t, watch }) {
     control,
     name: `items.${index}.charges`,
   });
+
+  const price = Number(watch(`items.${index}.price`)) || 0;
+  const discount = Number(watch(`items.${index}.discount`)) || 0;
+  const quantity = Number(watch(`items.${index}.purchased_quantity`)) || 0;
+  const htDiscount = (price - discount) * quantity;
+
+  useEffect(() => {
+    if (discount > price) {
+      setValue(`items.${index}.discount`, price);
+    }
+  }, [price, discount, setValue, index]);
 
   return (
     <Fragment>
@@ -152,18 +202,21 @@ function ItemRow({ control, index, field, removeItem, t, watch }) {
             </Typography>
             <Field.Number
               name={`items.${index}.purchased_quantity`}
-              sx={{ maxWidth: 100 }}
+              sx={{ minWidth: 150 }}
             />
           </Box>
         </TableCell>
         <TableCell>
-          <Field.Number name={`items.${index}.price`} sx={{ maxWidth: 100 }} />
+          <Field.Number name={`items.${index}.price`} sx={{ minWidth: 150 }} />
         </TableCell>
         <TableCell>
           <Field.Number
             name={`items.${index}.discount`}
-            sx={{ maxWidth: 100 }}
+            sx={{ minWidth: 150 }}
           />
+        </TableCell>
+        <TableCell>
+          {htDiscount.toFixed(2)}
         </TableCell>
         <TableCell>
           <Field.Text
@@ -198,7 +251,6 @@ function ItemRow({ control, index, field, removeItem, t, watch }) {
                   startIcon={<Iconify icon="eva:plus-fill" />}
                   onClick={() =>
                     appendCharge({
-                      nature: '',
                       designation: '',
                       quantity: 1,
                       price: 0,
@@ -212,60 +264,26 @@ function ItemRow({ control, index, field, removeItem, t, watch }) {
               </Stack>
               <Table size="small">
                 <TableHead>
-                  <TableRow sx={{ bgcolor: 'grey.200' }}>
-                    <TableCell>{t('form.labels.nature')}</TableCell>
+                  <TableRow sx={{ bgcolor: 'red.200' }}>
                     <TableCell>{t('form.labels.designation')}</TableCell>
                     <TableCell>{t('form.labels.quantity')}</TableCell>
                     <TableCell>{t('form.labels.price')}</TableCell>
                     <TableCell>{t('form.labels.discount')}</TableCell>
+                    <TableCell>{t('form.labels.ht_discount')}</TableCell>
                     <TableCell>{t('form.labels.observation')}</TableCell>
                     <TableCell />
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {chargeFields.map((chargeField, chargeIndex) => (
-                    <TableRow key={chargeField.id}>
-                      <TableCell>
-                        <Field.Text
-                          name={`items.${index}.charges.${chargeIndex}.nature`}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Field.Text
-                          name={`items.${index}.charges.${chargeIndex}.designation`}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Field.Number
-                          name={`items.${index}.charges.${chargeIndex}.quantity`}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Field.Number
-                          name={`items.${index}.charges.${chargeIndex}.price`}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Field.Number
-                          name={`items.${index}.charges.${chargeIndex}.discount`}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Field.Text
-                          name={`items.${index}.charges.${chargeIndex}.observation`}
-                          multiline
-                          rows={1}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <IconButton
-                          color="error"
-                          onClick={() => removeCharge(chargeIndex)}
-                        >
-                          <Iconify icon="eva:trash-2-outline" />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
+                    <ChargeRow
+                      key={chargeField.id}
+                      control={control}
+                      itemIndex={index}
+                      chargeIndex={chargeIndex}
+                      removeCharge={removeCharge}
+                      t={t}
+                    />
                   ))}
                 </TableBody>
               </Table>
@@ -380,10 +398,35 @@ export function CommandOrderNewEditForm({ initialData }) {
   });
   const [openModalIndex, setOpenModalIndex] = useState(null);
   const [openPurchaseRequestModal, setOpenPurchaseRequestModal] = useState(false);
-  const [ht, setHt] = useState(0);
-  const [htRemise, setHtRemise] = useState(0);
-  const [tva, setTva] = useState(0);
-  const [ttc, setTtc] = useState(0);
+
+  const watchedItems = watch('items');
+
+  const ht = watchedItems.reduce((acc, item) => {
+    const price = Number(item.price) || 0;
+    const discount = Number(item.discount) || 0;
+    const quantity = Number(item.purchased_quantity) || 0;
+    const itemHt = (price - discount) * quantity;
+
+    const chargesHt = (item.charges || []).reduce((chargesAcc, charge) => {
+      const chargePrice = Number(charge.price) || 0;
+      const chargeDiscount = Number(charge.discount) || 0;
+      const chargeQuantity = Number(charge.quantity) || 0;
+      return chargesAcc + (chargePrice - chargeDiscount) * chargeQuantity;
+    }, 0);
+
+    return acc + itemHt + chargesHt;
+  }, 0);
+
+  const watchedDiscount = watch('discount');
+  const globalDiscount = Number(watchedDiscount) || 0;
+  const htRemise = ht - globalDiscount;
+
+  const watchedTvaPercentage = watch('tva_percentage');
+  const tva = htRemise * (Number(watchedTvaPercentage) || 0) / 100;
+
+  const watchedTax = watch('tax');
+  const tax = Number(watchedTax) || 0;
+  const ttc = htRemise + tva + tax;
 
   const STEPS = [t('form.steps.information'), t('form.steps.products')];
 
@@ -493,18 +536,6 @@ export function CommandOrderNewEditForm({ initialData }) {
       });
     }
   }, [initialData, reset]);
-
-  const watchedItems = watch('items');
-  const watchedDiscount = watch('discount');
-  const watchedTvaPercentage = watch('tva_percentage');
-
-  useEffect(() => {
-    // TODO: Implement calculation logic
-    setHt(0);
-    setHtRemise(0);
-    setTva(0);
-    setTtc(0);
-  }, [watchedItems, watchedDiscount, watchedTvaPercentage]);
 
   const renderNavigationButtons = () => (
     <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3, mb: 3 }}>
@@ -727,6 +758,7 @@ export function CommandOrderNewEditForm({ initialData }) {
                   <TableCell>{t('form.labels.quantity_to_buy')}</TableCell>
                   <TableCell>{t('form.labels.price')}</TableCell>
                   <TableCell>{t('form.labels.discount')}</TableCell>
+                  <TableCell>{t('form.labels.ht_discount')}</TableCell>
                   <TableCell>{t('form.labels.observation')}</TableCell>
                   <TableCell />
                 </TableRow>
@@ -735,7 +767,7 @@ export function CommandOrderNewEditForm({ initialData }) {
                 {itemFields.map((field, index) => (
                     <ItemRow 
                         key={field.fieldKey} 
-                        {...{ control, index, field, removeItem, t, watch }}
+                        {...{ control, index, field, removeItem, t, watch, setValue }}
                     />
                 ))}
               </TableBody>
