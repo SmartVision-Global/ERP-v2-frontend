@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect, Fragment, useCallback } from 'react';
 import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 
 import Grid from '@mui/material/Grid2';
@@ -37,6 +37,7 @@ import { useRouter } from 'src/routes/hooks';
 
 import { endpoints } from 'src/lib/axios';
 import { useTranslate } from 'src/locales';
+import { uploadMedia } from 'src/actions/media';
 import { BILLING_STATUS_OPTIONS, PAYMENT_METHOD_OPTIONS } from 'src/_mock/purchase/data';
 import { createEntity, updateEntity } from 'src/actions/purchase-supply/command-order/command-order';
 import {
@@ -48,7 +49,7 @@ import {
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
-import { Form, Field } from 'src/components/hook-form';
+import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
 import ItemRow from './components/item-row';
 import ProductsListView from './products-list-view';
@@ -70,6 +71,8 @@ const getOrderSchema = (t) =>
     discount: z.number({ coerce: true }).min(0).optional(),
     tax: z.number({ coerce: true }).min(0).optional(),
     tva_percentage: z.number({ coerce: true }).min(0, { message: t('form.validations.tva_percentage_invalid') }).max(100, { message: t('form.validations.tva_percentage_invalid') }).optional(),
+    proforma: schemaHelper.file().optional(),
+    invoice: z.string().optional(),
     items: z
       .array(
         z.object({
@@ -103,6 +106,10 @@ const getOrderSchema = (t) =>
         })
       )
       .nonempty({ message: t('form.validations.at_least_one_product') }),
+    delivery_dates: z.array(z.object({
+        delivery_date: z.date({ required_error: t('form.validations.delivery_date_required') }),
+        observation: z.string().optional(),
+    })).optional(),
   });
 
 // BEB Request Form with two tabs: Informations and Produits
@@ -173,6 +180,9 @@ export function CommandOrderNewEditForm({ initialData }) {
       discount: initialData?.discount || 0,
       tax: initialData?.tax || 0,
       tva_percentage: initialData?.tva_percentage || 0,
+      proforma: initialData?.proforma || '',
+      invoice: initialData?.invoice || '',
+      delivery_dates: initialData?.delivery_dates || [],
       items: initialData?.items
         ? initialData.items.map((item) => ({
             product_id: item.product?.id?.toString() || '',
@@ -206,8 +216,32 @@ export function CommandOrderNewEditForm({ initialData }) {
     name: 'items',
     keyName: 'fieldKey',
   });
+  const { fields: deliveryDateFields, append: appendDeliveryDate, remove: removeDeliveryDate } = useFieldArray({
+      control,
+      name: 'delivery_dates',
+  });
   const [openModalIndex, setOpenModalIndex] = useState(null);
   const [openPurchaseRequestModal, setOpenPurchaseRequestModal] = useState(false);
+
+  const onDropProforma = async (acceptedFiles) => {
+    const value = acceptedFiles[0];
+    const newData = new FormData();
+    newData.append('type', 'image');
+    newData.append('file', value);
+    newData.append('collection', 'proformas');
+    setValue('proforma', value, { shouldValidate: true });
+
+    try {
+      const response = await uploadMedia(newData);
+      setValue('proforma', response?.uuid, { shouldValidate: true });
+    } catch (error) {
+      console.log('error in upload file', error);
+    }
+  };
+
+  const handleRemoveProforma = useCallback(() => {
+    setValue('proforma', null);
+  }, [setValue]);
 
   const watchedItems = watch('items');
 
@@ -238,11 +272,12 @@ export function CommandOrderNewEditForm({ initialData }) {
   const tax = Number(watchedTax) || 0;
   const ttc = htRemise + tva + tax;
 
-  const STEPS = [t('form.steps.information'), t('form.steps.products')];
+  const STEPS = [t('form.steps.information'), t('form.steps.products'), t('form.steps.confirmation')];
 
   const tabFields = {
     0: ['site_id', 'supplier_id', 'service_id', 'type'],
     1: ['items', 'billed', 'payment_method'],
+    2: ['delivery_dates'],
   };
 
   const handleNextStep = async () => {
@@ -327,6 +362,9 @@ export function CommandOrderNewEditForm({ initialData }) {
         discount: initialData?.discount || 0,
         tax: initialData?.tax || 0,
         tva_percentage: initialData?.tva_percentage || 0,
+        proforma: initialData?.proforma || '',
+        invoice: initialData?.invoice || '',
+        delivery_dates: initialData?.delivery_dates || [],
         items: initialData.items
           ? initialData.items.map((item) => ({
               product_id: item.product?.id?.toString() || '',
@@ -627,11 +665,6 @@ export function CommandOrderNewEditForm({ initialData }) {
           <CardContent>
             <Grid container spacing={3}>
               <Grid size={{ xs: 12, md: 6 }}>
-                <Field.Text name="print_note" label={t('form.labels.print_note')} multiline rows={3} />
-              </Grid>
-            </Grid>
-            <Grid container spacing={3} sx={{ pt: 3 }}>
-              <Grid size={{ xs: 12, md: 6 }}>
                 <Field.Text name="observation" label={t('form.labels.observation')} multiline rows={3} />
               </Grid>
             </Grid>
@@ -695,6 +728,66 @@ export function CommandOrderNewEditForm({ initialData }) {
     </Card>
   );
 
+  const renderConfirmationTab = () => (
+    <Card>
+      <CardHeader title={STEPS[2]} />
+      <CardContent>
+        <Stack spacing={3}>
+          
+         
+          <Button
+            startIcon={<Iconify icon="eva:plus-fill" />}
+            onClick={() => appendDeliveryDate({ delivery_date: new Date(), observation: '' })}
+            sx={{ alignSelf: 'flex-start' }}
+          >
+            {t('form.actions.add_delivery_date')}
+          </Button>
+          {deliveryDateFields.map((field, index) => (
+            <Stack key={field.id} direction="row" spacing={2} alignItems="center">
+              <Field.DatePicker
+                name={`delivery_dates.${index}.delivery_date`}
+                label={t('form.labels.delivery_date')}
+                sx={{ flex: 1 }}
+              />
+              <Field.Text
+                name={`delivery_dates.${index}.observation`}
+                label={t('form.labels.observation')}
+                sx={{ flex: 2 }}
+                multiline
+                rows={1}
+              />
+              <IconButton color="error" onClick={() => removeDeliveryDate(index)}>
+                <Iconify icon="eva:trash-2-outline" />
+              </IconButton>
+            </Stack>
+          ))}
+            <Divider />
+
+            <Grid container spacing={1.5}>
+            
+           
+            <Grid size={{ xs: 12, md: 6 }}>
+            <Typography variant="subtitle2">{t('form.labels.proforma')}</Typography>
+            <Field.Upload
+              name="proforma"
+              onDelete={handleRemoveProforma}
+              onDrop={onDropProforma}
+            />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+               <Field.Text name="invoice" label={t('form.labels.invoice_number_proforma')} />
+             </Grid>
+           </Grid>
+           <Grid container spacing={1.5}>
+           <Grid size={{ xs: 12, md: 6 }}>
+            <Field.Text name="print_note" label={t('form.labels.print_note')} multiline rows={3} />
+           </Grid>
+          </Grid>
+          </Stack>
+      </CardContent>
+    </Card>
+  );
+
   return (
     <Form methods={methods} onSubmit={onSubmit}>
       <input type="hidden" {...register('eon_voucher_id')} />
@@ -711,6 +804,7 @@ export function CommandOrderNewEditForm({ initialData }) {
       {activeStep === 0 && renderInformationsTab()}
 
       {activeStep === 1 && renderProductsTab()}
+      {activeStep === 2 && renderConfirmationTab()}
       {renderNavigationButtons()}
     </Form>
   );
