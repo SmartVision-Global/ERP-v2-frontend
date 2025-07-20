@@ -252,3 +252,61 @@ export function RenderCellBilled({ params }) {
     </Label>
   );
 }
+
+export function RenderCellPurchaseRequestCode({ params }) {
+  return <Typography>{params.row.purchase_request?.code ?? 'N/A'}</Typography>;
+}
+
+export function RenderCellPurchaseRequestType({ params }) {
+  const typeMap = { 1: 'Standard', 2: 'Urgent' };
+  const type = params.row.purchase_request?.type;
+  return <Typography>{typeMap[type] ?? 'N/A'}</Typography>;
+}
+
+export function RenderCellPurchaseRequestStatus({ params }) {
+  const statusMap = {
+    1: { text: 'Pending', color: 'warning' },
+    2: { text: 'Approved', color: 'success' },
+    3: { text: 'Rejected', color: 'error' },
+    4: { text: 'Processing', color: 'info' },
+  };
+  const status = params.row.purchase_request?.status;
+  const { text, color } = statusMap[status] || { text: 'N/A', color: 'default' };
+  return <Label variant="soft" color={color}>{text}</Label>;
+}
+
+export function RenderCellProductCode({ params }) {
+  return <Typography>{params.row.product?.code ?? 'N/A'}</Typography>;
+}
+
+export function RenderCellProductSupplierCode({ params }) {
+  return <Typography>{params.row.product?.supplier_code ?? 'N/A'}</Typography>;
+}
+
+export function RenderCellDateNeeded({ params }) {
+    return <Typography>{params.row.date_needed ? fDate(params.row.date_needed) : 'N/A'}</Typography>;
+}
+
+export function RenderCellObservations({ params }) {
+    return <Typography>{params.row.observation ?? 'N/A'}</Typography>;
+}
+
+export function RenderCellPurchaseRequestPriority({ params }) {
+    const priorityMap = {
+        1: { text: 'Low', color: 'default' },
+        2: { text: 'Medium', color: 'warning' },
+        3: { text: 'High', color: 'error' },
+    };
+    const priority = params.row.purchase_request?.priority;
+    const { text, color } = priorityMap[priority] || { text: 'N/A', color: 'default' };
+    return <Label variant="soft" color={color}>{text}</Label>;
+}
+
+export function RenderCellConfirmationDate({ params }) {
+    const confirmationDate = params.row.purchase_request?.confirmation_date;
+    return <Typography>{confirmationDate ? fDate(confirmationDate) : 'N/A'}</Typography>;
+}
+
+export function RenderCellNotImplemented() {
+  return <Typography sx={{color: 'text.disabled'}}>N/I</Typography>;
+}

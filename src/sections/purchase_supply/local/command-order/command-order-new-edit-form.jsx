@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import React, { useState, useEffect, Fragment } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import React, { useState, useEffect, Fragment } from 'react';
 import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 
 import Grid from '@mui/material/Grid2';
@@ -50,6 +50,7 @@ import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
 
+import ItemRow from './components/item-row';
 import ProductsListView from './products-list-view';
 import PurchaseRequestListView from './purchase-request-list-view';
 
@@ -103,197 +104,6 @@ const getOrderSchema = (t) =>
       )
       .nonempty({ message: t('form.validations.at_least_one_product') }),
   });
-
-function ChargeRow({ control, itemIndex, chargeIndex, removeCharge, t }) {
-  const price = Number(useWatch({ control, name: `items.${itemIndex}.charges.${chargeIndex}.price` })) || 0;
-  const discount = Number(useWatch({ control, name: `items.${itemIndex}.charges.${chargeIndex}.discount` })) || 0;
-  const quantity = Number(useWatch({ control, name: `items.${itemIndex}.charges.${chargeIndex}.quantity` })) || 0;
-  const htDiscount = (price - discount) * quantity;
-
-  return (
-    <TableRow>
-      <TableCell>
-        <Field.Text name={`items.${itemIndex}.charges.${chargeIndex}.designation`} />
-      </TableCell>
-      <TableCell>
-        <Field.Number name={`items.${itemIndex}.charges.${chargeIndex}.quantity`} />
-      </TableCell>
-      <TableCell>
-        <Field.Number name={`items.${itemIndex}.charges.${chargeIndex}.price`} />
-      </TableCell>
-      <TableCell>
-        <Field.Number name={`items.${itemIndex}.charges.${chargeIndex}.discount`} />
-      </TableCell>
-      <TableCell>{htDiscount.toFixed(2)}</TableCell>
-      <TableCell>
-        <Field.Text
-          name={`items.${itemIndex}.charges.${chargeIndex}.observation`}
-          multiline
-          rows={1}
-        />
-      </TableCell>
-      <TableCell>
-        <IconButton color="error" onClick={() => removeCharge(chargeIndex)}>
-          <Iconify icon="eva:trash-2-outline" />
-        </IconButton>
-      </TableCell>
-    </TableRow>
-  );
-}
-
-function ItemRow({ control, index, field, removeItem, t, watch, setValue }) {
-  const [expanded, setExpanded] = useState(false);
-
-  const {
-    fields: chargeFields,
-    append: appendCharge,
-    remove: removeCharge,
-  } = useFieldArray({
-    control,
-    name: `items.${index}.charges`,
-  });
-
-  const price = Number(watch(`items.${index}.price`)) || 0;
-  const discount = Number(watch(`items.${index}.discount`)) || 0;
-  const quantity = Number(watch(`items.${index}.purchased_quantity`)) || 0;
-  const htDiscount = (price - discount) * quantity;
-
-  useEffect(() => {
-    if (discount > price) {
-      setValue(`items.${index}.discount`, price);
-    }
-  }, [price, discount, setValue, index]);
-
-  return (
-    <Fragment>
-      <TableRow>
-        <TableCell>
-          <Field.Text
-            name={`items.${index}.purchase_request_code`}
-            InputProps={{ readOnly: true }}
-            sx={{ minWidth: 100 }}
-          />
-        </TableCell>
-        <TableCell>
-          <Field.Text
-            name={`items.${index}.code`}
-            InputProps={{ readOnly: true }}
-            sx={{ minWidth: 150 }}
-          />
-        </TableCell>
-        <TableCell>
-          <Field.Text
-            name={`items.${index}.supplier_code`}
-            InputProps={{ readOnly: true }}
-            sx={{ minWidth: 100 }}
-          />
-        </TableCell>
-        <TableCell>
-          <Field.Text
-            name={`items.${index}.designation`}
-            InputProps={{ readOnly: true }}
-            sx={{ minWidth: 150 }}
-          />
-        </TableCell>
-        <TableCell>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-              {watch(`items.${index}.unit_measure`)?.designation || ''}
-            </Typography>
-            <Field.Number
-              name={`items.${index}.purchased_quantity`}
-              sx={{ minWidth: 150 }}
-            />
-          </Box>
-        </TableCell>
-        <TableCell>
-          <Field.Number name={`items.${index}.price`} sx={{ minWidth: 150 }} />
-        </TableCell>
-        <TableCell>
-          <Field.Number
-            name={`items.${index}.discount`}
-            sx={{ minWidth: 150 }}
-          />
-        </TableCell>
-        <TableCell>
-          {htDiscount.toFixed(2)}
-        </TableCell>
-        <TableCell>
-          <Field.Text
-            name={`items.${index}.observation`}
-            multiline
-            rows={1}
-            sx={{ minWidth: 200 }}
-          />
-        </TableCell>
-        <TableCell>
-          <IconButton onClick={() => setExpanded(!expanded)}>
-            <Iconify icon={expanded ? "eva:minus-fill" : "eva:plus-fill"} />
-          </IconButton>
-          <IconButton color="error" onClick={() => removeItem(index)}>
-            <Iconify icon="eva:trash-2-outline" />
-          </IconButton>
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={10}>
-          <Collapse in={expanded} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-              >
-                <Typography variant="h6" gutterBottom component="div">
-                  {t('form.labels.charges')}
-                </Typography>
-                <Button
-                  startIcon={<Iconify icon="eva:plus-fill" />}
-                  onClick={() =>
-                    appendCharge({
-                      designation: '',
-                      quantity: 1,
-                      price: 0,
-                      discount: 0,
-                      observation: '',
-                    })
-                  }
-                >
-                  {t('form.actions.add_charge')}
-                </Button>
-              </Stack>
-              <Table size="small">
-                <TableHead>
-                  <TableRow sx={{ bgcolor: 'red.200' }}>
-                    <TableCell>{t('form.labels.designation')}</TableCell>
-                    <TableCell>{t('form.labels.quantity')}</TableCell>
-                    <TableCell>{t('form.labels.price')}</TableCell>
-                    <TableCell>{t('form.labels.discount')}</TableCell>
-                    <TableCell>{t('form.labels.ht_discount')}</TableCell>
-                    <TableCell>{t('form.labels.observation')}</TableCell>
-                    <TableCell />
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {chargeFields.map((chargeField, chargeIndex) => (
-                    <ChargeRow
-                      key={chargeField.id}
-                      control={control}
-                      itemIndex={index}
-                      chargeIndex={chargeIndex}
-                      removeCharge={removeCharge}
-                      t={t}
-                    />
-                  ))}
-                </TableBody>
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-    </Fragment>
-  );
-}
 
 // BEB Request Form with two tabs: Informations and Produits
 export function CommandOrderNewEditForm({ initialData }) {
