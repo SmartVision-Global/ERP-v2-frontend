@@ -35,8 +35,8 @@ import {
   ORDER_STATUS_OPTIONS,
 } from 'src/_mock/expression-of-needs/Beb/Beb';
 import {
-  useGetPurchaseOrders,
-  getFiltredPurchaseOrders,
+  useGetRequestPurchases,
+  getFiltredRequestPurchases,
   confirmPurchaseOrder,
   cancelPurchaseOrder,
 } from 'src/actions/purchase-supply/purchase-order/order';
@@ -100,7 +100,7 @@ export function OrderPurchaseList() {
     pageSize: PAGE_SIZE,
   });
   const [selectedRow, setSelectedRow] = useState('');
-  const { purchaseOrders, purchaseOrdersLoading, purchaseOrdersCount } = useGetPurchaseOrders({
+  const { requestPurchases, requestPurchasesLoading, requestPurchasesCount } = useGetRequestPurchases({
     limit: PAGE_SIZE,
     offset: 0,
   });
@@ -147,13 +147,13 @@ export function OrderPurchaseList() {
   const [dialogState, setDialogState] = useState({ open: false, action: null, order: null });
 
   useEffect(() => {
-    setTableData(purchaseOrders);
-    setRowCount(purchaseOrdersCount);
-  }, [purchaseOrders, purchaseOrdersCount]);
+    setTableData(requestPurchases);
+    setRowCount(requestPurchasesCount);
+  }, [requestPurchases, requestPurchasesCount]);
 
   const handleReset = useCallback(async () => {
     try {
-      const response = await getFiltredPurchaseOrders({
+      const response = await getFiltredRequestPurchases({
         limit: PAGE_SIZE,
         offset: 0,
       });
@@ -172,7 +172,7 @@ export function OrderPurchaseList() {
   const handleFilter = useCallback(
     async (data) => {
       try {
-        const response = await getFiltredPurchaseOrders(data);
+        const response = await getFiltredRequestPurchases(data);
         setTableData(response.data?.data?.records);
         setRowCount(response.data?.data?.total);
       } catch (error) {
@@ -517,7 +517,7 @@ export function OrderPurchaseList() {
             rows={tableData}
             rowCount={rowCount}
             columns={columns}
-            loading={purchaseOrdersLoading}
+            loading={requestPurchasesLoading}
             getRowHeight={() => 'auto'}
             paginationModel={paginationModel}
             paginationMode="server"

@@ -14,15 +14,16 @@ const swrOptions = {
   revalidateOnReconnect: enableServer || false,
 };
 
-const ENDPOINT = endpoints.purchaseSupply.purchaseOrder.list;
+const ENDPOINT = endpoints.purchaseSupply.purchaseRequest.list;
 // Dynamic endpoint for fetching items of a BEB (eon-voucher)
 const ENDPOINT_ITEMS = (id) => `${ENDPOINT}/${id}/items`;
+const ENDPOINT_ALL_ITEMS = () => `${ENDPOINT}/items`;
 const ENDPOINT_CONFIRM = (id) => `${ENDPOINT}/${id}/confirme`;
 const ENDPOINT_CANCEL = (id) => `${ENDPOINT}/${id}/cancele`;
 
 // ----------------------------------------------------------------------
 
-export function useGetPurchaseOrders(params) {
+export function useGetRequestPurchases(params) {
   // Use params to request paginated/filter data
   const key = params
     ? [ENDPOINT, { params }]
@@ -31,13 +32,13 @@ export function useGetPurchaseOrders(params) {
 
   const memoizedValue = useMemo(
     () => ({
-      purchaseOrders: data?.data?.records || [],
-      purchaseOrdersCount: data?.data?.total || 0,
+      requestPurchases: data?.data?.records || [],
+      requestPurchasesCount: data?.data?.total || 0,
 
-      purchaseOrdersLoading: isLoading,
-      purchaseOrdersError: error,
-      purchaseOrdersValidating: isValidating,
-      purchaseOrdersEmpty: !isLoading && !isValidating && !data?.data?.records.length,
+      requestPurchasesLoading: isLoading,
+      requestPurchasesError: error,
+      requestPurchasesValidating: isValidating,
+      requestPurchasesEmpty: !isLoading && !isValidating && !data?.data?.records.length,
     }),
     [data?.data?.records, data?.data?.total, error, isLoading, isValidating]
   );
@@ -45,7 +46,7 @@ export function useGetPurchaseOrders(params) {
   return memoizedValue;
 }
 
-export async function getFiltredPurchaseOrders(params) {
+export async function getFiltredRequestPurchases(params) {
   const response = await axios.get(`${ENDPOINT}`, {
     params,
   });
@@ -54,17 +55,17 @@ export async function getFiltredPurchaseOrders(params) {
 
 
 
-export function useGetPurchaseOrder(id) {
+export function useGetRequestPurchase(id) {
   const url = id ? `${ENDPOINT}/${id}` : '';
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
   
   const memoizedValue = useMemo(
     () => ({
-      purchaseOrder: data?.data,
-      purchaseOrderLoading: isLoading,
-      purchaseOrderError: error,
-      purchaseOrderValidating: isValidating,
-      purchaseOrderEmpty: !isLoading && !isValidating && !data?.data,
+      requestPurchase: data?.data,
+      requestPurchaseLoading: isLoading,
+      requestPurchaseError: error,
+      requestPurchaseValidating: isValidating,
+      requestPurchaseEmpty: !isLoading && !isValidating && !data?.data,
     }),
     [data?.data, error, isLoading, isValidating]
   );
@@ -75,11 +76,11 @@ export function useGetPurchaseOrder(id) {
 // ----------------------------------------------------------------------
 
 /**
- * Hook to fetch items for a given BEB (eon-voucher)
- * @param {string|number} id - ID of the eon-voucher
+ * Hook to fetch items for a given purchase request 
+ * @param {string|number} id - ID of the purchase request
  * @param {{ limit: number, offset: number }} params - pagination parameters
  */
-export function useGetPurchaseOrderItems(id, params) {
+export function useGetRequestPurchaseItems(id, params) {
   const url = id ? ENDPOINT_ITEMS(id) : null;
   const swrKey = id ? [url, { params }] : null;
   
@@ -97,9 +98,39 @@ export function useGetPurchaseOrderItems(id, params) {
   return memoizedValue;
 }
 
-export async function getFiltredPurchaseOrderItems(id, params) {
+
+// GET ALL ITEMS of all purchase requests
+export function useGetRequestPurchasesItems(params) {
+  const key = params
+    ? [ENDPOINT_ALL_ITEMS(), { params }]
+    : ENDPOINT_ALL_ITEMS();
+
+  console.log('key', key);
+  
+  const { data, isLoading, error, isValidating } = useSWR(key, fetcher, swrOptions);
+  const memoizedValue = useMemo(
+    () => ({
+      items: data?.data?.records || [],
+      itemsCount: data?.data?.total || 0,
+      itemsLoading: isLoading,
+      itemsError: error,
+      itemsValidating: isValidating,
+    }),
+    [data?.data?.records, data?.data?.total, error, isLoading, isValidating]
+  );
+  return memoizedValue;
+}
+
+export async function getFiltredRequestPurchaseItems(id, params) {
   const url = id ? ENDPOINT_ITEMS(id) : null;
   const response = await axios.get(url, {
+    params,
+  });
+  return response;
+}
+
+export async function getFiltredAllRequestPurchaseItems(params) {
+  const response = await axios.get(ENDPOINT_ALL_ITEMS(), {
     params,
   });
   return response;

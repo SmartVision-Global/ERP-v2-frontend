@@ -158,7 +158,7 @@ export const endpoints = {
     },
   },
   purchaseSupply: {
-    purchaseOrder: {
+    purchaseRequest: {
       list: '/v1/purchases/purchase-requests',
       items: (id) => `/v1/purchases/purchase-requests/${id}/items`,
       confirm: (id) => `/v1/purchases/purchase-requests/${id}/confirme`,

@@ -9,7 +9,8 @@ import {
   FormControl,
   TextField,
   InputAdornment,
-  Typography
+  Typography,
+  styled,
 } from '@mui/material';
 
 import { CONFIG } from 'src/global-config';
@@ -20,7 +21,33 @@ import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
 import { useTranslate } from 'src/locales';
 
+import {
+  RenderCellId,
+  RenderCellCode,
+  RenderCellSupplierCode,
+  RenderCellBuilderCode,
+  RenderCellDesignation,
+  RenderCellUnit,
+} from 'src/sections/store-management/stocks/stock-table-row';
+
 // ----------------------------------------------------------------------
+
+const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
+  // Pin the actions column to the right
+  '& .MuiDataGrid-columnHeader[data-field="actions"]': {
+    position: 'sticky',
+    right: 0,
+    backgroundColor: theme.palette.grey[200],
+    zIndex: theme.zIndex.appBar,
+  },
+  '& .MuiDataGrid-cell[data-field="actions"]': {
+    position: 'sticky',
+    right: 0,
+    backgroundColor: theme.palette.grey[200],
+    zIndex: 1,
+    borderLeft: `1px solid ${theme.palette.divider}`,
+  },
+}));
 
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 
@@ -44,19 +71,17 @@ export default function ProductsListView({ onSelectProduct }) {
   }, [stocks, stocksCount]);
 
   const columns = useMemo(() => [
-    { field: 'id', headerName: t('headers.id'), width: 70 },
-    { field: 'code', headerName: t('headers.code'), flex: 1, minWidth: 150 },
-    { field: 'supplier_code', headerName: t('headers.supplier_code'), flex: 1, minWidth: 150 },
-    { field: 'builder_code', headerName: t('form.labels.builder_code'), flex: 1, minWidth: 150 },
-    { field: 'designation', headerName: t('headers.designation'), flex: 1.5, minWidth: 150 },
+    { field: 'id', headerName: t('headers.id'), width: 70, renderCell: (params) => <RenderCellId params={params} /> },
+    { field: 'code', headerName: t('headers.code'), flex: 1, minWidth: 150, renderCell: (params) => <RenderCellCode params={params} /> },
+    { field: 'supplier_code', headerName: t('headers.supplier_code'), flex: 1, minWidth: 150, renderCell: (params) => <RenderCellSupplierCode params={params} /> },
+    { field: 'builder_code', headerName: t('form.labels.builder_code'), flex: 1, minWidth: 150, renderCell: (params) => <RenderCellBuilderCode params={params} /> },
+    { field: 'designation', headerName: t('headers.designation'), flex: 1.5, minWidth: 150, renderCell: (params) => <RenderCellDesignation params={params} /> },
     {
       field: 'unit_measure',
       headerName: t('headers.unit'),
       flex: 1,
       minWidth: 100,
-      renderCell: (params) => (
-        <Typography variant="body2">{params.row.unit_measure?.designation || ''}</Typography>
-      ),
+      renderCell: (params) => <RenderCellUnit params={params} />,
     },
    
     {
@@ -145,7 +170,7 @@ export default function ProductsListView({ onSelectProduct }) {
         setPaginationModel={setPaginationModel}
         paginationModel={paginationModel}
       />
-      <DataGrid
+      <StyledDataGrid
         disableRowSelectionOnClick
         disableColumnMenu
         rows={tableData}
@@ -165,7 +190,7 @@ export default function ProductsListView({ onSelectProduct }) {
           toolbar: { setFilterButtonEl },
           panel: { anchorEl: filterButtonEl },
         }}
-        sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
+        sx={{ [`& .${gridClasses.cell}`]: { py: 1, alignItems: 'center', display: 'inline-flex' } }}
       />
     </Card>
   );

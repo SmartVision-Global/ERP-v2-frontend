@@ -109,7 +109,15 @@
             "date_required": "Date is required",
             "at_least_one_product": "At least one product is required",
             "supplier_required": "Supplier is required",
-            "service_required": "Service is required"
+            "service_required": "Service is required",
+            "discount_superior_to_price": "Discount cannot be greater than the price",
+            "tva_percentage_invalid": "TVA percentage must be between 0 and 100",
+            "delivery_date_required": "Delivery date is required",
+            "payment_method_required": "Payment method is required",
+            "tax_required": "Tax is required",
+            "discount_required": "Discount is required",
+            "price_required": "Price is required",
+            "designation_required": "Designation is required"
         },
         "messages": {
             
@@ -141,18 +149,43 @@
             "supplier": "Supplier",
             "service": "Service",
             "payment_method": "Payment Method",
-            "billing": "Billing"
+            "billing": "Billing",
+            "price": "Price",
+            "discount": "Discount",
+            "charges": "Charges",
+            "ht": "HT",
+            "ht_remise": "HT Remisé",
+            "tva_percentage": "TVA %",
+            "tva": "TVA",
+            "tax": "Tax",
+            "ttc": "TTC",
+            "da_code": "D.A Code",
+            "nature": "Nature",
+            "quantity": "Quantity",
+            "notes": "Notes",
+            "print_note": "Print Note",
+            "observation": "Observation",
+            "ht_discount": "HT Discount",
+            "confirmation_subheader": "Manage delivery dates and confirmations",
+            "delivery_date": "Delivery Date",
+            "proforma": "Proforma",
+            "invoice_number_proforma": "Proforma Invoice N°"
         },
         "actions": {
             "previous_step": "Previous Step",
             "next_step": "Next Step",
             "validate": "Validate",
             "add": "Add",
-            "cancel": "Cancel"
+            "cancel": "Cancel",
+            "add_products": "Add products",
+            "add_from_purchase_request": "Add from purchase request",
+            "add_charge": "Add charge",
+            "add_delivery_date": "Add Delivery Date"
         },
         "steps": {
             "information": "Information",
-            "products": "Products"
+            "products": "Products",
+            "confirmation": "Confirmation"
         }
     }
 } 

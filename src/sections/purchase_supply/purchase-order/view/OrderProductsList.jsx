@@ -6,8 +6,8 @@ import { Box, Modal, Typography, Card } from '@mui/material';
 import { CONFIG } from 'src/global-config';
 import { useTranslate } from 'src/locales';
 import {
-  useGetPurchaseOrderItems,
-  getFiltredPurchaseOrderItems,
+  useGetRequestPurchaseItems,
+  getFiltredRequestPurchaseItems,
 } from 'src/actions/purchase-supply/purchase-order/order';
 
 import { TableToolbarCustom } from 'src/components/table';
@@ -22,7 +22,7 @@ export default function OrderProductsList({ id }) {
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState({});
 
-  const { items, itemsCount, itemsLoading } = useGetPurchaseOrderItems(id, {
+  const { items, itemsCount, itemsLoading } = useGetRequestPurchaseItems(id, {
     limit: paginationModel.pageSize,
     offset: 0,
   });
@@ -44,7 +44,7 @@ export default function OrderProductsList({ id }) {
 
   const handleReset = useCallback(async () => {
     try {
-      const response = await getFiltredPurchaseOrderItems(id, {
+      const response = await getFiltredRequestPurchaseItems(id, {
         limit: PAGE_SIZE,
         offset: 0,
       });
@@ -66,7 +66,7 @@ export default function OrderProductsList({ id }) {
         ...data,
       };
       try {
-        const response = await getFiltredPurchaseOrderItems(id, newData);
+        const response = await getFiltredRequestPurchaseItems(id, newData);
         setTableData(response.data?.data?.records);
         setRowCount(response.data?.data?.total);
       } catch (error) {
@@ -82,7 +82,7 @@ export default function OrderProductsList({ id }) {
         limit: newModel.pageSize,
         offset: newModel.page * newModel.pageSize,
       };
-      const response = await getFiltredPurchaseOrderItems(id, newData);
+      const response = await getFiltredRequestPurchaseItems(id, newData);
       setTableData(response.data?.data?.records);
       setPaginationModel(newModel);
     } catch (error) {

@@ -121,6 +121,7 @@ export default function ItemRow({ control, index, field, removeItem, watch, setV
                   startIcon={<Iconify icon="eva:plus-fill" />}
                   onClick={() =>
                     appendCharge({
+                      type: 1,
                       designation: '',
                       quantity: 1,
                       price: 0,

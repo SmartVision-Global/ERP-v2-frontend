@@ -8,7 +8,7 @@ import { PurchaseOrderNewEditForm } from './order-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-export function OrderEditView({ purchaseOrder }) {
+export function OrderEditView({ requestPurchase }) {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
@@ -18,12 +18,12 @@ export function OrderEditView({ purchaseOrder }) {
           { name: 'Achat et Approvisionnement', href: paths.dashboard.root },
           { name: 'Liste', href: paths.dashboard.purchaseSupply.purchaseOrder.root },
           { name: "Demande D'achats" },
-          { name: purchaseOrder?.code },
+          { name: requestPurchase?.code },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      {purchaseOrder && <PurchaseOrderNewEditForm initialData={purchaseOrder} />}
+      {requestPurchase && <PurchaseOrderNewEditForm initialData={requestPurchase} />}
     </DashboardContent>
   );
 }
