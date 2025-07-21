@@ -86,7 +86,7 @@ export function BebListView() {
     {id:'priority', type:'select', options:PRIORITY_OPTIONS, label:'Priorité'},
     
     {
-      id: 'created_date_start',
+      id: 'created_at',
       type: 'date-range',
       label: 'Date de création',
       operatorMin: 'gte',

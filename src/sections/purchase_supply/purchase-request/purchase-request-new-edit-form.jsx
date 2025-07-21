@@ -28,7 +28,7 @@ import { BebSelectList } from './beb-select-list';
 const getOrderSchema = (t) => z.object({
   eon_voucher_id: z.string().optional(),
   selectedBEB: z.any().optional(),
-  status_id: z.string().nonempty({ message: t('form.validations.status_required') }),
+  status: z.string().nonempty({ message: t('form.validations.status_required') }),
   site_id: z.string().nonempty({ message: t('form.validations.site_required') }),
   personal_id: z.string().nonempty({ message: t('form.validations.personal_required') }),
   type: z.string().nonempty({ message: t('form.validations.type_required') }),
@@ -106,7 +106,7 @@ export function PurchaseRequestNewEditForm({ initialData }) {
       type: initialData?.type?.toString() || PRODUCT_TYPE_OPTIONS[0]?.value?.toString() || '',
       priority:
         initialData?.priority?.toString() || PRIORITY_OPTIONS[0]?.value?.toString() || '',
-      status_id: initialData?.status_id?.toString() || TWO_STATUS_OPTIONS[0]?.value?.toString() || '',
+      status: initialData?.status?.toString() || TWO_STATUS_OPTIONS[0]?.value?.toString() || '',
       observation: initialData?.observation || '',
       items: initialData?.items
         ? initialData.items.map((item) => ({
@@ -135,7 +135,7 @@ export function PurchaseRequestNewEditForm({ initialData }) {
   const STEPS = [t('form.steps.information'), t('form.steps.products')];
 
   const tabFields = {
-    0: ['site_id', 'personal_id', 'type', 'priority', 'status_id'],
+    0: ['site_id', 'personal_id', 'type', 'priority', 'status'],
     1: ['items'],
   };
 
@@ -180,17 +180,23 @@ export function PurchaseRequestNewEditForm({ initialData }) {
             requested_date: item.requested_date,
           })),
         };
-       
+        delete payload.selectedBEB;
+        console.log('payload', payload);
         if (initialData?.id) {
-          await updateEntity('purchase_order', initialData.id, payload);
-          toast.success(t('form.messages.order_updated'));
+          await updateEntity('purchase_request', initialData.id, payload);
+          toast.success(t('form.messages.purchase_request_updated'));
         } else {
-          await createEntity('purchase_order', payload);
-          toast.success(t('form.messages.order_created'));
+          await createEntity('purchase_request', payload);
+          toast.success(t('form.messages.purchase_request_created'));
         }
-        router.push(paths.dashboard.purchaseSupply.purchaseOrder.root);
+        router.push(paths.dashboard.purchaseSupply.purchaseRequest.root);
       } catch (error) {
-        toast.error(error?.message || t('form.messages.operation_failed'));
+        console.error('error', error);
+        let message = error?.response?.data?.message || error?.message;
+        if (typeof message !== 'string') {
+          message = t('form.messages.operation_failed');
+        }
+        toast.error(message);
       }
     });
 
@@ -209,8 +215,8 @@ export function PurchaseRequestNewEditForm({ initialData }) {
         personal_id: initialData.personal?.toString() || '',
         type: initialData.type?.toString() || PRODUCT_TYPE_OPTIONS[0]?.value?.toString() || '',
         priority: initialData.priority?.toString() || PRIORITY_OPTIONS[0]?.value?.toString() || '',
-        status_id:
-          initialData.status_id?.toString() || TWO_STATUS_OPTIONS[0]?.value?.toString() || '',
+        status:
+          initialData.status?.toString() || TWO_STATUS_OPTIONS[0]?.value?.toString() || '',
         observation: initialData.observation || '',
         items: initialData.items
           ? initialData.items.map((item) => ({
@@ -300,7 +306,7 @@ export function PurchaseRequestNewEditForm({ initialData }) {
           </Grid>
           
           <Grid size={{ xs: 12, md: 6 }}>
-              <Field.Select name="status_id" label={t('form.labels.status')} size="small">
+              <Field.Select name="status" label={t('form.labels.status')} size="small">
                 {TWO_STATUS_OPTIONS.map((opt) => (
                   <MenuItem key={opt.value} value={`${opt.value}`}>{opt.label}</MenuItem>
                 ))}

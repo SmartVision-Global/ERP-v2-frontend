@@ -181,7 +181,7 @@ export function BorrowingReturnListView() {
       { id: 'nature', type: 'select', options: BORROWING_NATURE_OPTIONS, label: t('filters.nature')},
       { id: 'type', type: 'select', options: BORROWING_RETURN_TYPE_OPTIONS, label: t('filters.type') },
       { id: 'status', type: 'select', options: BORROWING_STATUS_OPTIONS, label: t('filters.status') },
-      { id: 'created_date_start', type: 'date-range', label: t('filters.creation_date'), operatorMin: 'gte', operatorMax: 'lte', cols: 3, width: 1 },
+      { id: 'created_at', type: 'date-range', label: t('filters.creation_date'), operatorMin: 'gte', operatorMax: 'lte', cols: 3, width: 1 },
   ], [t]);
 
   const [filterButtonEl, setFilterButtonEl] = useState(null);

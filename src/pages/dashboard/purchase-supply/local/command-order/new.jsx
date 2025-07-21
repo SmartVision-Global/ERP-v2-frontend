@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
-import { CommandOrderCreate } from 'src/sections/purchase_supply/local/command-order/view';
+import { CommandOrderCreateView } from 'src/sections/purchase_supply/local/command-order/view';
 
 // ----------------------------------------------------------------------
 
@@ -11,11 +11,11 @@ const metadata = { title: `Demande D'achats | Dashboard - ${CONFIG.appName}` };
 export default function Page() {
   return (
     <>
-      <Helmet>
+      <Helmet>  
         <title> {metadata.title}</title>
       </Helmet>
 
-      <CommandOrderCreate />
+      <CommandOrderCreateView />
     </>
   );
 }

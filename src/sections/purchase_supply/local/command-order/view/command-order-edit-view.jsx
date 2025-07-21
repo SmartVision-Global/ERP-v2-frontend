@@ -4,24 +4,26 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { CommandOrderNewEditForm } from './../command-order-new-edit-form.jsx';
+import { CommandOrderNewEditForm } from '../command-order-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-export function CommandOrderCreate() {
+export function CommandOrderEditView({ commandOrder }) {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Bon de commande"
+        heading="Edit"
+        backHref={paths.dashboard.purchaseSupply.commandOrder.root}
         links={[
-          { name: 'Achat et Approvisionnement', href: paths.dashboard.purchaseSupply.commandOrder.root },
+          { name: 'Achat et Approvisionnement', href: paths.dashboard.root },
           { name: 'Liste', href: paths.dashboard.purchaseSupply.commandOrder.root },
-          { name: "Bon de commande" },
+          { name: "Demande D'achats" },
+          { name: commandOrder?.code },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <CommandOrderNewEditForm />
+      {commandOrder && <CommandOrderNewEditForm initialData={commandOrder} />}
     </DashboardContent>
   );
 }

@@ -181,15 +181,17 @@ export function CommandOrderNewEditForm({ initialData }) {
       tva: initialData?.tva || 0,
       invoice: initialData?.invoice || '',
       invoice_code: initialData?.invoice_code || '',
-      delivery_dates: initialData?.delivery_dates || [],
+      delivery_dates: initialData?.delivery_dates
+        ? initialData.delivery_dates.map((d) => ({ ...d, delivery_date: new Date(d.delivery_date) }))
+        : [],
       items: initialData?.items
         ? initialData.items.map((item) => ({
-            product_id: item.product?.id?.toString() || '',
+            product_id: item.product_id?.toString() || '',
             purchase_request_item_id: item.purchase_request_item_id || null,
             purchase_request_code: item.purchase_request?.code || (item.purchase_request_item_id ? 'N/A' : '--'),
-            code: item.product?.code || '',
-            supplier_code: item.product?.supplier_code || '',
-            designation: item.product?.designation || '',
+            code: item.code || '',
+            supplier_code: item.supplier_code || '',
+            designation: item.designation || '',
             quantity: item.quantity?.toString() || '',
             price: item.price?.toString() || '',
             discount: item.discount?.toString() || '',
@@ -369,15 +371,17 @@ export function CommandOrderNewEditForm({ initialData }) {
         tva: initialData?.tva || 0,
         invoice: initialData?.invoice || '',
         invoice_code: initialData?.invoice_code || '',
-        delivery_dates: initialData?.delivery_dates || [],
+        delivery_dates: initialData.delivery_dates
+          ? initialData.delivery_dates.map((d) => ({ ...d, delivery_date: new Date(d.delivery_date) }))
+          : [],
         items: initialData.items
           ? initialData.items.map((item) => ({
-              product_id: item.product?.id?.toString() || '',
+              product_id: item.product_id?.toString() || '',
               purchase_request_item_id: item.purchase_request_item_id || null,
               purchase_request_code: item.purchase_request?.code || (item.purchase_request_item_id ? 'N/A' : '--'),
-              code: item.product?.code || '',
-              supplier_code: item.product?.supplier_code || '',
-              designation: item.product?.designation || '',
+              code: item.code || '',
+              supplier_code: item.supplier_code || '',
+              designation: item.designation || '',
               quantity: item.quantity?.toString() || '',
               price: item.price?.toString() || '',
               discount: item.discount?.toString() || '',

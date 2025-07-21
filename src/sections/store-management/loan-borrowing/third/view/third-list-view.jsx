@@ -133,7 +133,7 @@ export function ThirdListView({ isSelectionDialog = false, componentsProps, onSe
         label: t('filters.status'),
       },
       {
-        id: 'created_date_start',
+        id: 'created_at',
         type: 'date-range',
         label: t('filters.creation_date'),
         operatorMin: 'gte',

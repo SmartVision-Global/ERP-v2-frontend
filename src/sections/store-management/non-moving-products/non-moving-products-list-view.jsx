@@ -219,7 +219,7 @@ export function NonMovingProductsListView({ isSelectionDialog = false, component
       },
       
       {
-        id: 'created_date_start',
+        id: 'created_at',
         type: 'date-range',
         label: t('filters.creation_date'),
         operatorMin: 'gte',

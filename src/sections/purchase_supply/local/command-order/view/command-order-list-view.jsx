@@ -508,7 +508,7 @@ export function CommandOrderListView() {
                   showInMenu
                   icon={<Iconify icon="solar:pen-bold" />}
                   label={t('actions.edit')}
-                  href={paths.dashboard.purchaseSupply.purchaseOrder.editPurchaseOrder(
+                  href={paths.dashboard.purchaseSupply.commandOrder.edit(
                     params.row.id
                   )}
                 />,
@@ -559,7 +559,7 @@ export function CommandOrderListView() {
           heading={t('views.list')}
           links={[
             { name: t('views.purchase_and_supply'), href: paths.dashboard.root },
-            { name: t('views.list'), href: paths.dashboard.purchaseSupply.purchaseOrder.root },
+            { name: t('views.list'), href: paths.dashboard.purchaseSupply.commandOrder.root },
           ]}
           action={
             <Box sx={{ gap: 1, display: 'flex' }}>
