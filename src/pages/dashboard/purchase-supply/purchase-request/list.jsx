@@ -2,11 +2,11 @@ import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
-import { OrderPurchaseCreate } from 'src/sections/purchase_supply/purchase-order/view/order-create';
+import { PurchaseRequestListView } from 'src/sections/purchase_supply/purchase-request/view';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Demande D'achats | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `liste des demandes d'achat | Dashboard - ${CONFIG.appName}` };
 
 export default function Page() {
   return (
@@ -15,7 +15,7 @@ export default function Page() {
         <title> {metadata.title}</title>
       </Helmet>
 
-      <OrderPurchaseCreate />
+      <PurchaseRequestListView />
     </>
   );
 }

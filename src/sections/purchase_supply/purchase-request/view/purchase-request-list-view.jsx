@@ -63,8 +63,8 @@ import {
   RenderCellCode,
 } from '../../table-rows';
 import UtilsButton from 'src/components/custom-buttons/utils-button';
-import OrderProductsList from './OrderProductsList';
-import { OrderActionDialog } from './order-action-dialog';
+import PurchaseRequestItemsList from './../purchase-request-items-list';
+import { PurchaseRequestActionDialog } from './../components/purchase-request-action-dialog';
 
 // ----------------------------------------------------------------------
 
@@ -92,7 +92,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 // ----------------------------------------------------------------------
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 
-export function OrderPurchaseList() {
+export function PurchaseRequestListView() {
   const confirmDialog = useBoolean();
   const { t } = useTranslate('purchase-supply-module'); 
   const [paginationModel, setPaginationModel] = useState({
@@ -142,9 +142,9 @@ export function OrderPurchaseList() {
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
 
   const [detailOpen, setDetailOpen] = useState(false);
-  const [selectedOrderForProducts, setSelectedOrderForProducts] = useState(null);
+  const [selectedPurchaseRequest, setSelectedPurchaseRequest] = useState(null);
 
-  const [dialogState, setDialogState] = useState({ open: false, action: null, order: null });
+  const [dialogState, setDialogState] = useState({ open: false, action: null, purchaseRequest: null });
 
   useEffect(() => {
     setTableData(purchaseRequests);
@@ -197,24 +197,24 @@ export function OrderPurchaseList() {
     }
   };
 
-  const handleOpenDialog = (order, action) => {
-    setDialogState({ open: true, action, order });
+  const handleOpenDialog = (purchaseRequest, action) => {
+    setDialogState({ open: true, action, purchaseRequest });
   };
 
   const handleCloseDialog = () => {
-    setDialogState({ open: false, action: null, order: null });
+    setDialogState({ open: false, action: null, purchaseRequest: null });
   };
 
   const handleDialogAction = async (notes) => {
-    const { action, order } = dialogState;
+    const { action, purchaseRequest } = dialogState;
 
-    if (order) {
+    if (purchaseRequest) {
       try {
         if (action === 'confirm') {
-          await confirmPurchaseRequest(order.id, { notes });
+          await confirmPurchaseRequest(purchaseRequest.id, { notes });
           toast.success(t('messages.confirm_success'));
         } else if (action === 'cancel') {
-          await cancelPurchaseRequest(order.id, { notes });
+          await cancelPurchaseRequest(purchaseRequest.id, { notes });
           toast.success(t('messages.cancel_success'));
         }
         handleCloseDialog();
@@ -248,7 +248,7 @@ export function OrderPurchaseList() {
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.setAttribute('download', 'order.csv');
+    link.setAttribute('download', 'purchase_request.csv');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -296,13 +296,13 @@ export function OrderPurchaseList() {
   };
 
   const handleOpenDetail = useCallback((row) => {
-    setSelectedOrderForProducts(row);
+    setSelectedPurchaseRequest(row);
     setDetailOpen(true);
   }, []);
 
   const handleCloseDetail = () => {
     setDetailOpen(false);
-    setSelectedOrderForProducts(null);
+    setSelectedPurchaseRequest(null);
   };
 
   const renderConfirmValidationDialog = () => (
@@ -402,7 +402,7 @@ export function OrderPurchaseList() {
                   showInMenu
                   icon={<Iconify icon="solar:pen-bold" />}
                   label={t('actions.edit')}
-                  href={paths.dashboard.purchaseSupply.purchaseOrder.editPurchaseOrder(
+                  href={paths.dashboard.purchaseSupply.purchaseRequest.editPurchaseRequest(
                     params.row.id
                   )}
                 />,
@@ -413,7 +413,7 @@ export function OrderPurchaseList() {
                 <GridActionsCellItem
                   showInMenu
                   icon={<Iconify icon="eva:checkmark-circle-2-fill" />}
-                  label={t('actions.confirm_order')}
+                  label={t('actions.confirm_purchase_request')}
                   onClick={() => handleOpenDialog(params.row, 'confirm')}
                 />,
               ]
@@ -423,7 +423,7 @@ export function OrderPurchaseList() {
                 <GridActionsCellItem
                   showInMenu
                   icon={<Iconify icon="eva:close-circle-fill" />}
-                  label={t('actions.cancel_order')}
+                  label={t('actions.cancel_purchase_request')}
                   onClick={() => handleOpenDialog(params.row, 'cancel')}
                   sx={{ color: 'error.main' }}
                 />,
@@ -453,13 +453,13 @@ export function OrderPurchaseList() {
           heading={t('views.list')}
           links={[
             { name: t('views.purchase_and_supply'), href: paths.dashboard.root },
-            { name: t('views.list'), href: paths.dashboard.purchaseSupply.purchaseOrder.root },
+            { name: t('views.list'), href: paths.dashboard.purchaseSupply.purchaseRequest.root },
           ]}
           action={
             <Box sx={{ gap: 1, display: 'flex' }}>
               <Button
                 component={RouterLink}
-                href={paths.dashboard.purchaseSupply.purchaseOrder.newPurchaseOrder}
+                href={paths.dashboard.purchaseSupply.purchaseRequest.newPurchaseRequest}
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >
@@ -538,11 +538,11 @@ export function OrderPurchaseList() {
           />
         </Card>
       </DashboardContent>
-      {selectedOrderForProducts && (
+      {selectedPurchaseRequest && (
         <Dialog open={detailOpen} onClose={handleCloseDetail} maxWidth="xl" fullWidth>
           <DialogTitle>{t('dialog.product_list_title')}</DialogTitle>
           <DialogContent dividers>
-            <OrderProductsList id={selectedOrderForProducts.id} />
+            <PurchaseRequestItemsList id={selectedPurchaseRequest.id} />
           </DialogContent>
           <DialogActions>
             <Button variant="contained" onClick={handleCloseDetail}>
@@ -551,15 +551,15 @@ export function OrderPurchaseList() {
           </DialogActions>
         </Dialog>
       )}
-      <OrderActionDialog
+      <PurchaseRequestActionDialog
         open={dialogState.open}
         onClose={handleCloseDialog}
         onAction={handleDialogAction}
-        order={dialogState.order}
+        purchaseRequest={dialogState.purchaseRequest}
         title={
           dialogState.action === 'confirm'
-            ? t('dialog.confirm_purchase_order_title', { code: dialogState.order?.code })
-            : t('dialog.cancel_purchase_order_title', { code: dialogState.order?.code })
+            ? t('dialog.confirm_purchase_request_title', { code: dialogState.purchaseRequest?.code })
+            : t('dialog.cancel_purchase_request_title', { code: dialogState.purchaseRequest?.code })
         }
         notesLabel={
           dialogState.action === 'confirm' ? t('dialog.confirm_notes') : t('dialog.cancel_notes')

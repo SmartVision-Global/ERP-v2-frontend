@@ -388,7 +388,7 @@ export const navData = [
         children: [
           {
             title: "Demande d'achat",
-            path: paths.dashboard.purchaseSupply.purchaseOrder.root,
+            path: paths.dashboard.purchaseSupply.purchaseRequest.root,
           },
           {
             title: 'Traitement DA',

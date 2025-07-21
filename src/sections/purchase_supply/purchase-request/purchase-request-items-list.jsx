@@ -15,7 +15,7 @@ import { EmptyContent } from 'src/components/empty-content';
 
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 
-export default function OrderProductsList({ id }) {
+export default function PurchaseRequestItemsList({ id }) {
   const { t } = useTranslate('purchase-supply-module');
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: PAGE_SIZE });
   const [previewImage, setPreviewImage] = useState(null);

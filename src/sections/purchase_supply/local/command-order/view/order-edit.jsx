@@ -4,7 +4,7 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { PurchaseOrderNewEditForm } from './order-new-edit-form';
+// import { PurchaseOrderNewEditForm } from './order-new-edit-form';
 
 // ----------------------------------------------------------------------
 
@@ -23,7 +23,7 @@ export function OrderEditView({ purchaseOrder }) {
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      {purchaseOrder && <PurchaseOrderNewEditForm initialData={purchaseOrder} />}
+      {/* {purchaseOrder && <PurchaseOrderNewEditForm initialData={purchaseOrder} />} */}
     </DashboardContent>
   );
 }

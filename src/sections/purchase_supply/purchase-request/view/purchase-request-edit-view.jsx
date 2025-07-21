@@ -4,26 +4,26 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { PurchaseOrderNewEditForm } from './order-new-edit-form';
+import { PurchaseRequestNewEditForm } from './../purchase-request-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-export function OrderEditView({ requestPurchase }) {
+export function PurchaseRequestEditView({ purchaseRequest }) {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
         heading="Edit"
-        backHref={paths.dashboard.purchaseSupply.purchaseOrder.root}
+        backHref={paths.dashboard.purchaseSupply.purchaseRequest.root}
         links={[
           { name: 'Achat et Approvisionnement', href: paths.dashboard.root },
-          { name: 'Liste', href: paths.dashboard.purchaseSupply.purchaseOrder.root },
+          { name: 'Liste', href: paths.dashboard.purchaseSupply.purchaseRequest.root },
           { name: "Demande D'achats" },
-          { name: requestPurchase?.code },
+          { name: purchaseRequest?.code },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      {requestPurchase && <PurchaseOrderNewEditForm initialData={requestPurchase} />}
+      {purchaseRequest && <PurchaseRequestNewEditForm initialData={purchaseRequest} />}
     </DashboardContent>
   );
 }

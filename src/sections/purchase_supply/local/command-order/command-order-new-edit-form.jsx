@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useState, useEffect, Fragment, useCallback } from 'react';
 import { useForm, useFieldArray, useWatch } from 'react-hook-form';
+import React, { useState, useEffect, Fragment, useCallback } from 'react';
 
 import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
@@ -56,7 +56,7 @@ import ProductsListView from './products-list-view';
 import PurchaseRequestListView from './purchase-request-list-view';
 
 // Validation schema for the order's first tab
-const getOrderSchema = (t) =>
+const getCommandOrderSchema = (t) =>
   z.object({
     site_id: z.string().nonempty({ message: t('form.validations.site_required') }),
     supplier_id: z.string().nonempty({ message: t('form.validations.supplier_required') }),
@@ -68,34 +68,31 @@ const getOrderSchema = (t) =>
     payment_method: z
       .string()
       .nonempty({ message: t('form.validations.payment_method_required') }),
-    discount: z.number({ coerce: true }).min(0).optional(),
-    tax: z.number({ coerce: true }).min(0).optional(),
+    discount: z.number({ coerce: true }).min(0, { message: t('form.validations.discount_required') }),
+    tax: z.number({ coerce: true }).min(0, { message: t('form.validations.tax_required') }),
     tva_percentage: z.number({ coerce: true }).min(0, { message: t('form.validations.tva_percentage_invalid') }).max(100, { message: t('form.validations.tva_percentage_invalid') }).optional(),
-    proforma: schemaHelper.file().optional(),
-    invoice: z.string().optional(),
+    invoice: schemaHelper.file().optional(),
+    invoice_code: z.string().optional(),
     items: z
       .array(
         z.object({
           product_id: z.string().nonempty({ message: t('form.validations.product_required') }),
           purchase_request_item_id: z.number().nullable().optional(),
           purchase_request_code: z.string().optional(),
-          purchased_quantity: z
+          quantity: z
             .number({ coerce: true })
             .min(1, { message: t('form.validations.quantity_required') }),
           price: z.number({ coerce: true }).min(0, { message: t('form.validations.price_required') }),
-          discount: z.number({ coerce: true }).min(0).optional(),
-          designation: z.string().optional(),
-          supplier_code: z.string().optional(),
+          discount: z.number({ coerce: true }).min(0, { message: t('form.validations.discount_required') }),
           observation: z.string().optional(),
-          code: z.string().optional(),
-          unit_measure: z.any().optional(),
           charges: z
             .array(
               z.object({
-                designation: z.string().optional(),
-                quantity: z.number({ coerce: true }).min(1),
-                price: z.number({ coerce: true }).min(0),
-                discount: z.number({ coerce: true }).min(0).optional(),
+                type: z.number().min(1, { message: t('form.validations.type_required') }),
+                designation: z.string().nonempty({ message: t('form.validations.designation_required') }),
+                quantity: z.number({ coerce: true }).min(1, { message: t('form.validations.quantity_required') }),
+                price: z.number({ coerce: true }).min(0, { message: t('form.validations.price_required') }),
+                discount: z.number({ coerce: true }).min(0, { message: t('form.validations.discount_required') }),
                 observation: z.string().optional(),
               })
             )
@@ -112,7 +109,7 @@ const getOrderSchema = (t) =>
     })).optional(),
   });
 
-// BEB Request Form with two tabs: Informations and Produits
+// Command Order Form with three tabs: Informations, Produits and Confirmation
 export function CommandOrderNewEditForm({ initialData }) {
   const router = useRouter();
   const { t } = useTranslate('purchase-supply-module');
@@ -120,6 +117,7 @@ export function CommandOrderNewEditForm({ initialData }) {
 
   // Handler to select product into form
   const handleSelectProduct = (row) => {
+    // select new product
     if (openModalIndex === 'new') {
       appendItem({
         product_id: row.id.toString(),
@@ -129,13 +127,14 @@ export function CommandOrderNewEditForm({ initialData }) {
         designation: row.designation,
         unit_measure: row.unit_measure || { designation: '' },
         supplier_code: row.supplier_code,
-        purchased_quantity: '',
+        quantity: '',
         price: '',
         discount: '',
         observation: '',
         charges: [],
       });
     } else {
+      // select while there is an existing product
       const idx = openModalIndex;
       setValue(`items.${idx}.product_id`, row.id.toString());
       setValue(`items.${idx}.code`, row.code);
@@ -155,7 +154,7 @@ export function CommandOrderNewEditForm({ initialData }) {
       designation: row.product.designation,
       unit_measure: row.product.unit_measure || { designation: '' },
       supplier_code: row.product.supplier_code,
-      purchased_quantity: row.quantity,
+      quantity: row.quantity,
       price: '',
       discount: '',
       observation: '',
@@ -164,14 +163,14 @@ export function CommandOrderNewEditForm({ initialData }) {
     setOpenPurchaseRequestModal(false);
   }
 
-  const orderSchema = getOrderSchema(t);
+  const commandOrderSchema = getCommandOrderSchema(t);
 
   const methods = useForm({
-    resolver: zodResolver(orderSchema),
+    resolver: zodResolver(commandOrderSchema),
     defaultValues: {
-      site_id: initialData?.site?.id?.toString() || '',
-      supplier_id: initialData?.supplier?.id?.toString() || '',
-      service_id: initialData?.service?.id?.toString() || '',
+      site_id: initialData?.site?.id?.toString() || '1',
+      supplier_id: initialData?.supplier?.id?.toString() || '1',
+      service_id: initialData?.service?.id?.toString() || '1',
       type: initialData?.type?.toString() || PRODUCT_TYPE_OPTIONS[0]?.value?.toString() || '',
       print_note: initialData?.print_note || '',
       observation: initialData?.observation || '',
@@ -179,9 +178,9 @@ export function CommandOrderNewEditForm({ initialData }) {
       payment_method: initialData?.payment_method?.toString() || '',
       discount: initialData?.discount || 0,
       tax: initialData?.tax || 0,
-      tva_percentage: initialData?.tva_percentage || 0,
-      proforma: initialData?.proforma || '',
+      tva: initialData?.tva || 0,
       invoice: initialData?.invoice || '',
+      invoice_code: initialData?.invoice_code || '',
       delivery_dates: initialData?.delivery_dates || [],
       items: initialData?.items
         ? initialData.items.map((item) => ({
@@ -191,14 +190,14 @@ export function CommandOrderNewEditForm({ initialData }) {
             code: item.product?.code || '',
             supplier_code: item.product?.supplier_code || '',
             designation: item.product?.designation || '',
-            purchased_quantity: item.purchased_quantity?.toString() || '',
+            quantity: item.quantity?.toString() || '',
             price: item.price?.toString() || '',
             discount: item.discount?.toString() || '',
             observation: item.observation || '',
             unit_measure: item.unit_measure || { designation: '' },
             charges:
               item.charges?.map((charge) => ({
-                type: charge.nature,
+                type: charge.type || 1,
                 designation: charge.designation,
                 quantity: Number(charge.quantity),
                 price: Number(charge.price),
@@ -210,7 +209,7 @@ export function CommandOrderNewEditForm({ initialData }) {
     },
   });
 
-  const { handleSubmit, reset, control, register, setValue, watch, trigger, formState: { isSubmitting, errors } } = methods;
+  const { handleSubmit, reset,setError, control, register, setValue, watch, trigger, formState: { isSubmitting, errors } } = methods;
   const { fields: itemFields, append: appendItem, remove: removeItem } = useFieldArray({
     control,
     name: 'items',
@@ -223,24 +222,24 @@ export function CommandOrderNewEditForm({ initialData }) {
   const [openModalIndex, setOpenModalIndex] = useState(null);
   const [openPurchaseRequestModal, setOpenPurchaseRequestModal] = useState(false);
 
-  const onDropProforma = async (acceptedFiles) => {
+  const onDropInvoice = async (acceptedFiles) => {
     const value = acceptedFiles[0];
     const newData = new FormData();
     newData.append('type', 'image');
     newData.append('file', value);
-    newData.append('collection', 'proformas');
-    setValue('proforma', value, { shouldValidate: true });
+    newData.append('collection', 'invoices');
+    setValue('invoice', value, { shouldValidate: true });
 
     try {
       const response = await uploadMedia(newData);
-      setValue('proforma', response?.uuid, { shouldValidate: true });
+      setValue('invoice', response?.uuid, { shouldValidate: true });
     } catch (error) {
       console.log('error in upload file', error);
     }
   };
 
-  const handleRemoveProforma = useCallback(() => {
-    setValue('proforma', null);
+  const handleRemoveInvoice = useCallback(() => {
+    setValue('invoice', null);
   }, [setValue]);
 
   const watchedItems = watch('items');
@@ -248,7 +247,7 @@ export function CommandOrderNewEditForm({ initialData }) {
   const ht = watchedItems.reduce((acc, item) => {
     const price = Number(item.price) || 0;
     const discount = Number(item.discount) || 0;
-    const quantity = Number(item.purchased_quantity) || 0;
+    const quantity = Number(item.quantity) || 0;
     const itemHt = (price - discount) * quantity;
 
     const chargesHt = (item.charges || []).reduce((chargesAcc, charge) => {
@@ -306,23 +305,22 @@ export function CommandOrderNewEditForm({ initialData }) {
 
   // Move to next tab or submit at the last tab
   const onSubmit = handleSubmit(async (data) => {
-    console.log('data', data);
+    // console.log('data', data);
     try {
       // transform items to backend format
       const payload = {
           ...data,
+          nature: 1,
           items: data.items.map((item) => ({
             product_id: item.product_id,
             purchase_request_item_id: item.purchase_request_item_id,
-            code: item.code,
-            designation: item.designation,
-            purchased_quantity: Number(item.purchased_quantity),
+            quantity: Number(item.quantity),
             price: Number(item.price),
             discount: Number(item.discount),
             observation: item.observation,
             charges:
               item.charges?.map((charge) => ({
-                type: charge.nature,
+                type: charge.type,
                 designation: charge.designation,
                 quantity: Number(charge.quantity),
                 price: Number(charge.price),
@@ -332,9 +330,11 @@ export function CommandOrderNewEditForm({ initialData }) {
           })),
           discount: Number(data.discount),
           tax: Number(data.tax),
-          tva_percentage: Number(data.tva_percentage),
+          tva: Number(tva),
         };
-       
+        delete payload.tva_percentage;
+
+         console.log('payload', payload);
         if (initialData?.id) {
           await updateEntity('command_order', initialData.id, payload);
           toast.success(t('form.messages.order_updated'));
@@ -344,6 +344,11 @@ export function CommandOrderNewEditForm({ initialData }) {
         }
         router.push(paths.dashboard.purchaseSupply.commandOrder.root);
       } catch (error) {
+        if (error && error.errors) {
+          Object.entries(error.errors).forEach(([key, value]) => {
+            setError(key, { type: 'manual', message: value[0] });
+          });
+        }
         toast.error(error?.message || t('form.messages.operation_failed'));
       }
     });
@@ -361,9 +366,9 @@ export function CommandOrderNewEditForm({ initialData }) {
         payment_method: initialData.payment_method?.toString() || '',
         discount: initialData?.discount || 0,
         tax: initialData?.tax || 0,
-        tva_percentage: initialData?.tva_percentage || 0,
-        proforma: initialData?.proforma || '',
+        tva: initialData?.tva || 0,
         invoice: initialData?.invoice || '',
+        invoice_code: initialData?.invoice_code || '',
         delivery_dates: initialData?.delivery_dates || [],
         items: initialData.items
           ? initialData.items.map((item) => ({
@@ -373,12 +378,20 @@ export function CommandOrderNewEditForm({ initialData }) {
               code: item.product?.code || '',
               supplier_code: item.product?.supplier_code || '',
               designation: item.product?.designation || '',
-              purchased_quantity: item.purchased_quantity?.toString() || '',
+              quantity: item.quantity?.toString() || '',
               price: item.price?.toString() || '',
               discount: item.discount?.toString() || '',
               observation: item.observation || '',
               unit_measure: item.unit_measure || { designation: '' },
-              charges: item.charges || [],
+              charges:
+                item.charges?.map((charge) => ({
+                  type: charge.type || 1,
+                  designation: charge.designation,
+                  quantity: Number(charge.quantity),
+                  price: Number(charge.price),
+                  discount: Number(charge.discount),
+                  observation: charge.observation,
+                })) || [],
             }))
           : [],
       });
@@ -564,7 +577,7 @@ export function CommandOrderNewEditForm({ initialData }) {
                       </Typography>
                     </Box>
                     <Field.Number
-                      name={`items.${index}.purchased_quantity`}
+                      name={`items.${index}.quantity`}
                       label={t('form.labels.quantity_to_buy')}
                     />
                   </Box>
@@ -595,7 +608,7 @@ export function CommandOrderNewEditForm({ initialData }) {
               </Box>
             </Box>
           ))} */}
-          <TableContainer component={Paper}>
+          <TableContainer component={Paper} variant="outlined">
             <Table>
               <TableHead>
                 <TableRow>
@@ -603,7 +616,7 @@ export function CommandOrderNewEditForm({ initialData }) {
                   <TableCell>{t('form.labels.code')}</TableCell>
                   <TableCell>{t('form.labels.supplier_code')}</TableCell>
                   <TableCell>{t('form.labels.designation')}</TableCell>
-                  <TableCell>{t('form.labels.quantity_to_buy')}</TableCell>
+                  <TableCell>{t('form.labels.quantity')}</TableCell>
                   <TableCell>{t('form.labels.price')}</TableCell>
                   <TableCell>{t('form.labels.discount')}</TableCell>
                   <TableCell>{t('form.labels.ht_discount')}</TableCell>
@@ -613,10 +626,18 @@ export function CommandOrderNewEditForm({ initialData }) {
               </TableHead>
               <TableBody>
                 {itemFields.map((field, index) => (
-                    <ItemRow 
-                        key={field.fieldKey} 
-                        {...{ control, index, field, removeItem, t, watch, setValue }}
+                  <React.Fragment key={field.fieldKey}>
+                    <ItemRow
+                      {...{ control, index, field, removeItem, t, watch, setValue }}
                     />
+                    {index < itemFields.length - 1 && (
+                      <TableRow>
+                        <TableCell colSpan={10} sx={{ p: 0, border: 0 }}>
+                          <Divider sx={{ bgcolor: 'info.main', borderBottomWidth: 2 }} />
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </React.Fragment>
                 ))}
               </TableBody>
             </Table>
@@ -663,11 +684,11 @@ export function CommandOrderNewEditForm({ initialData }) {
         <Card sx={{ mt: 3 }}>
           <CardHeader title={t('form.labels.notes')} />
           <CardContent>
-            <Grid container spacing={3}>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <Field.Text name="observation" label={t('form.labels.observation')} multiline rows={3} />
-              </Grid>
-            </Grid>
+          <Grid container spacing={1.5}>
+           <Grid size={{ xs: 12, md: 6 }}>
+            <Field.Text name="print_note" label={t('form.labels.print_note')} multiline rows={3} />
+           </Grid>
+          </Grid>
           </CardContent>
         </Card>
         <Modal open={openModalIndex !== null} onClose={() => setOpenModalIndex(null)}>
@@ -769,20 +790,21 @@ export function CommandOrderNewEditForm({ initialData }) {
             <Grid size={{ xs: 12, md: 6 }}>
             <Typography variant="subtitle2">{t('form.labels.proforma')}</Typography>
             <Field.Upload
-              name="proforma"
-              onDelete={handleRemoveProforma}
-              onDrop={onDropProforma}
+              name="invoice"
+              onDelete={handleRemoveInvoice}
+              onDrop={onDropInvoice}
             />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-               <Field.Text name="invoice" label={t('form.labels.invoice_number_proforma')} />
+               <Field.Text name="invoice_code" label={t('form.labels.invoice_number_proforma')} />
              </Grid>
            </Grid>
-           <Grid container spacing={1.5}>
-           <Grid size={{ xs: 12, md: 6 }}>
-            <Field.Text name="print_note" label={t('form.labels.print_note')} multiline rows={3} />
-           </Grid>
-          </Grid>
+          
+          <Grid container spacing={3}>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Field.Text name="observation" label={t('form.labels.observation')} multiline rows={3} />
+              </Grid>
+            </Grid>
           </Stack>
       </CardContent>
     </Card>

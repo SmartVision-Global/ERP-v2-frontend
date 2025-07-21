@@ -22,7 +22,7 @@ import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
 
-import { BebSelectList } from '../beb-select-list';
+import { BebSelectList } from './beb-select-list';
 
 // Validation schema for the order's first tab
 const getOrderSchema = (t) => z.object({
@@ -48,7 +48,7 @@ const getOrderSchema = (t) => z.object({
 });
 
 // BEB Request Form with two tabs: Informations and Produits
-export function PurchaseOrderNewEditForm({ initialData }) {
+export function PurchaseRequestNewEditForm({ initialData }) {
   const router = useRouter();
   const { t } = useTranslate('purchase-supply-module');
   const [activeStep, setActiveStep] = useState(0);
