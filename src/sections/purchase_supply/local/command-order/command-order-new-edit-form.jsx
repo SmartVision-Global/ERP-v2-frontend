@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useFieldArray, useWatch } from 'react-hook-form';
-import React, { useState, useEffect, Fragment, useCallback } from 'react';
+import React, { useState, useEffect, Fragment, useCallback, useMemo } from 'react';
 
 import Grid from '@mui/material/Grid2';
 import { LoadingButton } from '@mui/lab';
@@ -115,6 +115,73 @@ export function CommandOrderNewEditForm({ initialData }) {
   const { t } = useTranslate('purchase-supply-module');
   const [activeStep, setActiveStep] = useState(0);
 
+  const defaultValues = useMemo(() => {
+    const base = {
+      site_id: '1',
+      supplier_id: '1',
+      service_id: '1',
+      type: PRODUCT_TYPE_OPTIONS[0]?.value?.toString() || '',
+      print_note: '',
+      observation: '',
+      billed: '',
+      payment_method: '',
+      discount: 0,
+      tax: 0,
+      tva_percentage: 0,
+      invoice: '',
+      invoice_code: '',
+      delivery_dates: [],
+      items: [],
+    };
+
+    if (!initialData) {
+      return base;
+    }
+
+    return {
+      site_id: initialData.site?.id?.toString() || '1',
+      supplier_id: initialData.supplier?.id?.toString() || '1',
+      service_id: initialData.service?.id?.toString() || '1',
+      type: initialData.type?.toString() || PRODUCT_TYPE_OPTIONS[0]?.value?.toString() || '',
+      print_note: initialData?.print_note || '',
+      observation: initialData?.observation || '',
+      billed: initialData.billed?.toString() || '',
+      payment_method: initialData.payment_method?.toString() || '',
+      discount: initialData?.discount || 0,
+      tax: initialData?.tax || 0,
+      tva_percentage: initialData.tva || 0,
+      invoice: initialData?.invoice || '',
+      invoice_code: initialData?.invoice_code || '',
+      delivery_dates: initialData.delivery_dates
+        ? initialData.delivery_dates.map((d) => ({ observation: d.observation ?? '', delivery_date: new Date(d.delivery_date) }))
+        : [],
+      items: initialData.items
+        ? initialData.items.map((item) => ({
+            product_id: item.product_id?.toString() || '',
+            purchase_request_item_id: item.purchase_request_item_id || null,
+            purchase_request_code: item.purchase_request?.code || (item.purchase_request_item_id ? 'N/A' : '--'),
+            code: item.code || '',
+            supplier_code: item.supplier_code || '',
+            designation: item.designation || '',
+            quantity: item.quantity?.toString() || '',
+            price: item.price?.toString() || '',
+            discount: item.discount?.toString() || '',
+            observation: item.observation || '',
+            unit_measure: item.unit_measure || { designation: '' },
+            charges:
+              item.charges?.map((charge) => ({
+                type: charge.type || 1,
+                designation: charge.designation,
+                quantity: Number(charge.quantity),
+                price: Number(charge.price),
+                discount: Number(charge.discount),
+                observation: charge.observation || '',
+              })) || [],
+          }))
+        : [],
+    };
+  }, [initialData]);
+
   // Handler to select product into form
   const handleSelectProduct = (row) => {
     // select new product
@@ -167,48 +234,7 @@ export function CommandOrderNewEditForm({ initialData }) {
 
   const methods = useForm({
     resolver: zodResolver(commandOrderSchema),
-    defaultValues: {
-      site_id: initialData?.site?.id?.toString() || '1',
-      supplier_id: initialData?.supplier?.id?.toString() || '1',
-      service_id: initialData?.service?.id?.toString() || '1',
-      type: initialData?.type?.toString() || PRODUCT_TYPE_OPTIONS[0]?.value?.toString() || '',
-      print_note: initialData?.print_note || '',
-      observation: initialData?.observation || '',
-      billed: initialData?.billed?.toString() || '',
-      payment_method: initialData?.payment_method?.toString() || '',
-      discount: initialData?.discount || 0,
-      tax: initialData?.tax || 0,
-      tva: initialData?.tva || 0,
-      invoice: initialData?.invoice || '',
-      invoice_code: initialData?.invoice_code || '',
-      delivery_dates: initialData?.delivery_dates
-        ? initialData.delivery_dates.map((d) => ({ ...d, delivery_date: new Date(d.delivery_date) }))
-        : [],
-      items: initialData?.items
-        ? initialData.items.map((item) => ({
-            product_id: item.product_id?.toString() || '',
-            purchase_request_item_id: item.purchase_request_item_id || null,
-            purchase_request_code: item.purchase_request?.code || (item.purchase_request_item_id ? 'N/A' : '--'),
-            code: item.code || '',
-            supplier_code: item.supplier_code || '',
-            designation: item.designation || '',
-            quantity: item.quantity?.toString() || '',
-            price: item.price?.toString() || '',
-            discount: item.discount?.toString() || '',
-            observation: item.observation || '',
-            unit_measure: item.unit_measure || { designation: '' },
-            charges:
-              item.charges?.map((charge) => ({
-                type: charge.type || 1,
-                designation: charge.designation,
-                quantity: Number(charge.quantity),
-                price: Number(charge.price),
-                discount: Number(charge.discount),
-                observation: charge.observation,
-              })) || [],
-          }))
-        : [],
-    },
+    defaultValues,
   });
 
   const { handleSubmit, reset,setError, control, register, setValue, watch, trigger, formState: { isSubmitting, errors } } = methods;
@@ -332,7 +358,7 @@ export function CommandOrderNewEditForm({ initialData }) {
           })),
           discount: Number(data.discount),
           tax: Number(data.tax),
-          tva: Number(tva),
+          tva: Number(data.tva_percentage) || 0,
         };
         delete payload.tva_percentage;
 
@@ -357,50 +383,9 @@ export function CommandOrderNewEditForm({ initialData }) {
 
   useEffect(() => {
     if (initialData) {
-      reset({
-        site_id: initialData.site?.id?.toString() || '',
-        supplier_id: initialData.supplier?.id?.toString() || '',
-        service_id: initialData.service?.id?.toString() || '',
-        type: initialData.type?.toString() || PRODUCT_TYPE_OPTIONS[0]?.value?.toString() || '',
-        print_note: initialData?.print_note || '',
-        observation: initialData?.observation || '',
-        billed: initialData.billed?.toString() || '',
-        payment_method: initialData.payment_method?.toString() || '',
-        discount: initialData?.discount || 0,
-        tax: initialData?.tax || 0,
-        tva: initialData?.tva || 0,
-        invoice: initialData?.invoice || '',
-        invoice_code: initialData?.invoice_code || '',
-        delivery_dates: initialData.delivery_dates
-          ? initialData.delivery_dates.map((d) => ({ ...d, delivery_date: new Date(d.delivery_date) }))
-          : [],
-        items: initialData.items
-          ? initialData.items.map((item) => ({
-              product_id: item.product_id?.toString() || '',
-              purchase_request_item_id: item.purchase_request_item_id || null,
-              purchase_request_code: item.purchase_request?.code || (item.purchase_request_item_id ? 'N/A' : '--'),
-              code: item.code || '',
-              supplier_code: item.supplier_code || '',
-              designation: item.designation || '',
-              quantity: item.quantity?.toString() || '',
-              price: item.price?.toString() || '',
-              discount: item.discount?.toString() || '',
-              observation: item.observation || '',
-              unit_measure: item.unit_measure || { designation: '' },
-              charges:
-                item.charges?.map((charge) => ({
-                  type: charge.type || 1,
-                  designation: charge.designation,
-                  quantity: Number(charge.quantity),
-                  price: Number(charge.price),
-                  discount: Number(charge.discount),
-                  observation: charge.observation,
-                })) || [],
-            }))
-          : [],
-      });
+      reset(defaultValues);
     }
-  }, [initialData, reset]);
+  }, [initialData, reset, defaultValues]);
 
   const renderNavigationButtons = () => (
     <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3, mb: 3 }}>

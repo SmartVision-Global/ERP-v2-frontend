@@ -4,7 +4,9 @@
         "purchase_and_supply": "Purchase and Supply",
         "purchase_request": "Purchase Request",
         "add_supplier": "Add Supplier",
-        "suppliers": "Suppliers"
+        "suppliers": "Suppliers",
+        "command_order": "Command Order",
+        "edit_command_order": "Edit Command Order"
     },
     "text":{
         

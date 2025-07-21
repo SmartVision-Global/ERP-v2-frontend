@@ -14,7 +14,6 @@ export default function Page() {
   const { id = '' } = useParams();
 
   const { commandOrder } = useGetCommandOrder(id);
-  console.log('commandOrder', commandOrder);  
   
   return (
     <>
