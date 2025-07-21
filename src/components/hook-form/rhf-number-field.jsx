@@ -65,6 +65,14 @@ export function RHFNumberField({ name, helperText, slotProps, type = 'text', ...
             },
           }}
           {...other}
+          sx={{
+            ...other.sx,
+            ...(other.InputProps?.readOnly && {
+              '& .MuiInputBase-root': {
+                backgroundColor: 'grey.200',
+              },
+            }),
+          }}
         />
       )}
     />

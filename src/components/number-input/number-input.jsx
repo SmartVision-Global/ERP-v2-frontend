@@ -23,6 +23,7 @@ export const NumberInput = forwardRef((props, ref) => {
     value,
     onChange,
     disabled,
+    readOnly,
     slotProps,
     helperText,
     captionText,
@@ -89,6 +90,11 @@ export const NumberInput = forwardRef((props, ref) => {
               !disabled && error
                 ? varAlpha(theme.vars.palette.error.mainChannel, 0.08)
                 : varAlpha(theme.vars.palette.grey['500Channel'], 0.08),
+            ...(readOnly && {
+              '& .MuiInputBase-root': {
+                backgroundColor: 'grey.200',
+              },
+            }),
           }),
           ...(Array.isArray(sx) ? sx : [sx]),
         ]}
@@ -108,6 +114,7 @@ export const NumberInput = forwardRef((props, ref) => {
           <CenteredInput
             name={id}
             disabled={disabled || disableInput}
+            readOnly={readOnly}
             value={currentValue}
             onChange={handleChange}
             {...slotProps?.input}
