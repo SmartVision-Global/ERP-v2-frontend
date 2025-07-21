@@ -23,7 +23,7 @@ const ENDPOINT_CANCEL = (id) => `${ENDPOINT}/${id}/cancele`;
 
 // ----------------------------------------------------------------------
 
-export function useGetRequestPurchases(params) {
+export function useGetPurchaseRequests(params) {
   // Use params to request paginated/filter data
   const key = params
     ? [ENDPOINT, { params }]
@@ -32,13 +32,12 @@ export function useGetRequestPurchases(params) {
 
   const memoizedValue = useMemo(
     () => ({
-      requestPurchases: data?.data?.records || [],
-      requestPurchasesCount: data?.data?.total || 0,
-
-      requestPurchasesLoading: isLoading,
-      requestPurchasesError: error,
-      requestPurchasesValidating: isValidating,
-      requestPurchasesEmpty: !isLoading && !isValidating && !data?.data?.records.length,
+      purchaseRequests: data?.data?.records || [],
+      purchaseRequestsCount: data?.data?.total || 0,
+      purchaseRequestsLoading: isLoading,
+      purchaseRequestsError: error,
+      purchaseRequestsValidating: isValidating,
+      purchaseRequestsEmpty: !isLoading && !isValidating && !data?.data?.records.length,
     }),
     [data?.data?.records, data?.data?.total, error, isLoading, isValidating]
   );
@@ -46,7 +45,7 @@ export function useGetRequestPurchases(params) {
   return memoizedValue;
 }
 
-export async function getFiltredRequestPurchases(params) {
+export async function getFiltredPurchaseRequests(params) {
   const response = await axios.get(`${ENDPOINT}`, {
     params,
   });
@@ -55,17 +54,17 @@ export async function getFiltredRequestPurchases(params) {
 
 
 
-export function useGetRequestPurchase(id) {
+export function useGetPurchaseRequest(id) {
   const url = id ? `${ENDPOINT}/${id}` : '';
   const { data, isLoading, error, isValidating } = useSWR(url, fetcher, swrOptions);
   
   const memoizedValue = useMemo(
     () => ({
-      requestPurchase: data?.data,
-      requestPurchaseLoading: isLoading,
-      requestPurchaseError: error,
-      requestPurchaseValidating: isValidating,
-      requestPurchaseEmpty: !isLoading && !isValidating && !data?.data,
+      purchaseRequest: data?.data,
+      purchaseRequestLoading: isLoading,
+      purchaseRequestError: error,
+      purchaseRequestValidating: isValidating,
+      purchaseRequestEmpty: !isLoading && !isValidating && !data?.data,
     }),
     [data?.data, error, isLoading, isValidating]
   );
@@ -80,7 +79,7 @@ export function useGetRequestPurchase(id) {
  * @param {string|number} id - ID of the purchase request
  * @param {{ limit: number, offset: number }} params - pagination parameters
  */
-export function useGetRequestPurchaseItems(id, params) {
+export function useGetPurchaseRequestItems(id, params) {
   const url = id ? ENDPOINT_ITEMS(id) : null;
   const swrKey = id ? [url, { params }] : null;
   
@@ -100,7 +99,7 @@ export function useGetRequestPurchaseItems(id, params) {
 
 
 // GET ALL ITEMS of all purchase requests
-export function useGetRequestPurchasesItems(params) {
+export function useGetAllPurchaseRequestsItems(params) {
   const key = params
     ? [ENDPOINT_ALL_ITEMS(), { params }]
     : ENDPOINT_ALL_ITEMS();
@@ -121,7 +120,7 @@ export function useGetRequestPurchasesItems(params) {
   return memoizedValue;
 }
 
-export async function getFiltredRequestPurchaseItems(id, params) {
+export async function getFiltredPurchaseRequestItems(id, params) {
   const url = id ? ENDPOINT_ITEMS(id) : null;
   const response = await axios.get(url, {
     params,
@@ -129,7 +128,7 @@ export async function getFiltredRequestPurchaseItems(id, params) {
   return response;
 }
 
-export async function getFiltredAllRequestPurchaseItems(params) {
+export async function getFiltredAllPurchaseRequestsItems(params) {
   const response = await axios.get(ENDPOINT_ALL_ITEMS(), {
     params,
   });
@@ -186,13 +185,13 @@ export async function updateEntity(entityType, id, data) {
 }
 
 
-export async function confirmPurchaseOrder(id, data) { 
+export async function confirmPurchaseRequest(id, data) { 
   const endpoint = ENDPOINT_CONFIRM(id);
   await axios.post(endpoint, data);
   mutate(ENDPOINT);
 }
 
-export async function cancelPurchaseOrder(id, data) { 
+export async function cancelPurchaseRequest(id, data) { 
   const endpoint = ENDPOINT_CANCEL(id);
   await axios.post(endpoint, data);
   mutate(ENDPOINT);

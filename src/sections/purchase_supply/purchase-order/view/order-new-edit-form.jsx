@@ -15,7 +15,7 @@ import { endpoints } from 'src/lib/axios';
 import { useTranslate } from 'src/locales';
 import { useMultiLookups } from 'src/actions/lookups';
 import { useGetStocks } from 'src/actions/stores/raw-materials/stocks';
-import { createEntity, updateEntity } from 'src/actions/purchase-supply/purchase-order/order';
+import { createEntity, updateEntity } from 'src/actions/purchase-supply/purchase-request/purchase-request';
 import { BEB_NATURE_OPTIONS, PRODUCT_TYPE_OPTIONS, PRIORITY_OPTIONS, TWO_STATUS_OPTIONS } from 'src/_mock/expression-of-needs/Beb/Beb';
 
 import { toast } from 'src/components/snackbar';

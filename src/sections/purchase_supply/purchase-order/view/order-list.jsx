@@ -35,11 +35,11 @@ import {
   ORDER_STATUS_OPTIONS,
 } from 'src/_mock/expression-of-needs/Beb/Beb';
 import {
-  useGetRequestPurchases,
-  getFiltredRequestPurchases,
-  confirmPurchaseOrder,
-  cancelPurchaseOrder,
-} from 'src/actions/purchase-supply/purchase-order/order';
+  useGetPurchaseRequests,
+  getFiltredPurchaseRequests,
+  confirmPurchaseRequest,
+  cancelPurchaseRequest,
+} from 'src/actions/purchase-supply/purchase-request/purchase-request';
 
 import { Iconify } from 'src/components/iconify';
 import { toast } from 'src/components/snackbar';
@@ -94,13 +94,13 @@ const PAGE_SIZE = CONFIG.pagination.pageSize;
 
 export function OrderPurchaseList() {
   const confirmDialog = useBoolean();
-  const { t } = useTranslate('purchase-supply-module');
+  const { t } = useTranslate('purchase-supply-module'); 
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: PAGE_SIZE,
   });
   const [selectedRow, setSelectedRow] = useState('');
-  const { requestPurchases, requestPurchasesLoading, requestPurchasesCount } = useGetRequestPurchases({
+  const { purchaseRequests, purchaseRequestsLoading, purchaseRequestsCount } = useGetPurchaseRequests({
     limit: PAGE_SIZE,
     offset: 0,
   });
@@ -147,13 +147,13 @@ export function OrderPurchaseList() {
   const [dialogState, setDialogState] = useState({ open: false, action: null, order: null });
 
   useEffect(() => {
-    setTableData(requestPurchases);
-    setRowCount(requestPurchasesCount);
-  }, [requestPurchases, requestPurchasesCount]);
+    setTableData(purchaseRequests);
+    setRowCount(purchaseRequestsCount);
+  }, [purchaseRequests, purchaseRequestsCount]);
 
   const handleReset = useCallback(async () => {
     try {
-      const response = await getFiltredRequestPurchases({
+      const response = await getFiltredPurchaseRequests({
         limit: PAGE_SIZE,
         offset: 0,
       });
@@ -172,7 +172,7 @@ export function OrderPurchaseList() {
   const handleFilter = useCallback(
     async (data) => {
       try {
-        const response = await getFiltredRequestPurchases(data);
+        const response = await getFiltredPurchaseRequests(data);
         setTableData(response.data?.data?.records);
         setRowCount(response.data?.data?.total);
       } catch (error) {
@@ -189,7 +189,7 @@ export function OrderPurchaseList() {
         limit: newModel.pageSize,
         offset: newModel.page * newModel.pageSize,
       };
-      const response = await getFiltredOrder(newData);
+      const response = await getFiltredPurchaseRequests(newData);
       setTableData(response.data?.data?.records);
       setPaginationModel(newModel);
     } catch (error) {
@@ -211,10 +211,10 @@ export function OrderPurchaseList() {
     if (order) {
       try {
         if (action === 'confirm') {
-          await confirmPurchaseOrder(order.id, { notes });
+          await confirmPurchaseRequest(order.id, { notes });
           toast.success(t('messages.confirm_success'));
         } else if (action === 'cancel') {
-          await cancelPurchaseOrder(order.id, { notes });
+          await cancelPurchaseRequest(order.id, { notes });
           toast.success(t('messages.cancel_success'));
         }
         handleCloseDialog();
@@ -517,7 +517,7 @@ export function OrderPurchaseList() {
             rows={tableData}
             rowCount={rowCount}
             columns={columns}
-            loading={requestPurchasesLoading}
+            loading={purchaseRequestsLoading}
             getRowHeight={() => 'auto'}
             paginationModel={paginationModel}
             paginationMode="server"

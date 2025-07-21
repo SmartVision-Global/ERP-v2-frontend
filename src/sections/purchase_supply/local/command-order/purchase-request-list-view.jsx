@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 
 import { CONFIG } from 'src/global-config';
-import { useGetRequestPurchasesItems, getFiltredAllRequestPurchaseItems } from 'src/actions/purchase-supply/purchase-order/order';
+import { useGetAllPurchaseRequestsItems, getFiltredAllPurchaseRequestsItems } from 'src/actions/purchase-supply/purchase-request/purchase-request';
 
 import { Iconify } from 'src/components/iconify';
 import { TableToolbarCustom } from 'src/components/table';
@@ -66,7 +66,7 @@ export default function PurchaseRequestListView({ onSelectProduct }) {
   const [previewImage, setPreviewImage] = useState(null);
 
   const { t } = useTranslate('purchase-supply-module');
-  const { items, itemsLoading, itemsCount } = useGetRequestPurchasesItems({
+  const { items, itemsLoading, itemsCount } = useGetAllPurchaseRequestsItems({
     limit: paginationModel.pageSize,
     offset: 0,
   });
@@ -143,7 +143,7 @@ export default function PurchaseRequestListView({ onSelectProduct }) {
 
   const handleReset = useCallback(async () => {
     try {
-      const response = await getFiltredAllRequestPurchaseItems({
+      const response = await getFiltredAllPurchaseRequestsItems({
         limit: PAGE_SIZE,
         offset: 0,
       });
@@ -161,7 +161,7 @@ export default function PurchaseRequestListView({ onSelectProduct }) {
 
   const handleFilter = useCallback(async (data) => {
     try {
-      const response = await getFiltredAllRequestPurchaseItems(data);
+      const response = await getFiltredAllPurchaseRequestsItems(data);
       setTableData(response.data?.data?.records);
       setRowCount(response.data?.data?.total);
     } catch (error) {
@@ -176,7 +176,7 @@ export default function PurchaseRequestListView({ onSelectProduct }) {
         limit: newModel.pageSize,
         offset: newModel.page * newModel.pageSize,
       };
-      const response = await getFiltredAllRequestPurchaseItems(newData);
+      const response = await getFiltredAllPurchaseRequestsItems(newData);
       setTableData(response.data?.data?.records);
       setPaginationModel(newModel);
     } catch (error)      {

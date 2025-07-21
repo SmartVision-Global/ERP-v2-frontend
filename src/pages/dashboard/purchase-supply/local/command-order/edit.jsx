@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { useParams } from 'src/routes/hooks';
 
 import { CONFIG } from 'src/global-config';
-import { useGetPurchaseOrder } from 'src/actions/purchase-supply/purchase-order/order';
+import { useGetPurchaseRequest   } from 'src/actions/purchase-supply/purchase-request/purchase-request';
 
 import { OrderEditView } from 'src/sections/purchase_supply/purchase-order/view/order-edit';
 // ----------------------------------------------------------------------
@@ -13,8 +13,8 @@ const metadata = { title: `Modifier Demande D'achat | Dashboard - ${CONFIG.appNa
 export default function Page() {
   const { id = '' } = useParams();
 
-  const { purchaseOrder } = useGetPurchaseOrder(id);
-  console.log('order', purchaseOrder);  
+  const { purchaseRequest } = useGetPurchaseRequest(id);
+  console.log('order', purchaseRequest);  
   
   return (
     <>
@@ -22,7 +22,7 @@ export default function Page() {
         <title> {metadata.title}</title>
       </Helmet>
 
-      <OrderEditView purchaseOrder={purchaseOrder} />
+      <OrderEditView purchaseRequest={purchaseRequest} />
     </>
   );
 }
