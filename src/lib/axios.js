@@ -158,6 +158,12 @@ export const endpoints = {
     },
   },
   purchaseSupply: {
+    settings: {
+      chargeTypes: {
+        list: '/v1/purchases/settings/charge-types',
+        
+      },
+    },
     purchaseRequest: {
       list: '/v1/purchases/purchase-requests',
       items: (id) => `/v1/purchases/purchase-requests/${id}/items`,

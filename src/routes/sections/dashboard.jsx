@@ -328,6 +328,11 @@ const PageLocalCommandOrderEdit = lazy(
   () => import('src/pages/dashboard/purchase-supply/local/command-order/edit')
 );
 
+// purchase settings
+const PagePurchaseSettings = lazy(
+  () => import('src/pages/dashboard/purchase-supply/local/purchase-settings/list')
+);
+
 
 
 
@@ -773,6 +778,7 @@ export const dashboardRoutes = [
           { path: 'command-order', element: <PageLocalCommandOrder /> },
           { path: 'command-order/new', element: <PageLocalCommandOrderNew /> },
           { path: 'command-order/:id/edit', element: <PageLocalCommandOrderEdit /> },
+          { path: 'purchase-settings', element: <PagePurchaseSettings /> },
         ],
       },
       {

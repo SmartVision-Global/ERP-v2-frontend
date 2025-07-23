@@ -232,6 +232,9 @@ export const paths = {
         root: `${ROOTS.DASHBOARD}/purchase-supply/command-order`,
         new: `${ROOTS.DASHBOARD}/purchase-supply/command-order/new`,
         edit: (id) => `${ROOTS.DASHBOARD}/purchase-supply/command-order/${id}/edit`,
+      },
+      settings:{
+        root: `${ROOTS.DASHBOARD}/purchase-supply/purchase-settings`,
       }
     },
     user: {

@@ -6,7 +6,8 @@
         "add_supplier": "Add Supplier",
         "suppliers": "Suppliers",
         "command_order": "Command Order",
-        "edit_command_order": "Edit Command Order"
+        "edit_command_order": "Edit Command Order",
+        "dashboard": "Dashboard"
     },
     "text":{
         
@@ -47,7 +48,8 @@
         "payment_method": "Payment Method",
         "proforma": "Proforma",
         "delivery_date": "Delivery Date",
-        "billed": "Billed"
+        "billed": "Billed",
+        "charge_types": "Charge Types"
     },
     "actions": {
         "purchase_request": "Purchase Request",
@@ -119,7 +121,9 @@
             "tax_required": "Tax is required",
             "discount_required": "Discount is required",
             "price_required": "Price is required",
-            "designation_required": "Designation is required"
+            "designation_required": "Designation is required",
+            "name_required": "Name is required",
+            "nature_required": "Nature is required"
         },
         "messages": {
             
@@ -145,7 +149,6 @@
             "current_quantity": "Current quantity",
             "quantity_to_buy": "Quantity to buy",
             "needs_date": "Needs date",
-            "observation": "Observation",
             "select_product": "Select a product",
             "builder_code": "Builder Code",
             "supplier": "Supplier",
@@ -171,7 +174,10 @@
             "confirmation_subheader": "Manage delivery dates and confirmations",
             "delivery_date": "Delivery Date",
             "proforma": "Proforma",
-            "invoice_number_proforma": "Proforma Invoice N°"
+            "invoice_number_proforma": "Proforma Invoice N°",
+            "name": "Name"
+           
+           
         },
         "actions": {
             "previous_step": "Previous Step",
@@ -182,7 +188,8 @@
             "add_products": "Add products",
             "add_from_purchase_request": "Add from purchase request",
             "add_charge": "Add charge",
-            "add_delivery_date": "Add Delivery Date"
+            "add_delivery_date": "Add Delivery Date",
+            "modify": "Modify"
         },
         "steps": {
             "information": "Information",

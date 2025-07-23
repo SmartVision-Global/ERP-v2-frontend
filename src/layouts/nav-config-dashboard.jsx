@@ -405,6 +405,10 @@ export const navData = [
               {
                 title:'Bon de commande',
                 path:paths.dashboard.purchaseSupply.commandOrder.root,
+              },
+              {
+                title:'Paramètres',
+                path:paths.dashboard.purchaseSupply.settings.root,
               }
             ]
           }
