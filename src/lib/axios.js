@@ -177,6 +177,9 @@ export const endpoints = {
       items: (id) => `/v1/purchases/purchase-orders/${id}/items`,
       confirm: (id) => `/v1/purchases/purchase-orders/${id}/confirme`,
     },
+    purchaseOperations: {
+      list: '/v1/purchases/purchase-operations',
+    },
   },
 
   // new:''

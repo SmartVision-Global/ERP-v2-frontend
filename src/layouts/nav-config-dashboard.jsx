@@ -407,6 +407,10 @@ export const navData = [
                 path:paths.dashboard.purchaseSupply.commandOrder.root,
               },
               {
+                title:'Opération d\'achats',
+                path:paths.dashboard.purchaseSupply.purchaseOperations.root,
+              },
+              {
                 title:'Paramètres',
                 path:paths.dashboard.purchaseSupply.settings.root,
               }
