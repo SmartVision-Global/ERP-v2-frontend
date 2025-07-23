@@ -88,7 +88,7 @@ const getCommandOrderSchema = (t) =>
           charges: z
             .array(
               z.object({
-                type: z.number().min(1, { message: t('form.validations.type_required') }),
+                type: z.string().nonempty( { message: t('form.validations.type_required') }),
                 designation: z.string().nonempty({ message: t('form.validations.designation_required') }),
                 quantity: z.number({ coerce: true }).min(1, { message: t('form.validations.quantity_required') }),
                 price: z.number({ coerce: true }).min(0, { message: t('form.validations.price_required') }),
@@ -170,7 +170,7 @@ export function CommandOrderNewEditForm({ initialData }) {
             unit_measure: item.unit_measure || { designation: '' },
             charges:
               item.charges?.map((charge) => ({
-                type: charge.type || 1,
+                type: charge.type || '1',
                 designation: charge.designation,
                 quantity: Number(charge.quantity),
                 price: Number(charge.price),

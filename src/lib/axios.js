@@ -226,5 +226,7 @@ export const endpoints = {
     personals:'hr/lookups/personals',
     suppliers:'purchases/lookups/suppliers',
     services:'settings/lookups/services',
+    chargeTypes:'purchases/lookups/settings/charge-types'
+
   },
 };

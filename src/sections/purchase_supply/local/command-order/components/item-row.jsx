@@ -121,9 +121,9 @@ export default function ItemRow({ control, index, field, removeItem, watch, setV
                   startIcon={<Iconify icon="eva:plus-fill" />}
                   onClick={() =>
                     appendCharge({
-                      type: 1,
+                      type: '1',
                       designation: '',
-                      quantity: 1,
+                      quantity: 0,
                       price: 0,
                       discount: 0,
                       observation: '',
@@ -136,6 +136,7 @@ export default function ItemRow({ control, index, field, removeItem, watch, setV
               <Table size="small">
                 <TableHead>
                   <TableRow sx={{ bgcolor: 'red.200' }}>
+                    <TableCell>{t('form.labels.type')}</TableCell>
                     <TableCell>{t('form.labels.designation')}</TableCell>
                     <TableCell>{t('form.labels.quantity')}</TableCell>
                     <TableCell>{t('form.labels.price')}</TableCell>

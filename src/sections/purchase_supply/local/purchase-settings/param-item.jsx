@@ -185,7 +185,7 @@ export function ParamItem({
           title={title}
           onCreate={onCreate}
           onUpdate={onUpdate}
-          currentProduct={selectedRow}
+          currentSetting={selectedRow}
         />
       )}
     </>

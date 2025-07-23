@@ -23,7 +23,7 @@ export const getSettingsSchema = (t) => zod.object({
   nature: zod.array(zod.string()).min(1, { message: t('form.validations.nature_required') }),
 });
 
-export function AddItemDialog({ open, onClose, currentProduct, name, title, onCreate, onUpdate }) {
+export function AddItemDialog({ open, onClose, currentSetting, name, title, onCreate, onUpdate }) {
   const {t} = useTranslate('purchase-supply-module')
   const SettingsSchema =  getSettingsSchema(t);
 
@@ -36,14 +36,14 @@ export function AddItemDialog({ open, onClose, currentProduct, name, title, onCr
   const methods = useForm({
     resolver: zodResolver(SettingsSchema),
     defaultValues,
-    values: currentProduct,
+    values: currentSetting,
   });
 
   const {
     // watch,
     reset,
     handleSubmit,
-    // setError,
+    setError,
     formState: { isSubmitting },
   } = methods;
   // const values = watch();
@@ -58,18 +58,23 @@ export function AddItemDialog({ open, onClose, currentProduct, name, title, onCr
 
     try {
       // await new Promise((resolve) => setTimeout(resolve, 500));
-      if (currentProduct) {
-        await onUpdate(currentProduct.id, updatedData);
+      if (currentSetting) {
+        await onUpdate(currentSetting.id, updatedData);
       } else {
         await onCreate(updatedData);
       }
       reset();
       onClose();
-      toast.success(currentProduct ? 'Update success!' : 'Create success!');
+      toast.success(currentSetting ? 'Update success!' : 'Create success!');
       // router.push(paths.dashboard.product.root);
       // console.info('DATA', updatedData);
     } catch (error) {
-      console.error(error);
+      if (error && error.errors) {
+        Object.entries(error.errors).forEach(([key, value]) => {
+          setError(key, { type: 'manual', message: value[0] });
+        });
+      }
+      toast.error(error?.message || t('form.messages.operation_failed'));
     }
     // }
   });
@@ -78,7 +83,7 @@ export function AddItemDialog({ open, onClose, currentProduct, name, title, onCr
       <Dialog open={open} onClose={onClose} sx={{ minWidth: '500px' }}>
         <Form methods={methods} onSubmit={onSubmit}>
           <DialogTitle>
-            {currentProduct ? t('form.actions.modify') : t('form.actions.add')} {title}
+            {currentSetting ? t('form.actions.modify') : t('form.actions.add')} {title}
           </DialogTitle>
 
           <DialogContent sx={{ minWidth: 500 }}>
@@ -109,7 +114,7 @@ export function AddItemDialog({ open, onClose, currentProduct, name, title, onCr
               {t('form.actions.cancel')}
             </Button>
             <LoadingButton type="submit" loading={isSubmitting} variant="contained">
-              {currentProduct ? t('form.actions.modify') : t('form.actions.add')}
+              {currentSetting ? t('form.actions.modify') : t('form.actions.add')}
             </LoadingButton>
           </DialogActions>
         </Form>

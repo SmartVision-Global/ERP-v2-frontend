@@ -3,6 +3,7 @@ import { useWatch } from 'react-hook-form';
 
 import { TableRow, TableCell, IconButton } from '@mui/material';
 
+import { endpoints } from 'src/lib/axios';
 import { useTranslate } from 'src/locales';
 
 import { Iconify } from 'src/components/iconify';
@@ -18,16 +19,37 @@ export default function ChargeRow({ control, itemIndex, chargeIndex, removeCharg
   return (
     <TableRow>
       <TableCell>
-        <Field.Text name={`items.${itemIndex}.charges.${chargeIndex}.designation`} />
+        <Field.LookupSearch
+          name={`items.${itemIndex}.charges.${chargeIndex}.type`}
+          label={t('form.labels.type')}
+          url={endpoints.lookups.chargeTypes}
+          size="small"
+          sx={{ minWidth: 160 }}
+        />
       </TableCell>
       <TableCell>
-        <Field.Number name={`items.${itemIndex}.charges.${chargeIndex}.quantity`} />
+        <Field.Text
+          name={`items.${itemIndex}.charges.${chargeIndex}.designation`}
+          sx={{ minWidth: 160 }}
+        />
       </TableCell>
       <TableCell>
-        <Field.Number name={`items.${itemIndex}.charges.${chargeIndex}.price`} />
+        <Field.Number
+          name={`items.${itemIndex}.charges.${chargeIndex}.quantity`}
+          sx={{ minWidth: 120 }}
+        />
       </TableCell>
       <TableCell>
-        <Field.Number name={`items.${itemIndex}.charges.${chargeIndex}.discount`} />
+        <Field.Number
+          name={`items.${itemIndex}.charges.${chargeIndex}.price`}
+          sx={{ minWidth: 120 }}
+        />
+      </TableCell>
+      <TableCell>
+        <Field.Number
+          name={`items.${itemIndex}.charges.${chargeIndex}.discount`}
+          sx={{ minWidth: 120 }}
+        />
       </TableCell>
       <TableCell>{htDiscount.toFixed(2)}</TableCell>
       <TableCell>
@@ -35,6 +57,7 @@ export default function ChargeRow({ control, itemIndex, chargeIndex, removeCharg
           name={`items.${itemIndex}.charges.${chargeIndex}.observation`}
           multiline
           rows={1}
+          sx={{ minWidth: 200 }}
         />
       </TableCell>
       <TableCell>
