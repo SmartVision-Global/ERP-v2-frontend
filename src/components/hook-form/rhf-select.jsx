@@ -220,7 +220,7 @@ export function RHFMultiSelect({
           ));
 
         return (
-          <FormControl error={!!error} {...other}>
+          <FormControl fullWidth error={!!error} {...other}>
             {label && renderLabel()}
 
             <Select

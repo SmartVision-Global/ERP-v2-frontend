@@ -290,14 +290,14 @@ const PageRhPayrollManagementExtraPayDetails = lazy(
 
 // ============== purchase_Supply ==================
 //purchase Order
-const PagePurchaseOrder = lazy(
-  () => import('src/pages/dashboard/purchase-supply/purchase-order/list')
+const PagePurchaseRequest = lazy(
+  () => import('src/pages/dashboard/purchase-supply/purchase-request/list')
 );
-const PageNewPurchaseOrder = lazy(
-  () => import('src/pages/dashboard/purchase-supply/purchase-order/new')
+const PageNewPurchaseRequest = lazy(
+  () => import('src/pages/dashboard/purchase-supply/purchase-request/new')
 );
-const PagePurchaseOrderEdit = lazy(
-  () => import('src/pages/dashboard/purchase-supply/purchase-order/edit')
+const PagePurchaseRequestEdit = lazy(
+  () => import('src/pages/dashboard/purchase-supply/purchase-request/edit')
 );
 //Processing Da
 const PageProcessingDa = lazy(
@@ -305,9 +305,36 @@ const PageProcessingDa = lazy(
 );
 
 //Local
+//Supplier
 const PageLocalSupplier = lazy(
   () => import('src/pages/dashboard/purchase-supply/local/supplier/list')
 );
+const PageLocalSupplierNew = lazy(
+  () => import('src/pages/dashboard/purchase-supply/local/supplier/new')
+);
+const PageLocalSupplierEdit = lazy(
+  () => import('src/pages/dashboard/purchase-supply/local/supplier/edit')
+);
+//Command Order
+const PageLocalCommandOrder = lazy(
+  () => import('src/pages/dashboard/purchase-supply/local/command-order/list')
+);
+
+const PageLocalCommandOrderNew = lazy(
+  () => import('src/pages/dashboard/purchase-supply/local/command-order/new')
+);
+
+const PageLocalCommandOrderEdit = lazy(
+  () => import('src/pages/dashboard/purchase-supply/local/command-order/edit')
+);
+
+// purchase settings
+const PagePurchaseSettings = lazy(
+  () => import('src/pages/dashboard/purchase-supply/local/purchase-settings/list')
+);
+
+
+
 
 // Account
 const AccountGeneralPage = lazy(() => import('src/pages/dashboard/user/account/general'));
@@ -741,11 +768,17 @@ export const dashboardRoutes = [
       {
         path: 'purchase-supply',
         children: [
-          { path: 'purchase-order', element: <PagePurchaseOrder />, index: true },
-          { path: 'purchase-order/new', element: <PageNewPurchaseOrder /> },
-          { path: 'purchase-order/:id/edit', element: <PagePurchaseOrderEdit /> },
+          { path: 'purchase-request', element: <PagePurchaseRequest />, index: true },
+          { path: 'purchase-request/new', element: <PageNewPurchaseRequest /> },
+          { path: 'purchase-request/:id/edit', element: <PagePurchaseRequestEdit /> },
           { path: 'processing-da', element: <PageProcessingDa /> },
           { path: 'supplier', element: <PageLocalSupplier /> },
+          { path: 'supplier/new', element: <PageLocalSupplierNew /> },
+          { path: 'supplier/:id/edit', element: <PageLocalSupplierEdit /> },
+          { path: 'command-order', element: <PageLocalCommandOrder /> },
+          { path: 'command-order/new', element: <PageLocalCommandOrderNew /> },
+          { path: 'command-order/:id/edit', element: <PageLocalCommandOrderEdit /> },
+          { path: 'purchase-settings', element: <PagePurchaseSettings /> },
         ],
       },
       {

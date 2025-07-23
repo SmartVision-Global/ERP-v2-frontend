@@ -96,6 +96,9 @@ export const schemaHelper = {
   file: (props) =>
     zod.custom().transform((data, ctx) => {
       const hasFile = data instanceof File || (typeof data === 'string' && !!data.length);
+      if(!data) {
+        return null;
+      }
 
       if (!hasFile) {
         ctx.addIssue({

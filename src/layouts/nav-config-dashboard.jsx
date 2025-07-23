@@ -388,7 +388,7 @@ export const navData = [
         children: [
           {
             title: "Demande d'achat",
-            path: paths.dashboard.purchaseSupply.purchaseOrder.root,
+            path: paths.dashboard.purchaseSupply.purchaseRequest.root,
           },
           {
             title: 'Traitement DA',
@@ -401,6 +401,14 @@ export const navData = [
               {
                 title:'Fournisseurs',
                 path:paths.dashboard.purchaseSupply.supplier.root,
+              },
+              {
+                title:'Bon de commande',
+                path:paths.dashboard.purchaseSupply.commandOrder.root,
+              },
+              {
+                title:'Paramètres',
+                path:paths.dashboard.purchaseSupply.settings.root,
               }
             ]
           }

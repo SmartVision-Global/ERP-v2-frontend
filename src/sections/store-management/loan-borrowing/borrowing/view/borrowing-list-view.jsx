@@ -216,7 +216,7 @@ export function BorrowingListView({ isSelectionDialog = false, componentsProps, 
         label: t('filters.return_status'),
       },
       {
-        id: 'created_date_start',
+        id: 'created_at',
         type: 'date-range',
         label: t('filters.creation_date'),
         operatorMin: 'gte',

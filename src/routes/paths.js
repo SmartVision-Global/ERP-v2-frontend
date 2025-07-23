@@ -215,10 +215,10 @@ export const paths = {
       },
     },
     purchaseSupply: {
-      purchaseOrder: {
-        root: `${ROOTS.DASHBOARD}/purchase-supply/purchase-order`,
-        newPurchaseOrder: `${ROOTS.DASHBOARD}/purchase-supply/purchase-order/new`,
-        editPurchaseOrder: (id) => `${ROOTS.DASHBOARD}/purchase-supply/purchase-order/${id}/edit`,
+      purchaseRequest: {
+        root: `${ROOTS.DASHBOARD}/purchase-supply/purchase-request`,
+        newPurchaseRequest: `${ROOTS.DASHBOARD}/purchase-supply/purchase-request/new`,
+        editPurchaseRequest: (id) => `${ROOTS.DASHBOARD}/purchase-supply/purchase-request/${id}/edit`,
       },
       processingDa: {
         root: `${ROOTS.DASHBOARD}/purchase-supply/processing-da`,
@@ -227,6 +227,14 @@ export const paths = {
         root: `${ROOTS.DASHBOARD}/purchase-supply/supplier`,
         new: `${ROOTS.DASHBOARD}/purchase-supply/supplier/new`,
         edit: (id) => `${ROOTS.DASHBOARD}/purchase-supply/supplier/${id}/edit`,
+      },
+      commandOrder:{
+        root: `${ROOTS.DASHBOARD}/purchase-supply/command-order`,
+        new: `${ROOTS.DASHBOARD}/purchase-supply/command-order/new`,
+        edit: (id) => `${ROOTS.DASHBOARD}/purchase-supply/command-order/${id}/edit`,
+      },
+      settings:{
+        root: `${ROOTS.DASHBOARD}/purchase-supply/purchase-settings`,
       }
     },
     user: {

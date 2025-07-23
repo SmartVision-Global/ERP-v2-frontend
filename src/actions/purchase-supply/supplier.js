@@ -63,12 +63,12 @@ export function useGetSupplier(id) {
 
 // ----------------------------------------------------------------------
 
-export async function createEntity(entityType, data) {
+export async function createSupplier(data) {
   if (!enableServer) return;
 
   const endpoint = ENDPOINT;
   if (!endpoint) {
-    console.error(`No endpoint found for entity type: ${entityType}`);
+    console.error(`No endpoint found for supplier`);
     return;
   }
 
@@ -76,17 +76,17 @@ export async function createEntity(entityType, data) {
     await axios.post(endpoint, data);
     mutate(ENDPOINT);
   } catch (error) {
-    console.error(`Error creating ${entityType}:`, error);
+    console.error(`Error creating supplier:`, error);
     throw error;
   }
 }
 
-export async function updateEntity(entityType, id, data) {
+export async function updateSupplier(id, data) {
   if (!enableServer) return;
 
   const endpoint = ENDPOINT;
   if (!endpoint) {
-    console.error(`No endpoint found for entity type: ${entityType}`);
+    console.error(`No endpoint found for supplier`);
     return;
   }
 
@@ -94,7 +94,7 @@ export async function updateEntity(entityType, id, data) {
     await axios.patch(`${endpoint}/${id}`, data);
     mutate(ENDPOINT);
   } catch (error) {
-    console.error(`Error updating ${entityType}:`, error);
+    console.error(`Error updating supplier:`, error);
     throw error;
   }
 } 

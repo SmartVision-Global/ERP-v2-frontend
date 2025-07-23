@@ -13,6 +13,12 @@ import {
   PRIORITY_OPTIONS,
   ORDER_STATUS_OPTIONS,
 } from 'src/_mock/expression-of-needs/Beb/Beb';
+import {
+  SUPPLIER_STATUS_OPTIONS,
+  COMMAND_ORDER_STATUS_OPTIONS,
+  PAYMENT_METHOD_OPTIONS,
+  BILLING_STATUS_OPTIONS,
+} from 'src/_mock/purchase/data';
 
 import { Label } from 'src/components/label';
 
@@ -68,6 +74,20 @@ export function RenderCellStatus({ params }) {
     </Label>
   );
 }
+
+export function RenderCellCommandOrderStatus({ params }) {
+  const status = COMMAND_ORDER_STATUS_OPTIONS.find((option) => option.value == params.row.status);
+  const color = status ? status.color : 'default';
+  const label = status ? status.label : 'N/I';
+  return (
+    <Label variant="soft" color={color}>
+      {label}
+    </Label>
+  );
+}
+
+
+
 export function RenderCellBEB({ params }) {
   return fCurrency(params.row.beb);
 }
@@ -129,7 +149,6 @@ export function RenderCellPriority({ params }) {
   );
 }
 
-
 // supplier
 
 export function RenderCellName({ params }) {
@@ -137,3 +156,157 @@ export function RenderCellName({ params }) {
 }
 
 
+export function RenderCellSupplier({ params }) {
+  return <Typography fontSize={14}>{params.row.code}</Typography>;
+}
+
+export function RenderCellExerciseStartDate({ params }) {
+  return <span>{fDate(params.row.created_at)}</span>;
+}
+
+export function RenderCellSupplierStatus({ params }) {
+    const status = SUPPLIER_STATUS_OPTIONS.find((option) => option.value == params.row.status); 
+    const color = status ? status.color : 'default';
+    const label = status ? status.label : 'N/I';
+    return (
+        <Label variant="soft" color={color}>
+            {label}
+        </Label>
+    );
+}
+export function RenderCellSupplierName({ params }) {
+  return <Typography fontSize={14}>{params.row.supplier?.name}</Typography>;
+}
+
+export function RenderCellService({ params }) {
+  return <Typography fontSize={14}>{params.row.service?.name}</Typography>;
+}
+
+export function RenderCellHT({ params }) {
+  return <Typography variant="body2">{fCurrency(params.row.ht)}</Typography>;
+}
+
+export function RenderCellDiscount({ params }) {
+  return <Typography variant="body2">{fCurrency(params.row.remise)}</Typography>;
+}
+
+export function RenderCellTVA({ params }) {
+  return <Typography variant="body2">{fCurrency(params.row.tva)}</Typography>;
+}
+
+export function RenderCellTax({ params }) {
+  return <Typography variant="body2">{fCurrency(params.row.tax)}</Typography>;
+}
+
+export function RenderCellStamp({ params }) {
+  return <Typography variant="body2">{fCurrency(params.row.stamp)}</Typography>;
+}
+
+export function RenderCellTTC({ params }) {
+  return <Typography variant="body2" sx={{fontWeight: 'bold'}}>{fCurrency(params.row.ttc)}</Typography>;
+}
+
+export function RenderCellPaymentMethod({ params }) {
+  const paymentMethod = PAYMENT_METHOD_OPTIONS.find(
+    (option) => option.value == params.row.payment_method
+  );
+  const color = paymentMethod ? paymentMethod.color : 'default';
+  const label = paymentMethod ? paymentMethod.label : 'N/I';
+  return (
+    <Label variant="soft" color={color}>
+      {label}
+    </Label>
+  );
+}
+
+export function RenderCellProforma({ params }) {
+  return <Typography fontSize={14}>N/I</Typography>;
+}
+
+export function RenderCellDeliveryDate({ params }) {
+  if (!params.row.delivery_dates || params.row.delivery_dates.length === 0) {
+    return null;
+  }
+
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, py: 1 }}>
+      {params.row.delivery_dates.map(({ id, delivery_date }) => (
+        <Box key={id} sx={{ display: 'flex', flexDirection: 'column' }}>
+          <span>{fDate(delivery_date)}</span>
+          <Box component="span" sx={{ typography: 'caption', color: 'text.secondary' }}>
+            {fTime(delivery_date)}
+          </Box>
+        </Box>
+      ))}
+    </Box>
+  );
+}
+
+export function RenderCellBilled({ params }) {
+  const status = BILLING_STATUS_OPTIONS.find((option) => option.value == String(params.row.billed));
+  const color = status ? status.color : 'default';
+  const label = status ? status.label : 'N/I';
+  return (
+    <Label variant="soft" color={color}>
+      {label}
+    </Label>
+  );
+}
+
+export function RenderCellPurchaseRequestCode({ params }) {
+  return <Typography>{params.row.purchase_request?.code ?? 'N/A'}</Typography>;
+}
+
+export function RenderCellPurchaseRequestType({ params }) {
+  const typeMap = { 1: 'Standard', 2: 'Urgent' };
+  const type = params.row.purchase_request?.type;
+  return <Typography>{typeMap[type] ?? 'N/A'}</Typography>;
+}
+
+export function RenderCellPurchaseRequestStatus({ params }) {
+  const statusMap = {
+    1: { text: 'Pending', color: 'warning' },
+    2: { text: 'Approved', color: 'success' },
+    3: { text: 'Rejected', color: 'error' },
+    4: { text: 'Processing', color: 'info' },
+  };
+  const status = params.row.purchase_request?.status;
+  const { text, color } = statusMap[status] || { text: 'N/A', color: 'default' };
+  return <Label variant="soft" color={color}>{text}</Label>;
+}
+
+export function RenderCellProductCode({ params }) {
+  return <Typography>{params.row.product?.code ?? 'N/A'}</Typography>;
+}
+
+export function RenderCellProductSupplierCode({ params }) {
+  return <Typography>{params.row.product?.supplier_code ?? 'N/A'}</Typography>;
+}
+
+export function RenderCellDateNeeded({ params }) {
+    return <Typography>{params.row.date_needed ? fDate(params.row.date_needed) : 'N/A'}</Typography>;
+}
+
+export function RenderCellObservations({ params }) {
+    return <Typography>{params.row.observation ?? 'N/A'}</Typography>;
+}
+
+export function RenderCellPurchaseRequestPriority({ params }) {
+    const priorityMap = {
+        1: { text: 'Low', color: 'default' },
+        2: { text: 'Medium', color: 'warning' },
+        3: { text: 'High', color: 'error' },
+    };
+    const priority = params.row.purchase_request?.priority;
+    const { text, color } = priorityMap[priority] || { text: 'N/A', color: 'default' };
+    return <Label variant="soft" color={color}>{text}</Label>;
+}
+
+export function RenderCellConfirmationDate({ params }) {
+    const confirmationDate = params.row.purchase_request?.confirmation_date;
+    return <Typography>{confirmationDate ? fDate(confirmationDate) : 'N/A'}</Typography>;
+}
+
+export function RenderCellNotImplemented() {
+  return <Typography sx={{color: 'text.disabled'}}>N/I</Typography>;
+}

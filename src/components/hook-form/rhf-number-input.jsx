@@ -16,6 +16,7 @@ export function RHFNumberInput({ name, helperText, ...other }) {
           {...field}
           onChange={(event, value) => field.onChange(value)}
           {...other}
+          readOnly={other.InputProps?.readOnly}
           error={!!error}
           helperText={error?.message ?? helperText}
         />

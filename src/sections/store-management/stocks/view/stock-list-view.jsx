@@ -24,7 +24,8 @@ import {
   Typography,
   FormControl,
   TextField,
-  InputAdornment
+  InputAdornment,
+  styled,
 } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
@@ -59,6 +60,23 @@ import {
 } from '../stock-table-row';
 
 // ----------------------------------------------------------------------
+
+const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
+  // Pin the actions column to the right
+  '& .MuiDataGrid-columnHeader[data-field="actions"]': {
+    position: 'sticky',
+    right: 0,
+    backgroundColor: theme.palette.grey[200],
+    zIndex: theme.zIndex.appBar,
+  },
+  '& .MuiDataGrid-cell[data-field="actions"]': {
+    position: 'sticky',
+    right: 0,
+    backgroundColor: theme.palette.grey[200],
+    zIndex: 1,
+    borderLeft: `1px solid ${theme.palette.divider}`,
+  },
+}));
 
 const HIDE_COLUMNS = { categories: false };
 
@@ -272,7 +290,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
     { id: 'workshop_id', type: 'lookup', label: t('filters.workshop'), url: endpoints.lookups.workshops},
     { id: 'image', type: 'select', options: IMAGE_OPTIONS, label: t('filters.image') },
     {
-      id: 'created_date_start',
+      id: 'created_at',
       type: 'date-range',
       label: t('filters.creation_date'),
       operatorMin: 'gte',
@@ -280,6 +298,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
       cols: 3,
       width: 1,
     },
+    
   ], [t]);
 
   const [filterButtonEl, setFilterButtonEl] = useState(null);
@@ -621,7 +640,7 @@ export function StockListView({ isSelectionDialog = false, componentsProps, onSe
             </>
           )}
 
-          <DataGrid
+          <StyledDataGrid
             {...componentsProps}
             disableRowSelectionOnClick
             disableColumnMenu
