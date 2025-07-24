@@ -396,7 +396,8 @@ export const navData = [
           },
           {
             title:'Local',
-            path:paths.dashboard.purchaseSupply.supplier.root,
+            // path:paths.dashboard.purchaseSupply.supplier.root,
+            path:'/dashboard/purchase-supply',
             children:[
               {
                 title:'Fournisseurs',

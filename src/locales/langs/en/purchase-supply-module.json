@@ -49,7 +49,24 @@
         "proforma": "Proforma",
         "delivery_date": "Delivery Date",
         "billed": "Billed",
-        "charge_types": "Charge Types"
+        "charge_types": "Charge Types",
+        "bill_date": "Bill Date",
+        "purchase_order": "Purchase Order",
+        "store": "Store",
+        "issue_date": "Issue Date",
+        "um": "UM",
+        "lot_number": "Lot Number",
+        "purchased_quantity": "Purchased Quantity",
+        "received_quantity": "Received Quantity",
+        "price": "Price",
+        "final_price": "Final Price",
+        "total": "Total",
+        "num_bl": "BL Number",
+        "date_bl": "BL Date",
+        "matricule": "Matricule",
+        "nature": "Nature",
+        "linked_to": "Linked To",
+        "order": "Order"
     },
     "actions": {
         "purchase_request": "Purchase Request",
@@ -62,7 +79,8 @@
         "product_list": "Product List",
         "yes": "Yes",
         "details": "Details",
-        "command_order": "Command Order"
+        "command_order": "Command Order",
+        "purchase_operation": "Purchase Operation"
     },
     "filters": {
         "code": "Code",
@@ -74,14 +92,16 @@
         "requester": "Requester",
         "created_by": "Created by",
         "processed_by": "Processed by",
-        "date": "Date",
+        "date": "Creation Date (Select a range)",
         "search_placeholder": "Search...",
         "name": "Name",
         "payment_mode": "Payment Mode",
         "billing": "Billing",
         "service": "Service",
         "delivery_date": "Delivery Date",
-        "supplier": "Supplier"
+        "supplier": "Supplier",
+        "bill_date": "Bill Date (Select a range)",
+        "issue_date": "Issue Date (Select a range)"
     },
     "dialog": {
         "product_list_title": "Product List",

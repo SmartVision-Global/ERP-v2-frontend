@@ -38,11 +38,11 @@ import {
   BILLING_STATUS_OPTIONS,
 } from 'src/_mock/purchase/data';
 import {
-  useGetCommandOrders,
-  getFiltredCommandOrders,
-  confirmCommandOrder,
-  cancelCommandOrder,
-} from 'src/actions/purchase-supply/command-order/command-order';
+  useGetPurchaseOperations,
+  getFiltredPurchaseOperations,
+  confirmPurchaseOperation,
+  cancelPurchaseOperation,
+} from 'src/actions/purchase-supply/purchase-operations';
 
 import { Iconify } from 'src/components/iconify';
 import { toast } from 'src/components/snackbar';
@@ -74,11 +74,14 @@ import {
   RenderCellTTC,
   RenderCellPaymentMethod,
   RenderCellProforma,
-  RenderCellDeliveryDate,
   RenderCellBilled,
+  RenderCellBillDate,
+  RenderCellPurchaseOrder,
+  RenderCellStore,
+  RenderCellIssueDate
 } from '../../../table-rows';
 import UtilsButton from 'src/components/custom-buttons/utils-button';
-import OrderProductsList from './OrderProductsList';
+import PurchaseOperationItems from './purchase-operation-items';
 import { OrderActionDialog } from './order-action-dialog';
 
 // ----------------------------------------------------------------------
@@ -115,7 +118,7 @@ export function PurchaseOperationsListView() {
     pageSize: PAGE_SIZE,
   });
   const [selectedRow, setSelectedRow] = useState('');
-  const { commandOrders, commandOrdersLoading, commandOrdersCount } = useGetCommandOrders({
+  const { purchaseOperations, purchaseOperationsLoading, purchaseOperationsCount } = useGetPurchaseOperations({
     limit: PAGE_SIZE,
     offset: 0,
   });
@@ -144,6 +147,12 @@ export function PurchaseOperationsListView() {
         label: t('filters.type'),
       },
       {
+        id:'store_id',
+        type:'lookup',
+        label:t('filters.store'),
+        url:endpoints.lookups.stores
+      },
+      {
         id: 'status',
         type: 'select',
         options: COMMAND_ORDER_STATUS_OPTIONS,
@@ -168,6 +177,8 @@ export function PurchaseOperationsListView() {
         label: t('filters.billing'),
       },
       { id: 'delivery_date', type: 'date', label: t('filters.delivery_date') },
+      {id:'issue_date',type:'date-range',label:t('filters.issue_date')},
+      {id:'bill_date',type:'date-range',label:t('filters.bill_date')},
       { id: 'created_at', type: 'date-range', label: t('filters.date'), cols: 3 },
     ],
     [t]
@@ -184,13 +195,13 @@ export function PurchaseOperationsListView() {
   const [dialogState, setDialogState] = useState({ open: false, action: null, order: null });
 
   useEffect(() => {
-    setTableData(commandOrders);
-    setRowCount(commandOrdersCount);
-  }, [commandOrders, commandOrdersCount]);
+    setTableData(purchaseOperations);
+    setRowCount(purchaseOperationsCount);
+  }, [purchaseOperations, purchaseOperationsCount]);
 
   const handleReset = useCallback(async () => {
     try {
-      const response = await getFiltredCommandOrders({
+      const response = await getFiltredPurchaseOperations({
         limit: PAGE_SIZE,
         offset: 0,
       });
@@ -209,7 +220,7 @@ export function PurchaseOperationsListView() {
   const handleFilter = useCallback(
     async (data) => {
       try {
-        const response = await getFiltredCommandOrders(data);
+        const response = await getFiltredPurchaseOperations(data);
         setTableData(response.data?.data?.records);
         setRowCount(response.data?.data?.total);
       } catch (error) {
@@ -226,7 +237,7 @@ export function PurchaseOperationsListView() {
         limit: newModel.pageSize,
         offset: newModel.page * newModel.pageSize,
       };
-      const response = await getFiltredCommandOrders(newData);
+      const response = await getFiltredPurchaseOperations(newData);
       setTableData(response.data?.data?.records);
       setPaginationModel(newModel);
     } catch (error) {
@@ -248,10 +259,10 @@ export function PurchaseOperationsListView() {
     if (order) {
       try {
         if (action === 'confirm') {
-          await confirmCommandOrder(order.id, { notes });
+          await confirmPurchaseOperation(order.id, { notes });
           toast.success(t('messages.confirm_success'));
         } else if (action === 'cancel') {
-          await cancelCommandOrder(order.id, { notes });
+          await cancelPurchaseOperation(order.id, { notes });
           toast.success(t('messages.cancel_success'));
         }
         handleCloseDialog();
@@ -400,25 +411,11 @@ export function PurchaseOperationsListView() {
         renderCell: (params) => <RenderCellSupplierName params={params} />,
       },
       {
-        field: 'type',
-        headerName: t('headers.type'),
-        flex: 1,
-        minWidth: 120,
-        renderCell: (params) => <RenderCellType params={params} />,
-      },
-      {
-        field: 'site',
-        headerName: t('headers.site'),
-        flex: 1,
-        minWidth: 150,
-        renderCell: (params) => <RenderCellSite params={params} />,
-      },
-      {
-        field: 'service',
-        headerName: t('headers.service'),
-        flex: 1,
-        minWidth: 150,
-        renderCell: (params) => <RenderCellService params={params} />,
+        field:'purchase_order',
+        headerName:t('headers.purchase_order'),
+        flex:1,
+        minWidth:150,
+        renderCell:(params)=><RenderCellPurchaseOrder params={params}/>
       },
       {
         field: 'ht',
@@ -428,7 +425,7 @@ export function PurchaseOperationsListView() {
         renderCell: (params) => <RenderCellHT params={params} />,
       },
       {
-        field: 'remise',
+        field: 'discount',
         headerName: t('headers.discount'),
         flex: 1,
         minWidth: 100,
@@ -455,6 +452,7 @@ export function PurchaseOperationsListView() {
         minWidth: 100,
         renderCell: (params) => <RenderCellStamp params={params} />,
       },
+      
       {
         field: 'ttc',
         headerName: t('headers.ttc'),
@@ -463,32 +461,70 @@ export function PurchaseOperationsListView() {
         renderCell: (params) => <RenderCellTTC params={params} />,
       },
       {
-        field: 'payment_method',
-        headerName: t('headers.payment_method'),
-        flex: 1,
-        minWidth: 150,
-        renderCell: (params) => <RenderCellPaymentMethod params={params} />,
-      },
-      {
         field: 'proforma',
         headerName: t('headers.proforma'),
         flex: 1,
         minWidth: 100,
         renderCell: (params) => <RenderCellProforma params={params} />,
       },
+      
       {
-        field: 'delivery_dates',
-        headerName: t('headers.delivery_date'),
+        field:'bill_date',
+        headerName:t('headers.bill_date'),
+        flex:1,
+        minWidth:150,
+        renderCell:(params)=><RenderCellBillDate params={params}/>
+      },
+      {
+        field: 'type',
+        headerName: t('headers.type'),
+        flex: 1,
+        minWidth: 120,
+        renderCell: (params) => <RenderCellType params={params} />,
+      },
+      {
+        field: 'site',
+        headerName: t('headers.site'),
         flex: 1,
         minWidth: 150,
-        renderCell: (params) => <RenderCellDeliveryDate params={params} />,
+        renderCell: (params) => <RenderCellSite params={params} />,
       },
+      {
+        field:'store',
+        headerName:t('headers.store'),
+        flex:1,
+        minWidth:150,
+        renderCell:(params)=><RenderCellStore params={params}/>
+      },
+      {
+        field: 'service',
+        headerName: t('headers.service'),
+        flex: 1,
+        minWidth: 150,
+        renderCell: (params) => <RenderCellService params={params} />,
+      },
+     
+      {
+        field: 'payment_method',
+        headerName: t('headers.payment_method'),
+        flex: 1,
+        minWidth: 150,
+        renderCell: (params) => <RenderCellPaymentMethod params={params} />,
+      },
+      
       {
         field: 'billed',
         headerName: t('headers.billed'),
         flex: 1,
         minWidth: 120,
         renderCell: (params) => <RenderCellBilled params={params} />,
+      },
+      {
+        field:'issue_date',
+        headerName:t('headers.issue_date'),
+        flex:1,
+        minWidth:150,
+        renderCell:(params)=><RenderCellIssueDate params={params}/>
       },
       { field: 'observation', headerName: t('headers.observations'), flex: 1, minWidth: 200 },
       {
@@ -508,7 +544,7 @@ export function PurchaseOperationsListView() {
                   showInMenu
                   icon={<Iconify icon="solar:pen-bold" />}
                   label={t('actions.edit')}
-                  href={paths.dashboard.purchaseSupply.commandOrder.edit(
+                  href={paths.dashboard.purchaseSupply.purchaseOperations.edit(
                     params.row.id
                   )}
                 />,
@@ -559,17 +595,17 @@ export function PurchaseOperationsListView() {
           heading={t('views.list')}
           links={[
             { name: t('views.purchase_and_supply'), href: paths.dashboard.root },
-            { name: t('views.list'), href: paths.dashboard.purchaseSupply.commandOrder.root },
+            { name: t('views.list'), href: paths.dashboard.purchaseSupply.purchaseOperations.root },
           ]}
           action={
             <Box sx={{ gap: 1, display: 'flex' }}>
               <Button
                 component={RouterLink}
-                href={paths.dashboard.purchaseSupply.commandOrder.new}
+                href={paths.dashboard.purchaseSupply.purchaseOperations.new}
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >
-                {t('actions.command_order')}
+                {t('actions.purchase_operation')}
               </Button>
               <UtilsButton
                 exportToCsv={exportToCsv}
@@ -623,7 +659,7 @@ export function PurchaseOperationsListView() {
             rows={tableData}
             rowCount={rowCount}
             columns={columns}
-            loading={commandOrdersLoading}
+            loading={purchaseOperationsLoading}
             getRowHeight={() => 'auto'}
             paginationModel={paginationModel}
             paginationMode="server"
@@ -648,7 +684,7 @@ export function PurchaseOperationsListView() {
         <Dialog open={detailOpen} onClose={handleCloseDetail} maxWidth="xl" fullWidth>
           <DialogTitle>{t('dialog.product_list_title')}</DialogTitle>
           <DialogContent dividers>
-            <OrderProductsList id={selectedOrderForProducts.id} />
+            <PurchaseOperationItems id={selectedOrderForProducts.id} />
           </DialogContent>
           <DialogActions>
             <Button variant="contained" onClick={handleCloseDetail}>

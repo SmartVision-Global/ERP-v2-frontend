@@ -428,7 +428,7 @@ export function CommandOrderListView() {
         renderCell: (params) => <RenderCellHT params={params} />,
       },
       {
-        field: 'remise',
+        field: 'discount',
         headerName: t('headers.discount'),
         flex: 1,
         minWidth: 100,

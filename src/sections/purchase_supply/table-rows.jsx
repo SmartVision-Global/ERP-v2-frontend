@@ -187,7 +187,7 @@ export function RenderCellHT({ params }) {
 }
 
 export function RenderCellDiscount({ params }) {
-  return <Typography variant="body2">{fCurrency(params.row.remise)}</Typography>;
+  return <Typography variant="body2">{fCurrency(params.row.discount)}</Typography>;
 }
 
 export function RenderCellTVA({ params }) {
@@ -220,7 +220,7 @@ export function RenderCellPaymentMethod({ params }) {
 }
 
 export function RenderCellProforma({ params }) {
-  return <Typography fontSize={14}>N/I</Typography>;
+  return <Typography fontSize={14}>{params.row.invoice ? params.row.invoice : 'N/I'}</Typography>;
 }
 
 export function RenderCellDeliveryDate({ params }) {
@@ -240,6 +240,10 @@ export function RenderCellDeliveryDate({ params }) {
       ))}
     </Box>
   );
+}
+
+export function RenderCellBillDate({ params }) {
+  return <Typography>{params.row.bill_date ? fDate(params.row.bill_date) : 'N/A'}</Typography>;
 }
 
 export function RenderCellBilled({ params }) {
@@ -309,4 +313,16 @@ export function RenderCellConfirmationDate({ params }) {
 
 export function RenderCellNotImplemented() {
   return <Typography sx={{color: 'text.disabled'}}>N/I</Typography>;
+}
+
+export function RenderCellPurchaseOrder({ params }) {
+  return <Typography>{params.row.purchase_order?.code ?? 'N/A'}</Typography>;
+}
+
+export function RenderCellStore({ params }) {
+  return <Typography>{params.row.store?.code ?? 'N/A'}</Typography>;
+}
+
+export function RenderCellIssueDate({ params }) {
+  return <Typography>{params.row.issue_date ? fDate(params.row.issue_date) : 'N/A'}</Typography>;
 }

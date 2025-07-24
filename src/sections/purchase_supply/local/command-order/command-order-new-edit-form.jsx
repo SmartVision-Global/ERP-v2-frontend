@@ -235,6 +235,7 @@ export function CommandOrderNewEditForm({ initialData }) {
   const methods = useForm({
     resolver: zodResolver(commandOrderSchema),
     defaultValues,
+    mode: 'onChange',
   });
 
   const { handleSubmit, reset,setError, control, register, setValue, watch, trigger, formState: { isSubmitting, errors } } = methods;

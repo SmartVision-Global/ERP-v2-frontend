@@ -6,23 +6,23 @@ import { Box, Modal, Typography, Card } from '@mui/material';
 import { CONFIG } from 'src/global-config';
 import { useTranslate } from 'src/locales';
 import {
-  useGetPurchaseRequestItems,
-  getFiltredPurchaseRequestItems,
-} from 'src/actions/purchase-supply/purchase-request/purchase-request';
+  useGetPurchaseOperationItems,
+  getFiltredPurchaseOperationItems,
+} from 'src/actions/purchase-supply/purchase-operations';
 
 import { TableToolbarCustom } from 'src/components/table';
 import { EmptyContent } from 'src/components/empty-content';
 
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 
-export default function OrderProductsList({ id }) {
+export default function PurchaseOperationItems({ id }) {
   const { t } = useTranslate('purchase-supply-module');
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: PAGE_SIZE });
   const [previewImage, setPreviewImage] = useState(null);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState({});
 
-  const { items, itemsCount, itemsLoading } = useGetPurchaseRequestItems(id, {
+  const { items, itemsCount, itemsLoading } = useGetPurchaseOperationItems(id, {
     limit: paginationModel.pageSize,
     offset: 0,
   });
@@ -44,7 +44,7 @@ export default function OrderProductsList({ id }) {
 
   const handleReset = useCallback(async () => {
     try {
-      const response = await getFiltredPurchaseRequestItems(id, {
+      const response = await getFiltredPurchaseOperationItems(id, {
         limit: PAGE_SIZE,
         offset: 0,
       });
@@ -66,7 +66,7 @@ export default function OrderProductsList({ id }) {
         ...data,
       };
       try {
-        const response = await getFiltredPurchaseRequestItems(id, newData);
+        const response = await getFiltredPurchaseOperationItems(id, newData);
         setTableData(response.data?.data?.records);
         setRowCount(response.data?.data?.total);
       } catch (error) {
@@ -82,7 +82,7 @@ export default function OrderProductsList({ id }) {
         limit: newModel.pageSize,
         offset: newModel.page * newModel.pageSize,
       };
-      const response = await getFiltredPurchaseRequestItems(id, newData);
+      const response = await getFiltredPurchaseOperationItems(id, newData);
       setTableData(response.data?.data?.records);
       setPaginationModel(newModel);
     } catch (error) {
@@ -92,111 +92,79 @@ export default function OrderProductsList({ id }) {
 
   const columns = useMemo(
     () => [
-      { field: 'id', headerName: t('headers.id'), width: 50 , renderCell: (params) => <Typography>{params.row.id}</Typography>},
       {
-        field: 'image',
-        headerName: t('headers.photo'),
-        width: 100,
-        renderCell: (params) => {
-          const src = params.row.product?.image;
-          return src ? (
-            <img
-              src={src}
-              alt="product"
-              style={{ width: 40, height: 40, cursor: 'pointer' }}
-              onClick={() => setPreviewImage(src)}
-            />
-          ) : (
-            t('messages.no_image')
-          );
-        },
+        field: 'id',
+        headerName: t('headers.id'),
+        width: 80,
+        renderCell: (params) => <Typography>{params.row.id}</Typography>,
       },
       {
         field: 'code',
         headerName: t('headers.code'),
         flex: 1,
         minWidth: 120,
-        renderCell: (params) => <Typography>{params.row.product?.code}</Typography>,
+        renderCell: (params) => <Typography>{params.row.product_id?.code}</Typography>,
       },
       {
         field: 'supplier_code',
         headerName: t('headers.supplier_code'),
-        width: 110,
-        renderCell: (params) => (
-          <Typography>{params.row.product?.supplier_code}</Typography>
-        ),
-      },
-      {
-        field: 'local_code',
-        headerName: t('headers.local_code'),
-        flex: 1,
-        minWidth: 100,
-        renderCell: (params) => (
-          <Typography>{params.row.product?.local_code || 'N/I'}</Typography>
-        ),
+        width: 130,
+        renderCell: (params) => <Typography>{params.row.product_id?.supplier_code}</Typography>,
       },
       {
         field: 'designation',
         headerName: t('headers.designation'),
         flex: 1,
-        minWidth: 120,
-        renderCell: (params) => (
-          <Typography>{params.row.product?.designation}</Typography>
-        ),
+        minWidth: 150,
+        renderCell: (params) => <Typography>{params.row.designation}</Typography>,
       },
       {
-        field: 'unit_measure',
-        headerName: t('headers.unit'),
+        field: 'um',
+        headerName: t('headers.um'),
+        width: 80,
+        renderCell: () => <Typography>N/I</Typography>,
+      },
+      {
+        field: 'lot_number',
+        headerName: t('headers.lot_number'),
         width: 100,
-        renderCell: (params) => (
-          <Typography>{params.row.unit_measure?.designation || 'N/I'}</Typography>
-        ),
+        renderCell: () => <Typography>N/I</Typography>,
       },
       {
-        field: 'purchased_quantity',
-        headerName: t('headers.quantity_to_purchase'),
-        width: 110,
-        renderCell: (params) => (
-          <Typography>{params.row.purchased_quantity}</Typography>
-        ),
+        field: 'quantity',
+        headerName: t('headers.purchased_quantity'),
+        width: 130,
+        renderCell: (params) => <Typography>{params.row.quantity}</Typography>,
       },
       {
-        field: 'requested_quantity',
-        headerName: t('headers.requested_quantity'),
-        width: 110,
-        renderCell: (params) => (
-          <Typography>{params.row.requested_quantity || 'N/I'}</Typography>
-        ),
+        field: 'quantity_rec',
+        headerName: t('headers.received_quantity'),
+        width: 140,
+        renderCell: (params) => <Typography>{params.row.quantity_rec}</Typography>,
       },
       {
-        field: 'remaining_quantity',
-        headerName: t('headers.remaining_quantity'),
-        width: 110,
-        renderCell: (params) => (
-          <Typography>{params.row.remaining_quantity || 'N/I'}</Typography>
-        ),
+        field: 'price',
+        headerName: t('headers.price'),
+        width: 100,
+        renderCell: (params) => <Typography>{params.row.price}</Typography>,
       },
       {
-        field: 'status',
-        headerName: t('headers.status'),
-        width: 110,
-        renderCell: (params) => <Typography>{params.row.status || 'N/I'}</Typography>,
+        field: 'discount',
+        headerName: t('headers.discount'),
+        width: 100,
+        renderCell: (params) => <Typography>{params.row.discount}</Typography>,
       },
       {
-        field: 'traitement',
-        headerName: t('headers.processing'),
-        width: 110,
-        renderCell: (params) => (
-          <Typography>{params.row.traitement || 'N/I'}</Typography>
-        ),
+        field: 'final_price',
+        headerName: t('headers.final_price'),
+        width: 100,
+        renderCell: () => <Typography>N/I</Typography>,
       },
       {
-        field: 'current_quantity',
-        headerName: t('headers.current_quantity'),
-        width: 110,
-        renderCell: (params) => (
-          <Typography>{params.row.product?.quantity || 'N/I'}</Typography>
-        ),
+        field: 'total',
+        headerName: t('headers.total'),
+        width: 100,
+        renderCell: () => <Typography>N/I</Typography>,
       },
       {
         field: 'observation',
@@ -206,12 +174,40 @@ export default function OrderProductsList({ id }) {
         renderCell: (params) => <Typography>{params.row.observation}</Typography>,
       },
       {
-        field: 'date_traitement',
-        headerName: t('headers.processing_date'),
-        width: 110,
-        renderCell: (params) => (
-          <Typography>{params.row.date_traitement || 'N/I'}</Typography>
-        ),
+        field: 'num_bl',
+        headerName: t('headers.num_bl'),
+        width: 100,
+        renderCell: (params) => <Typography>{params.row.num_bl}</Typography>,
+      },
+      {
+        field: 'date_bl',
+        headerName: t('headers.date_bl'),
+        width: 120,
+        renderCell: (params) => <Typography>{params.row.date_bl}</Typography>,
+      },
+      {
+        field: 'matricule',
+        headerName: t('headers.matricule'),
+        width: 120,
+        renderCell: (params) => <Typography>{params.row.matricule}</Typography>,
+      },
+      {
+        field: 'nature',
+        headerName: t('headers.nature'),
+        width: 100,
+        renderCell: (params) => <Typography>{params.row.nature}</Typography>,
+      },
+      {
+        field: 'linked_to',
+        headerName: t('headers.linked_to'),
+        width: 100,
+        renderCell: () => <Typography>N/I</Typography>,
+      },
+      {
+        field: 'order',
+        headerName: t('headers.order'),
+        width: 100,
+        renderCell: () => <Typography>N/I</Typography>,
       },
     ],
     [t]

@@ -110,7 +110,7 @@ const getCommandOrderSchema = (t) =>
   });
 
 // Command Order Form with three tabs: Informations, Produits and Confirmation
-export function CommandOrderNewEditForm({ initialData }) {
+export function PurchaseOperationsNewEditForm({ initialData }) {
   const router = useRouter();
   const { t } = useTranslate('purchase-supply-module');
   const [activeStep, setActiveStep] = useState(0);
@@ -235,6 +235,7 @@ export function CommandOrderNewEditForm({ initialData }) {
   const methods = useForm({
     resolver: zodResolver(commandOrderSchema),
     defaultValues,
+    mode: 'onChange',
   });
 
   const { handleSubmit, reset,setError, control, register, setValue, watch, trigger, formState: { isSubmitting, errors } } = methods;
