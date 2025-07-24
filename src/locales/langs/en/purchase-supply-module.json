@@ -156,6 +156,7 @@
             "global_info_purchase_request": "Global information about the purchase request",
             "global_info_command_order": "Global information about the command order",
             "site": "Site",
+            "store": "Store",
             "personal": "Personal",
             "type": "Type",
             "priority": "Priority",

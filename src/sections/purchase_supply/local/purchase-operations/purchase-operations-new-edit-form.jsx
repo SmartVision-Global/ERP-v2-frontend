@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, useFieldArray, useWatch } from 'react-hook-form';
+import { useForm, useFieldArray, useWatch, Controller } from 'react-hook-form';
 import React, { useState, useEffect, Fragment, useCallback, useMemo } from 'react';
 
 import Grid from '@mui/material/Grid2';
@@ -30,6 +30,7 @@ import {
   Paper,
   Collapse,
   CardContent,
+  TextField,
 } from '@mui/material';
 
 import { paths } from 'src/routes/paths';
@@ -39,7 +40,8 @@ import { endpoints } from 'src/lib/axios';
 import { useTranslate } from 'src/locales';
 import { uploadMedia } from 'src/actions/media';
 import { BILLING_STATUS_OPTIONS, PAYMENT_METHOD_OPTIONS } from 'src/_mock/purchase/data';
-import { createEntity, updateEntity } from 'src/actions/purchase-supply/command-order/command-order';
+import { useGetCommandOrder } from 'src/actions/purchase-supply/command-order/command-order';
+import { createEntity, updateEntity } from 'src/actions/purchase-supply/purchase-operations';
 import {
   BEB_NATURE_OPTIONS,
   PRODUCT_TYPE_OPTIONS,
@@ -54,12 +56,16 @@ import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import ItemRow from './components/item-row';
 import ProductsListView from './products-list-view';
 import PurchaseRequestListView from './purchase-request-list-view';
+import PurchaseOrderListView from './purchase-order-list-view';
 
 // Validation schema for the order's first tab
-const getCommandOrderSchema = (t) =>
+const getPurchaseOperationSchema = (t) =>
   z.object({
     site_id: z.string().nonempty({ message: t('form.validations.site_required') }),
+    store_id: z.string().nonempty({ message: t('form.validations.store_required') }),
     supplier_id: z.string().nonempty({ message: t('form.validations.supplier_required') }),
+    // purchase_order_id: z.number().nullable().optional(),
+    purchase_order_id: z.string().optional(),
     service_id: z.string().nonempty({ message: t('form.validations.service_required') }),
     type: z.string().nonempty({ message: t('form.validations.type_required') }),
     print_note: z.string().optional(),
@@ -114,11 +120,22 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
   const router = useRouter();
   const { t } = useTranslate('purchase-supply-module');
   const [activeStep, setActiveStep] = useState(0);
+  const [selectedPurchaseOrderCode, setSelectedPurchaseOrderCode] = useState('');
+
+  const { commandOrder } = useGetCommandOrder(initialData?.purchase_order_id);
+
+  useEffect(() => {
+    if (commandOrder) {
+      setSelectedPurchaseOrderCode(commandOrder.code);
+    }
+  }, [commandOrder]);
 
   const defaultValues = useMemo(() => {
     const base = {
       site_id: '1',
+      store_id: '1',
       supplier_id: '1',
+      purchase_order_id: '',
       service_id: '1',
       type: PRODUCT_TYPE_OPTIONS[0]?.value?.toString() || '',
       print_note: '',
@@ -140,7 +157,9 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
 
     return {
       site_id: initialData.site?.id?.toString() || '1',
+      store_id: initialData.store?.id?.toString() || '1',
       supplier_id: initialData.supplier?.id?.toString() || '1',
+      purchase_order_id: initialData.purchase_order_id?.toString() || '',
       service_id: initialData.service?.id?.toString() || '1',
       type: initialData.type?.toString() || PRODUCT_TYPE_OPTIONS[0]?.value?.toString() || '',
       print_note: initialData?.print_note || '',
@@ -230,10 +249,10 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
     setOpenPurchaseRequestModal(false);
   }
 
-  const commandOrderSchema = getCommandOrderSchema(t);
+  const purchaseOperationSchema = getPurchaseOperationSchema(t);
 
   const methods = useForm({
-    resolver: zodResolver(commandOrderSchema),
+    resolver: zodResolver(purchaseOperationSchema),
     defaultValues,
     mode: 'onChange',
   });
@@ -250,6 +269,7 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
   });
   const [openModalIndex, setOpenModalIndex] = useState(null);
   const [openPurchaseRequestModal, setOpenPurchaseRequestModal] = useState(false);
+  const [openPurchaseOrderModal, setOpenPurchaseOrderModal] = useState(false);
 
   const onDropInvoice = async (acceptedFiles) => {
     const value = acceptedFiles[0];
@@ -265,6 +285,17 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
     } catch (error) {
       console.log('error in upload file', error);
     }
+  };
+
+  const handleSelectPurchaseOrder = (row) => {
+    setValue('purchase_order_id', row.id?.toString() || '', { shouldValidate: true });
+    setSelectedPurchaseOrderCode(row.code);
+    setOpenPurchaseOrderModal(false);
+  };
+
+  const handleRemovePurchaseOrder = () => {
+    setValue('purchase_order_id', '', { shouldValidate: true });
+    setSelectedPurchaseOrderCode('');
   };
 
   const handleRemoveInvoice = useCallback(() => {
@@ -303,7 +334,7 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
   const STEPS = [t('form.steps.information'), t('form.steps.products'), t('form.steps.confirmation')];
 
   const tabFields = {
-    0: ['site_id', 'supplier_id', 'service_id', 'type'],
+    0: ['site_id', 'store_id', 'supplier_id', 'service_id', 'type'],
     1: ['items', 'billed', 'payment_method'],
     2: ['delivery_dates'],
   };
@@ -365,13 +396,13 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
 
          console.log('payload', payload);
         if (initialData?.id) {
-          await updateEntity('command_order', initialData.id, payload);
+          await updateEntity('purchase_operation', initialData.id, payload);
           toast.success(t('form.messages.order_updated'));
         } else {
-          await createEntity('command_order', payload);
+          await createEntity('purchase_operation', payload);
           toast.success(t('form.messages.order_created'));
         }
-        router.push(paths.dashboard.purchaseSupply.commandOrder.root);
+        router.push(paths.dashboard.purchaseSupply.purchaseOperations.root);
       } catch (error) {
         if (error && error.errors) {
           Object.entries(error.errors).forEach(([key, value]) => {
@@ -429,6 +460,11 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
               ))}
             </Field.Select>
             <Field.LookupSearch
+              name="store_id"
+              label={t('form.labels.store')}
+              url={endpoints.lookups.stores}
+            />
+            <Field.LookupSearch
               name="supplier_id"
               label={t('form.labels.supplier')}
               url={endpoints.lookups.suppliers}
@@ -437,6 +473,29 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
               name="service_id"
               label={t('form.labels.service')}
               url={endpoints.lookups.services}
+            />
+            <Field.Text
+              name="purchase_order_id"
+              value={selectedPurchaseOrderCode || ''}
+              label={t('form.labels.purchase_order')}
+              onClick={() => setOpenPurchaseOrderModal(true)}
+              InputProps={{
+                readOnly: true,
+                style: { cursor: 'pointer' },
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemovePurchaseOrder();
+                      }}
+                      edge="end"
+                    >
+                      <Iconify icon="eva:trash-2-outline" />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
           </Stack>
         </Grid>
@@ -519,85 +578,7 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
           </Typography>
         )}
         <Box sx={{ mt: 2 }}>
-          {/* {itemFields.map((field, index) => (
-            <Box
-              key={field.fieldKey}
-              sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 2, mb: 2 }}
-            >
-              <Grid container spacing={2}>
-                <Grid size={{ xs: 12, md: 4 }}>
-                  <Field.Text
-                    name={`items.${index}.code`}
-                    label={t('form.labels.code')}
-                    InputProps={{ readOnly: true }}
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, md: 4 }}>
-                  <Field.Text
-                    name={`items.${index}.supplier_code`}
-                    label={t('form.labels.supplier_code')}
-                    InputProps={{ readOnly: true }}
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, md: 4 }}>
-                  <Field.Text
-                    name={`items.${index}.designation`}
-                    label={t('form.labels.designation')}
-                    InputProps={{ readOnly: true }}
-                  />
-                </Grid>
-              </Grid>
-
-              <Grid container spacing={2} sx={{ mt: 2 }}>
-                <Grid size={{ xs: 12, md: 4 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'start', gap: 1 }}>
-                    <Box
-                      sx={{
-                        width: 36,
-                        height: 36,
-                        borderRadius: '25%',
-                        bgcolor: 'grey.300',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Typography variant="subtitle2" sx={{ fontSize: '1rem' }}>
-                        {watch(`items.${index}.unit_measure`)?.designation || ''}
-                      </Typography>
-                    </Box>
-                    <Field.Number
-                      name={`items.${index}.quantity`}
-                      label={t('form.labels.quantity_to_buy')}
-                    />
-                  </Box>
-                </Grid>
-                <Grid size={{ xs: 12, md: 4 }}>
-                  <Field.Number name={`items.${index}.price`} label={t('form.labels.price')} />
-                </Grid>
-                <Grid size={{ xs: 12, md: 4 }}>
-                  <Field.Number name={`items.${index}.discount`} label={t('form.labels.discount')} />
-                </Grid>
-              </Grid>
-
-              <Grid container spacing={2} sx={{ mt: 2 }}>
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <Field.Text
-                    name={`items.${index}.observation`}
-                    label={t('form.labels.observation')}
-                    multiline
-                    rows={2}
-                  />
-                </Grid>
-              </Grid>
-
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                <IconButton color="error" onClick={() => removeItem(index)}>
-                  <Iconify icon="eva:trash-2-outline" />
-                </IconButton>
-              </Box>
-            </Box>
-          ))} */}
+          
           <TableContainer component={Paper} variant="outlined">
             <Table>
               <TableHead>
@@ -801,6 +782,7 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
   );
 
   return (
+    <>
     <Form methods={methods} onSubmit={onSubmit}>
       <input type="hidden" {...register('eon_voucher_id')} />
       <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 3 }}>
@@ -819,5 +801,33 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
       {activeStep === 2 && renderConfirmationTab()}
       {renderNavigationButtons()}
     </Form>
+    <Modal open={openPurchaseOrderModal} onClose={() => setOpenPurchaseOrderModal(false)}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            bgcolor: 'background.paper',
+            p: 3,
+            width: '80%',
+            height: '90%',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <Typography variant="h6" mb={2}>
+            {t('form.labels.select_purchase_order')}
+          </Typography>
+
+          <PurchaseOrderListView onSelectPurchaseOrder={handleSelectPurchaseOrder} />
+
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+            <Button onClick={() => setOpenPurchaseOrderModal(false)}>{t('form.actions.cancel')}</Button>
+          </Box>
+        </Box>
+      </Modal>
+    </>
   );
 }
