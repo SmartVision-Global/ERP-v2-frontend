@@ -336,9 +336,9 @@ const PagePurchaseOperationsNew = lazy(
   () => import('src/pages/dashboard/purchase-supply/local/purchase-operations/new')
 );
 
-
-
-
+const PagePurchaseOperationsEdit = lazy(
+  () => import('src/pages/dashboard/purchase-supply/local/purchase-operations/edit')
+);
 
 
 
@@ -795,6 +795,7 @@ export const dashboardRoutes = [
           { path: 'purchase-settings', element: <PagePurchaseSettings /> },
           { path: 'purchase-operations', element: <PagePurchaseOperations /> },
           { path: 'purchase-operations/new', element: <PagePurchaseOperationsNew /> },
+          { path: 'purchase-operations/:id/edit', element: <PagePurchaseOperationsEdit /> },
         ],
       },
       {

@@ -77,7 +77,8 @@ const getPurchaseOperationSchema = (t) =>
     tax: z.number({ coerce: true }).min(0, { message: t('form.validations.tax_required') }),
     tva_percentage: z.number({ coerce: true }).min(0, { message: t('form.validations.tva_percentage_invalid') }).max(100, { message: t('form.validations.tva_percentage_invalid') }).optional(),
     invoice: schemaHelper.file().optional(),
-    invoice_code: z.string().optional(),
+    bill_number: z.string().optional(),
+    bill_date: z.any().optional(),
     issue_date: z.any().refine((val) => val, { message: t('form.validations.issue_date_required') }),
     items: z
       .array(
@@ -113,10 +114,6 @@ const getPurchaseOperationSchema = (t) =>
         })
       )
       .nonempty({ message: t('form.validations.at_least_one_product') }),
-    delivery_dates: z.array(z.object({
-        delivery_date: z.date({ required_error: t('form.validations.delivery_date_required') }),
-        observation: z.string().optional(),
-    })).optional(),
   });
 
 // Command Order Form with three tabs: Informations, Produits and Confirmation
@@ -126,13 +123,11 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
   const [activeStep, setActiveStep] = useState(0);
   const [selectedPurchaseOrderCode, setSelectedPurchaseOrderCode] = useState('');
 
-  const { commandOrder } = useGetCommandOrder(initialData?.purchase_order_id);
-
   useEffect(() => {
-    if (commandOrder) {
-      setSelectedPurchaseOrderCode(commandOrder.code);
+    if (initialData?.purchase_order) {
+      setSelectedPurchaseOrderCode(initialData.purchase_order.code);
     }
-  }, [commandOrder]);
+  }, [initialData]);
 
   const defaultValues = useMemo(() => {
     const base = {
@@ -150,9 +145,9 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
       tax: 0,
       tva_percentage: 0,
       invoice: '',
-      invoice_code: '',
+      bill_number: '',
+      bill_date: new Date(),
       issue_date: new Date(),
-      delivery_dates: [],
       items: [],
     };
 
@@ -164,7 +159,7 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
       site_id: initialData.site?.id?.toString() || '1',
       store_id: initialData.store?.id?.toString() || '1',
       supplier_id: initialData.supplier?.id?.toString() || '1',
-      purchase_order_id: initialData.purchase_order_id?.toString() || '',
+      purchase_order_id: initialData.purchase_order?.id?.toString() || '',
       service_id: initialData.service?.id?.toString() || '1',
       type: initialData.type?.toString() || PRODUCT_TYPE_OPTIONS[0]?.value?.toString() || '',
       print_note: initialData?.print_note || '',
@@ -175,14 +170,12 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
       tax: initialData?.tax || 0,
       tva_percentage: initialData.tva || 0,
       invoice: initialData?.invoice || '',
-      invoice_code: initialData?.invoice_code || '',
+      bill_number: initialData?.bill_number || '',
+      bill_date: initialData.bill_date ? new Date(initialData.bill_date) : null,
       issue_date: initialData.issue_date ? new Date(initialData.issue_date) : new Date(),
-      delivery_dates: initialData.delivery_dates
-        ? initialData.delivery_dates.map((d) => ({ observation: d.observation ?? '', delivery_date: new Date(d.delivery_date) }))
-        : [],
       items: initialData.items
         ? initialData.items.map((item) => ({
-            product_id: item.product_id?.toString() || '',
+            product_id: item.id?.toString() || '',
             code: item.code || '',
             supplier_code: item.supplier_code || '',
             designation: item.designation || '',
@@ -221,12 +214,12 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
         designation: row.designation,
         unit_measure: row.unit_measure || { designation: '' },
         supplier_code: row.supplier_code,
-        quantity: '',
-        price: '',
-        discount: '',
+        quantity: 0,
+        price: 0,
+        discount: 0,
         observation: '',
         num_bl: '',
-        date_bl: null,
+        date_bl: new Date(),
         matricule: '',
         charges: [],
       });
@@ -247,6 +240,7 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
   const methods = useForm({
     resolver: zodResolver(purchaseOperationSchema),
     defaultValues,
+    // on change mode to validate fields when user type
     mode: 'onChange',
   });
 
@@ -256,10 +250,7 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
     name: 'items',
     keyName: 'fieldKey',
   });
-  const { fields: deliveryDateFields, append: appendDeliveryDate, remove: removeDeliveryDate } = useFieldArray({
-      control,
-      name: 'delivery_dates',
-  });
+
   const [openModalIndex, setOpenModalIndex] = useState(null);
   const [openPurchaseOrderModal, setOpenPurchaseOrderModal] = useState(false);
 
@@ -329,7 +320,7 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
     0: ['site_id', 'store_id', 'supplier_id', 'service_id', 'type'],
     1: ['items', 'billed', 'payment_method'],
     2: ['issue_date'],
-    3: ['delivery_dates'],
+    3: [],
   };
 
   const handleNextStep = async () => {
@@ -338,6 +329,8 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
     if (isValid) {
       setActiveStep(activeStep + 1);
     } else {
+      console.log('isvalid,', isValid);
+      console.log('fieldsToValidate', fieldsToValidate);
       toast.error(t('messages.validation_error'));
     }
   };
@@ -362,12 +355,24 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
 
   // Move to next tab or submit at the last tab
   const onSubmit = handleSubmit(async (data) => {
-    // console.log('data', data);
+    const formatDate = (date) => {
+      if (!date) return null;
+      const d = new Date(date);
+      const year = d.getFullYear();
+      const month = (`0${d.getMonth() + 1}`).slice(-2);
+      const day = (`0${d.getDate()}`).slice(-2);
+      return `${year}-${month}-${day}`;
+    };
+
     try {
       // transform items to backend format
       const payload = {
           ...data,
+          issue_date: formatDate(data.issue_date),
+          bill_date: formatDate(data.bill_date),
+          // stamp and nature to be removed
           nature: 1,
+          stamp:"1",
           items: data.items.map((item) => ({
             product_id: item.product_id,
             quantity: Number(item.quantity),
@@ -375,7 +380,7 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
             discount: Number(item.discount),
             observation: item.observation,
             num_bl: item.num_bl,
-            date_bl: item.date_bl,
+            date_bl: formatDate(item.date_bl),
             matricule: item.matricule,
             charges:
               item.charges?.map((charge) => ({
@@ -386,7 +391,7 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
                 discount: Number(charge.discount),
                 observation: charge.observation,
                 num_bl: charge.num_bl,
-                date_bl: charge.date_bl,
+                date_bl: formatDate(charge.date_bl),
                 matricule: charge.matricule,
               })) || [],
           })),
@@ -399,10 +404,10 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
          console.log('payload', payload);
         if (initialData?.id) {
           await updateEntity('purchase_operation', initialData.id, payload);
-          toast.success(t('form.messages.order_updated'));
+          toast.success(t('form.messages.purchase_operation_updated'));
         } else {
           await createEntity('purchase_operation', payload);
-          toast.success(t('form.messages.order_created'));
+          toast.success(t('form.messages.purchase_operation_created'));
         }
         router.push(paths.dashboard.purchaseSupply.purchaseOperations.root);
       } catch (error) {
@@ -447,7 +452,7 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
         {t('form.labels.global_info_command_order')}
       </Typography>
       <Grid container spacing={3}>
-        <Grid size={{ md: 6 }}>
+        <Grid size={{xs:12, md: 6 }}>
           <Stack spacing={4}>
             <Field.LookupSearch
               name="site_id"
@@ -476,28 +481,37 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
               label={t('form.labels.service')}
               url={endpoints.lookups.services}
             />
-            <Field.Text
+            <Controller
               name="purchase_order_id"
-              value={selectedPurchaseOrderCode || ''}
-              label={t('form.labels.purchase_order')}
-              onClick={() => setOpenPurchaseOrderModal(true)}
-              InputProps={{
-                readOnly: true,
-                style: { cursor: 'pointer' },
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemovePurchaseOrder();
-                      }}
-                      edge="end"
-                    >
-                      <Iconify icon="eva:trash-2-outline" />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <TextField
+                  {...field}
+                  value={selectedPurchaseOrderCode || ''}
+                  label={t('form.labels.purchase_order')}
+                  onClick={() => setOpenPurchaseOrderModal(true)}
+                  fullWidth
+                  error={!!error}
+                  helperText={error?.message}
+                  InputProps={{
+                    readOnly: true,
+                    style: { cursor: 'pointer' },
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemovePurchaseOrder();
+                          }}
+                          edge="end"
+                        >
+                          <Iconify icon="eva:trash-2-outline" />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              )}
             />
           </Stack>
         </Grid>
@@ -692,39 +706,7 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
       <CardHeader title={STEPS[3]} />
       <CardContent>
         <Stack spacing={3}>
-          
-         
-          <Button
-            startIcon={<Iconify icon="eva:plus-fill" />}
-            onClick={() => appendDeliveryDate({ delivery_date: new Date(), observation: '' })}
-            sx={{ alignSelf: 'flex-start' }}
-          >
-            {t('form.actions.add_delivery_date')}
-          </Button>
-          {deliveryDateFields.map((field, index) => (
-            <Stack key={field.id} direction="row" spacing={2} alignItems="center">
-              <Field.DatePicker
-                name={`delivery_dates.${index}.delivery_date`}
-                label={t('form.labels.delivery_date')}
-                sx={{ flex: 1 }}
-              />
-              <Field.Text
-                name={`delivery_dates.${index}.observation`}
-                label={t('form.labels.observation')}
-                sx={{ flex: 2 }}
-                multiline
-                rows={1}
-              />
-              <IconButton color="error" onClick={() => removeDeliveryDate(index)}>
-                <Iconify icon="eva:trash-2-outline" />
-              </IconButton>
-            </Stack>
-          ))}
-            <Divider />
-
             <Grid container spacing={1.5}>
-            
-           
             <Grid size={{ xs: 12, md: 6 }}>
             <Typography variant="subtitle2">{t('form.labels.proforma')}</Typography>
             <Field.Upload
@@ -733,11 +715,15 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
               onDrop={onDropInvoice}
             />
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
-               <Field.Text name="invoice_code" label={t('form.labels.invoice_number_proforma')} />
-             </Grid>
            </Grid>
-          
+           <Grid container spacing={3}>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Field.Text name="bill_number" label={t('form.labels.bill_number')} />
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Field.DatePicker name="bill_date" label={t('form.labels.bill_date')} />
+              </Grid>
+            </Grid>
           <Grid container spacing={3}>
               <Grid size={{ xs: 12, md: 6 }}>
                 <Field.Text name="observation" label={t('form.labels.observation')} multiline rows={3} />

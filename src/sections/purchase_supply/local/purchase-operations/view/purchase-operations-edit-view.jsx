@@ -5,26 +5,26 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { CommandOrderNewEditForm } from '../command-order-new-edit-form';
+import { PurchaseOperationsNewEditForm } from '../purchase-operations-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-export function CommandOrderEditView({ commandOrder }) {
+export function PurchaseOperationsEditView({ purchaseOperations }) {
   const { t } = useTranslate('purchase-supply-module');
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading={t('views.edit_command_order', { code: commandOrder?.code })}
-        backHref={paths.dashboard.purchaseSupply.commandOrder.root}
+        heading={t('views.edit_purchase_operations', { code: purchaseOperations?.code })}
+        backHref={paths.dashboard.purchaseSupply.purchaseOperations.root}
         links={[
           { name: t('views.purchase_and_supply'), href: paths.dashboard.root },
-          { name: t('views.command_order'), href: paths.dashboard.purchaseSupply.commandOrder.root },
-          { name: commandOrder?.code },
+          { name: t('views.purchase_operations'), href: paths.dashboard.purchaseSupply.purchaseOperations.root },
+          { name: purchaseOperations?.code },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      {commandOrder && <CommandOrderNewEditForm initialData={commandOrder} />}
+      {purchaseOperations && <PurchaseOperationsNewEditForm initialData={purchaseOperations} />}
     </DashboardContent>
   );
 }

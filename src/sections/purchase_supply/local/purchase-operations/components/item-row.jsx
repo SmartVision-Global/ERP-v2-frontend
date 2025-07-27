@@ -50,13 +50,6 @@ export default function ItemRow({ control, index, field, removeItem, watch, setV
       <TableRow>
         <TableCell>
           <Field.Text
-            name={`items.${index}.purchase_request_code`}
-            InputProps={{ readOnly: true }}
-            sx={{ minWidth: 100 }}
-          />
-        </TableCell>
-        <TableCell>
-          <Field.Text
             name={`items.${index}.code`}
             InputProps={{ readOnly: true }}
             sx={{ minWidth: 150 }}
@@ -103,6 +96,24 @@ export default function ItemRow({ control, index, field, removeItem, watch, setV
           />
         </TableCell>
         <TableCell>
+          <Field.Text
+            name={`items.${index}.num_bl`}
+            sx={{ minWidth: 150 }}
+          />
+        </TableCell>
+        <TableCell>
+          <Field.DatePicker
+            name={`items.${index}.date_bl`}
+            sx={{ minWidth: 150 }}
+          />
+        </TableCell>
+        <TableCell>
+          <Field.Text
+            name={`items.${index}.matricule`}
+            sx={{ minWidth: 150 }}
+          />
+        </TableCell>
+        <TableCell>
           <IconButton onClick={() => setExpanded(!expanded)}>
             <Iconify icon={expanded ? 'eva:minus-fill' : 'eva:plus-fill'} />
           </IconButton>
@@ -121,12 +132,15 @@ export default function ItemRow({ control, index, field, removeItem, watch, setV
                   startIcon={<Iconify icon="eva:plus-fill" />}
                   onClick={() =>
                     appendCharge({
-                      type: '1',
+                      charge_type_id: '1',
                       designation: '',
                       quantity: 0,
                       price: 0,
                       discount: 0,
                       observation: '',
+                      num_bl: '',
+                      date_bl: null,
+                      matricule: '',
                     })
                   }
                 >
@@ -136,13 +150,16 @@ export default function ItemRow({ control, index, field, removeItem, watch, setV
               <Table size="small">
                 <TableHead>
                   <TableRow sx={{ bgcolor: 'red.200' }}>
-                    <TableCell>{t('form.labels.type')}</TableCell>
+                    <TableCell>{t('form.labels.charge_type')}</TableCell>
                     <TableCell>{t('form.labels.designation')}</TableCell>
                     <TableCell>{t('form.labels.quantity')}</TableCell>
                     <TableCell>{t('form.labels.price')}</TableCell>
                     <TableCell>{t('form.labels.discount')}</TableCell>
                     <TableCell>{t('form.labels.ht_discount')}</TableCell>
                     <TableCell>{t('form.labels.observation')}</TableCell>
+                    <TableCell>{t('form.labels.num_bl')}</TableCell>
+                    <TableCell>{t('form.labels.date_bl')}</TableCell>
+                    <TableCell>{t('form.labels.matricule')}</TableCell>
                     <TableCell />
                   </TableRow>
                 </TableHead>

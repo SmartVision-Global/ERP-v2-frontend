@@ -6,8 +6,10 @@
         "add_supplier": "Add Supplier",
         "suppliers": "Suppliers",
         "command_order": "Command Order",
+        "purchase_operations": "Purchase Operations",
         "edit_command_order": "Edit Command Order",
-        "dashboard": "Dashboard"
+        "dashboard": "Dashboard",
+        "edit_purchase_operations": "Edit Purchase Operations"
     },
     "text":{
         
@@ -148,7 +150,8 @@
             "issue_date_required": "Issue date is required"
         },
         "messages": {
-            
+            "purchase_operation_updated": "Purchase operation updated successfully",
+            "purchase_operation_created": "Purchase operation created successfully"
         },
         "sections": {
            
@@ -203,7 +206,10 @@
             "date_bl": "BL Date",
             "matricule": "Matricule",
             "charge_type": "Charge Type",
-            "issue_date": "Issue Date"
+            "issue_date": "Issue Date",
+            "bill_number": "Bill Number",
+            "bill_date": "Bill Date",
+            "purchase_order": "Purchase Order"
            
            
         },
