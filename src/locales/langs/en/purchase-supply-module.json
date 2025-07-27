@@ -119,7 +119,8 @@
         "no_image": "No image",
         "order_updated": "Order updated successfully",
         "order_created": "Order created successfully",
-        "operation_failed": "Operation failed"
+        "operation_failed": "Operation failed",
+        "validation_error": "Please fill in all required fields"
     },
     "form": {
         "validations": {
@@ -143,7 +144,8 @@
             "price_required": "Price is required",
             "designation_required": "Designation is required",
             "name_required": "Name is required",
-            "nature_required": "Nature is required"
+            "nature_required": "Nature is required",
+            "issue_date_required": "Issue date is required"
         },
         "messages": {
             
@@ -196,7 +198,12 @@
             "delivery_date": "Delivery Date",
             "proforma": "Proforma",
             "invoice_number_proforma": "Proforma Invoice N°",
-            "name": "Name"
+            "name": "Name",
+            "num_bl": "BL Number",
+            "date_bl": "BL Date",
+            "matricule": "Matricule",
+            "charge_type": "Charge Type",
+            "issue_date": "Issue Date"
            
            
         },
@@ -215,6 +222,7 @@
         "steps": {
             "information": "Information",
             "products": "Products",
+            "deposit": "Deposit",
             "confirmation": "Confirmation"
         }
     }

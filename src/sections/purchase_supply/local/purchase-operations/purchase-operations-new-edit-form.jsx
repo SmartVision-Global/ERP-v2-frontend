@@ -55,7 +55,6 @@ import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
 import ItemRow from './components/item-row';
 import ProductsListView from './products-list-view';
-import PurchaseRequestListView from './purchase-request-list-view';
 import PurchaseOrderListView from './purchase-order-list-view';
 
 // Validation schema for the order's first tab
@@ -79,27 +78,32 @@ const getPurchaseOperationSchema = (t) =>
     tva_percentage: z.number({ coerce: true }).min(0, { message: t('form.validations.tva_percentage_invalid') }).max(100, { message: t('form.validations.tva_percentage_invalid') }).optional(),
     invoice: schemaHelper.file().optional(),
     invoice_code: z.string().optional(),
+    issue_date: z.any().refine((val) => val, { message: t('form.validations.issue_date_required') }),
     items: z
       .array(
         z.object({
           product_id: z.string().nonempty({ message: t('form.validations.product_required') }),
-          purchase_request_item_id: z.number().nullable().optional(),
-          purchase_request_code: z.string().optional(),
           quantity: z
             .number({ coerce: true })
-            .min(1, { message: t('form.validations.quantity_required') }),
+            .min(0, { message: t('form.validations.quantity_required') }),
           price: z.number({ coerce: true }).min(0, { message: t('form.validations.price_required') }),
           discount: z.number({ coerce: true }).min(0, { message: t('form.validations.discount_required') }),
           observation: z.string().optional(),
+          num_bl: z.string().optional(),
+          date_bl: z.any().optional(),
+          matricule: z.string().optional(),
           charges: z
             .array(
               z.object({
-                type: z.string().nonempty( { message: t('form.validations.type_required') }),
+                charge_type_id: z.string().nonempty( { message: t('form.validations.type_required') }),
                 designation: z.string().nonempty({ message: t('form.validations.designation_required') }),
-                quantity: z.number({ coerce: true }).min(1, { message: t('form.validations.quantity_required') }),
+                quantity: z.number({ coerce: true }).min(0, { message: t('form.validations.quantity_required') }),
                 price: z.number({ coerce: true }).min(0, { message: t('form.validations.price_required') }),
                 discount: z.number({ coerce: true }).min(0, { message: t('form.validations.discount_required') }),
                 observation: z.string().optional(),
+                num_bl: z.string().optional(),
+                date_bl: z.any().optional(),
+                matricule: z.string().optional(),
               })
             )
             .optional(),
@@ -140,13 +144,14 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
       type: PRODUCT_TYPE_OPTIONS[0]?.value?.toString() || '',
       print_note: '',
       observation: '',
-      billed: '',
-      payment_method: '',
+      billed: BILLING_STATUS_OPTIONS[0]?.value?.toString() || '',
+      payment_method: PAYMENT_METHOD_OPTIONS[0]?.value?.toString() || '',
       discount: 0,
       tax: 0,
       tva_percentage: 0,
       invoice: '',
       invoice_code: '',
+      issue_date: new Date(),
       delivery_dates: [],
       items: [],
     };
@@ -164,21 +169,20 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
       type: initialData.type?.toString() || PRODUCT_TYPE_OPTIONS[0]?.value?.toString() || '',
       print_note: initialData?.print_note || '',
       observation: initialData?.observation || '',
-      billed: initialData.billed?.toString() || '',
-      payment_method: initialData.payment_method?.toString() || '',
+      billed: initialData.billed?.toString() || BILLING_STATUS_OPTIONS[0]?.value?.toString() || '',
+      payment_method: initialData.payment_method?.toString() || PAYMENT_METHOD_OPTIONS[0]?.value?.toString() || '',
       discount: initialData?.discount || 0,
       tax: initialData?.tax || 0,
       tva_percentage: initialData.tva || 0,
       invoice: initialData?.invoice || '',
       invoice_code: initialData?.invoice_code || '',
+      issue_date: initialData.issue_date ? new Date(initialData.issue_date) : new Date(),
       delivery_dates: initialData.delivery_dates
         ? initialData.delivery_dates.map((d) => ({ observation: d.observation ?? '', delivery_date: new Date(d.delivery_date) }))
         : [],
       items: initialData.items
         ? initialData.items.map((item) => ({
             product_id: item.product_id?.toString() || '',
-            purchase_request_item_id: item.purchase_request_item_id || null,
-            purchase_request_code: item.purchase_request?.code || (item.purchase_request_item_id ? 'N/A' : '--'),
             code: item.code || '',
             supplier_code: item.supplier_code || '',
             designation: item.designation || '',
@@ -186,15 +190,21 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
             price: item.price?.toString() || '',
             discount: item.discount?.toString() || '',
             observation: item.observation || '',
+            num_bl: item.num_bl || '',
+            date_bl: item.date_bl ? new Date(item.date_bl) : null,
+            matricule: item.matricule || '',
             unit_measure: item.unit_measure || { designation: '' },
             charges:
               item.charges?.map((charge) => ({
-                type: charge.type || '1',
+                charge_type_id: charge.charge_type_id || '1',
                 designation: charge.designation,
                 quantity: Number(charge.quantity),
                 price: Number(charge.price),
                 discount: Number(charge.discount),
                 observation: charge.observation || '',
+                num_bl: charge.num_bl || '',
+                date_bl: charge.date_bl || null,
+                matricule: charge.matricule || '',
               })) || [],
           }))
         : [],
@@ -207,8 +217,6 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
     if (openModalIndex === 'new') {
       appendItem({
         product_id: row.id.toString(),
-        purchase_request_item_id: null,
-        purchase_request_code: '--',
         code: row.code,
         designation: row.designation,
         unit_measure: row.unit_measure || { designation: '' },
@@ -217,6 +225,9 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
         price: '',
         discount: '',
         observation: '',
+        num_bl: '',
+        date_bl: null,
+        matricule: '',
         charges: [],
       });
     } else {
@@ -230,24 +241,6 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
     }
     setOpenModalIndex(null);
   };
-
-  const handleSelectPurchaseRequest = (row) => {
-    appendItem({
-      product_id: row.product.id.toString(),
-      purchase_request_item_id: row.id,
-      purchase_request_code: row.purchase_request.code,
-      code: row.product.code,
-      designation: row.product.designation,
-      unit_measure: row.product.unit_measure || { designation: '' },
-      supplier_code: row.product.supplier_code,
-      quantity: row.quantity,
-      price: '',
-      discount: '',
-      observation: '',
-      charges: [],
-    });
-    setOpenPurchaseRequestModal(false);
-  }
 
   const purchaseOperationSchema = getPurchaseOperationSchema(t);
 
@@ -268,7 +261,6 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
       name: 'delivery_dates',
   });
   const [openModalIndex, setOpenModalIndex] = useState(null);
-  const [openPurchaseRequestModal, setOpenPurchaseRequestModal] = useState(false);
   const [openPurchaseOrderModal, setOpenPurchaseOrderModal] = useState(false);
 
   const onDropInvoice = async (acceptedFiles) => {
@@ -331,12 +323,13 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
   const tax = Number(watchedTax) || 0;
   const ttc = htRemise + tva + tax;
 
-  const STEPS = [t('form.steps.information'), t('form.steps.products'), t('form.steps.confirmation')];
+  const STEPS = [t('form.steps.information'), t('form.steps.products'), t('form.steps.deposit'), t('form.steps.confirmation')];
 
   const tabFields = {
     0: ['site_id', 'store_id', 'supplier_id', 'service_id', 'type'],
     1: ['items', 'billed', 'payment_method'],
-    2: ['delivery_dates'],
+    2: ['issue_date'],
+    3: ['delivery_dates'],
   };
 
   const handleNextStep = async () => {
@@ -344,6 +337,8 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
     const isValid = await trigger(fieldsToValidate);
     if (isValid) {
       setActiveStep(activeStep + 1);
+    } else {
+      toast.error(t('messages.validation_error'));
     }
   };
 
@@ -357,6 +352,8 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
       const isValid = await trigger(fieldsToValidate);
       if (isValid) {
         setActiveStep(step);
+      } else {
+        toast.error(t('messages.validation_error'));
       }
     } else {
       setActiveStep(step);
@@ -373,19 +370,24 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
           nature: 1,
           items: data.items.map((item) => ({
             product_id: item.product_id,
-            purchase_request_item_id: item.purchase_request_item_id,
             quantity: Number(item.quantity),
             price: Number(item.price),
             discount: Number(item.discount),
             observation: item.observation,
+            num_bl: item.num_bl,
+            date_bl: item.date_bl,
+            matricule: item.matricule,
             charges:
               item.charges?.map((charge) => ({
-                type: charge.type,
+                charge_type_id: charge.charge_type_id,
                 designation: charge.designation,
                 quantity: Number(charge.quantity),
                 price: Number(charge.price),
                 discount: Number(charge.discount),
                 observation: charge.observation,
+                num_bl: charge.num_bl,
+                date_bl: charge.date_bl,
+                matricule: charge.matricule,
               })) || [],
           })),
           discount: Number(data.discount),
@@ -503,6 +505,19 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
     </Box>
   );
 
+  const renderDepositeTab = () => (
+    <Card>
+      <CardHeader title={STEPS[2]} />
+      <CardContent>
+        <Grid container spacing={3}>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Field.DatePicker name="issue_date" label={t('form.labels.issue_date')} />
+          </Grid>
+        </Grid>
+      </CardContent>
+    </Card>
+  );
+
   const renderProductsTab = () => (
     <Card>
       <CardHeader
@@ -538,16 +553,6 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
         </Grid>
         <Divider sx={{ my: 2 }} />
         <Stack direction="row" alignItems="center" spacing={1} justifyContent="space-between">
-          {/* <Stack direction="row" alignItems="center" spacing={1}> */}
-            {/* <Typography variant="subtitle2">{t('form.labels.add_products')}</Typography>
-            <IconButton
-              color="primary"
-              onClick={() => {
-                setOpenModalIndex('new');
-              }}
-            >
-              <Iconify icon="eva:plus-fill" />
-            </IconButton> */}
             <Button
                color="primary"
                variant="outlined"
@@ -558,19 +563,6 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
              >
                {t('form.actions.add_products')}
             </Button>
-          {/* </Stack> */}
-          {/* <Stack direction="row" alignItems="center" spacing={1}> */}
-          <Button
-            color="warning"
-            variant="outlined"
-            onClick={() => {
-              setOpenPurchaseRequestModal(true);
-            }}
-            startIcon={<Iconify icon="eva:plus-fill" />}
-          >
-            {t('form.actions.add_from_purchase_request')}
-          </Button>
-          {/* </Stack> */}
         </Stack>
         {!!errors.items && (
           <Typography color="error" sx={{ mt: 2 }}>
@@ -583,7 +575,6 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>{t('form.labels.da_code')}</TableCell>
                   <TableCell>{t('form.labels.code')}</TableCell>
                   <TableCell>{t('form.labels.supplier_code')}</TableCell>
                   <TableCell>{t('form.labels.designation')}</TableCell>
@@ -592,6 +583,9 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
                   <TableCell>{t('form.labels.discount')}</TableCell>
                   <TableCell>{t('form.labels.ht_discount')}</TableCell>
                   <TableCell>{t('form.labels.observation')}</TableCell>
+                  <TableCell>{t('form.labels.num_bl')}</TableCell>
+                  <TableCell>{t('form.labels.date_bl')}</TableCell>
+                  <TableCell>{t('form.labels.matricule')}</TableCell>
                   <TableCell />
                 </TableRow>
               </TableHead>
@@ -689,40 +683,13 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
             </Box>
           </Box>
         </Modal>
-        <Modal open={openPurchaseRequestModal} onClose={() => setOpenPurchaseRequestModal(false)}>
-          <Box
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              bgcolor: 'background.paper',
-              p: 3,
-              width: '80%',
-              height: '90%',
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            <Typography variant="h6" mb={2}>
-              {t('form.labels.select_purchase_request_item')}
-            </Typography>
-
-            <PurchaseRequestListView onSelectProduct={handleSelectPurchaseRequest} />
-
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-              <Button onClick={() => setOpenPurchaseRequestModal(false)}>{t('form.actions.cancel')}</Button>
-            </Box>
-          </Box>
-        </Modal>
       </Stack>
     </Card>
   );
 
   const renderConfirmationTab = () => (
     <Card>
-      <CardHeader title={STEPS[2]} />
+      <CardHeader title={STEPS[3]} />
       <CardContent>
         <Stack spacing={3}>
           
@@ -796,9 +763,9 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
       </Stepper>
 
       {activeStep === 0 && renderInformationsTab()}
-
       {activeStep === 1 && renderProductsTab()}
-      {activeStep === 2 && renderConfirmationTab()}
+      {activeStep === 2 && renderDepositeTab()}
+      {activeStep === 3 && renderConfirmationTab()}
       {renderNavigationButtons()}
     </Form>
     <Modal open={openPurchaseOrderModal} onClose={() => setOpenPurchaseOrderModal(false)}>
