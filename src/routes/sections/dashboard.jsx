@@ -602,10 +602,10 @@ export const dashboardRoutes = [
       {
         path: 'settings',
         children: [
-          {
-            path: 'general-settings',
-            element: <SettingsGeneralSettings />,
-          },
+          // {
+          //   path: 'general-settings',
+          //   element: <SettingsGeneralSettings />,
+          // },
           {
             path: 'site',
             children: [
@@ -614,33 +614,33 @@ export const dashboardRoutes = [
               { path: ':id/edit', element: <SettingsSiteEdit /> },
             ],
           },
-          {
-            path: 'store',
-            children: [
-              { index: true, element: <SettingsStoreList /> },
-              { path: 'new', element: <SettingsStoreNew /> },
-            ],
-          },
-          {
-            path: 'identification',
-            children: [
-              { index: true, element: <SettingsIdentificationGlobalSettings /> },
-              { path: 'global-settings', element: <SettingsIdentificationGlobalSettings /> },
-              {
-                path: 'raw-materials',
-                element: <PageSettingsIdentFamCategRpList group={1} nature={1} />,
-              },
-              {
-                path: 'spare-parts',
-                element: <PageSettingsIdentFamCategRpList group={2} nature={1} />,
-              },
-              { path: 'tools', element: <PageSettingsIdentFamCategRpList group={3} nature={1} /> },
-              {
-                path: 'supplies',
-                element: <PageSettingsIdentFamCategRpList group={4} nature={1} />,
-              },
-            ],
-          },
+          // {
+          //   path: 'store',
+          //   children: [
+          //     { index: true, element: <SettingsStoreList /> },
+          //     { path: 'new', element: <SettingsStoreNew /> },
+          //   ],
+          // },
+          // {
+          //   path: 'identification',
+          //   children: [
+          //     { index: true, element: <SettingsIdentificationGlobalSettings /> },
+          //     { path: 'global-settings', element: <SettingsIdentificationGlobalSettings /> },
+          //     {
+          //       path: 'raw-materials',
+          //       element: <PageSettingsIdentFamCategRpList group={1} nature={1} />,
+          //     },
+          //     {
+          //       path: 'spare-parts',
+          //       element: <PageSettingsIdentFamCategRpList group={2} nature={1} />,
+          //     },
+          //     { path: 'tools', element: <PageSettingsIdentFamCategRpList group={3} nature={1} /> },
+          //     {
+          //       path: 'supplies',
+          //       element: <PageSettingsIdentFamCategRpList group={4} nature={1} />,
+          //     },
+          //   ],
+          // },
           {
             path: 'service',
             children: [

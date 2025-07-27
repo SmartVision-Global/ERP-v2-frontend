@@ -510,6 +510,21 @@ export function CalculationPersonalPayrollView({ month }) {
                   }}
                   sx={{
                     [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' },
+                    '& .MuiDataGrid-columnHeader[data-field="actions"]': {
+                      position: 'sticky',
+                      right: 0,
+                      backgroundColor: (theme) => theme.palette.grey[200],
+                      zIndex: (theme) => theme.zIndex.appBar, // keep it above scrollbars
+                    },
+
+                    // Sticky actions column - Cell
+                    '& .MuiDataGrid-cell[data-field="actions"]': {
+                      position: 'sticky',
+                      right: 0,
+                      backgroundColor: (theme) => theme.palette.grey[200],
+                      zIndex: 1,
+                      borderLeft: (theme) => `1px solid ${theme.palette.divider}`,
+                    },
                   }}
                 />
               </Card>

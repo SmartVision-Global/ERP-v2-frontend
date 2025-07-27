@@ -19,7 +19,7 @@ export default function Page() {
       {/* <BlankView title="Page one" /> */}
       <Box
         sx={{
-          minHeight: '750px',
+          height: '700px',
         }}
       >
         <Image src="/logo/logo-svt-2.jpg" sx={{ width: 1, height: 1 }} />
