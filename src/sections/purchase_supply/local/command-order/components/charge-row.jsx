@@ -20,7 +20,7 @@ export default function ChargeRow({ control, itemIndex, chargeIndex, removeCharg
     <TableRow>
       <TableCell>
         <Field.LookupSearch
-          name={`items.${itemIndex}.charges.${chargeIndex}.type`}
+          name={`items.${itemIndex}.charges.${chargeIndex}.charge_type_id`}
           label={t('form.labels.type')}
           url={endpoints.lookups.chargeTypes}
           size="small"

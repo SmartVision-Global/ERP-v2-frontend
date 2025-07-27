@@ -9,11 +9,11 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
-export function OrderActionDialog({
+export function PurchaseOperationActionDialog({
   open,
   onClose,
   onAction,
-  order,
+  purchaseOperation,
   title,
   notesLabel,
   actionButtonText,
@@ -21,7 +21,7 @@ export function OrderActionDialog({
 }) {
   const [notes, setNotes] = useState('');
 
-  if (!order) {
+  if (!purchaseOperation) {
     return null;
   }
 
@@ -62,11 +62,11 @@ export function OrderActionDialog({
   );
 }
 
-OrderActionDialog.propTypes = {
+PurchaseOperationActionDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   onAction: PropTypes.func.isRequired,
-  order: PropTypes.object,
+  purchaseOperation: PropTypes.object,
   title: PropTypes.string.isRequired,
   notesLabel: PropTypes.string.isRequired,
   actionButtonText: PropTypes.string.isRequired,

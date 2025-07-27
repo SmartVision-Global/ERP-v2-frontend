@@ -175,10 +175,10 @@ export function PurchaseOperationsNewEditForm({ initialData }) {
       issue_date: initialData.issue_date ? new Date(initialData.issue_date) : new Date(),
       items: initialData.items
         ? initialData.items.map((item) => ({
-            product_id: item.id?.toString() || '',
-            code: item.code || '',
-            supplier_code: item.supplier_code || '',
-            designation: item.designation || '',
+            product_id: item.product?.id?.toString() || '',
+            code: item.product?.code || '',
+            supplier_code: item.product?.supplier_code || '',
+            designation: item.product?.designation || '',
             quantity: item.quantity?.toString() || '',
             price: item.price?.toString() || '',
             discount: item.discount?.toString() || '',

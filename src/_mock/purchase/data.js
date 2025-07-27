@@ -22,6 +22,16 @@ export const COMMAND_ORDER_STATUS_OPTIONS = [
     { value: '5', label: 'Annullé', color: 'error' },
 ];
 
+export const PURCHASE_OPERATION_STATUS_OPTIONS = [
+    { value: '1', label: 'En cours', color: 'warning' },
+    { value: '2', label: 'Validee', color: 'success' },
+    { value: '3', label: 'Annulée', color: 'error' },
+    { value: '4', label: 'Non confirmée', color: 'warning' },
+    { value: '5', label: 'En attente', color: 'warning' },
+    { value: '6', label: 'Quantité modifiée', color: 'warning' },
+    { value: '7', label: 'Validaiton annulée', color: 'warning' },
+];
+
 
 export const PAYMENT_METHOD_OPTIONS = [
     { value: '1', label: 'A terme', color: 'default' },

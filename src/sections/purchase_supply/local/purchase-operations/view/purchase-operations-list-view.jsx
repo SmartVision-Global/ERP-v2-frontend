@@ -27,13 +27,12 @@ import { RouterLink } from 'src/routes/components';
 import { endpoints } from 'src/lib/axios';
 
 import { CONFIG } from 'src/global-config';
-import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
 import {
   PRODUCT_TYPE_OPTIONS,
 } from 'src/_mock/expression-of-needs/Beb/Beb';
 import {
-  COMMAND_ORDER_STATUS_OPTIONS,
+  PURCHASE_OPERATION_STATUS_OPTIONS,
   PAYMENT_METHOD_OPTIONS,
   BILLING_STATUS_OPTIONS,
 } from 'src/_mock/purchase/data';
@@ -82,13 +81,11 @@ import {
 } from '../../../table-rows';
 import UtilsButton from 'src/components/custom-buttons/utils-button';
 import PurchaseOperationItems from './purchase-operation-items';
-import { OrderActionDialog } from './order-action-dialog';
+import { PurchaseOperationActionDialog } from './purchase-operation-action-dialog';
 
 // ----------------------------------------------------------------------
 
-const HIDE_COLUMNS = { category: false };
-
-const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
+const HIDE_COLUMNS_TOGGLABLE = ['actions'];
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   // Pin the actions column to the right
@@ -155,7 +152,7 @@ export function PurchaseOperationsListView() {
       {
         id: 'status',
         type: 'select',
-        options: COMMAND_ORDER_STATUS_OPTIONS,
+        options: PURCHASE_OPERATION_STATUS_OPTIONS,
         label: t('filters.status'),
       },
       {
@@ -187,12 +184,10 @@ export function PurchaseOperationsListView() {
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState({});
 
-  const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
-
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedOrderForProducts, setSelectedOrderForProducts] = useState(null);
 
-  const [dialogState, setDialogState] = useState({ open: false, action: null, order: null });
+  const [dialogState, setDialogState] = useState({ open: false, action: null, purchaseOperation: null });
 
   useEffect(() => {
     setTableData(purchaseOperations);
@@ -245,24 +240,24 @@ export function PurchaseOperationsListView() {
     }
   };
 
-  const handleOpenDialog = (order, action) => {
-    setDialogState({ open: true, action, order });
+  const handleOpenDialog = (purchaseOperation, action) => {
+    setDialogState({ open: true, action, purchaseOperation });
   };
 
   const handleCloseDialog = () => {
-    setDialogState({ open: false, action: null, order: null });
+    setDialogState({ open: false, action: null, purchaseOperation: null });
   };
 
   const handleDialogAction = async (notes) => {
-    const { action, order } = dialogState;
+    const { action, purchaseOperation } = dialogState;
 
-    if (order) {
+    if (purchaseOperation) {
       try {
         if (action === 'confirm') {
-          await confirmPurchaseOperation(order.id, { notes });
+          await confirmPurchaseOperation(purchaseOperation.id, { notes });
           toast.success(t('messages.confirm_success'));
         } else if (action === 'cancel') {
-          await cancelPurchaseOperation(order.id, { notes });
+          await cancelPurchaseOperation(purchaseOperation.id, { notes });
           toast.success(t('messages.cancel_success'));
         }
         handleCloseDialog();
@@ -530,10 +525,10 @@ export function PurchaseOperationsListView() {
       {
         type: 'actions',
         field: 'actions',
-        headerName: ' ',
+        headerName: 'actions',
         align: 'right',
         headerAlign: 'right',
-        width: 50,
+        width: 70,
         sortable: false,
         filterable: false,
         disableColumnMenu: true,
@@ -665,8 +660,6 @@ export function PurchaseOperationsListView() {
             paginationMode="server"
             onPaginationModelChange={(model) => handlePaginationModelChange(model)}
             pageSizeOptions={[2, 10, 20, { value: -1, label: 'All' }]}
-            columnVisibilityModel={columnVisibilityModel}
-            onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
             slots={{
               noRowsOverlay: () => <EmptyContent />,
               noResultsOverlay: () => <EmptyContent title={t('messages.no_results')} />,
@@ -693,15 +686,15 @@ export function PurchaseOperationsListView() {
           </DialogActions>
         </Dialog>
       )}
-      <OrderActionDialog
+      <PurchaseOperationActionDialog
         open={dialogState.open}
         onClose={handleCloseDialog}
         onAction={handleDialogAction}
-        order={dialogState.order}
+        purchaseOperation={dialogState.purchaseOperation}
         title={
           dialogState.action === 'confirm'
-            ? t('dialog.confirm_purchase_order_title', { code: dialogState.order?.code })
-            : t('dialog.cancel_purchase_order_title', { code: dialogState.order?.code })
+            ? t('dialog.confirm_purchase_order_title', { code: dialogState.purchaseOperation?.code })
+            : t('dialog.cancel_purchase_order_title', { code: dialogState.purchaseOperation?.code })
         }
         notesLabel={
           dialogState.action === 'confirm' ? t('dialog.confirm_notes') : t('dialog.cancel_notes')
