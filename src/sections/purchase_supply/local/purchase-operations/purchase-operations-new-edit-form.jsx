@@ -28,7 +28,6 @@ import {
   TableCell,
   TableBody,
   Paper,
-  Collapse,
   CardContent,
   TextField,
 } from '@mui/material';
@@ -39,15 +38,11 @@ import { useRouter } from 'src/routes/hooks';
 import { endpoints } from 'src/lib/axios';
 import { useTranslate } from 'src/locales';
 import { uploadMedia } from 'src/actions/media';
-import { BILLING_STATUS_OPTIONS, PAYMENT_METHOD_OPTIONS } from 'src/_mock/purchase/data';
-import { useGetCommandOrder } from 'src/actions/purchase-supply/command-order/command-order';
-import { createEntity, updateEntity } from 'src/actions/purchase-supply/purchase-operations';
 import {
-  BEB_NATURE_OPTIONS,
-  PRODUCT_TYPE_OPTIONS,
-  PRIORITY_OPTIONS,
-  TWO_STATUS_OPTIONS,
+  PRODUCT_TYPE_OPTIONS
 } from 'src/_mock/expression-of-needs/Beb/Beb';
+import { BILLING_STATUS_OPTIONS, PAYMENT_METHOD_OPTIONS } from 'src/_mock/purchase/data';
+import { createEntity, updateEntity } from 'src/actions/purchase-supply/purchase-operations';
 
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
