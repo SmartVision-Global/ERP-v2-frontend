@@ -327,6 +327,20 @@ const PageLocalCommandOrderNew = lazy(
 const PageLocalCommandOrderEdit = lazy(
   () => import('src/pages/dashboard/purchase-supply/local/command-order/edit')
 );
+//Purchase Operations
+const PagePurchaseOperations = lazy(
+  () => import('src/pages/dashboard/purchase-supply/local/purchase-operations/list')
+);
+
+const PagePurchaseOperationsNew = lazy(
+  () => import('src/pages/dashboard/purchase-supply/local/purchase-operations/new')
+);
+
+const PagePurchaseOperationsEdit = lazy(
+  () => import('src/pages/dashboard/purchase-supply/local/purchase-operations/edit')
+);
+
+
 
 // purchase settings
 const PagePurchaseSettings = lazy(
@@ -772,13 +786,16 @@ export const dashboardRoutes = [
           { path: 'purchase-request/new', element: <PageNewPurchaseRequest /> },
           { path: 'purchase-request/:id/edit', element: <PagePurchaseRequestEdit /> },
           { path: 'processing-da', element: <PageProcessingDa /> },
-          { path: 'supplier', element: <PageLocalSupplier /> },
+          { path: 'supplier', element: <PageLocalSupplier /> , index: true},
           { path: 'supplier/new', element: <PageLocalSupplierNew /> },
           { path: 'supplier/:id/edit', element: <PageLocalSupplierEdit /> },
           { path: 'command-order', element: <PageLocalCommandOrder /> },
           { path: 'command-order/new', element: <PageLocalCommandOrderNew /> },
           { path: 'command-order/:id/edit', element: <PageLocalCommandOrderEdit /> },
           { path: 'purchase-settings', element: <PagePurchaseSettings /> },
+          { path: 'purchase-operations', element: <PagePurchaseOperations /> },
+          { path: 'purchase-operations/new', element: <PagePurchaseOperationsNew /> },
+          { path: 'purchase-operations/:id/edit', element: <PagePurchaseOperationsEdit /> },
         ],
       },
       {

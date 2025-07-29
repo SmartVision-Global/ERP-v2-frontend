@@ -27,22 +27,21 @@ import { RouterLink } from 'src/routes/components';
 import { endpoints } from 'src/lib/axios';
 
 import { CONFIG } from 'src/global-config';
-import { useMultiLookups } from 'src/actions/lookups';
 import { DashboardContent } from 'src/layouts/dashboard';
 import {
   PRODUCT_TYPE_OPTIONS,
 } from 'src/_mock/expression-of-needs/Beb/Beb';
 import {
-  COMMAND_ORDER_STATUS_OPTIONS,
+  PURCHASE_OPERATION_STATUS_OPTIONS,
   PAYMENT_METHOD_OPTIONS,
   BILLING_STATUS_OPTIONS,
 } from 'src/_mock/purchase/data';
 import {
-  useGetCommandOrders,
-  getFiltredCommandOrders,
-  confirmCommandOrder,
-  cancelCommandOrder,
-} from 'src/actions/purchase-supply/command-order/command-order';
+  useGetPurchaseOperations,
+  getFiltredPurchaseOperations,
+  confirmPurchaseOperation,
+  cancelPurchaseOperation,
+} from 'src/actions/purchase-supply/purchase-operations';
 
 import { Iconify } from 'src/components/iconify';
 import { toast } from 'src/components/snackbar';
@@ -74,18 +73,19 @@ import {
   RenderCellTTC,
   RenderCellPaymentMethod,
   RenderCellProforma,
-  RenderCellDeliveryDate,
   RenderCellBilled,
+  RenderCellBillDate,
+  RenderCellPurchaseOrder,
+  RenderCellStore,
+  RenderCellIssueDate
 } from '../../../table-rows';
 import UtilsButton from 'src/components/custom-buttons/utils-button';
-import OrderProductsList from './OrderProductsList';
-import { OrderActionDialog } from './order-action-dialog';
+import PurchaseOperationItems from './purchase-operation-items';
+import { PurchaseOperationActionDialog } from './purchase-operation-action-dialog';
 
 // ----------------------------------------------------------------------
 
-const HIDE_COLUMNS = { category: false };
-
-const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
+const HIDE_COLUMNS_TOGGLABLE = ['actions'];
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   // Pin the actions column to the right
@@ -107,7 +107,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 // ----------------------------------------------------------------------
 const PAGE_SIZE = CONFIG.pagination.pageSize;
 
-export function CommandOrderListView() {
+export function PurchaseOperationsListView() {
   const confirmDialog = useBoolean();
   const { t } = useTranslate('purchase-supply-module');
   const [paginationModel, setPaginationModel] = useState({
@@ -115,7 +115,7 @@ export function CommandOrderListView() {
     pageSize: PAGE_SIZE,
   });
   const [selectedRow, setSelectedRow] = useState('');
-  const { commandOrders, commandOrdersLoading, commandOrdersCount } = useGetCommandOrders({
+  const { purchaseOperations, purchaseOperationsLoading, purchaseOperationsCount } = useGetPurchaseOperations({
     limit: PAGE_SIZE,
     offset: 0,
   });
@@ -144,9 +144,15 @@ export function CommandOrderListView() {
         label: t('filters.type'),
       },
       {
+        id:'store_id',
+        type:'lookup',
+        label:t('filters.store'),
+        url:endpoints.lookups.stores
+      },
+      {
         id: 'status',
         type: 'select',
-        options: COMMAND_ORDER_STATUS_OPTIONS,
+        options: PURCHASE_OPERATION_STATUS_OPTIONS,
         label: t('filters.status'),
       },
       {
@@ -168,6 +174,8 @@ export function CommandOrderListView() {
         label: t('filters.billing'),
       },
       { id: 'delivery_date', type: 'date', label: t('filters.delivery_date') },
+      {id:'issue_date',type:'date-range',label:t('filters.issue_date')},
+      {id:'bill_date',type:'date-range',label:t('filters.bill_date')},
       { id: 'created_at', type: 'date-range', label: t('filters.date'), cols: 3 },
     ],
     [t]
@@ -176,21 +184,19 @@ export function CommandOrderListView() {
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [editedFilters, setEditedFilters] = useState({});
 
-  const [columnVisibilityModel, setColumnVisibilityModel] = useState(HIDE_COLUMNS);
-
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedOrderForProducts, setSelectedOrderForProducts] = useState(null);
 
-  const [dialogState, setDialogState] = useState({ open: false, action: null, order: null });
+  const [dialogState, setDialogState] = useState({ open: false, action: null, purchaseOperation: null });
 
   useEffect(() => {
-    setTableData(commandOrders);
-    setRowCount(commandOrdersCount);
-  }, [commandOrders, commandOrdersCount]);
+    setTableData(purchaseOperations);
+    setRowCount(purchaseOperationsCount);
+  }, [purchaseOperations, purchaseOperationsCount]);
 
   const handleReset = useCallback(async () => {
     try {
-      const response = await getFiltredCommandOrders({
+      const response = await getFiltredPurchaseOperations({
         limit: PAGE_SIZE,
         offset: 0,
       });
@@ -209,7 +215,7 @@ export function CommandOrderListView() {
   const handleFilter = useCallback(
     async (data) => {
       try {
-        const response = await getFiltredCommandOrders(data);
+        const response = await getFiltredPurchaseOperations(data);
         setTableData(response.data?.data?.records);
         setRowCount(response.data?.data?.total);
       } catch (error) {
@@ -226,7 +232,7 @@ export function CommandOrderListView() {
         limit: newModel.pageSize,
         offset: newModel.page * newModel.pageSize,
       };
-      const response = await getFiltredCommandOrders(newData);
+      const response = await getFiltredPurchaseOperations(newData);
       setTableData(response.data?.data?.records);
       setPaginationModel(newModel);
     } catch (error) {
@@ -234,24 +240,24 @@ export function CommandOrderListView() {
     }
   };
 
-  const handleOpenDialog = (order, action) => {
-    setDialogState({ open: true, action, order });
+  const handleOpenDialog = (purchaseOperation, action) => {
+    setDialogState({ open: true, action, purchaseOperation });
   };
 
   const handleCloseDialog = () => {
-    setDialogState({ open: false, action: null, order: null });
+    setDialogState({ open: false, action: null, purchaseOperation: null });
   };
 
   const handleDialogAction = async (notes) => {
-    const { action, order } = dialogState;
+    const { action, purchaseOperation } = dialogState;
 
-    if (order) {
+    if (purchaseOperation) {
       try {
         if (action === 'confirm') {
-          await confirmCommandOrder(order.id, { notes });
+          await confirmPurchaseOperation(purchaseOperation.id, { notes });
           toast.success(t('messages.confirm_success'));
         } else if (action === 'cancel') {
-          await cancelCommandOrder(order.id, { notes });
+          await cancelPurchaseOperation(purchaseOperation.id, { notes });
           toast.success(t('messages.cancel_success'));
         }
         handleCloseDialog();
@@ -400,25 +406,11 @@ export function CommandOrderListView() {
         renderCell: (params) => <RenderCellSupplierName params={params} />,
       },
       {
-        field: 'type',
-        headerName: t('headers.type'),
-        flex: 1,
-        minWidth: 120,
-        renderCell: (params) => <RenderCellType params={params} />,
-      },
-      {
-        field: 'site',
-        headerName: t('headers.site'),
-        flex: 1,
-        minWidth: 150,
-        renderCell: (params) => <RenderCellSite params={params} />,
-      },
-      {
-        field: 'service',
-        headerName: t('headers.service'),
-        flex: 1,
-        minWidth: 150,
-        renderCell: (params) => <RenderCellService params={params} />,
+        field:'purchase_order',
+        headerName:t('headers.purchase_order'),
+        flex:1,
+        minWidth:150,
+        renderCell:(params)=><RenderCellPurchaseOrder params={params}/>
       },
       {
         field: 'ht',
@@ -455,6 +447,7 @@ export function CommandOrderListView() {
         minWidth: 100,
         renderCell: (params) => <RenderCellStamp params={params} />,
       },
+      
       {
         field: 'ttc',
         headerName: t('headers.ttc'),
@@ -463,26 +456,57 @@ export function CommandOrderListView() {
         renderCell: (params) => <RenderCellTTC params={params} />,
       },
       {
-        field: 'payment_method',
-        headerName: t('headers.payment_method'),
-        flex: 1,
-        minWidth: 150,
-        renderCell: (params) => <RenderCellPaymentMethod params={params} />,
-      },
-      {
         field: 'proforma',
         headerName: t('headers.proforma'),
         flex: 1,
         minWidth: 100,
         renderCell: (params) => <RenderCellProforma params={params} />,
       },
+      
       {
-        field: 'delivery_dates',
-        headerName: t('headers.delivery_date'),
+        field:'bill_date',
+        headerName:t('headers.bill_date'),
+        flex:1,
+        minWidth:150,
+        renderCell:(params)=><RenderCellBillDate params={params}/>
+      },
+      {
+        field: 'type',
+        headerName: t('headers.type'),
+        flex: 1,
+        minWidth: 120,
+        renderCell: (params) => <RenderCellType params={params} />,
+      },
+      {
+        field: 'site',
+        headerName: t('headers.site'),
         flex: 1,
         minWidth: 150,
-        renderCell: (params) => <RenderCellDeliveryDate params={params} />,
+        renderCell: (params) => <RenderCellSite params={params} />,
       },
+      {
+        field:'store',
+        headerName:t('headers.store'),
+        flex:1,
+        minWidth:150,
+        renderCell:(params)=><RenderCellStore params={params}/>
+      },
+      {
+        field: 'service',
+        headerName: t('headers.service'),
+        flex: 1,
+        minWidth: 150,
+        renderCell: (params) => <RenderCellService params={params} />,
+      },
+     
+      {
+        field: 'payment_method',
+        headerName: t('headers.payment_method'),
+        flex: 1,
+        minWidth: 150,
+        renderCell: (params) => <RenderCellPaymentMethod params={params} />,
+      },
+      
       {
         field: 'billed',
         headerName: t('headers.billed'),
@@ -490,14 +514,21 @@ export function CommandOrderListView() {
         minWidth: 120,
         renderCell: (params) => <RenderCellBilled params={params} />,
       },
+      {
+        field:'issue_date',
+        headerName:t('headers.issue_date'),
+        flex:1,
+        minWidth:150,
+        renderCell:(params)=><RenderCellIssueDate params={params}/>
+      },
       { field: 'observation', headerName: t('headers.observations'), flex: 1, minWidth: 200 },
       {
         type: 'actions',
         field: 'actions',
-        headerName: ' ',
+        headerName: 'actions',
         align: 'right',
         headerAlign: 'right',
-        width: 50,
+        width: 70,
         sortable: false,
         filterable: false,
         disableColumnMenu: true,
@@ -508,7 +539,7 @@ export function CommandOrderListView() {
                   showInMenu
                   icon={<Iconify icon="solar:pen-bold" />}
                   label={t('actions.edit')}
-                  href={paths.dashboard.purchaseSupply.commandOrder.edit(
+                  href={paths.dashboard.purchaseSupply.purchaseOperations.edit(
                     params.row.id
                   )}
                 />,
@@ -559,17 +590,17 @@ export function CommandOrderListView() {
           heading={t('views.list')}
           links={[
             { name: t('views.purchase_and_supply'), href: paths.dashboard.root },
-            { name: t('views.list'), href: paths.dashboard.purchaseSupply.commandOrder.root },
+            { name: t('views.list'), href: paths.dashboard.purchaseSupply.purchaseOperations.root },
           ]}
           action={
             <Box sx={{ gap: 1, display: 'flex' }}>
               <Button
                 component={RouterLink}
-                href={paths.dashboard.purchaseSupply.commandOrder.new}
+                href={paths.dashboard.purchaseSupply.purchaseOperations.new}
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >
-                {t('actions.command_order')}
+                {t('actions.purchase_operation')}
               </Button>
               <UtilsButton
                 exportToCsv={exportToCsv}
@@ -623,14 +654,12 @@ export function CommandOrderListView() {
             rows={tableData}
             rowCount={rowCount}
             columns={columns}
-            loading={commandOrdersLoading}
+            loading={purchaseOperationsLoading}
             getRowHeight={() => 'auto'}
             paginationModel={paginationModel}
             paginationMode="server"
             onPaginationModelChange={(model) => handlePaginationModelChange(model)}
             pageSizeOptions={[2, 10, 20, { value: -1, label: 'All' }]}
-            columnVisibilityModel={columnVisibilityModel}
-            onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
             slots={{
               noRowsOverlay: () => <EmptyContent />,
               noResultsOverlay: () => <EmptyContent title={t('messages.no_results')} />,
@@ -648,7 +677,7 @@ export function CommandOrderListView() {
         <Dialog open={detailOpen} onClose={handleCloseDetail} maxWidth="xl" fullWidth>
           <DialogTitle>{t('dialog.product_list_title')}</DialogTitle>
           <DialogContent dividers>
-            <OrderProductsList id={selectedOrderForProducts.id} />
+            <PurchaseOperationItems id={selectedOrderForProducts.id} />
           </DialogContent>
           <DialogActions>
             <Button variant="contained" onClick={handleCloseDetail}>
@@ -657,15 +686,15 @@ export function CommandOrderListView() {
           </DialogActions>
         </Dialog>
       )}
-      <OrderActionDialog
+      <PurchaseOperationActionDialog
         open={dialogState.open}
         onClose={handleCloseDialog}
         onAction={handleDialogAction}
-        order={dialogState.order}
+        purchaseOperation={dialogState.purchaseOperation}
         title={
           dialogState.action === 'confirm'
-            ? t('dialog.confirm_purchase_order_title', { code: dialogState.order?.code })
-            : t('dialog.cancel_purchase_order_title', { code: dialogState.order?.code })
+            ? t('dialog.confirm_purchase_order_title', { code: dialogState.purchaseOperation?.code })
+            : t('dialog.cancel_purchase_order_title', { code: dialogState.purchaseOperation?.code })
         }
         notesLabel={
           dialogState.action === 'confirm' ? t('dialog.confirm_notes') : t('dialog.cancel_notes')

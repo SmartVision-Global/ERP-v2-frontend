@@ -6,8 +6,10 @@
         "add_supplier": "Add Supplier",
         "suppliers": "Suppliers",
         "command_order": "Command Order",
+        "purchase_operations": "Purchase Operations",
         "edit_command_order": "Edit Command Order",
-        "dashboard": "Dashboard"
+        "dashboard": "Dashboard",
+        "edit_purchase_operations": "Edit Purchase Operations"
     },
     "text":{
         
@@ -49,7 +51,24 @@
         "proforma": "Proforma",
         "delivery_date": "Delivery Date",
         "billed": "Billed",
-        "charge_types": "Charge Types"
+        "charge_types": "Charge Types",
+        "bill_date": "Bill Date",
+        "purchase_order": "Purchase Order",
+        "store": "Store",
+        "issue_date": "Issue Date",
+        "um": "UM",
+        "lot_number": "Lot Number",
+        "purchased_quantity": "Purchased Quantity",
+        "received_quantity": "Received Quantity",
+        "price": "Price",
+        "final_price": "Final Price",
+        "total": "Total",
+        "num_bl": "BL Number",
+        "date_bl": "BL Date",
+        "matricule": "Matricule",
+        "nature": "Nature",
+        "linked_to": "Linked To",
+        "order": "Order"
     },
     "actions": {
         "purchase_request": "Purchase Request",
@@ -62,7 +81,8 @@
         "product_list": "Product List",
         "yes": "Yes",
         "details": "Details",
-        "command_order": "Command Order"
+        "command_order": "Command Order",
+        "purchase_operation": "Purchase Operation"
     },
     "filters": {
         "code": "Code",
@@ -74,14 +94,16 @@
         "requester": "Requester",
         "created_by": "Created by",
         "processed_by": "Processed by",
-        "date": "Date",
+        "date": "Creation Date (Select a range)",
         "search_placeholder": "Search...",
         "name": "Name",
         "payment_mode": "Payment Mode",
         "billing": "Billing",
         "service": "Service",
         "delivery_date": "Delivery Date",
-        "supplier": "Supplier"
+        "supplier": "Supplier",
+        "bill_date": "Bill Date (Select a range)",
+        "issue_date": "Issue Date (Select a range)"
     },
     "dialog": {
         "product_list_title": "Product List",
@@ -99,7 +121,8 @@
         "no_image": "No image",
         "order_updated": "Order updated successfully",
         "order_created": "Order created successfully",
-        "operation_failed": "Operation failed"
+        "operation_failed": "Operation failed",
+        "validation_error": "Please fill in all required fields"
     },
     "form": {
         "validations": {
@@ -123,10 +146,12 @@
             "price_required": "Price is required",
             "designation_required": "Designation is required",
             "name_required": "Name is required",
-            "nature_required": "Nature is required"
+            "nature_required": "Nature is required",
+            "issue_date_required": "Issue date is required"
         },
         "messages": {
-            
+            "purchase_operation_updated": "Purchase operation updated successfully",
+            "purchase_operation_created": "Purchase operation created successfully"
         },
         "sections": {
            
@@ -136,6 +161,7 @@
             "global_info_purchase_request": "Global information about the purchase request",
             "global_info_command_order": "Global information about the command order",
             "site": "Site",
+            "store": "Store",
             "personal": "Personal",
             "type": "Type",
             "priority": "Priority",
@@ -175,7 +201,15 @@
             "delivery_date": "Delivery Date",
             "proforma": "Proforma",
             "invoice_number_proforma": "Proforma Invoice N°",
-            "name": "Name"
+            "name": "Name",
+            "num_bl": "BL Number",
+            "date_bl": "BL Date",
+            "matricule": "Matricule",
+            "charge_type": "Charge Type",
+            "issue_date": "Issue Date",
+            "bill_number": "Bill Number",
+            "bill_date": "Bill Date",
+            "purchase_order": "Purchase Order"
            
            
         },
@@ -194,6 +228,7 @@
         "steps": {
             "information": "Information",
             "products": "Products",
+            "deposit": "Deposit",
             "confirmation": "Confirmation"
         }
     }

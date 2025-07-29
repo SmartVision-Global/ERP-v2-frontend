@@ -201,7 +201,7 @@ export function TableToolbarCustom({
                   <Button variant="outlined" onClick={rangeCalendarPicker.onOpen}>
                     {rangeCalendarPicker.startDate && rangeCalendarPicker.endDate
                       ? `${fDate(rangeCalendarPicker.startDate)} - ${fDate(rangeCalendarPicker.endDate)}`
-                      : 'Date de création (Sélectionner un intervale)'}
+                      : item.label || 'Date de création (Sélectionner un intervale)'}
                   </Button>
 
                   <CustomDateRangePicker

@@ -396,7 +396,8 @@ export const navData = [
           },
           {
             title:'Local',
-            path:paths.dashboard.purchaseSupply.supplier.root,
+            // path:paths.dashboard.purchaseSupply.supplier.root,
+            path:'/dashboard/purchase-supply',
             children:[
               {
                 title:'Fournisseurs',
@@ -405,6 +406,10 @@ export const navData = [
               {
                 title:'Bon de commande',
                 path:paths.dashboard.purchaseSupply.commandOrder.root,
+              },
+              {
+                title:'Opération d\'achats',
+                path:paths.dashboard.purchaseSupply.purchaseOperations.root,
               },
               {
                 title:'Paramètres',

@@ -15,8 +15,8 @@ export function CommandOrderCreateView() {
         heading="Bon de commande"
         links={[
           { name: 'Achat et Approvisionnement', href: paths.dashboard.purchaseSupply.commandOrder.root },
-          { name: 'Liste', href: paths.dashboard.purchaseSupply.commandOrder.root },
-          { name: "Bon de commande" },
+          { name: 'Bon de commande', href: paths.dashboard.purchaseSupply.commandOrder.root },
+          { name: "Ajouter" },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />

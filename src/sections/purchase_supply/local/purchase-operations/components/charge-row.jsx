@@ -61,6 +61,21 @@ export default function ChargeRow({ control, itemIndex, chargeIndex, removeCharg
         />
       </TableCell>
       <TableCell>
+        <Field.Text
+          name={`items.${itemIndex}.charges.${chargeIndex}.num_bl`}
+        />
+      </TableCell>
+      <TableCell>
+        <Field.DatePicker
+          name={`items.${itemIndex}.charges.${chargeIndex}.date_bl`}
+        />
+      </TableCell>
+      <TableCell>
+        <Field.Text
+          name={`items.${itemIndex}.charges.${chargeIndex}.matricule`}
+        />
+      </TableCell>
+      <TableCell>
         <IconButton color="error" onClick={() => removeCharge(chargeIndex)}>
           <Iconify icon="eva:trash-2-outline" />
         </IconButton>
