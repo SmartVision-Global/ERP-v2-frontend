@@ -92,7 +92,7 @@ export function WorkProgramsListView() {
       field: 'name',
       headerName: 'Nom',
       flex: 1,
-      minWidth: 160,
+      minWidth: 200,
       hideable: false,
       renderCell: (params) => (
         // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
@@ -183,7 +183,6 @@ export function WorkProgramsListView() {
     {
       field: 'work_stop',
       headerName: 'Durée totale des pauses',
-      //   flex: 0.5,
       flex: 1,
 
       minWidth: 200,
@@ -196,9 +195,7 @@ export function WorkProgramsListView() {
     {
       field: 'status',
       headerName: 'Etat',
-      //   flex: 0.5,
       flex: 1,
-
       minWidth: 120,
       hideable: false,
       renderCell: (params) => (
@@ -209,9 +206,7 @@ export function WorkProgramsListView() {
     {
       field: 'createdAt',
       headerName: 'Date de création',
-      flex: 1,
-      minWidth: 150,
-
+      width: 100,
       renderCell: (params) => <RenderCellCreatedAt params={params} />,
     },
 
@@ -219,7 +214,7 @@ export function WorkProgramsListView() {
       type: 'actions',
       field: 'actions',
       headerName: ' ',
-      align: 'right',
+      align: 'center',
       headerAlign: 'right',
       width: 80,
       sortable: false,
@@ -355,7 +350,24 @@ export function WorkProgramsListView() {
               panel: { anchorEl: filterButtonEl },
               columnsManagement: { getTogglableColumns },
             }}
-            sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
+            sx={{
+              [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' },
+              '& .MuiDataGrid-columnHeader[data-field="actions"]': {
+                position: 'sticky',
+                right: 0,
+                backgroundColor: (theme) => theme.palette.grey[200],
+                zIndex: (theme) => theme.zIndex.appBar, // keep it above scrollbars
+              },
+
+              // Sticky actions column - Cell
+              '& .MuiDataGrid-cell[data-field="actions"]': {
+                position: 'sticky',
+                right: 0,
+                backgroundColor: (theme) => theme.palette.grey[200],
+                zIndex: 1,
+                borderLeft: (theme) => `1px solid ${theme.palette.divider}`,
+              },
+            }}
           />
         </Card>
       </DashboardContent>

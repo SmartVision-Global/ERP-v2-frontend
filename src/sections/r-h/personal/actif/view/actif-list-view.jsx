@@ -144,7 +144,7 @@ export function ActifListView() {
     },
     { id: 'job_regime', type: 'select', options: PRODUCT_TEAM_TYPE_OPTIONS, label: 'Type équipe' },
 
-    { id: 'bank_id', type: 'select', options: banks, label: 'Banque', serverData: true },
+    { id: 'bank', type: 'select', options: banks, label: 'Banque', serverData: true },
     {
       id: 'contract_type',
       type: 'select',
@@ -585,7 +585,7 @@ export function ActifListView() {
       type: 'actions',
       field: 'actions',
       headerName: ' ',
-      align: 'right',
+      align: 'center',
       headerAlign: 'right',
       width: 80,
       sortable: false,
@@ -771,7 +771,7 @@ export function ActifListView() {
             paginationModel={paginationModel}
             paginationMode="server"
             onPaginationModelChange={(model) => handlePaginationModelChange(model)}
-            pageSizeOptions={[2, 10, 20, { value: -1, label: 'All' }]}
+            pageSizeOptions={[PAGE_SIZE, 20, 100, { value: -1, label: 'All' }]}
             columnVisibilityModel={columnVisibilityModel}
             onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
             slots={{
@@ -783,7 +783,24 @@ export function ActifListView() {
               panel: { anchorEl: filterButtonEl },
               columnsManagement: { getTogglableColumns },
             }}
-            sx={{ [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' } }}
+            sx={{
+              [`& .${gridClasses.cell}`]: { alignItems: 'center', display: 'inline-flex' },
+              '& .MuiDataGrid-columnHeader[data-field="actions"]': {
+                position: 'sticky',
+                right: 0,
+                backgroundColor: (theme) => theme.palette.grey[200],
+                zIndex: (theme) => theme.zIndex.appBar, // keep it above scrollbars
+              },
+
+              // Sticky actions column - Cell
+              '& .MuiDataGrid-cell[data-field="actions"]': {
+                position: 'sticky',
+                right: 0,
+                backgroundColor: (theme) => theme.palette.grey[200],
+                zIndex: 1,
+                borderLeft: (theme) => `1px solid ${theme.palette.divider}`,
+              },
+            }}
           />
         </Card>
       </DashboardContent>
