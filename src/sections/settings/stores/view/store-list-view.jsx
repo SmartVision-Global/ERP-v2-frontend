@@ -1,5 +1,5 @@
 import { useBoolean } from 'minimal-shared/hooks';
-import { useState, useEffect, forwardRef, useCallback } from 'react';
+import { useState, useEffect, forwardRef, useCallback, useMemo } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -13,6 +13,7 @@ import { DataGrid, gridClasses, GridActionsCellItem } from '@mui/x-data-grid';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
+import { useTranslate } from 'src/locales';
 import { useGetStores } from 'src/actions/store';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { PRODUCT_STOCK_OPTIONS, DOCUMENT_STATUS_OPTIONS } from 'src/_mock';
@@ -34,64 +35,17 @@ import {
 
 // ----------------------------------------------------------------------
 
-const SEX_OPTIONS = [
-  { value: 'man', label: 'Homme' },
-  { value: 'woman', label: 'Femme' },
-];
-
 const HIDE_COLUMNS = { category: false };
 
 const HIDE_COLUMNS_TOGGLABLE = ['category', 'actions'];
 
 // ----------------------------------------------------------------------
 
-const FILTERS_OPTIONS = [
-  {
-    id: 'designation',
-    type: 'input',
-    label: 'Designation',
-    cols: 12,
-    width: 0.24,
-  },
-  {
-    id: 'status',
-    type: 'select',
-    options: DOCUMENT_STATUS_OPTIONS,
-    label: 'Etat',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'valideur',
-    type: 'select',
-    options: PRODUCT_STOCK_OPTIONS,
-    label: 'Valideur',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'start_date',
-    type: 'date',
-    label: 'Date début de création',
-    cols: 3,
-    width: 1,
-  },
-  {
-    id: 'end_date',
-    type: 'date',
-    label: 'Date fin de création',
-    cols: 3,
-    width: 1,
-  },
-];
-
 export function StoreListView() {
   const confirmDialog = useBoolean();
+  const { t } = useTranslate('settings-module');
 
   const { stores, storesLoading } = useGetStores({ limit: 10, offset: 0 });
-  console.log('StoreListView');
-  console.log('stores', stores);
-
   const [tableData, setTableData] = useState(stores);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
@@ -114,110 +68,153 @@ export function StoreListView() {
     (id) => {
       const deleteRow = tableData.filter((row) => row.id !== id);
 
-      toast.success('Delete success!');
+      toast.success(t('messages.delete_success'));
 
       setTableData(deleteRow);
     },
-    [tableData]
+    [tableData, t]
   );
 
   const handleDeleteRows = useCallback(() => {
     const deleteRows = tableData.filter((row) => !selectedRowIds.includes(row.id));
 
-    toast.success('Delete success!');
+    toast.success(t('messages.delete_success'));
 
     setTableData(deleteRows);
-  }, [selectedRowIds, tableData]);
+  }, [selectedRowIds, tableData, t]);
 
-  const columns = [
-    { field: 'category', headerName: 'Category', filterable: false },
-    {
-      field: 'id',
-      headerName: 'ID',
-      //   flex: 0.5,
-      flex: 1,
+  const FILTERS_OPTIONS = useMemo(
+    () => [
+      {
+        id: 'designation',
+        type: 'input',
+        label: t('filters.designation'),
+        cols: 3,
+       
+      },
+      {
+        id: 'status',
+        type: 'select',
+        options: DOCUMENT_STATUS_OPTIONS,
+        label: t('filters.status'),
+        cols: 3,
+       
+      },
+      {
+        id: 'valideur',
+        type: 'select',
+        options: PRODUCT_STOCK_OPTIONS,
+        label: t('filters.validator'),
+        cols: 3,
+       
+      },
+      {
+        id: 'start_date',
+        type: 'date',
+        label: t('filters.creation_start_date'),
+        cols: 3,
+      },
+      {
+        id: 'end_date',
+        type: 'date',
+        label: t('filters.creation_end_date'),
+        cols: 3,
+      },
+    ],
+    [t]
+  );
 
-      width: 100,
-      hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellId params={params} href={paths.dashboard.root} />
-      ),
-    },
-    {
-      field: 'code',
-      headerName: 'Code',
-      flex: 1,
-      minWidth: 160,
-      hideable: false,
-      renderCell: (params) => <RenderCellCode params={params} />,
-    },
-    {
-      field: 'type',
-      headerName: 'Type',
-      flex: 1,
-      minWidth: 160,
-      hideable: false,
-      renderCell: (params) => <RenderCellType params={params} />,
-    },
-    {
-      field: 'name',
-      headerName: 'Site',
-      flex: 1,
-      minWidth: 160,
-      hideable: false,
-      renderCell: (params) => (
-        // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
-        <RenderCellSite params={params} href={paths.dashboard.root} />
-      ),
-    },
+  const columns = useMemo(
+    () => [
+      { field: 'category', headerName: t('headers.category'), filterable: false },
+      {
+        field: 'id',
+        headerName: t('headers.id'),
+        //   flex: 0.5,
+        flex: 1,
 
-    {
-      field: 'createdAt',
-      headerName: 'Date de création',
-      flex: 1,
-      width: 110,
-      type: 'singleSelect',
-      editable: true,
-      valueOptions: SEX_OPTIONS,
-      renderCell: (params) => <RenderCellCreatedAt params={params} />,
-    },
+        width: 100,
+        hideable: false,
+        renderCell: (params) => (
+          // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+          <RenderCellId params={params} href={paths.dashboard.root} />
+        ),
+      },
+      {
+        field: 'code',
+        headerName: t('headers.code'),
+        flex: 1,
+        minWidth: 160,
+        hideable: false,
+        renderCell: (params) => <RenderCellCode params={params} />,
+      },
+      {
+        field: 'type',
+        headerName: t('headers.type'),
+        flex: 1,
+        minWidth: 160,
+        hideable: false,
+        renderCell: (params) => <RenderCellType params={params} />,
+      },
+      {
+        field: 'name',
+        headerName: t('headers.site'),
+        flex: 1,
+        minWidth: 160,
+        hideable: false,
+        renderCell: (params) => (
+          // <RenderCellProduct params={params} href={paths.dashboard.product.details(params.row.id)} />
+          <RenderCellSite params={params} href={paths.dashboard.root} />
+        ),
+      },
 
-    {
-      type: 'actions',
-      field: 'actions',
-      headerName: ' ',
-      align: 'right',
-      headerAlign: 'right',
-      width: 80,
-      sortable: false,
-      filterable: false,
-      disableColumnMenu: true,
-      getActions: (params) => [
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:eye-bold" />}
-          label="View"
-          // href={paths.dashboard.product.details(params.row.id)}
-          href={paths.dashboard.root}
-        />,
-        <GridActionsLinkItem
-          showInMenu
-          icon={<Iconify icon="solar:pen-bold" />}
-          label="Edit"
-          // href={paths.dashboard.product.edit(params.row.id)}
-          href={paths.dashboard.root}
-        />,
-        <GridActionsCellItem
-          showInMenu
-          icon={<Iconify icon="solar:trash-bin-trash-bold" />}
-          label="Delete"
-          onClick={() => handleDeleteRow(params.row.id)}
-          sx={{ color: 'error.main' }}
-        />,
-      ],
-    },
-  ];
+      {
+        field: 'createdAt',
+        headerName: t('headers.created_date'),
+        flex: 1,
+        width: 110,
+        type: 'singleSelect',
+        editable: true,
+        renderCell: (params) => <RenderCellCreatedAt params={params} />,
+      },
+
+      {
+        type: 'actions',
+        field: 'actions',
+        headerName: ' ',
+        align: 'right',
+        headerAlign: 'right',
+        width: 80,
+        sortable: false,
+        filterable: false,
+        disableColumnMenu: true,
+        getActions: (params) => [
+          <GridActionsLinkItem
+            showInMenu
+            icon={<Iconify icon="solar:eye-bold" />}
+            label={t('actions.view')}
+            // href={paths.dashboard.product.details(params.row.id)}
+            href={paths.dashboard.root}
+          />,
+          <GridActionsLinkItem
+            showInMenu
+            icon={<Iconify icon="solar:pen-bold" />}
+            label={t('actions.edit')}
+            // href={paths.dashboard.product.edit(params.row.id)}
+            href={paths.dashboard.root}
+          />,
+          <GridActionsCellItem
+            showInMenu
+            icon={<Iconify icon="solar:trash-bin-trash-bold" />}
+            label={t('actions.delete')}
+            onClick={() => handleDeleteRow(params.row.id)}
+            sx={{ color: 'error.main' }}
+          />,
+        ],
+      },
+    ],
+    [t, handleDeleteRow]
+  );
 
   const getTogglableColumns = () =>
     columns
@@ -228,7 +225,7 @@ export function StoreListView() {
     <ConfirmDialog
       open={confirmDialog.value}
       onClose={confirmDialog.onFalse}
-      title="Delete"
+      title={t('actions.delete')}
       content={
         <>
           Are you sure want to delete <strong> {selectedRowIds.length} </strong> items?
@@ -243,7 +240,7 @@ export function StoreListView() {
             confirmDialog.onFalse();
           }}
         >
-          Delete
+          {t('actions.delete')}
         </Button>
       }
     />
@@ -253,11 +250,11 @@ export function StoreListView() {
     <>
       <DashboardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <CustomBreadcrumbs
-          heading="List"
+          heading={t('views.list')}
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Ressources humaine', href: paths.dashboard.root },
-            { name: 'Zones' },
+            { name: t('views.dashboard'), href: paths.dashboard.root },
+            { name: t('views.human_resources'), href: paths.dashboard.root },
+            { name: t('views.zones') },
           ]}
           action={
             <Button
@@ -266,7 +263,7 @@ export function StoreListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              Ajouter
+              {t('actions.add')}
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
@@ -297,7 +294,7 @@ export function StoreListView() {
                 fullWidth
                 // value={currentFilters.name}
                 // onChange={handleFilterName}
-                placeholder="Search "
+                placeholder={t('filters.search_placeholder')}
                 slotProps={{
                   input: {
                     startAdornment: (
@@ -328,7 +325,7 @@ export function StoreListView() {
             slots={{
               // toolbar: CustomToolbarCallback,
               noRowsOverlay: () => <EmptyContent />,
-              noResultsOverlay: () => <EmptyContent title="No results found" />,
+              noResultsOverlay: () => <EmptyContent title={t('messages.no_results')} />,
             }}
             slotProps={{
               toolbar: { setFilterButtonEl },

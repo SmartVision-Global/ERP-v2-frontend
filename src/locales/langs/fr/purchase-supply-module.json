@@ -1,10 +1,106 @@
 {
-    "purchase-supply-module": {
-        "purchase-order": {
-            "new": {
-                "title": "Nouvelle commande",
-                "description": "Créez une nouvelle commande"
-            }
+
+    "views": {
+        
+    },
+    "headers": {
+        
+    },
+    "actions": {
+       
+        
+    },
+    "filters": {
+        
+    },
+    "dialog": {
+        
+    },
+    "messages":{
+        
+    },
+    "form": {
+        "validations": {
+            
+        },
+        "messages": {
+           
+        },
+        "sections": {
+           
+        },
+        "labels": {
+            "message": "Message",
+            "global_info_purchase_request": "Informations générales sur la demande d'achat",
+            "global_info_command_order": "Informations générales sur la commande",
+            "site": "Site",
+            "personal": "Personnel",
+            "type": "Type",
+            "priority": "Priorité",
+            "status": "Statut",
+            "observations": "Observations",
+            "add_products": "Ajouter des produits",
+            "products_subheader": "Veuillez remplir le tableau des produits, le tableau doit contenir au moins un produit.",
+            "code": "Code",
+            "supplier_code": "Code fournisseur",
+            "designation": "Désignation",
+            "current_quantity": "Quantité actuelle",
+            "quantity_to_buy": "Quantité à acheter",
+            "needs_date": "Date de besoin",
+            "observation": "Observation",
+            "select_product": "Sélectionner un produit",
+            "builder_code": "Code constructeur",
+            "supplier": "Fournisseur",
+            "service": "Service",
+            "payment_method": "Mode de paiement",
+            "billing": "Facturation",
+            "price": "Prix",
+            "discount": "Remise",
+            "charges": "Frais",
+            "ht": "HT",
+            "ht_remise": "HT Remisé",
+            "tva_percentage": "TVA %",
+            "tva": "TVA",
+            "tax": "Taxe",
+            "ttc": "TTC",
+            "da_code": "Code D.A",
+            "nature": "Nature",
+            "quantity": "Quantité",
+            "notes": "Notes",
+            "print_note": "Note d'impression",
+            "observation": "Observation",
+            "quantity_required": "La quantité est requise",
+            "date_required": "La date est requise",
+            "at_least_one_product": "Au moins un produit est requis",
+            "supplier_required": "Le fournisseur est requis",
+            "service_required": "Le service est requis",
+            "discount_superior_to_price": "La remise ne peut pas être supérieure au prix",
+            "ht_discount": "HT Remisé",
+            "tva_percentage_invalid": "Le pourcentage de TVA doit être compris entre 0 et 100",
+            "confirmation_subheader": "Gérer les dates de livraison et les confirmations",
+            "delivery_date": "Date de livraison",
+            "proforma": "Proforma",
+            "invoice_number_proforma": "N° facture proforma"
+        },
+        "actions": {
+            "previous_step": "Étape précédente",
+            "next_step": "Étape suivante",
+            "validate": "Valider",
+            "add": "Ajouter",
+            "cancel": "Annuler",
+            "add_products": "Ajouter des produits",
+            "add_from_purchase_request": "Ajouter à partir de la demande d'achat",
+            "add_charge": "Ajouter des frais",
+            "add_delivery_date": "Ajouter une date de livraison"
+        },
+        "steps": {
+            "information": "Information",
+            "products": "Produits",
+            "confirmation": "Confirmation"
         }
+    },
+    "dialogs": {
+        
     }
-}
+
+} 

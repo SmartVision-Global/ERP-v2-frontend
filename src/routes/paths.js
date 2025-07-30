@@ -43,6 +43,8 @@ export const paths = {
   // DASHBOARD
   dashboard: {
     root: ROOTS.DASHBOARD,
+    // two: `${ROOTS.DASHBOARD}/two`,
+    // three: `${ROOTS.DASHBOARD}/three`,
     rh: {
       personal: {
         root: `${ROOTS.DASHBOARD}/humain-ressource/personal`,
@@ -212,6 +214,34 @@ export const paths = {
         newDac: `${ROOTS.DASHBOARD}/humain-ressource/para-tax-declaration/dac/new`,
       },
     },
+    purchaseSupply: {
+      purchaseRequest: {
+        root: `${ROOTS.DASHBOARD}/purchase-supply/purchase-request`,
+        newPurchaseRequest: `${ROOTS.DASHBOARD}/purchase-supply/purchase-request/new`,
+        editPurchaseRequest: (id) => `${ROOTS.DASHBOARD}/purchase-supply/purchase-request/${id}/edit`,
+      },
+      processingDa: {
+        root: `${ROOTS.DASHBOARD}/purchase-supply/processing-da`,
+      },
+      supplier:{
+        root: `${ROOTS.DASHBOARD}/purchase-supply/supplier`,
+        new: `${ROOTS.DASHBOARD}/purchase-supply/supplier/new`,
+        edit: (id) => `${ROOTS.DASHBOARD}/purchase-supply/supplier/${id}/edit`,
+      },
+      commandOrder:{
+        root: `${ROOTS.DASHBOARD}/purchase-supply/command-order`,
+        new: `${ROOTS.DASHBOARD}/purchase-supply/command-order/new`,
+        edit: (id) => `${ROOTS.DASHBOARD}/purchase-supply/command-order/${id}/edit`,
+      },
+      purchaseOperations:{
+        root: `${ROOTS.DASHBOARD}/purchase-supply/purchase-operations`,
+        new: `${ROOTS.DASHBOARD}/purchase-supply/purchase-operations/new`,
+        edit: (id) => `${ROOTS.DASHBOARD}/purchase-supply/purchase-operations/${id}/edit`,
+      },
+      settings:{
+        root: `${ROOTS.DASHBOARD}/purchase-supply/purchase-settings`,
+      }
+    },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
       new: `${ROOTS.DASHBOARD}/user/new`,
@@ -223,6 +253,87 @@ export const paths = {
       demo: {
         edit: `${ROOTS.DASHBOARD}/user/${1}/edit`,
       },
+    },
+    storeManagement: {
+      root: `${ROOTS.DASHBOARD}/store-management`,
+      rawMaterial: {
+        root: `${ROOTS.DASHBOARD}/store-management/raw-material`,
+        stocks: `${ROOTS.DASHBOARD}/store-management/raw-material`,
+        newStock: `${ROOTS.DASHBOARD}/store-management/raw-material/new`,
+        editStock: (id) => `${ROOTS.DASHBOARD}/store-management/raw-material/${id}/edit`,
+
+        operations: `${ROOTS.DASHBOARD}/store-management/raw-material/operations`,
+        
+
+        storageArea: `${ROOTS.DASHBOARD}/store-management/raw-material/storage-area`,
+        newStorageArea: `${ROOTS.DASHBOARD}/store-management/raw-material/storage-area/new`,
+        initialStorage: `${ROOTS.DASHBOARD}/store-management/raw-material/initial-storage`,
+        newInitialStorage: `${ROOTS.DASHBOARD}/store-management/raw-material/initial-storage/new`,
+        exitSlips: `${ROOTS.DASHBOARD}/store-management/raw-material/exit-slip`,
+        newExitSlip: `${ROOTS.DASHBOARD}/store-management/raw-material/exit-slip/new`,
+        editExitSlip: (id) =>
+          `${ROOTS.DASHBOARD}/store-management/raw-material/exit-slips/${id}/edit`,
+        integrations: `${ROOTS.DASHBOARD}/store-management/raw-material/integrations`,
+        newIntegration: `${ROOTS.DASHBOARD}/store-management/raw-material/integrations/new`,
+        editIntegration: (id) =>
+          `${ROOTS.DASHBOARD}/store-management/raw-material/integrations/${id}/edit`,
+        transferSlips: `${ROOTS.DASHBOARD}/store-management/raw-material/transfer-slip`,
+        newTransferSlip: `${ROOTS.DASHBOARD}/store-management/raw-material/transfer-slip/new`,
+        editTransferSlip: (id) =>
+          `${ROOTS.DASHBOARD}/store-management/raw-material/transfer-slip/${id}/edit`,
+        nonMovingProducts: `${ROOTS.DASHBOARD}/store-management/raw-material/non-moving-products`,
+      },
+
+      loanBorrowing: {
+        root: `${ROOTS.DASHBOARD}/store-management`,
+        third: `${ROOTS.DASHBOARD}/store-management/third`,
+        newThird: `${ROOTS.DASHBOARD}/store-management/third/new`,
+        editThird: (id) => `${ROOTS.DASHBOARD}/store-management/third/${id}/edit`,
+        borrowing: `${ROOTS.DASHBOARD}/store-management/borrowing`,
+        newBorrowing: `${ROOTS.DASHBOARD}/store-management/borrowing/new`,
+        editBorrowing: (id) => `${ROOTS.DASHBOARD}/store-management/borrowing/${id}/edit`,
+        
+        borrowingReturn: `${ROOTS.DASHBOARD}/store-management/borrowing-return`,
+        newBorrowingReturn: `${ROOTS.DASHBOARD}/store-management/borrowing-return/new`,
+        editBorrowingReturn: (id) => `${ROOTS.DASHBOARD}/store-management/borrowing-return/${id}/edit`,
+      },
+    },
+    store: {
+      // rawMaterials: {
+      root: `${ROOTS.DASHBOARD}/store/raw-materials`,
+      //   // stocks: `${ROOTS.DASHBOARD}/store/raw-materials/stocks`,
+      //   newStock: `${ROOTS.DASHBOARD}/store/raw-materials/stocks/new`,
+      //   editStock: (id) => `${ROOTS.DASHBOARD}/store/raw-materials/stocks/${id}/edit`,
+      //   storageArea: `${ROOTS.DASHBOARD}/store/raw-materials/storage-area`,
+      //   newStorageArea: `${ROOTS.DASHBOARD}/store/raw-materials/storage-area/new`,
+      //   initialStorage: `${ROOTS.DASHBOARD}/store/raw-materials/initial-storage`,
+      //   newInitialStorage: `${ROOTS.DASHBOARD}/store/raw-materials/initial-storage/new`,
+      //   exitSlip: `${ROOTS.DASHBOARD}/store/raw-materials/exit-slip`,
+      //   newExitSlip: `${ROOTS.DASHBOARD}/store/raw-materials/exit-slip/new`,
+      //   editExitSlip: (id) => `${ROOTS.DASHBOARD}/store/raw-materials/exit-slip/${id}/edit`,
+      //   integrations: `${ROOTS.DASHBOARD}/store/raw-materials/integrations`,
+      //   newIntegration: `${ROOTS.DASHBOARD}/store/raw-materials/integrations/new`,
+      //   editIntegration: (id) => `${ROOTS.DASHBOARD}/store/raw-materials/integrations/${id}/edit`,
+      //   transferSlip: `${ROOTS.DASHBOARD}/store/raw-materials/transfer-slip`,
+      //   newTransferSlip: `${ROOTS.DASHBOARD}/store/raw-materials/transfer-slip/new`,
+      //   editTransferSlip: (id) => `${ROOTS.DASHBOARD}/store/raw-materials/transfer-slip/${id}/edit`,
+      // },
+      spareParts: {
+        root: `${ROOTS.DASHBOARD}/store/spare-parts`,
+        list: `${ROOTS.DASHBOARD}/store/spare-parts/list`,
+        settings: `${ROOTS.DASHBOARD}/store/spare-parts/settings`,
+      },
+      tools: `${ROOTS.DASHBOARD}/store/tools`,
+      supplies: `${ROOTS.DASHBOARD}/store/supplies`,
+    },
+    expressionOfNeeds: {
+      root: `${ROOTS.DASHBOARD}/expression-of-needs`,
+      beb: {
+        root: `${ROOTS.DASHBOARD}/expression-of-needs/beb`,
+        new: `${ROOTS.DASHBOARD}/expression-of-needs/beb/new`,
+        edit: (id) => `${ROOTS.DASHBOARD}/expression-of-needs/beb/${id}/edit`,
+      },
+      bmb: {},
     },
 
     settings: {
@@ -262,6 +373,10 @@ export const paths = {
         root: `${ROOTS.DASHBOARD}/settings/store`,
         newStore: `${ROOTS.DASHBOARD}/settings/store/new`,
       },
+      validationCircuit: {
+        root: `${ROOTS.DASHBOARD}/settings/validation-circuit`,
+        details: (target_action) => `${ROOTS.DASHBOARD}/settings/validation-circuit/${target_action}`,
+      },
       identification: {
         root: `${ROOTS.DASHBOARD}/settings/identification`,
         globalSettings: `${ROOTS.DASHBOARD}/settings/identification/global-settings`,
@@ -270,6 +385,11 @@ export const paths = {
         tools: `${ROOTS.DASHBOARD}/settings/identification/tools`,
         supplies: `${ROOTS.DASHBOARD}/settings/identification/supplies`,
       },
+    },
+    group: {
+      root: `${ROOTS.DASHBOARD}/group`,
+      five: `${ROOTS.DASHBOARD}/group/five`,
+      six: `${ROOTS.DASHBOARD}/group/six`,
     },
   },
 };

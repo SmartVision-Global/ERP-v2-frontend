@@ -14,9 +14,11 @@ import { AuthGuard } from 'src/auth/guard';
 import { usePathname } from '../hooks';
 
 const IndexPage = lazy(() => import('src/pages/dashboard/one'));
+// const TwoPage = lazy(() => import('src/pages/dashboard/two'));
 
 const PageRhList = lazy(() => import('src/pages/dashboard/r-h/personal/actif/list'));
 const PageRhDocumentsList = lazy(() => import('src/pages/dashboard/r-h/personal/documents/list'));
+const PageRhBloqueList = lazy(() => import('src/pages/dashboard/r-h/personal/block/list'));
 const PageRhDasList = lazy(() => import('src/pages/dashboard/r-h/para-tax-declaration/das/list'));
 const PageRhDasDetails = lazy(
   () => import('src/pages/dashboard/r-h/para-tax-declaration/das/details')
@@ -286,6 +288,68 @@ const PageRhPayrollManagementExtraPayDetails = lazy(
   () => import('src/pages/dashboard/r-h/payroll-management/exptra-pay/details')
 );
 
+// ============== purchase_Supply ==================
+//purchase Order
+const PagePurchaseRequest = lazy(
+  () => import('src/pages/dashboard/purchase-supply/purchase-request/list')
+);
+const PageNewPurchaseRequest = lazy(
+  () => import('src/pages/dashboard/purchase-supply/purchase-request/new')
+);
+const PagePurchaseRequestEdit = lazy(
+  () => import('src/pages/dashboard/purchase-supply/purchase-request/edit')
+);
+//Processing Da
+const PageProcessingDa = lazy(
+  () => import('src/pages/dashboard/purchase-supply/processing-da/list')
+);
+
+//Local
+//Supplier
+const PageLocalSupplier = lazy(
+  () => import('src/pages/dashboard/purchase-supply/local/supplier/list')
+);
+const PageLocalSupplierNew = lazy(
+  () => import('src/pages/dashboard/purchase-supply/local/supplier/new')
+);
+const PageLocalSupplierEdit = lazy(
+  () => import('src/pages/dashboard/purchase-supply/local/supplier/edit')
+);
+//Command Order
+const PageLocalCommandOrder = lazy(
+  () => import('src/pages/dashboard/purchase-supply/local/command-order/list')
+);
+
+const PageLocalCommandOrderNew = lazy(
+  () => import('src/pages/dashboard/purchase-supply/local/command-order/new')
+);
+
+const PageLocalCommandOrderEdit = lazy(
+  () => import('src/pages/dashboard/purchase-supply/local/command-order/edit')
+);
+//Purchase Operations
+const PagePurchaseOperations = lazy(
+  () => import('src/pages/dashboard/purchase-supply/local/purchase-operations/list')
+);
+
+const PagePurchaseOperationsNew = lazy(
+  () => import('src/pages/dashboard/purchase-supply/local/purchase-operations/new')
+);
+
+const PagePurchaseOperationsEdit = lazy(
+  () => import('src/pages/dashboard/purchase-supply/local/purchase-operations/edit')
+);
+
+
+
+// purchase settings
+const PagePurchaseSettings = lazy(
+  () => import('src/pages/dashboard/purchase-supply/local/purchase-settings/list')
+);
+
+
+
+
 // Account
 const AccountGeneralPage = lazy(() => import('src/pages/dashboard/user/account/general'));
 const AccountChangePasswordPage = lazy(
@@ -317,6 +381,15 @@ const SettingsGeneralSettings = lazy(
 const SettingsStoreList = lazy(() => import('src/pages/dashboard/settings/stores/list'));
 const SettingsStoreNew = lazy(() => import('src/pages/dashboard/settings/stores/new'));
 
+const SettingsValidationCircuitList = lazy(
+  () => import('src/pages/dashboard/settings/validation-circuit/list')
+);
+
+const SettingsValidationCircuitEdit = lazy(
+  () => import('src/pages/dashboard/settings/validation-circuit/edit')
+);
+
+
 const SettingsIdentificationGlobalSettings = lazy(
   () => import('src/pages/dashboard/settings/identification-parameters/global-settings/list')
 );
@@ -325,6 +398,125 @@ const PageSettingsIdentFamCategRpList = lazy(
   () => import('src/pages/dashboard/settings/identification-parameters/fam-categ-rp/list')
 );
 const SettingsServiceEdit = lazy(() => import('src/pages/dashboard/settings/services/edit'));
+
+// gestion magasinage
+// const PageStoreRawMaterialsStocksList = lazy(
+//   () => import('src/pages/dashboard/store/raw-materials/stocks/list')
+// );
+// const PageStoreRawMaterialsStocksNew = lazy(
+//   () => import('src/pages/dashboard/store/raw-materials/stocks/new')
+// );
+// const PageStoreRawMaterialsStocksEdit = lazy(
+//   () => import('src/pages/dashboard/store/raw-materials/stocks/edit')
+// );
+
+// store management
+// stocks
+const PageStoreManagementStocksList = lazy(
+  () => import('src/pages/dashboard/store-management/stocks/list')
+);
+const PageStoreManagementStocksNew = lazy(
+  () => import('src/pages/dashboard/store-management/stocks/new')
+);
+const PageStoreManagementStocksEdit = lazy(
+  () => import('src/pages/dashboard/store-management/stocks/edit')
+);
+
+// expression de besoins
+const PageExpressionOfNeedsBebList = lazy(
+  () => import('src/pages/dashboard/expression-of-needs/Beb/list')
+);
+const PageExpressionOfNeedsBebNew = lazy(
+  () => import('src/pages/dashboard/expression-of-needs/Beb/new')
+);
+const PageExpressionOfNeedsBebEdit = lazy(
+  () => import('src/pages/dashboard/expression-of-needs/Beb/edit')
+);
+
+const PageStoreStorageEreaList = lazy(
+  () => import('src/pages/dashboard/store-management/storage-area/list')
+);
+const PageStoreStorageAreaNew = lazy(
+  () => import('src/pages/dashboard/store-management/storage-area/new')
+);
+
+const PageStoreInitialStorageList = lazy(
+  () => import('src/pages/dashboard/store-management/initial-storage/list')
+);
+const PageStoreInitialStorageNew = lazy(
+  () => import('src/pages/dashboard/store-management/initial-storage/new')
+);
+const PageStoreExitSlipList = lazy(
+  () => import('src/pages/dashboard/store-management/exit-slip/list')
+);
+const PageStoreExitSlipNew = lazy(
+  () => import('src/pages/dashboard/store-management/exit-slip/new')
+);
+const PageStoreExitSlipEdit = lazy(
+  () => import('src/pages/dashboard/store-management/exit-slip/edit')
+);
+
+const PageStoreIntegrationList = lazy(
+  () => import('src/pages/dashboard/store-management/integration/list')
+);
+const PageStoreIntegrationNew = lazy(
+  () => import('src/pages/dashboard/store-management/integration/new')
+);
+const PageStoreIntegrationEdit = lazy(
+  () => import('src/pages/dashboard/store-management/integration/edit')
+);
+
+const PageStoreTransferSlipList = lazy(
+  () => import('src/pages/dashboard/store-management/transfer-slip/list')
+);
+const PageStoreTransferSlipNew = lazy(
+  () => import('src/pages/dashboard/store-management/transfer-slip/new')
+);
+const PageStoreTransferSlipEdit = lazy(
+  () => import('src/pages/dashboard/store-management/transfer-slip/edit')
+);
+
+const PageStoreNonMovingProductsList = lazy(
+  () => import('src/pages/dashboard/store-management/non-moving-products/list')
+);
+
+// store mangement
+// operations
+const PageStoreOperationsList = lazy(
+  () => import('src/pages/dashboard/store-management/operations/list')
+);
+
+// loan borrowing
+const PageStoreLoanBorrowingThirdList = lazy(
+  () => import('src/pages/dashboard/store-management/loan-borrowing/third/list')
+);
+const PageStoreLoanBorrowingThirdNew = lazy(
+  () => import('src/pages/dashboard/store-management/loan-borrowing/third/new')
+);
+const PageStoreLoanBorrowingThirdEdit = lazy(
+  () => import('src/pages/dashboard/store-management/loan-borrowing/third/edit')
+);
+
+const PageStoreLoanBorrowingBorrowingList = lazy(
+  () => import('src/pages/dashboard/store-management/loan-borrowing/borrowing/list')
+);
+const PageStoreLoanBorrowingBorrowingNew = lazy(
+  () => import('src/pages/dashboard/store-management/loan-borrowing/borrowing/new')
+);
+
+const PageStoreLoanBorrowingBorrowingEdit = lazy(
+  () => import('src/pages/dashboard/store-management/loan-borrowing/borrowing/edit')
+);
+
+const PageStoreLoanBorrowingReturnList = lazy(
+  () => import('src/pages/dashboard/store-management/loan-borrowing/borrowing-return/list')
+);
+const PageStoreLoanBorrowingReturnNew = lazy(
+  () => import('src/pages/dashboard/store-management/loan-borrowing/borrowing-return/new')
+);
+const PageStoreLoanBorrowingReturnEdit = lazy(
+  () => import('src/pages/dashboard/store-management/loan-borrowing/borrowing-return/edit')
+);
 
 const ComingSoonPage = lazy(() => import('src/pages/coming-soon'));
 
@@ -354,6 +546,7 @@ export const dashboardRoutes = [
     element: CONFIG.auth.skip ? dashboardLayout() : <AuthGuard>{dashboardLayout()}</AuthGuard>,
     children: [
       { element: <IndexPage />, index: true },
+      // { path: 'two', element: <TwoPage /> },
 
       {
         path: 'humain-ressource',
@@ -585,15 +778,43 @@ export const dashboardRoutes = [
           },
         ],
       },
-
+      // Purchase Supply
+      {
+        path: 'purchase-supply',
+        children: [
+          { path: 'purchase-request', element: <PagePurchaseRequest />, index: true },
+          { path: 'purchase-request/new', element: <PageNewPurchaseRequest /> },
+          { path: 'purchase-request/:id/edit', element: <PagePurchaseRequestEdit /> },
+          { path: 'processing-da', element: <PageProcessingDa /> },
+          { path: 'supplier', element: <PageLocalSupplier /> , index: true},
+          { path: 'supplier/new', element: <PageLocalSupplierNew /> },
+          { path: 'supplier/:id/edit', element: <PageLocalSupplierEdit /> },
+          { path: 'command-order', element: <PageLocalCommandOrder /> },
+          { path: 'command-order/new', element: <PageLocalCommandOrderNew /> },
+          { path: 'command-order/:id/edit', element: <PageLocalCommandOrderEdit /> },
+          { path: 'purchase-settings', element: <PagePurchaseSettings /> },
+          { path: 'purchase-operations', element: <PagePurchaseOperations /> },
+          { path: 'purchase-operations/new', element: <PagePurchaseOperationsNew /> },
+          { path: 'purchase-operations/:id/edit', element: <PagePurchaseOperationsEdit /> },
+        ],
+      },
       {
         path: 'user',
         children: [
+          // { index: true, element: <UserProfilePage /> },
+          // { path: 'profile', element: <UserProfilePage /> },
+          // { path: 'cards', element: <UserCardsPage /> },
+          // { path: 'list', element: <UserListPage /> },
+          // { path: 'new', element: <UserCreatePage /> },
+          // { path: ':id/edit', element: <UserEditPage /> },
           {
             path: 'account',
             element: accountLayout(),
             children: [
               { index: true, element: <AccountGeneralPage /> },
+              // { path: 'billing', element: <AccountBillingPage /> },
+              // { path: 'notifications', element: <AccountNotificationsPage /> },
+              // { path: 'socials', element: <AccountSocialsPage /> },
               { path: 'change-password', element: <AccountChangePasswordPage /> },
             ],
           },
@@ -602,10 +823,16 @@ export const dashboardRoutes = [
       {
         path: 'settings',
         children: [
-          // {
-          //   path: 'general-settings',
-          //   element: <SettingsGeneralSettings />,
-          // },
+          // { index: true, element: <UserProfilePage /> },
+          // { path: 'profile', element: <UserProfilePage /> },
+          // { path: 'cards', element: <UserCardsPage /> },
+          // { path: 'list', element: <UserListPage /> },
+          // { path: 'new', element: <UserCreatePage /> },
+          // { path: ':id/edit', element: <UserEditPage /> },
+          {
+            path: 'general-settings',
+            element: <SettingsGeneralSettings />,
+          },
           {
             path: 'site',
             children: [
@@ -614,33 +841,41 @@ export const dashboardRoutes = [
               { path: ':id/edit', element: <SettingsSiteEdit /> },
             ],
           },
-          // {
-          //   path: 'store',
-          //   children: [
-          //     { index: true, element: <SettingsStoreList /> },
-          //     { path: 'new', element: <SettingsStoreNew /> },
-          //   ],
-          // },
-          // {
-          //   path: 'identification',
-          //   children: [
-          //     { index: true, element: <SettingsIdentificationGlobalSettings /> },
-          //     { path: 'global-settings', element: <SettingsIdentificationGlobalSettings /> },
-          //     {
-          //       path: 'raw-materials',
-          //       element: <PageSettingsIdentFamCategRpList group={1} nature={1} />,
-          //     },
-          //     {
-          //       path: 'spare-parts',
-          //       element: <PageSettingsIdentFamCategRpList group={2} nature={1} />,
-          //     },
-          //     { path: 'tools', element: <PageSettingsIdentFamCategRpList group={3} nature={1} /> },
-          //     {
-          //       path: 'supplies',
-          //       element: <PageSettingsIdentFamCategRpList group={4} nature={1} />,
-          //     },
-          //   ],
-          // },
+          {
+            path: 'store',
+            children: [
+              { index: true, element: <SettingsStoreList /> },
+              { path: 'new', element: <SettingsStoreNew /> },
+            ],
+          },
+          {
+            path: 'validation-circuit',
+            children: [
+              { index: true, element: <SettingsValidationCircuitList /> },
+              { path: ':target_action', element: <SettingsValidationCircuitEdit /> },
+              // { path: 'new', element: <SettingsValidationCircuitNew /> },
+            ],
+          },
+          {
+            path: 'identification',
+            children: [
+              { index: true, element: <SettingsIdentificationGlobalSettings /> },
+              { path: 'global-settings', element: <SettingsIdentificationGlobalSettings /> },
+              {
+                path: 'raw-materials',
+                element: <PageSettingsIdentFamCategRpList group={1} nature={1} />,
+              },
+              {
+                path: 'spare-parts',
+                element: <PageSettingsIdentFamCategRpList group={2} nature={1} />,
+              },
+              { path: 'tools', element: <PageSettingsIdentFamCategRpList group={3} nature={1} /> },
+              {
+                path: 'supplies',
+                element: <PageSettingsIdentFamCategRpList group={4} nature={1} />,
+              },
+            ],
+          },
           {
             path: 'service',
             children: [
@@ -678,9 +913,109 @@ export const dashboardRoutes = [
             element: accountLayout(),
             children: [
               { index: true, element: <AccountGeneralPage /> },
+              // { path: 'billing', element: <AccountBillingPage /> },
+              // { path: 'notifications', element: <AccountNotificationsPage /> },
+              // { path: 'socials', element: <AccountSocialsPage /> },
               { path: 'change-password', element: <AccountChangePasswordPage /> },
             ],
           },
+        ],
+      },
+      {
+        path: 'store-management',
+        children: [
+          {
+            path: 'raw-material',
+
+            children: [
+              { index: true, element: <PageStoreManagementStocksList product_type={1} /> },
+              { path: 'new', element: <PageStoreManagementStocksNew product_type={1} /> },
+              { path: ':id/edit', element: <PageStoreManagementStocksEdit product_type={1} /> },
+
+              { path: 'storage-area', element: <PageStoreStorageEreaList product_type={1} /> },
+              { path: 'storage-area/new', element: <PageStoreStorageAreaNew product_type={1} /> },
+              { path: 'operations', element: <PageStoreOperationsList product_type={1} /> },
+              
+              {
+                path: 'initial-storage',
+                element: <PageStoreInitialStorageList product_type={1} />,
+              },
+              {
+                path: 'initial-storage/new',
+                element: <PageStoreInitialStorageNew product_type={1} />,
+              },
+
+              { path: 'exit-slip', element: <PageStoreExitSlipList product_type={1} /> },
+              { path: 'exit-slip/new', element: <PageStoreExitSlipNew product_type={1} /> },
+              { path: 'exit-slip/:id/edit', element: <PageStoreExitSlipEdit product_type={1} /> },
+              { path: 'integrations', element: <PageStoreIntegrationList product_type={1} /> },
+              { path: 'integrations/new', element: <PageStoreIntegrationNew product_type={1} /> },
+              {
+                path: 'integrations/:id/edit',
+                element: <PageStoreIntegrationEdit product_type={1} />,
+              },
+              { path: 'transfer-slip', element: <PageStoreTransferSlipList product_type={1} /> },
+              { path: 'transfer-slip/new', element: <PageStoreTransferSlipNew product_type={1} /> },
+              {
+                path: 'transfer-slip/:id/edit',
+                element: <PageStoreTransferSlipEdit product_type={1} />,
+              },
+              { path: 'non-moving-products', element: <PageStoreNonMovingProductsList product_type={1}/> },
+            ],
+          },
+          {
+            path: '',
+            children: [
+              { path: 'borrowing', element: <PageStoreLoanBorrowingBorrowingList /> },
+              { path: 'borrowing/new', element: <PageStoreLoanBorrowingBorrowingNew /> },
+              { path: 'borrowing/:id/edit', element: <PageStoreLoanBorrowingBorrowingEdit /> },
+              { path: 'borrowing-return', element: <PageStoreLoanBorrowingReturnList /> },
+              { path: 'borrowing-return/new', element: <PageStoreLoanBorrowingReturnNew /> },
+              { path: 'borrowing-return/:id/edit', element: <PageStoreLoanBorrowingReturnEdit /> },
+              { path: 'third', element: <PageStoreLoanBorrowingThirdList /> },
+              { path: 'third/new', element: <PageStoreLoanBorrowingThirdNew /> },
+              { path: 'third/:id/edit', element: <PageStoreLoanBorrowingThirdEdit /> },
+
+            ],
+          },
+        ],
+      },
+      // {
+      //   path: 'store',
+      //   children: [
+      //     {
+      //       path: 'raw-materials',
+      //       children: [
+      //         { index: true, element: <PageStoreRawMaterialsStocksList /> },
+      //         // { path: 'stocks', element: <PageStoreRawMaterialsStocksList /> },
+      //         { path: 'storage-area', element: <PageStoreStorageEreaList /> },
+      //         { path: 'storage-area/new', element: <PageStoreStorageAreaNew /> },
+      //         { path: 'initial-storage', element: <PageStoreInitialStorageList /> },
+      //         { path: 'initial-storage/new', element: <PageStoreInitialStorageNew /> },
+      //         // { path: 'stocks/new', element: <PageStoreRawMaterialsStocksNew /> },
+      //         // { path: 'stocks/:id/edit', element: <PageStoreRawMaterialsStocksEdit /> },
+      //         { path: 'exit-slip', element: <PageStoreExitSlipList /> },
+      //         { path: 'exit-slip/new', element: <PageStoreExitSlipNew /> },
+      //         { path: 'exit-slip/:id/edit', element: <PageStoreExitSlipEdit /> },
+      //         { path: 'integrations', element: <PageStoreIntegrationList /> },
+      //         { path: 'integrations/new', element: <PageStoreIntegrationNew /> },
+      //         { path: 'integrations/:id/edit', element: <PageStoreIntegrationEdit /> },
+      //         { path: 'transfer-slip', element: <PageStoreTransferSlipList /> },
+      //         { path: 'transfer-slip/new', element: <PageStoreTransferSlipNew /> },
+      //         { path: 'transfer-slip/:id/edit', element: <PageStoreTransferSlipEdit /> },
+      //         // { path: 'stocks/new', element: <PageStoreRawMaterialsStocksNew /> },
+      //         // { path: 'stocks/:id/edit', element: <PageStoreRawMaterialsStocksEdit /> },
+      //       ],
+      //     },
+      //   ],
+      // },
+      {
+        path: 'expression-of-needs',
+        children: [
+          { index: true, element: <PageExpressionOfNeedsBebList /> },
+          { path: 'beb', element: <PageExpressionOfNeedsBebList /> },
+          { path: 'beb/new', element: <PageExpressionOfNeedsBebNew /> },
+          { path: 'beb/:id/edit', element: <PageExpressionOfNeedsBebEdit /> },
         ],
       },
     ],

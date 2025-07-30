@@ -1,10 +1,12 @@
 import { merge } from 'es-toolkit';
+import React, { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import { ListSubheader } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';
@@ -22,7 +24,7 @@ export function RHFSelect({ name, children, helperText, slotProps = {}, ...other
   const baseSlotProps = {
     select: {
       sx: { textTransform: 'capitalize' },
-      MenuProps: {
+      MenuProps: {      
         slotProps: {
           paper: {
             sx: [{ maxHeight: 220 }],
@@ -51,6 +53,124 @@ export function RHFSelect({ name, children, helperText, slotProps = {}, ...other
           {children}
         </TextField>
       )}
+    />
+  );
+}
+
+// THIS IS A LOOKUP SELECT WITH A SEARCH BAR
+export function RHFSelectSearch({
+  name,
+  children,
+  helperText,
+  slotProps = {},
+  onSearch,
+  loading,
+  ...other
+}) {
+  const { control } = useFormContext();
+  const [inputValue, setInputValue] = useState('');
+
+  const labelId = `${name}-select`;
+
+  const baseSlotProps = {
+    select: {
+      sx: { textTransform: 'capitalize' },
+      MenuProps: {
+        autoFocus: false,
+        slotProps: {
+          paper: {
+            sx: [{ maxHeight: 220 }],
+          },
+        },
+      },
+    },
+    htmlInput: { id: labelId },
+    inputLabel: { htmlFor: labelId },
+  };
+
+  const handleInputChange = (e) => {
+    const val = e.target.value;
+    setInputValue(val);
+    if (onSearch) {
+      onSearch(val);
+    }
+  };
+
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field, fieldState: { error } }) => {
+        const options = React.Children.toArray(children).map((child) => ({
+          value: child.props.value,
+          text: child.props.children,
+        }));
+
+        const valueInOptions = options.some((opt) => opt.value === field.value);
+
+        const handleOpen = () => {
+          if (field.value) {
+            const selectedOption = options.find((o) => o.value === field.value);
+            if (selectedOption) {
+              setInputValue(selectedOption.text);
+              if (onSearch) {
+                onSearch(selectedOption.text);
+              }
+            }
+          } else {
+            setInputValue('');
+            if (onSearch) {
+              onSearch('');
+            }
+          }
+        };
+
+        const finalSlotProps = merge({}, baseSlotProps, slotProps, {
+          select: {
+            onOpen: handleOpen,
+            MenuProps: {
+              disableAutoFocusItem: true,
+            },
+          },
+        });
+
+        return (
+          <TextField
+            {...field}
+            value={valueInOptions ? field.value : ''}
+            select
+            fullWidth
+            error={!!error}
+            helperText={error?.message ?? helperText}
+            slotProps={finalSlotProps}
+            {...other}
+          >
+            {onSearch && (
+              <ListSubheader
+                sx={{
+                  p: 1,
+                  position: 'sticky',
+                  top: -8,
+                  zIndex: 1,
+                  bgcolor: 'background.paper',
+                }}
+              >
+                <TextField
+                  size="small"
+                  placeholder="Search..."
+                  fullWidth
+                  value={inputValue}
+                  onChange={handleInputChange}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                />
+              </ListSubheader>
+            )}
+            {loading && <MenuItem disabled>Loading...</MenuItem>}
+            {!loading && children}
+          </TextField>
+        );
+      }}
     />
   );
 }
@@ -100,7 +220,7 @@ export function RHFMultiSelect({
           ));
 
         return (
-          <FormControl error={!!error} {...other}>
+          <FormControl fullWidth error={!!error} {...other}>
             {label && renderLabel()}
 
             <Select
