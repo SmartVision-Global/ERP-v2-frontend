@@ -95,27 +95,24 @@ export const navData = [
                 path: paths.dashboard.storeManagement.rawMaterial.nonMovingProducts,
               },
             ],
-            
-        
           },
           {
-            title:'Prêt Emprunt',
-            path:paths.dashboard.storeManagement.loanBorrowing.root,
-            children:[
+            title: 'Prêt Emprunt',
+            path: paths.dashboard.storeManagement.loanBorrowing.root,
+            children: [
               {
-                title:'Prêt Emprunt'	,
-                path:paths.dashboard.storeManagement.loanBorrowing.borrowing,
+                title: 'Prêt Emprunt',
+                path: paths.dashboard.storeManagement.loanBorrowing.borrowing,
               },
               {
-                title:'Retour Emprunt',
-                path:paths.dashboard.storeManagement.loanBorrowing.borrowingReturn,
+                title: 'Retour Emprunt',
+                path: paths.dashboard.storeManagement.loanBorrowing.borrowingReturn,
               },
               {
-                title:'Tiers',
-                path:paths.dashboard.storeManagement.loanBorrowing.third,
+                title: 'Tiers',
+                path: paths.dashboard.storeManagement.loanBorrowing.third,
               },
-              
-            ]
+            ],
           },
           // {
           //   title: 'Pièces de rechange',
@@ -395,28 +392,28 @@ export const navData = [
             path: paths.dashboard.purchaseSupply.processingDa.root,
           },
           {
-            title:'Local',
+            title: 'Local',
             // path:paths.dashboard.purchaseSupply.supplier.root,
-            path:'/dashboard/purchase-supply',
-            children:[
+            path: '/dashboard/purchase-supply',
+            children: [
               {
-                title:'Fournisseurs',
-                path:paths.dashboard.purchaseSupply.supplier.root,
+                title: 'Fournisseurs',
+                path: paths.dashboard.purchaseSupply.supplier.root,
               },
               {
-                title:'Bon de commande',
-                path:paths.dashboard.purchaseSupply.commandOrder.root,
+                title: 'Bon de commande',
+                path: paths.dashboard.purchaseSupply.commandOrder.root,
               },
               {
-                title:'Opération d\'achats',
-                path:paths.dashboard.purchaseSupply.purchaseOperations.root,
+                title: "Opération d'achats",
+                path: paths.dashboard.purchaseSupply.purchaseOperations.root,
               },
               {
-                title:'Paramètres',
-                path:paths.dashboard.purchaseSupply.settings.root,
-              }
-            ]
-          }
+                title: 'Paramètres',
+                path: paths.dashboard.purchaseSupply.settings.root,
+              },
+            ],
+          },
         ],
       },
       {
@@ -424,35 +421,35 @@ export const navData = [
         path: '/dashboard/settings',
         icon: ICONS.folder,
         children: [
-          // {
-          //   title: "Paramètrage d'identification",
-          //   path: paths.dashboard.settings.identification.root,
-          //   children: [
-          //     {
-          //       title: 'Unités mesure, Dimensions, Ateliers ...',
-          //       path: paths.dashboard.settings.identification.globalSettings,
-          //     },
-          //     {
-          //       title: 'Matières premières',
-          //       path: paths.dashboard.settings.identification.rawMaterials,
-          //     },
-          //     {
-          //       title: 'Pièces de rechange',
-          //       path: paths.dashboard.settings.identification.spareParts,
-          //     },
-          //     { title: 'Outillage', path: paths.dashboard.settings.identification.tools },
-          //     { title: 'Fournitures', path: paths.dashboard.settings.identification.supplies },
-          //   ],
-          // },
+          {
+            title: "Paramètrage d'identification",
+            path: paths.dashboard.settings.identification.root,
+            children: [
+              {
+                title: 'Unités mesure, Dimensions, Ateliers ...',
+                path: paths.dashboard.settings.identification.globalSettings,
+              },
+              {
+                title: 'Matières premières',
+                path: paths.dashboard.settings.identification.rawMaterials,
+              },
+              {
+                title: 'Pièces de rechange',
+                path: paths.dashboard.settings.identification.spareParts,
+              },
+              { title: 'Outillage', path: paths.dashboard.settings.identification.tools },
+              { title: 'Fournitures', path: paths.dashboard.settings.identification.supplies },
+            ],
+          },
           {
             title: 'Sociétés',
             path: paths.dashboard.settings.society.root,
           },
           // sites
-          // {
-          //   title: 'General Settings',
-          //   path: paths.dashboard.settings.generalSettings.root,
-          // },
+          {
+            title: 'General Settings',
+            path: paths.dashboard.settings.generalSettings.root,
+          },
           {
             title: 'Sites',
             path: paths.dashboard.settings.site.root,
